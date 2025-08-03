@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📚 Booker - Gestionnaire de bibliothèque personnelle
 
-## Getting Started
+Une application moderne et intuitive pour gérer votre collection de livres avec un design réactif et de belles animations.
 
-First, run the development server:
+## ✨ Fonctionnalités
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Gestion complète des livres** : Ajoutez, modifiez et supprimez des livres
+- **Suivi de progression** : Marquez votre avancement de lecture avec un cercle de progression animé
+- **Statuts de lecture** : À lire, En cours, Terminé
+- **Recherche et filtres** : Trouvez rapidement vos livres par titre, auteur ou genre
+- **Notes et évaluations** : Ajoutez des notes personnelles et notez vos livres
+- **Statistiques** : Visualisez votre collection avec des statistiques détaillées
+- **Design responsive** : Interface optimisée pour desktop et mobile
+- **Animations fluides** : Transitions et animations modernes avec Framer Motion
+- **Stockage local** : Vos données sont sauvegardées localement
+
+## 🚀 Technologies utilisées
+
+- **Next.js 15** - Framework React moderne
+- **TypeScript** - Typage statique
+- **Tailwind CSS** - Framework CSS utilitaire
+- **Framer Motion** - Animations et transitions
+- **Lucide React** - Icônes modernes
+- **Headless UI** - Composants accessibles
+
+## 🛠️ Installation et démarrage
+
+1. **Cloner le projet**
+   ```bash
+   git clone <votre-repo>
+   cd booker
+   ```
+
+2. **Installer les dépendances**
+   ```bash
+   npm install
+   ```
+
+3. **Lancer l'application**
+   ```bash
+   npm run dev
+   ```
+
+4. **Ouvrir dans le navigateur**
+   ```
+   http://localhost:3000
+   ```
+
+## 📱 Utilisation
+
+### Ajouter un livre
+- Cliquez sur le bouton "Ajouter un livre" dans l'en-tête
+- Remplissez les informations : titre, auteur, statut, pages, etc.
+- Ajoutez une note et une évaluation si souhaité
+
+### Gérer votre collection
+- **Filtrer** : Utilisez les boutons de filtre pour voir les livres par statut
+- **Rechercher** : Tapez dans la barre de recherche pour trouver un livre
+- **Modifier** : Cliquez sur une carte de livre pour la modifier
+- **Supprimer** : Utilisez le bouton de suppression dans chaque carte
+
+### Suivre votre progression
+- Le cercle de progression affiche automatiquement votre avancement
+- Mettez à jour la page actuelle pour voir le progrès se modifier
+- Les statistiques se mettent à jour en temps réel
+
+## 🎨 Design
+
+L'application utilise un design moderne avec :
+- **Palette de couleurs** : Bleus, verts et gris pour un look professionnel
+- **Animations** : Transitions fluides et micro-interactions
+- **Responsive** : Adaptation parfaite sur tous les écrans
+- **Accessibilité** : Interface intuitive et accessible
+
+## 📊 Structure du projet
+
+```
+src/
+├── app/
+│   ├── globals.css      # Styles globaux et animations
+│   ├── layout.tsx       # Layout principal
+│   └── page.tsx         # Page d'accueil
+├── components/
+│   ├── BookCard.tsx     # Carte de livre
+│   ├── BookForm.tsx     # Formulaire d'ajout/modification
+│   ├── ProgressCircle.tsx # Cercle de progression
+│   └── Stats.tsx        # Composant de statistiques
+├── hooks/
+│   └── useBooks.ts      # Hook de gestion des livres
+└── types/
+    └── book.ts          # Types TypeScript
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔧 Scripts disponibles
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `npm run dev` - Lance le serveur de développement
+- `npm run build` - Construit l'application pour la production
+- `npm run start` - Lance l'application en production
+- `npm run lint` - Vérifie le code avec ESLint
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📝 Fonctionnalités à venir
 
-## Learn More
+- [ ] Synchronisation cloud
+- [ ] Import/export de données
+- [ ] Recommandations de livres
+- [ ] Mode sombre
+- [ ] Notifications de rappel
+- [ ] Partage de bibliothèque
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Booker** - Votre bibliothèque personnelle, modernisée ✨

@@ -1,0 +1,293 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Book, BookFormData, BookStatus } from '@/types/book';
+import { X, BookOpen, Star, User, FileText, Hash, Trash2 } from 'lucide-react';
+
+interface BookFormProps {
+  book?: Book;
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: BookFormData) => void;
+  onDelete?: (id: string) => void;
+}
+
+export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookFormProps) {
+  const [formData, setFormData] = useState<BookFormData>({
+    title: '',
+    author: '',
+    status: 'toread',
+    totalPages: undefined,
+    currentPage: undefined,
+    rating: undefined,
+    notes: '',
+    genre: '',
+    isbn: '',
+  });
+
+  useEffect(() => {
+    if (book) {
+      setFormData({
+        title: book.title,
+        author: book.author,
+        cover: book.cover,
+        status: book.status,
+        totalPages: book.totalPages,
+        currentPage: book.currentPage,
+        rating: book.rating,
+        notes: book.notes || '',
+        genre: book.genre || '',
+        isbn: book.isbn || '',
+      });
+    } else {
+      setFormData({
+        title: '',
+        author: '',
+        status: 'toread',
+        totalPages: undefined,
+        currentPage: undefined,
+        rating: undefined,
+        notes: '',
+        genre: '',
+        isbn: '',
+      });
+    }
+  }, [book]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(formData);
+    onClose();
+  };
+
+  const handleInputChange = (field: keyof BookFormData, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleDelete = () => {
+    if (book && onDelete) {
+      if (confirm('Êtes-vous sûr de vouloir supprimer ce livre ?')) {
+        onDelete(book.id);
+        onClose();
+      }
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {book ? 'Modifier le livre' : 'Ajouter un livre'}
+                </h2>
+                <div className="flex items-center gap-2">
+                  {book && onDelete && (
+                    <button
+                      onClick={handleDelete}
+                      className="p-2 text-red-400 hover:text-red-600 transition-colors"
+                      title="Supprimer le livre"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  )}
+                  <button
+                    onClick={onClose}
+                    className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Titre */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Titre *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.title}
+                    onChange={(e) => handleInputChange('title', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Titre du livre"
+                  />
+                </div>
+
+                {/* Auteur */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Auteur *
+                  </label>
+                  <div className="relative">
+                    <User size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="text"
+                      required
+                      value={formData.author}
+                      onChange={(e) => handleInputChange('author', e.target.value)}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Nom de l'auteur"
+                    />
+                  </div>
+                </div>
+
+                {/* Statut */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Statut
+                  </label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => handleInputChange('status', e.target.value as BookStatus)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="toread">À lire</option>
+                    <option value="reading">En cours</option>
+                    <option value="completed">Terminé</option>
+                  </select>
+                </div>
+
+                {/* Pages */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Pages totales
+                    </label>
+                    <div className="relative">
+                      <BookOpen size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <input
+                        type="number"
+                        value={formData.totalPages || ''}
+                        onChange={(e) => handleInputChange('totalPages', e.target.value ? parseInt(e.target.value) : undefined)}
+                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="0"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Page actuelle
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.currentPage || ''}
+                      onChange={(e) => handleInputChange('currentPage', e.target.value ? parseInt(e.target.value) : undefined)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+
+                {/* Note */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Note
+                  </label>
+                  <div className="flex items-center gap-2">
+                    {[1, 2, 3, 4, 5].map((rating) => (
+                      <button
+                        key={rating}
+                        type="button"
+                        onClick={() => handleInputChange('rating', rating)}
+                        className={`p-1 rounded transition-colors ${
+                          formData.rating === rating
+                            ? 'text-yellow-500'
+                            : 'text-gray-300 hover:text-yellow-400'
+                        }`}
+                      >
+                        <Star size={20} className={formData.rating && formData.rating >= rating ? 'fill-current' : ''} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Genre */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Genre
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.genre}
+                    onChange={(e) => handleInputChange('genre', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Roman, Science-fiction, etc."
+                  />
+                </div>
+
+                {/* ISBN */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    ISBN
+                  </label>
+                  <div className="relative">
+                    <Hash size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="text"
+                      value={formData.isbn}
+                      onChange={(e) => handleInputChange('isbn', e.target.value)}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="978-0-000000-0-0"
+                    />
+                  </div>
+                </div>
+
+                {/* Notes */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Notes
+                  </label>
+                  <div className="relative">
+                    <FileText size={16} className="absolute left-3 top-3 text-gray-400" />
+                    <textarea
+                      value={formData.notes}
+                      onChange={(e) => handleInputChange('notes', e.target.value)}
+                      rows={3}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                      placeholder="Vos notes sur ce livre..."
+                    />
+                  </div>
+                </div>
+
+                {/* Boutons */}
+                <div className="flex gap-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    {book ? 'Modifier' : 'Ajouter'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+} 

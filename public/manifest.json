@@ -1,0 +1,53 @@
+{
+  "name": "Booker - Gestionnaire de bibliothèque",
+  "short_name": "Booker",
+  "description": "Application moderne pour gérer votre collection de livres personnelle",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "fr",
+  "categories": ["books", "productivity", "education"],
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ajouter un livre",
+      "short_name": "Ajouter",
+      "description": "Ajouter un nouveau livre à votre collection",
+      "url": "/?action=add",
+      "icons": [
+        {
+          "src": "/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Livres en cours",
+      "short_name": "En cours",
+      "description": "Voir vos livres en cours de lecture",
+      "url": "/?filter=reading",
+      "icons": [
+        {
+          "src": "/icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
