@@ -97,17 +97,26 @@ L'application utilise un design moderne avec :
 src/
 ├── app/
 │   ├── globals.css      # Styles globaux et animations
-│   ├── layout.tsx       # Layout principal
-│   └── page.tsx         # Page d'accueil
+│   ├── layout.tsx       # Layout principal avec AuthProvider
+│   ├── page.tsx         # Page d'accueil
+│   └── not-found.tsx    # Page 404
 ├── components/
+│   ├── AuthProvider.tsx # Provider d'authentification
 │   ├── BookCard.tsx     # Carte de livre
 │   ├── BookForm.tsx     # Formulaire d'ajout/modification
 │   ├── ProgressCircle.tsx # Cercle de progression
+│   ├── ReadingTimer.tsx # Timer de lecture
 │   └── Stats.tsx        # Composant de statistiques
 ├── hooks/
-│   └── useBooks.ts      # Hook de gestion des livres
+│   ├── useAuth.ts       # Hook d'authentification
+│   ├── useBooks.ts      # Hook de gestion des livres
+│   └── useReadingSessions.ts # Hook des sessions de lecture
+├── lib/
+│   └── supabase.ts      # Configuration client Supabase
 └── types/
-    └── book.ts          # Types TypeScript
+    ├── book.ts          # Types des livres
+    ├── reading-session.ts # Types des sessions
+    └── supabase.ts      # Types de base de données
 ```
 
 ## 🔧 Scripts disponibles
