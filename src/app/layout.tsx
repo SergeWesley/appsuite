@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { UpdateNotification } from "@/components/UpdateNotification";
+import { AuthProvider } from "@/components/AuthProvider";
 
 export const metadata: Metadata = {
   title: "Booker - Gestionnaire de bibliothèque personnelle",
