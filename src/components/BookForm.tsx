@@ -13,6 +13,15 @@ interface BookFormProps {
   onDelete?: (id: string) => void;
 }
 
+interface BookSuggestion {
+  key: string;
+  title: string;
+  author_name?: string[];
+  first_publish_year?: number;
+  isbn?: string[];
+  number_of_pages_median?: number;
+}
+
 export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookFormProps) {
   const [formData, setFormData] = useState<BookFormData>({
     title: '',
@@ -25,6 +34,39 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
     genre: '',
     isbn: '',
   });
+  const [suggestions, setSuggestions] = useState<BookSuggestion[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const searchBooks = async (query: string) => {
+    if (query.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const response = await fetch(
+        `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&fields=key,title,author_name,first_publish_year,isbn,number_of_pages_median&limit=5`
+      );
+      const data = await response.json();
+      setSuggestions(data.docs);
+    } catch (error) {
+      console.error('Erreur lors de la recherche de livres:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleSuggestionSelect = (suggestion: BookSuggestion) => {
+    setFormData(prev => ({
+      ...prev,
+      title: suggestion.title,
+      author: suggestion.author_name?.[0] || '',
+      totalPages: suggestion.number_of_pages_median,
+      isbn: suggestion.isbn?.[0] || '',
+    }));
+    setSuggestions([]);
+  };
 
   useEffect(() => {
     if (book) {
@@ -55,9 +97,25 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
     }
   }, [book]);
 
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      author: '',
+      status: 'toread',
+      totalPages: undefined,
+      currentPage: undefined,
+      rating: undefined,
+      notes: '',
+      genre: '',
+      isbn: '',
+    });
+    setSuggestions([]);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
+    resetForm();
     onClose();
   };
 
@@ -107,7 +165,10 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
                     </button>
                   )}
                   <button
-                    onClick={onClose}
+                    onClick={() => {
+                      resetForm();
+                      onClose();
+                    }}
                     className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
                   >
                     <X size={20} />
@@ -117,18 +178,52 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Titre */}
-                <div>
+                <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Titre *
                   </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.title}
-                    onChange={(e) => handleInputChange('title', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Titre du livre"
-                  />
+                  <div className="relative">
+                    <input
+                      type="text"
+                      required
+                      value={formData.title}
+                      onChange={(e) => {
+                        handleInputChange('title', e.target.value);
+                        searchBooks(e.target.value);
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="Titre du livre"
+                    />
+                    {isSearching && (
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        <div className="animate-spin h-5 w-5 border-2 border-blue-600 rounded-full border-t-transparent"></div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Liste des suggestions */}
+                  {suggestions.length > 0 && (
+                    <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                      {suggestions.map((suggestion) => (
+                        <button
+                          key={suggestion.key}
+                          type="button"
+                          onClick={() => handleSuggestionSelect(suggestion)}
+                          className="w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors"
+                        >
+                          <div className="font-medium text-gray-900">
+                            {suggestion.title}
+                          </div>
+                          {suggestion.author_name && (
+                            <div className="text-sm text-gray-600">
+                              par {suggestion.author_name[0]}
+                              {suggestion.first_publish_year && ` (${suggestion.first_publish_year})`}
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Auteur */}
@@ -271,7 +366,10 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
                 <div className="flex gap-3 pt-4">
                   <button
                     type="button"
-                    onClick={onClose}
+                    onClick={() => {
+                      resetForm();
+                      onClose();
+                    }}
                     className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
                   >
                     Annuler
