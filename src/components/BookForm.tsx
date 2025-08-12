@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Book, BookFormData, BookStatus } from '@/types/book';
 import { IsbnScanner } from './IsbnScanner';
 import { X, BookOpen, Star, User, FileText, Hash, Trash2, Camera } from 'lucide-react';
+import { useDebounce } from '@/hooks/useDebounce';
 
 interface BookFormProps {
   book?: Book;
@@ -40,21 +41,34 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
   const [authorSuggestions, setAuthorSuggestions] = useState<BookSuggestion[]>([]);
   const [isSearchingTitle, setIsSearchingTitle] = useState(false);
   const [isSearchingAuthor, setIsSearchingAuthor] = useState(false);
+  const [isSearchingIsbn, setIsSearchingIsbn] = useState(false);
+
+  // Debounce pour l'ISBN pour éviter trop de requêtes API
+  const debouncedIsbn = useDebounce(formData.isbn, 500);
+
+  // Recherche automatique par ISBN quand l'utilisateur arrête de taper
+  useEffect(() => {
+    if (debouncedIsbn && debouncedIsbn.length >= 10) {
+      searchBooks(debouncedIsbn, 'isbn');
+    } else if (debouncedIsbn && debouncedIsbn.length < 10) {
+      setTitleSuggestions([]);
+    }
+  }, [debouncedIsbn]);
 
   const searchBooks = async (query: string, type: 'title' | 'author' | 'isbn' = 'title') => {
-    if (query.length < 3) {
+    if (query.length < 3  && type !== 'isbn') {
       if (type === 'title') {
         setTitleSuggestions([]);
       } else if (type === 'author') {
         setAuthorSuggestions([]);
-      } else {
-        // Pour l'ISBN, on peut accepter des codes plus courts
-        if (query.length < 10) {
-          setTitleSuggestions([]);
-          return;
-        }
       }
       return;
+    }
+
+    if (type === 'isbn' && query.length < 10) {
+        // Pour l'ISBN, on vide les suggestions si moins de 10 caractères
+        setTitleSuggestions([]);
+        return;
     }
 
     if (type === 'title') {
@@ -62,13 +76,14 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
     } else if (type === 'author') {
       setIsSearchingAuthor(true);
     } else {
-      setIsSearchingTitle(true); // Pour l'ISBN, on utilise le même état
+      setIsSearchingIsbn(true); // Pour l'ISBN, on utilise son propre état
     }
 
     try {
       let apiUrl: string;
       
       if (type === 'isbn') {
+        console.log('isbn', query);
         // Utiliser l'endpoint spécifique pour l'ISBN
         apiUrl = `https://openlibrary.org/search.json?isbn=${encodeURIComponent(query)}&fields=key,title,author_name,first_publish_year,isbn,number_of_pages_median&limit=5`;
       } else {
@@ -90,10 +105,12 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
     } catch (error) {
       console.error('Erreur lors de la recherche de livres:', error);
     } finally {
-      if (type === 'title' || type === 'isbn') {
+      if (type === 'title') {
         setIsSearchingTitle(false);
-      } else {
+      } else if (type === 'author') {
         setIsSearchingAuthor(false);
+      } else {
+        setIsSearchingIsbn(false);
       }
     }
   };
@@ -427,6 +444,11 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
                       className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="978-0-000000-0-0"
                     />
+                    {isSearchingIsbn && (
+                      <div className="absolute right-12 top-1/2 transform -translate-y-1/2">
+                        <div className="animate-spin h-5 w-5 border-2 border-blue-600 rounded-full border-t-transparent"></div>
+                      </div>
+                    )}
                     <button
                       type="button"
                       onClick={() => setIsScanning(true)}
