@@ -12,7 +12,7 @@ import { InstallPWA } from '@/components/InstallPWA';
 import { ReadingTimer } from '@/components/ReadingTimer';
 
 export default function Home() {
-  const { books, loading, addBook, updateBook, deleteBook, getStats } = useBooks();
+  const { books, loading, error, addBook, updateBook, deleteBook, getStats } = useBooks();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | undefined>(undefined);
   const [selectedStatus, setSelectedStatus] = useState<BookStatus | 'all'>('all');
