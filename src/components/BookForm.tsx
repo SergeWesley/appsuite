@@ -493,7 +493,7 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
                     type="submit"
                     className="flex-1 px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
                   >
-                    {book ? 'Modifier' : 'Ajouter'}
+                    {book ? 'Valider' : 'Ajouter'}
                   </button>
                 </div>
               </form>
