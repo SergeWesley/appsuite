@@ -24,6 +24,7 @@ Une application moderne et intuitive pour gérer votre collection de livres avec
 - **Framer Motion** - Animations et transitions
 - **Lucide React** - Icônes modernes
 - **Headless UI** - Composants accessibles
+- **Supabase** - Base de données et authentification en temps réel
 
 ## 🛠️ Installation et démarrage
 
@@ -80,7 +81,7 @@ L'application utilise un design moderne avec :
 src/
 ├── app/
 │   ├── globals.css      # Styles globaux et animations
-│   ├���─ layout.tsx       # Layout principal
+│   ├── layout.tsx       # Layout principal
 │   └── page.tsx         # Page d'accueil
 ├── components/
 │   ├── BookCard.tsx     # Carte de livre
