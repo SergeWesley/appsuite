@@ -38,42 +38,56 @@ export function BookCard({ book, onEdit, onDelete, onStatusChange }: BookCardPro
       className="book-card p-6 cursor-pointer group"
       onClick={() => onEdit(book)}
     >
+    
       <div className="flex items-start justify-between mb-4">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
-            {book.title}
-          </h3>
-          <p className="text-sm text-gray-600 flex items-center gap-1 mt-1">
-            <User size={14} />
-            {book.author}
-          </p>
+        <div className="flex items-start gap-4 min-w-0">
+            {/* Si on a une couverture */}
+            {book.coverUrl && (
+                <div className="mb-4">
+                <img
+                    src={book.coverUrl}
+                    alt={`Couverture de ${book.title}`}
+                    className="w-12 h-16 object-cover rounded-lg shadow-md flex-shrink-0"
+                />
+                </div>
+            )}
+
+            <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+                    {book.title}
+                </h3>
+                <p className="text-sm text-gray-600 flex items-center gap-1 mt-1">
+                    <User size={14} />
+                    {book.author}
+                </p>
+            </div>
         </div>
+      </div>
+
+      <div className="flex items-center gap-2 ml-4">
+        <span className={`status-badge ${status.color}`}>
+        {status.label}
+        </span>
         
-        <div className="flex items-center gap-2 ml-4">
-          <span className={`status-badge ${status.color}`}>
-            {status.label}
-          </span>
-          
-          <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(book);
-              }}
-              className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-            >
-              <Edit2 size={16} />
-            </button>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(book.id);
-              }}
-              className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-            >
-              <Trash2 size={16} />
-            </button>
-          </div>
+        <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+        <button
+            onClick={(e) => {
+            e.stopPropagation();
+            onEdit(book);
+            }}
+            className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+        >
+            <Edit2 size={16} />
+        </button>
+        <button
+            onClick={(e) => {
+            e.stopPropagation();
+            onDelete(book.id);
+            }}
+            className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+        >
+            <Trash2 size={16} />
+        </button>
         </div>
       </div>
 

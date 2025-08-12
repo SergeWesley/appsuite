@@ -21,6 +21,7 @@ interface BookSuggestion {
   first_publish_year?: number;
   isbn?: string[];
   number_of_pages_median?: number;
+  cover_i?: number; // ID de la couverture
 }
 
 export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookFormProps) {
@@ -35,6 +36,7 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
     notes: '',
     genre: '',
     isbn: '',
+    coverUrl: '',
   });
   const [titleSuggestions, setTitleSuggestions] = useState<BookSuggestion[]>([]);
   const [authorSuggestions, setAuthorSuggestions] = useState<BookSuggestion[]>([]);
@@ -109,6 +111,10 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
       author: suggestion.author_name?.[0] || '',
       totalPages: suggestion.number_of_pages_median,
       isbn: suggestion.isbn?.[0] || '',
+      coverUrl: 
+        suggestion.cover_i? `https://covers.openlibrary.org/b/id/${suggestion.cover_i}-L.jpg`
+        : suggestion.isbn?.[0]? `https://covers.openlibrary.org/b/isbn/${suggestion.isbn[0]}-L.jpg`
+        : ''
     }));
     setTitleSuggestions([]);
     setAuthorSuggestions([]);

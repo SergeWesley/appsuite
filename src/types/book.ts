@@ -16,6 +16,7 @@ export interface Book {
   dateCompleted?: Date;
   genre?: string;
   isbn?: string;
+  coverUrl?: string; // URL de la couverture
 }
 
 export interface BookFormData {
@@ -29,4 +30,5 @@ export interface BookFormData {
   notes?: string;
   genre?: string;
   isbn?: string;
+  coverUrl?: string; // URL de la couverture
 } 
