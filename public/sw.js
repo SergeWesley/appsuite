@@ -1,73 +1,88 @@
-const CACHE_NAME = 'booker-v1.0.0';
+const CACHE_NAME = `booker-${new Date().getTime()}`;
+const STATIC_CACHE_NAME = 'booker-static-v1';
 const urlsToCache = [
   '/',
   '/manifest.json',
   '/icon-192x192.png',
-  '/icon-512x512.png'
+  '/icon-512x512.png',
+  '/offline.html'
 ];
 
 // Installation du Service Worker
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Cache ouvert');
+    Promise.all([
+      caches.open(STATIC_CACHE_NAME).then((cache) => {
+        console.log('Cache statique ouvert');
         return cache.addAll(urlsToCache);
+      }),
+      caches.open(CACHE_NAME).then((cache) => {
+        console.log('Cache dynamique ouvert');
       })
+    ]).then(() => {
+      // Force le nouveau service worker à devenir actif immédiatement
+      return self.skipWaiting();
+    })
   );
 });
 
 // Activation du Service Worker
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Suppression de l\'ancien cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    Promise.all([
+      // Nettoyer les anciens caches
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (cacheName !== CACHE_NAME && cacheName !== STATIC_CACHE_NAME) {
+              console.log('Suppression de l\'ancien cache:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      }),
+      // Prendre le contrôle de tous les clients immédiatement
+      self.clients.claim(),
+      // Informer les clients de la mise à jour
+      self.clients.matchAll().then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({
+            type: 'UPDATE_AVAILABLE'
+          });
+        });
+      })
+    ])
   );
 });
 
 // Interception des requêtes
 self.addEventListener('fetch', (event) => {
+  // Stratégie stale-while-revalidate
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Retourner la réponse en cache si elle existe
-        if (response) {
-          return response;
-        }
+    caches.match(event.request).then((cachedResponse) => {
+      const fetchPromise = fetch(event.request)
+        .then((networkResponse) => {
+          // Mise en cache de la nouvelle réponse
+          if (networkResponse && networkResponse.status === 200) {
+            const cache = caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, networkResponse.clone());
+              return networkResponse;
+            });
+          }
+          return networkResponse;
+        })
+        .catch((error) => {
+          // En cas d'erreur réseau, retourner la page hors ligne pour les requêtes de document
+          if (event.request.destination === 'document') {
+            return caches.match('/offline.html');
+          }
+          throw error;
+        });
 
-        // Sinon, faire la requête réseau
-        return fetch(event.request)
-          .then((response) => {
-            // Vérifier si la réponse est valide
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // Cloner la réponse car elle ne peut être utilisée qu'une fois
-            const responseToCache = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          })
-          .catch(() => {
-            // En cas d'erreur réseau, retourner une page hors ligne
-            if (event.request.destination === 'document') {
-              return caches.match('/offline.html');
-            }
-          });
-      })
+      // Retourner la réponse en cache immédiatement si disponible,
+      // sinon attendre la réponse réseau
+      return cachedResponse || fetchPromise;
+    })
   );
 });
 

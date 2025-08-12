@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { UpdateNotification } from "@/components/UpdateNotification";
 
 export const metadata: Metadata = {
   title: "Booker - Gestionnaire de bibliothèque personnelle",
@@ -43,6 +44,7 @@ export default function RootLayout({
     <html lang="fr">
       <body className="antialiased">
         {children}
+        <UpdateNotification />
       </body>
     </html>
   );

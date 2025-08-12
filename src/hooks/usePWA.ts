@@ -16,6 +16,7 @@ export function usePWA() {
   const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
+  const [updateAvailable, setUpdateAvailable] = useState(false);
 
   useEffect(() => {
     // Vérifier si l'app est déjà installée
@@ -49,6 +50,25 @@ export function usePWA() {
         try {
           const registration = await navigator.serviceWorker.register('/sw.js');
           console.log('Service Worker enregistré:', registration);
+
+          // Vérifier les mises à jour
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            if (newWorker) {
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  setUpdateAvailable(true);
+                }
+              });
+            }
+          });
+
+          // Écouter les messages du Service Worker
+          navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data && event.data.type === 'UPDATE_AVAILABLE') {
+              setUpdateAvailable(true);
+            }
+          });
         } catch (error) {
           console.error('Erreur d\'enregistrement du Service Worker:', error);
         }
@@ -114,11 +134,29 @@ export function usePWA() {
     }
   };
 
+  // Fonction pour mettre à jour l'application
+  const updateApp = async () => {
+    if ('serviceWorker' in navigator) {
+      const registration = await navigator.serviceWorker.ready;
+      await registration.update();
+      
+      if (registration.waiting) {
+        // Envoyer un message au Service Worker pour qu'il s'active
+        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
+
+      // Recharger la page pour appliquer les mises à jour
+      window.location.reload();
+    }
+  };
+
   return {
     isInstallable,
     isInstalled,
     isOnline,
+    updateAvailable,
     installApp,
+    updateApp,
     requestNotificationPermission,
     sendNotification,
   };
