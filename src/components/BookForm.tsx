@@ -41,30 +41,46 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
   const [isSearchingTitle, setIsSearchingTitle] = useState(false);
   const [isSearchingAuthor, setIsSearchingAuthor] = useState(false);
 
-  const searchBooks = async (query: string, type: 'title' | 'author' = 'title') => {
+  const searchBooks = async (query: string, type: 'title' | 'author' | 'isbn' = 'title') => {
     if (query.length < 3) {
       if (type === 'title') {
         setTitleSuggestions([]);
-      } else {
+      } else if (type === 'author') {
         setAuthorSuggestions([]);
+      } else {
+        // Pour l'ISBN, on peut accepter des codes plus courts
+        if (query.length < 10) {
+          setTitleSuggestions([]);
+          return;
+        }
       }
       return;
     }
 
     if (type === 'title') {
       setIsSearchingTitle(true);
-    } else {
+    } else if (type === 'author') {
       setIsSearchingAuthor(true);
+    } else {
+      setIsSearchingTitle(true); // Pour l'ISBN, on utilise le même état
     }
 
     try {
-      const searchParam = type === 'title' ? 'title' : 'author';
-      const response = await fetch(
-        `https://openlibrary.org/search.json?${searchParam}=${encodeURIComponent(query)}&fields=key,title,author_name,first_publish_year,isbn,number_of_pages_median&limit=5`
-      );
+      let apiUrl: string;
+      
+      if (type === 'isbn') {
+        // Utiliser l'endpoint spécifique pour l'ISBN
+        apiUrl = `https://openlibrary.org/search.json?isbn=${encodeURIComponent(query)}&fields=key,title,author_name,first_publish_year,isbn,number_of_pages_median&limit=5`;
+      } else {
+        // Utiliser l'endpoint standard pour titre et auteur
+        const searchParam = type === 'title' ? 'title' : 'author';
+        apiUrl = `https://openlibrary.org/search.json?${searchParam}=${encodeURIComponent(query)}&fields=key,title,author_name,first_publish_year,isbn,number_of_pages_median&limit=5`;
+      }
+      
+      const response = await fetch(apiUrl);
       const data = await response.json();
       
-      if (type === 'title') {
+      if (type === 'title' || type === 'isbn') {
         setTitleSuggestions(data.docs);
         setAuthorSuggestions([]); // Efface les suggestions d'auteur
       } else {
@@ -74,7 +90,7 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
     } catch (error) {
       console.error('Erreur lors de la recherche de livres:', error);
     } finally {
-      if (type === 'title') {
+      if (type === 'title' || type === 'isbn') {
         setIsSearchingTitle(false);
       } else {
         setIsSearchingAuthor(false);
@@ -167,7 +183,7 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
             handleInputChange('isbn', isbn);
             setIsScanning(false);
             // Rechercher automatiquement le livre avec l'ISBN
-            searchBooks(isbn, 'title');
+            searchBooks(isbn, 'isbn');
           }}
           onClose={() => setIsScanning(false)}
         />
