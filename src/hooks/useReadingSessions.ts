@@ -2,146 +2,266 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { ReadingSession, ReadingSessionFormData, BookReadingStats } from '@/types/reading-session';
+import { Database } from '@/types/supabase';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from './useAuth';
 
-// Fonction pour générer un ID unique
-function generateId(): string {
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID();
-  }
-  return 'session-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now().toString(36);
+type SessionRow = Database['public']['Tables']['reading_sessions']['Row'];
+type SessionInsert = Database['public']['Tables']['reading_sessions']['Insert'];
+type SessionUpdate = Database['public']['Tables']['reading_sessions']['Update'];
+
+// Fonction pour convertir les données de la base vers le type ReadingSession
+function mapRowToSession(row: SessionRow): ReadingSession {
+  return {
+    id: row.id,
+    bookId: row.book_id,
+    startTime: new Date(row.start_time),
+    endTime: row.end_time ? new Date(row.end_time) : undefined,
+    duration: row.duration,
+    notes: row.notes || undefined,
+    pagesRead: row.pages_read || undefined,
+    isActive: row.is_active,
+  };
 }
 
 export function useReadingSessions() {
   const [sessions, setSessions] = useState<ReadingSession[]>([]);
   const [activeSessions, setActiveSessions] = useState<Map<string, ReadingSession>>(new Map());
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
-  // Charger les sessions depuis localStorage
-  useEffect(() => {
-    const savedSessions = localStorage.getItem('reading-sessions');
-    if (savedSessions) {
-      try {
-        const parsedSessions = JSON.parse(savedSessions).map((session: any) => ({
-          ...session,
-          startTime: new Date(session.startTime),
-          endTime: session.endTime ? new Date(session.endTime) : undefined,
-        }));
-        
-        // Vérifier les sessions actives et nettoyer les sessions trop anciennes (plus de 24h)
-        const now = new Date();
-        const validSessions = parsedSessions.map((session: ReadingSession) => {
+  // Fonction pour migrer les données du localStorage vers Supabase
+  const migrateFromLocalStorage = async () => {
+    if (!user) return;
+
+    try {
+      const savedSessions = localStorage.getItem('reading-sessions');
+      if (!savedSessions) return;
+
+      const parsedSessions = JSON.parse(savedSessions);
+      if (!Array.isArray(parsedSessions) || parsedSessions.length === 0) return;
+
+      console.log('Migration des sessions depuis localStorage...');
+      
+      // Insérer chaque session dans Supabase
+      for (const localSession of parsedSessions) {
+        const sessionData: SessionInsert = {
+          book_id: localSession.bookId,
+          start_time: localSession.startTime || new Date().toISOString(),
+          end_time: localSession.endTime || null,
+          duration: localSession.duration || 0,
+          notes: localSession.notes || null,
+          pages_read: localSession.pagesRead || null,
+          is_active: localSession.isActive || false,
+          user_id: user.id,
+        };
+
+        const { error } = await supabase
+          .from('reading_sessions')
+          .insert(sessionData);
+
+        if (error) {
+          console.error('Erreur lors de la migration de la session:', error);
+        }
+      }
+
+      // Supprimer les données du localStorage après migration réussie
+      localStorage.removeItem('reading-sessions');
+      console.log('Migration des sessions terminée, données localStorage supprimées');
+    } catch (error) {
+      console.error('Erreur lors de la migration des sessions:', error);
+    }
+  };
+
+  // Charger les sessions depuis Supabase
+  const loadSessions = async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setError(null);
+      const { data, error } = await supabase
+        .from('reading_sessions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('start_time', { ascending: false });
+
+      if (error) throw error;
+
+      const mappedSessions = data.map(mapRowToSession);
+      
+      // Nettoyer les sessions actives trop anciennes (plus de 24h)
+      const now = new Date();
+      const cleanedSessions = await Promise.all(
+        mappedSessions.map(async (session) => {
           if (session.isActive) {
             const hoursSinceStart = (now.getTime() - session.startTime.getTime()) / (1000 * 60 * 60);
-            // Si la session est active depuis plus de 24h, la marquer comme terminée automatiquement
             if (hoursSinceStart > 24) {
-              return {
-                ...session,
-                isActive: false,
-                endTime: new Date(session.startTime.getTime() + (24 * 60 * 60 * 1000)), // 24h après le début
-                duration: 24 * 60 * 60, // 24 heures en secondes
-              };
+              // Marquer comme terminée automatiquement
+              const endTime = new Date(session.startTime.getTime() + (24 * 60 * 60 * 1000));
+              const duration = 24 * 60 * 60;
+
+              const { data: updatedData, error: updateError } = await supabase
+                .from('reading_sessions')
+                .update({
+                  is_active: false,
+                  end_time: endTime.toISOString(),
+                  duration: duration,
+                })
+                .eq('id', session.id)
+                .eq('user_id', user.id)
+                .select()
+                .single();
+
+              if (updateError) {
+                console.error('Erreur lors de la mise à jour de la session:', updateError);
+                return session;
+              }
+
+              return mapRowToSession(updatedData);
             }
           }
           return session;
-        });
-        
-        setSessions(validSessions);
-        
-        // Charger les sessions actives valides
-        const activeSessionsMap = new Map<string, ReadingSession>();
-        validSessions.forEach((session: ReadingSession) => {
-          if (session.isActive) {
-            activeSessionsMap.set(session.bookId, session);
-          }
-        });
-        setActiveSessions(activeSessionsMap);
-        
-        // Sauvegarder les sessions nettoyées si des changements ont été apportés
-        if (validSessions.some((session: ReadingSession, index:  number) => 
-          session.isActive !== parsedSessions[index]?.isActive ||
-          session.endTime !== parsedSessions[index]?.endTime
-        )) {
-          localStorage.setItem('reading-sessions', JSON.stringify(validSessions));
-        }
-      } catch (error) {
-        console.error('Erreur lors du chargement des sessions:', error);
-      }
-    }
-    setLoading(false);
-  }, []);
+        })
+      );
 
-  // Sauvegarder les sessions dans localStorage
-  const saveSessions = useCallback((newSessions: ReadingSession[]) => {
-    localStorage.setItem('reading-sessions', JSON.stringify(newSessions));
-    setSessions(newSessions);
-  }, []);
+      setSessions(cleanedSessions);
+
+      // Construire la map des sessions actives
+      const activeSessionsMap = new Map<string, ReadingSession>();
+      cleanedSessions.forEach((session) => {
+        if (session.isActive) {
+          activeSessionsMap.set(session.bookId, session);
+        }
+      });
+      setActiveSessions(activeSessionsMap);
+    } catch (err) {
+      console.error('Erreur lors du chargement des sessions:', err);
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      // Vérifier s'il y a des données à migrer
+      migrateFromLocalStorage().then(() => {
+        loadSessions();
+      });
+    } else {
+      setLoading(false);
+    }
+  }, [user]);
 
   // Démarrer une session de lecture
-  const startSession = useCallback((bookId: string): ReadingSession => {
-    // Arrêter toute session active existante pour ce livre
-    const existingSession = activeSessions.get(bookId);
-    if (existingSession) {
-      stopSession(bookId);
+  const startSession = useCallback(async (bookId: string): Promise<ReadingSession | null> => {
+    if (!user) {
+      setError('Utilisateur non connecté');
+      return null;
     }
 
-    const newSession: ReadingSession = {
-      id: generateId(),
-      bookId,
-      startTime: new Date(),
-      duration: 0,
-      isActive: true,
-    };
+    try {
+      setError(null);
+      
+      // Arrêter toute session active existante pour ce livre
+      const existingSession = activeSessions.get(bookId);
+      if (existingSession) {
+        await stopSession(bookId);
+      }
 
-    setSessions(prevSessions => {
-      const updatedSessions = [...prevSessions, newSession];
-      localStorage.setItem('reading-sessions', JSON.stringify(updatedSessions));
-      return updatedSessions;
-    });
-    
-    setActiveSessions(prev => {
-      const newMap = new Map(prev);
-      newMap.set(bookId, newSession);
-      return newMap;
-    });
-    
-    return newSession;
-  }, [activeSessions]);
+      const sessionData: SessionInsert = {
+        book_id: bookId,
+        start_time: new Date().toISOString(),
+        duration: 0,
+        is_active: true,
+        user_id: user.id,
+      };
+
+      const { data, error } = await supabase
+        .from('reading_sessions')
+        .insert(sessionData)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const newSession = mapRowToSession(data);
+      
+      setSessions(prev => [newSession, ...prev]);
+      setActiveSessions(prev => {
+        const newMap = new Map(prev);
+        newMap.set(bookId, newSession);
+        return newMap;
+      });
+      
+      return newSession;
+    } catch (err) {
+      console.error('Erreur lors du démarrage de la session:', err);
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      return null;
+    }
+  }, [activeSessions, user]);
 
   // Arrêter une session de lecture
-  const stopSession = useCallback((bookId: string, sessionData?: ReadingSessionFormData): ReadingSession | null => {
+  const stopSession = useCallback(async (bookId: string, sessionData?: ReadingSessionFormData): Promise<ReadingSession | null> => {
+    if (!user) {
+      setError('Utilisateur non connecté');
+      return null;
+    }
+
     const activeSession = activeSessions.get(bookId);
     if (!activeSession) {
       return null;
     }
 
-    const endTime = new Date();
-    const duration = Math.floor((endTime.getTime() - activeSession.startTime.getTime()) / 1000);
+    try {
+      setError(null);
+      const endTime = new Date();
+      const duration = Math.floor((endTime.getTime() - activeSession.startTime.getTime()) / 1000);
 
-    const completedSession: ReadingSession = {
-      ...activeSession,
-      endTime,
-      duration,
-      isActive: false,
-      notes: sessionData?.notes,
-      pagesRead: sessionData?.pagesRead,
-    };
+      const updateData: SessionUpdate = {
+        end_time: endTime.toISOString(),
+        duration,
+        is_active: false,
+        notes: sessionData?.notes || null,
+        pages_read: sessionData?.pagesRead || null,
+      };
 
-    setSessions(prevSessions => {
-      const updatedSessions = prevSessions.map(session =>
-        session.id === activeSession.id ? completedSession : session
+      const { data, error } = await supabase
+        .from('reading_sessions')
+        .update(updateData)
+        .eq('id', activeSession.id)
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const completedSession = mapRowToSession(data);
+      
+      setSessions(prev => 
+        prev.map(session => 
+          session.id === activeSession.id ? completedSession : session
+        )
       );
-      localStorage.setItem('reading-sessions', JSON.stringify(updatedSessions));
-      return updatedSessions;
-    });
-    
-    setActiveSessions(prev => {
-      const newMap = new Map(prev);
-      newMap.delete(bookId);
-      return newMap;
-    });
+      
+      setActiveSessions(prev => {
+        const newMap = new Map(prev);
+        newMap.delete(bookId);
+        return newMap;
+      });
 
-    return completedSession;
-  }, [activeSessions]);
+      return completedSession;
+    } catch (err) {
+      console.error('Erreur lors de l\'arrêt de la session:', err);
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      return null;
+    }
+  }, [activeSessions, user]);
 
   // Obtenir les sessions pour un livre
   const getSessionsForBook = useCallback((bookId: string): ReadingSession[] => {
@@ -181,25 +301,43 @@ export function useReadingSessions() {
   }, [activeSessions]);
 
   // Supprimer une session
-  const deleteSession = useCallback((sessionId: string) => {
-    setSessions(prevSessions => {
-      const updatedSessions = prevSessions.filter(session => session.id !== sessionId);
-      localStorage.setItem('reading-sessions', JSON.stringify(updatedSessions));
-      return updatedSessions;
-    });
-    
-    // Supprimer des sessions actives si nécessaire
-    setActiveSessions(prev => {
-      const newMap = new Map(prev);
-      for (const [bookId, session] of prev) {
-        if (session.id === sessionId) {
-          newMap.delete(bookId);
-          break;
+  const deleteSession = useCallback(async (sessionId: string): Promise<boolean> => {
+    if (!user) {
+      setError('Utilisateur non connecté');
+      return false;
+    }
+
+    try {
+      setError(null);
+      const { error } = await supabase
+        .from('reading_sessions')
+        .delete()
+        .eq('id', sessionId)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setSessions(prev => prev.filter(session => session.id !== sessionId));
+      
+      // Supprimer des sessions actives si nécessaire
+      setActiveSessions(prev => {
+        const newMap = new Map(prev);
+        for (const [bookId, session] of prev) {
+          if (session.id === sessionId) {
+            newMap.delete(bookId);
+            break;
+          }
         }
-      }
-      return newMap;
-    });
-  }, []);
+        return newMap;
+      });
+
+      return true;
+    } catch (err) {
+      console.error('Erreur lors de la suppression de la session:', err);
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      return false;
+    }
+  }, [user]);
 
   // Formater la durée en format lisible
   const formatDuration = useCallback((seconds: number): string => {
@@ -220,6 +358,7 @@ export function useReadingSessions() {
     sessions,
     activeSessions: Array.from(activeSessions.values()),
     loading,
+    error,
     startSession,
     stopSession,
     getSessionsForBook,
@@ -228,5 +367,6 @@ export function useReadingSessions() {
     getActiveSession,
     deleteSession,
     formatDuration,
+    refreshSessions: loadSessions,
   };
 }
