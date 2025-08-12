@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Book, BookFormData, BookStatus } from '@/types/book';
 import { IsbnScanner } from './IsbnScanner';
@@ -42,12 +42,18 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
   const [isSearchingTitle, setIsSearchingTitle] = useState(false);
   const [isSearchingAuthor, setIsSearchingAuthor] = useState(false);
   const [isSearchingIsbn, setIsSearchingIsbn] = useState(false);
+  const isSelectingSuggestion = useRef(false);
 
   // Debounce pour l'ISBN pour éviter trop de requêtes API
   const debouncedIsbn = useDebounce(formData.isbn, 500);
 
   // Recherche automatique par ISBN quand l'utilisateur arrête de taper
   useEffect(() => {
+    if (isSelectingSuggestion.current) {
+    // On ignore ce changement déclenché par la sélection
+        isSelectingSuggestion.current = false;
+        return;
+    }
     if (debouncedIsbn && debouncedIsbn.length >= 10) {
       searchBooks(debouncedIsbn, 'isbn');
     } else if (debouncedIsbn && debouncedIsbn.length < 10) {
@@ -116,6 +122,7 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
   };
 
   const handleSuggestionSelect = (suggestion: BookSuggestion) => {
+    isSelectingSuggestion.current = true;
     setFormData(prev => ({
       ...prev,
       title: suggestion.title,
