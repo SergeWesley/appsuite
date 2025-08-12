@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Book, BookFormData, BookStatus } from '@/types/book';
 import { IsbnScanner } from './IsbnScanner';
 import { X, BookOpen, Star, User, FileText, Hash, Trash2, Camera } from 'lucide-react';
-import { useDebounce } from '@/hooks/useDebounce';
 
 interface BookFormProps {
   book?: Book;
@@ -42,24 +41,6 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
   const [isSearchingTitle, setIsSearchingTitle] = useState(false);
   const [isSearchingAuthor, setIsSearchingAuthor] = useState(false);
   const [isSearchingIsbn, setIsSearchingIsbn] = useState(false);
-  const isSelectingSuggestion = useRef(false);
-
-  // Debounce pour l'ISBN pour éviter trop de requêtes API
-  const debouncedIsbn = useDebounce(formData.isbn, 500);
-
-  // Recherche automatique par ISBN quand l'utilisateur arrête de taper
-  useEffect(() => {
-    if (isSelectingSuggestion.current) {
-    // On ignore ce changement déclenché par la sélection
-        isSelectingSuggestion.current = false;
-        return;
-    }
-    if (debouncedIsbn && debouncedIsbn.length >= 10) {
-      searchBooks(debouncedIsbn, 'isbn');
-    } else if (debouncedIsbn && debouncedIsbn.length < 10) {
-      setTitleSuggestions([]);
-    }
-  }, [debouncedIsbn]);
 
   const searchBooks = async (query: string, type: 'title' | 'author' | 'isbn' = 'title') => {
     if (query.length < 3  && type !== 'isbn') {
@@ -122,7 +103,6 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
   };
 
   const handleSuggestionSelect = (suggestion: BookSuggestion) => {
-    isSelectingSuggestion.current = true;
     setFormData(prev => ({
       ...prev,
       title: suggestion.title,
@@ -447,7 +427,10 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
                     <input
                       type="text"
                       value={formData.isbn}
-                      onChange={(e) => handleInputChange('isbn', e.target.value)}
+                      onChange={(e) => {
+                        handleInputChange('isbn', e.target.value);
+                        searchBooks(e.target.value, 'isbn');
+                      }} 
                       className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="978-0-000000-0-0"
                     />
