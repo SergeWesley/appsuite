@@ -128,7 +128,9 @@ src/
 
 ## 📝 Fonctionnalités à venir
 
-- [ ] Synchronisation cloud
+- [x] Synchronisation cloud (Supabase)
+- [x] Timer de lecture avec statistiques
+- [ ] Authentification avec email/password
 - [ ] Import/export de données
 - [ ] Recommandations de livres
 - [ ] Mode sombre
