@@ -12,7 +12,9 @@ Une application moderne et intuitive pour gérer votre collection de livres avec
 - **Statistiques** : Visualisez votre collection avec des statistiques détaillées
 - **Design responsive** : Interface optimisée pour desktop et mobile
 - **Animations fluides** : Transitions et animations modernes avec Framer Motion
-- **Stockage local** : Vos données sont sauvegardées localement
+- **Timer de lecture** : Chronométrez vos sessions de lecture avec statistiques
+- **Synchronisation cloud** : Vos données sont sauvegardées et synchronisées via Supabase
+- **Migration automatique** : Migration transparente depuis localStorage vers Supabase
 
 ## 🚀 Technologies utilisées
 
@@ -78,7 +80,7 @@ L'application utilise un design moderne avec :
 src/
 ├── app/
 │   ├── globals.css      # Styles globaux et animations
-│   ├── layout.tsx       # Layout principal
+│   ├���─ layout.tsx       # Layout principal
 │   └── page.tsx         # Page d'accueil
 ├── components/
 │   ├── BookCard.tsx     # Carte de livre
