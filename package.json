@@ -16,6 +16,7 @@
     "next": "15.4.5",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-zxing": "^2.1.0",
     "sharp": "^0.34.3"
   },
   "devDependencies": {

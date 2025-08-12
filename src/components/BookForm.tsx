@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Book, BookFormData, BookStatus } from '@/types/book';
-import { X, BookOpen, Star, User, FileText, Hash, Trash2 } from 'lucide-react';
+import { IsbnScanner } from './IsbnScanner';
+import { X, BookOpen, Star, User, FileText, Hash, Trash2, Camera } from 'lucide-react';
 
 interface BookFormProps {
   book?: Book;
@@ -23,6 +24,7 @@ interface BookSuggestion {
 }
 
 export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookFormProps) {
+  const [isScanning, setIsScanning] = useState(false);
   const [formData, setFormData] = useState<BookFormData>({
     title: '',
     author: '',
@@ -159,7 +161,17 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
 
   return (
     <AnimatePresence>
-      {isOpen && (
+      {isScanning ? (
+        <IsbnScanner
+          onScan={(isbn: string) => {
+            handleInputChange('isbn', isbn);
+            setIsScanning(false);
+            // Rechercher automatiquement le livre avec l'ISBN
+            searchBooks(isbn, 'title');
+          }}
+          onClose={() => setIsScanning(false)}
+        />
+      ) : isOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -396,9 +408,17 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
                       type="text"
                       value={formData.isbn}
                       onChange={(e) => handleInputChange('isbn', e.target.value)}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="978-0-000000-0-0"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setIsScanning(true)}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
+                      title="Scanner un code ISBN"
+                    >
+                      <Camera size={16} />
+                    </button>
                   </div>
                 </div>
 
