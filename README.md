@@ -39,15 +39,31 @@ Une application moderne et intuitive pour gérer votre collection de livres avec
    npm install
    ```
 
-3. **Lancer l'application**
+3. **Configurer Supabase**
+   ```bash
+   # Créez un fichier .env.local avec vos clés Supabase
+   cp .env.example .env.local
+   # Éditez .env.local avec vos vraies clés
+   ```
+
+4. **Lancer l'application**
    ```bash
    npm run dev
    ```
 
-4. **Ouvrir dans le navigateur**
+5. **Ouvrir dans le navigateur**
    ```
    http://localhost:3000
    ```
+
+## 🗄️ Configuration Supabase
+
+Cette application utilise Supabase comme backend. Consultez le guide détaillé de migration dans `MIGRATION_SUPABASE.md` pour :
+
+1. Créer un projet Supabase
+2. Configurer la base de données
+3. Obtenir vos clés API
+4. Migrer vos données existantes
 
 ## 📱 Utilisation
 
