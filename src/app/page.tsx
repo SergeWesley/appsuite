@@ -9,6 +9,7 @@ import { BookCard } from '@/components/BookCard';
 import { BookForm } from '@/components/BookForm';
 import { Stats } from '@/components/Stats';
 import { InstallPWA } from '@/components/InstallPWA';
+import { ReadingTimer } from '@/components/ReadingTimer';
 
 export default function Home() {
   const { books, loading, addBook, updateBook, deleteBook, getStats } = useBooks();
@@ -16,7 +17,8 @@ export default function Home() {
   const [editingBook, setEditingBook] = useState<Book | undefined>(undefined);
   const [selectedStatus, setSelectedStatus] = useState<BookStatus | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-
+  const [timerBook, setTimerBook] = useState<Book | undefined>(undefined);
+  const [isTimerOpen, setIsTimerOpen] = useState(false);
   const stats = getStats();
 
   const handleAddBook = (data: BookFormData) => {
@@ -55,6 +57,16 @@ export default function Home() {
     } else {
       handleAddBook(data);
     }
+  };
+
+  const openTimer = (book: Book) => {
+    setTimerBook(book);
+    setIsTimerOpen(true);
+  };
+
+  const closeTimer = () => {
+    setIsTimerOpen(false);
+    setTimerBook(undefined);
   };
 
   // Filtrer les livres
@@ -187,6 +199,7 @@ export default function Home() {
                       onEdit={openForm}
                       onDelete={handleDeleteBook}
                       onStatusChange={handleStatusChange}
+                      onOpenTimer={openTimer}
                     />
                   </motion.div>
                 ))}
@@ -219,6 +232,15 @@ export default function Home() {
         onSubmit={handleSubmit}
         onDelete={handleDeleteBook}
       />
+
+          {/* Timer de lecture */}
+      {timerBook && (
+        <ReadingTimer
+          book={timerBook}
+          isOpen={isTimerOpen}
+          onClose={closeTimer}
+        />
+      )}
     </div>
   );
 }

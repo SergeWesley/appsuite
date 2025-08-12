@@ -3,13 +3,14 @@
 import { motion } from 'framer-motion';
 import { Book, BookStatus } from '@/types/book';
 import { ProgressCircle } from './ProgressCircle';
-import { BookOpen, Star, Calendar, User, Edit2, Trash2 } from 'lucide-react';
+import { BookOpen, Star, Calendar, User, Edit2, Trash2, Timer } from 'lucide-react';
 
 interface BookCardProps {
   book: Book;
   onEdit: (book: Book) => void;
   onDelete: (id: string) => void;
   onStatusChange: (id: string, status: BookStatus) => void;
+  onOpenTimer: (book: Book) => void;
 }
 
 const statusConfig = {
@@ -18,7 +19,7 @@ const statusConfig = {
   toread: { label: 'À lire', color: 'status-toread' },
 };
 
-export function BookCard({ book, onEdit, onDelete, onStatusChange }: BookCardProps) {
+export function BookCard({ book, onEdit, onDelete, onStatusChange, onOpenTimer }: BookCardProps) {
   const status = statusConfig[book.status];
 
   const formatDate = (date: Date) => {
@@ -70,24 +71,33 @@ export function BookCard({ book, onEdit, onDelete, onStatusChange }: BookCardPro
         </span>
         
         <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-        <button
+          <button
             onClick={(e) => {
-            e.stopPropagation();
-            onEdit(book);
+              e.stopPropagation();
+              onOpenTimer(book);
+            }}
+            className="p-1 text-green-400 hover:text-green-500 transition-colors"
+          >
+            <Timer size={16} />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit(book);
             }}
             className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-        >
+          >
             <Edit2 size={16} />
-        </button>
-        <button
+          </button>
+          <button
             onClick={(e) => {
             e.stopPropagation();
             onDelete(book.id);
             }}
             className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-        >
-            <Trash2 size={16} />
-        </button>
+            >
+              <Trash2 size={16} />
+          </button>
         </div>
       </div>
 
