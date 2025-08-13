@@ -156,22 +156,6 @@ export function useBooks() {
       if (updates.isbn !== undefined) updateData.isbn = updates.isbn;
       if (updates.coverUrl !== undefined) updateData.cover_url = updates.coverUrl;
 
-      // Calculer le progrès
-      if (updates.status === 'completed') {
-        updateData.progress = 100;
-        updateData.date_completed = new Date().toISOString();
-      } else if (updates.currentPage && updates.totalPages) {
-        updateData.progress = Math.round((updates.currentPage / updates.totalPages) * 100);
-      }
-
-      // Mettre à jour la date de début
-      if (updates.status === 'reading') {
-        const currentBook = books.find(book => book.id === id);
-        if (currentBook && !currentBook.dateStarted) {
-          updateData.date_started = new Date().toISOString();
-        }
-      }
-
       const { data, error } = await supabase
         .from('books')
         .update(updateData)
