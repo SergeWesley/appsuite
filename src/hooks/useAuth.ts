@@ -1,25 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { User } from '@supabase/supabase-js';
+import { User, AuthError } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
-      // Si Supabase n'est pas configuré, créer un utilisateur fictif pour le mode localStorage
-      setUser({
-        id: 'local-user',
-        email: 'local@example.com',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        app_metadata: {},
-        user_metadata: {},
-        aud: 'authenticated',
-      } as User);
+      // Si Supabase n'est pas configuré, on reste non connecté
       setLoading(false);
       return;
     }
