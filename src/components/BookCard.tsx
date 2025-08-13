@@ -54,7 +54,7 @@ export function BookCard({ book, onEdit, onDelete, onStatusChange, onOpenTimer }
           animate={{ opacity: 1, x: 0 }}
           className="absolute top-0 left-0 right-0 bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 text-xs font-medium flex items-center gap-2 z-10"
         >
-          <Timer size={12} className="animate-pulse" />
+          <BookOpen size={12} className="animate-pulse" />
           <span>Session en cours: {currentTime}</span>
           <div className="ml-auto flex">
             <div className="w-1 h-1 bg-white rounded-full animate-pulse"></div>
@@ -108,7 +108,7 @@ export function BookCard({ book, onEdit, onDelete, onStatusChange, onOpenTimer }
             }`}
             title={hasActiveTimer ? 'Gérer la session en cours' : 'Démarrer une session'}
           >
-            <Timer size={16} className={hasActiveTimer ? 'animate-pulse' : ''} />
+            <BookOpen size={16} className={hasActiveTimer ? 'animate-pulse' : ''} />
           </button>
           <button
             onClick={(e) => {
