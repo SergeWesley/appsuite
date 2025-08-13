@@ -291,7 +291,7 @@ export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
                 </button>
                 <button
                   onClick={handleCancelStop}
-                  disabled={isStopping}
+                  disabled={isStopping || isSyncing}
                   className="flex-1 bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 disabled:cursor-not-allowed text-gray-700 py-2 px-4 rounded-lg font-medium transition-colors"
                 >
                   Annuler
