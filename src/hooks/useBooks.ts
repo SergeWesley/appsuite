@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Book, BookFormData, BookStatus } from '@/types/book';
 import { Database } from '@/types/supabase';
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { useAuth } from './useAuth';
 
 type BookRow = Database['public']['Tables']['books']['Row'];
@@ -63,58 +63,8 @@ export function useBooks() {
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
-  // Fonction pour migrer les données du localStorage vers Supabase
-  const migrateFromLocalStorage = async () => {
-    if (!user) return;
 
-    try {
-      const savedBooks = localStorage.getItem('books');
-      if (!savedBooks) return;
-
-      const parsedBooks = JSON.parse(savedBooks);
-      if (!Array.isArray(parsedBooks) || parsedBooks.length === 0) return;
-
-      console.log('Migration des livres depuis localStorage...');
-      
-      // Insérer chaque livre dans Supabase
-      for (const localBook of parsedBooks) {
-        const bookData: BookInsert = {
-          title: localBook.title,
-          author: localBook.author,
-          cover: localBook.cover || null,
-          status: localBook.status,
-          progress: localBook.progress || 0,
-          total_pages: localBook.totalPages || null,
-          current_page: localBook.currentPage || null,
-          rating: localBook.rating || null,
-          notes: localBook.notes || null,
-          date_added: localBook.dateAdded || new Date().toISOString(),
-          date_started: localBook.dateStarted || null,
-          date_completed: localBook.dateCompleted || null,
-          genre: localBook.genre || null,
-          isbn: localBook.isbn || null,
-          cover_url: localBook.coverUrl || null,
-          user_id: user.id,
-        };
-
-        const { error } = await supabase!
-          .from('books')
-          .insert(bookData);
-
-        if (error) {
-          console.error('Erreur lors de la migration du livre:', error);
-        }
-      }
-
-      // Supprimer les données du localStorage après migration réussie
-      localStorage.removeItem('books');
-      console.log('Migration terminée, données localStorage supprimées');
-    } catch (error) {
-      console.error('Erreur lors de la migration:', error);
-    }
-  };
-
-  // Charger les livres depuis localStorage ou Supabase
+  // Charger les livres depuis Supabase
   const loadBooks = async () => {
     if (!user) {
       setLoading(false);
@@ -124,24 +74,7 @@ export function useBooks() {
     try {
       setError(null);
 
-      if (!isSupabaseConfigured) {
-        // Mode localStorage
-        const savedBooks = localStorage.getItem('books');
-        if (savedBooks) {
-          const parsedBooks = JSON.parse(savedBooks).map((book: any) => ({
-            ...book,
-            dateAdded: new Date(book.dateAdded),
-            dateStarted: book.dateStarted ? new Date(book.dateStarted) : undefined,
-            dateCompleted: book.dateCompleted ? new Date(book.dateCompleted) : undefined,
-          }));
-          setBooks(parsedBooks);
-        }
-        setLoading(false);
-        return;
-      }
-
-      // Mode Supabase
-      const { data, error } = await supabase!
+      const { data, error } = await supabase
         .from('books')
         .select('*')
         .eq('user_id', user.id)
@@ -161,22 +94,12 @@ export function useBooks() {
 
   useEffect(() => {
     if (user) {
-      // Vérifier s'il y a des données à migrer
-      migrateFromLocalStorage().then(() => {
-        loadBooks();
-      });
+      loadBooks();
     } else {
       setLoading(false);
     }
   }, [user]);
 
-  // Fonction pour générer un ID unique
-  function generateId(): string {
-    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-      return crypto.randomUUID();
-    }
-    return 'id-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now().toString(36);
-  }
 
   // Ajouter un nouveau livre
   const addBook = async (bookData: BookFormData): Promise<Book | null> => {
@@ -188,29 +111,9 @@ export function useBooks() {
     try {
       setError(null);
 
-      if (!isSupabaseConfigured) {
-        // Mode localStorage
-        const newBook: Book = {
-          id: generateId(),
-          ...bookData,
-          progress: bookData.status === 'completed' ? 100 :
-                    bookData.currentPage && bookData.totalPages ?
-                    Math.round((bookData.currentPage / bookData.totalPages) * 100) : 0,
-          dateAdded: new Date(),
-          dateStarted: bookData.status === 'reading' || bookData.status === 'completed' ? new Date() : undefined,
-          dateCompleted: bookData.status === 'completed' ? new Date() : undefined,
-        };
-
-        const updatedBooks = [newBook, ...books];
-        localStorage.setItem('books', JSON.stringify(updatedBooks));
-        setBooks(updatedBooks);
-        return newBook;
-      }
-
-      // Mode Supabase
       const insertData = mapFormDataToInsert(bookData, user.id);
 
-      const { data, error } = await supabase!
+      const { data, error } = await supabase
         .from('books')
         .insert(insertData)
         .select()
@@ -238,36 +141,6 @@ export function useBooks() {
     try {
       setError(null);
 
-      if (!isSupabaseConfigured) {
-        // Mode localStorage
-        const updatedBooks = books.map(book => {
-          if (book.id === id) {
-            const updatedBook = { ...book, ...updates };
-
-            // Calculer le progrès
-            if (updates.status === 'completed') {
-              updatedBook.progress = 100;
-              updatedBook.dateCompleted = new Date();
-            } else if (updates.currentPage && updates.totalPages) {
-              updatedBook.progress = Math.round((updates.currentPage / updates.totalPages) * 100);
-            }
-
-            // Mettre à jour les dates
-            if (updates.status === 'reading' && !book.dateStarted) {
-              updatedBook.dateStarted = new Date();
-            }
-
-            return updatedBook;
-          }
-          return book;
-        });
-
-        localStorage.setItem('books', JSON.stringify(updatedBooks));
-        setBooks(updatedBooks);
-        return true;
-      }
-
-      // Mode Supabase
       const updateData: BookUpdate = {};
 
       // Mapper les champs de mise à jour
@@ -299,7 +172,7 @@ export function useBooks() {
         }
       }
 
-      const { data, error } = await supabase!
+      const { data, error } = await supabase
         .from('books')
         .update(updateData)
         .eq('id', id)
@@ -329,16 +202,7 @@ export function useBooks() {
     try {
       setError(null);
 
-      if (!isSupabaseConfigured) {
-        // Mode localStorage
-        const updatedBooks = books.filter(book => book.id !== id);
-        localStorage.setItem('books', JSON.stringify(updatedBooks));
-        setBooks(updatedBooks);
-        return true;
-      }
-
-      // Mode Supabase
-      const { error } = await supabase!
+      const { error } = await supabase
         .from('books')
         .delete()
         .eq('id', id)
