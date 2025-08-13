@@ -8,10 +8,11 @@ const TimerContext = createContext<ReturnType<typeof useTimer> | null>(null);
 
 interface TimerProviderProps {
   children: ReactNode;
+  onBookDataChanged?: () => void;
 }
 
-export function TimerProvider({ children }: TimerProviderProps) {
-  const timerData = useTimer();
+export function TimerProvider({ children, onBookDataChanged }: TimerProviderProps) {
+  const timerData = useTimer(onBookDataChanged);
   
   return (
     <TimerContext.Provider value={timerData}>
