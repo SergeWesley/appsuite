@@ -182,6 +182,14 @@ export function useReadingSessions() {
     }
   }, [user]);
 
+  // Fonction pour générer un ID unique
+  function generateId(): string {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    return 'session-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now().toString(36);
+  }
+
   // Démarrer une session de lecture
   const startSession = useCallback(async (bookId: string): Promise<ReadingSession | null> => {
     if (!user) {
@@ -191,13 +199,37 @@ export function useReadingSessions() {
 
     try {
       setError(null);
-      
+
       // Arrêter toute session active existante pour ce livre
       const existingSession = activeSessions.get(bookId);
       if (existingSession) {
         await stopSession(bookId);
       }
 
+      if (!isSupabaseConfigured) {
+        // Mode localStorage
+        const newSession: ReadingSession = {
+          id: generateId(),
+          bookId,
+          startTime: new Date(),
+          duration: 0,
+          isActive: true,
+        };
+
+        const updatedSessions = [newSession, ...sessions];
+        localStorage.setItem('reading-sessions', JSON.stringify(updatedSessions));
+        setSessions(updatedSessions);
+
+        setActiveSessions(prev => {
+          const newMap = new Map(prev);
+          newMap.set(bookId, newSession);
+          return newMap;
+        });
+
+        return newSession;
+      }
+
+      // Mode Supabase
       const sessionData: SessionInsert = {
         book_id: bookId,
         start_time: new Date().toISOString(),
@@ -206,7 +238,7 @@ export function useReadingSessions() {
         user_id: user.id,
       };
 
-      const { data, error } = await supabase
+      const { data, error } = await supabase!
         .from('reading_sessions')
         .insert(sessionData)
         .select()
@@ -215,21 +247,21 @@ export function useReadingSessions() {
       if (error) throw error;
 
       const newSession = mapRowToSession(data);
-      
+
       setSessions(prev => [newSession, ...prev]);
       setActiveSessions(prev => {
         const newMap = new Map(prev);
         newMap.set(bookId, newSession);
         return newMap;
       });
-      
+
       return newSession;
     } catch (err) {
       console.error('Erreur lors du démarrage de la session:', err);
       setError(err instanceof Error ? err.message : 'Erreur inconnue');
       return null;
     }
-  }, [activeSessions, user]);
+  }, [activeSessions, user, sessions]);
 
   // Arrêter une session de lecture
   const stopSession = useCallback(async (bookId: string, sessionData?: ReadingSessionFormData): Promise<ReadingSession | null> => {
