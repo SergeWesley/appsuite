@@ -79,8 +79,12 @@ export default function Home() {
   const closeTimer = () => {
     setIsTimerOpen(false);
     setTimerBook(undefined);
-    // Forcer un re-render en mettant à jour l'état
-    // Le hook useTimer va automatiquement déclencher un re-render
+  };
+
+  const handleSessionStopped = async () => {
+    // Rafraîchir les livres quand une session se termine
+    console.log('Session terminée, rafraîchissement des livres...');
+    await refreshBooks();
   };
 
   // Filtrer les livres
