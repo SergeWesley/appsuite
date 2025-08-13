@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Book, BookFormData, BookStatus } from '@/types/book';
 import { Database } from '@/types/supabase';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from './useAuth';
 
 type BookRow = Database['public']['Tables']['books']['Row'];
