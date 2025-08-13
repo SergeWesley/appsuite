@@ -56,7 +56,7 @@ export default function RootLayout({
                       console.log('Service Worker enregistré avec succès:', registration.scope);
                     })
                     .catch(function(error) {
-                      console.log('Échec de l\'enregistrement du Service Worker:', error);
+                      console.log("Échec de l\'enregistrement du Service Worker:", error);
                     });
                 });
               }

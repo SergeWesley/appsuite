@@ -84,15 +84,7 @@ export default function Home() {
 
   const handleSessionStopped = async () => {
     // Rafraîchir les livres quand une session se termine
-    console.log('🔄 Session terminée, rafraîchissement des livres...');
-    console.log('📚 Livres avant rafraîchissement:', books.find(b => b.id === timerBook?.id));
-
     await refreshBooks();
-
-    // Vérifier après rafraîchissement
-    setTimeout(() => {
-      console.log('📚 Livres après rafraîchissement:', books.find(b => b.id === timerBook?.id));
-    }, 100);
   };
 
   // Filtrer les livres

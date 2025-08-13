@@ -74,7 +74,7 @@ export function ReadingTimer({
       // Aussi arrêter le timer pour le contexte
       const timerSuccess = await stopTimer(book.id, sessionData.notes, sessionData.pagesRead);
 
-      if (sessionResult && timerSuccess) {
+      if (timerSuccess) {
         setShowStopForm(false);
         setSessionData({ notes: '', pagesRead: undefined });
         setIsStopping(false);
@@ -89,7 +89,7 @@ export function ReadingTimer({
           } finally {
             setIsSyncing(false);
           }
-        }, 800);
+        }, 0);
       }
     } catch (error) {
       console.error('Erreur lors de l\'arrêt du timer:', error);
