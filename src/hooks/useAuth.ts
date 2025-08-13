@@ -43,8 +43,13 @@ export function useAuth() {
 
   // Connexion anonyme pour commencer (peut être remplacé par un vrai système d'auth)
   const signInAnonymously = async () => {
+    if (!isSupabaseConfigured) {
+      // En mode localStorage, on simule une connexion réussie
+      return { user: user, session: null };
+    }
+
     try {
-      const { data, error } = await supabase.auth.signInAnonymously();
+      const { data, error } = await supabase!.auth.signInAnonymously();
       if (error) throw error;
       return data;
     } catch (error) {
@@ -54,8 +59,13 @@ export function useAuth() {
   };
 
   const signOut = async () => {
+    if (!isSupabaseConfigured) {
+      // En mode localStorage, on ne fait rien
+      return;
+    }
+
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error } = await supabase!.auth.signOut();
       if (error) throw error;
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
