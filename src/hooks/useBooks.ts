@@ -328,7 +328,17 @@ export function useBooks() {
 
     try {
       setError(null);
-      const { error } = await supabase
+
+      if (!isSupabaseConfigured) {
+        // Mode localStorage
+        const updatedBooks = books.filter(book => book.id !== id);
+        localStorage.setItem('books', JSON.stringify(updatedBooks));
+        setBooks(updatedBooks);
+        return true;
+      }
+
+      // Mode Supabase
+      const { error } = await supabase!
         .from('books')
         .delete()
         .eq('id', id)
