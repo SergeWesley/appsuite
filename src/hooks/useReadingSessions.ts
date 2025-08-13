@@ -74,7 +74,7 @@ export function useReadingSessions() {
     }
   };
 
-  // Charger les sessions depuis Supabase
+  // Charger les sessions depuis localStorage ou Supabase
   const loadSessions = async () => {
     if (!user) {
       setLoading(false);
@@ -83,7 +83,32 @@ export function useReadingSessions() {
 
     try {
       setError(null);
-      const { data, error } = await supabase
+
+      if (!isSupabaseConfigured) {
+        // Mode localStorage
+        const savedSessions = localStorage.getItem('reading-sessions');
+        if (savedSessions) {
+          const parsedSessions = JSON.parse(savedSessions).map((session: any) => ({
+            ...session,
+            startTime: new Date(session.startTime),
+            endTime: session.endTime ? new Date(session.endTime) : undefined,
+          }));
+          setSessions(parsedSessions);
+
+          const activeSessionsMap = new Map<string, ReadingSession>();
+          parsedSessions.forEach((session: ReadingSession) => {
+            if (session.isActive) {
+              activeSessionsMap.set(session.bookId, session);
+            }
+          });
+          setActiveSessions(activeSessionsMap);
+        }
+        setLoading(false);
+        return;
+      }
+
+      // Mode Supabase
+      const { data, error } = await supabase!
         .from('reading_sessions')
         .select('*')
         .eq('user_id', user.id)
