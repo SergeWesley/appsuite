@@ -76,17 +76,16 @@ export function ReadingTimer({
         setIsStopping(false);
         setIsSyncing(true);
 
-        // Attendre que le trigger SQL se déclenche et rafraîchir les livres
-        // Le trigger devrait automatiquement mettre à jour les pages du livre
-        setTimeout(async () => {
+        // Notifier la page principale pour rafraîchir les livres
+        // Attendre un peu pour que le trigger SQL s'exécute
+        setTimeout(() => {
           try {
-            await refreshBooks();
-            // Fermer la modal après rafraîchissement pour voir les changements
-            onClose();
+            onSessionStopped(); // Déclenche le rafraîchissement dans la page principale
+            onClose(); // Fermer la modal
           } finally {
             setIsSyncing(false);
           }
-        }, 1000); // Délai plus long pour être sûr que le trigger s'exécute
+        }, 1000);
       }
     } catch (error) {
       console.error('Erreur lors de l\'arrêt du timer:', error);
