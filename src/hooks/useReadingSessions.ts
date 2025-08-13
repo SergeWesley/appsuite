@@ -163,7 +163,7 @@ export function useReadingSessions() {
     }
   }, [user]);
 
-  // Arrêter une session de lecture
+  // Arrêter une session de lecture (utilise maintenant la fonction Supabase)
   const stopSession = useCallback(async (bookId: string, sessionData?: ReadingSessionFormData): Promise<ReadingSession | null> => {
     if (!user) {
       setError('Utilisateur non connecté');
@@ -177,41 +177,35 @@ export function useReadingSessions() {
 
     try {
       setError(null);
-      const endTime = new Date();
-      const duration = Math.floor((endTime.getTime() - activeSession.startTime.getTime()) / 1000);
 
-      const completedSession: ReadingSession = {
-        ...activeSession,
-        endTime,
-        duration,
-        isActive: false,
-        notes: sessionData?.notes,
-        pagesRead: sessionData?.pagesRead,
-      };
-
-      const updateData: SessionUpdate = {
-        end_time: endTime.toISOString(),
-        duration,
-        is_active: false,
-        notes: sessionData?.notes || null,
-        pages_read: sessionData?.pagesRead || null,
-      };
-
-      const { data, error } = await supabase
-        .from('reading_sessions')
-        .update(updateData)
-        .eq('id', activeSession.id)
-        .eq('user_id', user.id)
-        .select()
-        .single();
+      // Utiliser la fonction Supabase pour arrêter la session
+      const { data: success, error } = await supabase.rpc('stop_reading_session', {
+        p_session_id: activeSession.id,
+        p_user_id: user.id,
+        p_notes: sessionData?.notes || null,
+        p_pages_read: sessionData?.pagesRead || null
+      });
 
       if (error) throw error;
 
-      const supabaseSession = mapRowToSession(data);
+      if (!success) {
+        throw new Error('Impossible d\'arrêter la session');
+      }
+
+      // Récupérer la session mise à jour
+      const { data: updatedSessionData, error: fetchError } = await supabase
+        .from('reading_sessions')
+        .select('*')
+        .eq('id', activeSession.id)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      const updatedSession = mapRowToSession(updatedSessionData);
 
       setSessions(prev =>
         prev.map(session =>
-          session.id === activeSession.id ? supabaseSession : session
+          session.id === activeSession.id ? updatedSession : session
         )
       );
 
@@ -221,13 +215,13 @@ export function useReadingSessions() {
         return newMap;
       });
 
-      return supabaseSession;
+      return updatedSession;
     } catch (err) {
       console.error('Erreur lors de l\'arrêt de la session:', err);
       setError(err instanceof Error ? err.message : 'Erreur inconnue');
       return null;
     }
-  }, [activeSessions, user, sessions]);
+  }, [activeSessions, user]);
 
   // Obtenir les sessions pour un livre
   const getSessionsForBook = useCallback((bookId: string): ReadingSession[] => {
