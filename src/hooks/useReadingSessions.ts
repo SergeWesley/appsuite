@@ -24,7 +24,7 @@ function mapRowToSession(row: SessionRow): ReadingSession {
   };
 }
 
-export function useReadingSessions() {
+export function useReadingSessions(onBookDataChanged?: () => void) {
   const [sessions, setSessions] = useState<ReadingSession[]>([]);
   const [activeSessions, setActiveSessions] = useState<Map<string, ReadingSession>>(new Map());
   const [loading, setLoading] = useState(true);
