@@ -53,6 +53,11 @@
     background-color: theme(colors.gray.100);
     color: theme(colors.gray.800);
   }
+
+  .status-wishlist {
+    background-color: theme(colors.red.100);
+    color: theme(colors.red.800);
+  }
 }
 
 /* Utilitaires supplémentaires */

@@ -18,6 +18,7 @@ const statusConfig = {
   reading: { label: 'En cours', color: 'status-reading' },
   completed: { label: 'Terminé', color: 'status-completed' },
   toread: { label: 'À lire', color: 'status-toread' },
+  wishlist: { label: 'Souhait', color: 'status-wishlist' },
 };
 
 export function BookCard({ book, onEdit, onDelete, onStatusChange, onOpenTimer }: BookCardProps) {

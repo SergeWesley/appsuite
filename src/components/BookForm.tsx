@@ -350,6 +350,7 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
                     <option value="toread">À lire</option>
                     <option value="reading">En cours</option>
                     <option value="completed">Terminé</option>
+                    <option value="wishlist">Souhait</option>
                   </select>
                 </div>
 

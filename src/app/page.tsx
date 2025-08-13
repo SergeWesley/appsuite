@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, BookOpen, CheckCircle, Clock, Search, Filter, LogOut, User } from 'lucide-react';
+import { Plus, BookOpen, CheckCircle, Clock, Search, Filter, LogOut, User, Heart } from 'lucide-react';
 import { useAuthContext } from '@/components/AuthProvider';
 import { useBooksWithSessions } from '@/hooks/useBooksWithSessions';
 import { Book, BookStatus, BookFormData } from '@/types/book';
@@ -101,6 +101,7 @@ export default function Home() {
     { value: 'reading', label: 'En cours', icon: Clock },
     { value: 'completed', label: 'Terminés', icon: CheckCircle },
     { value: 'toread', label: 'À lire', icon: BookOpen },
+    { value: 'wishlist', label: 'Souhaits', icon: Heart },
   ];
 
   if (loading) {

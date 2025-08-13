@@ -1,17 +1,18 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { BookOpen, CheckCircle, Clock, Star, TrendingUp } from 'lucide-react';
+import { BookOpen, CheckCircle, Clock, Heart, Star, TrendingUp } from 'lucide-react';
 
 interface StatsProps {
   total: number;
   reading: number;
   completed: number;
   toRead: number;
+  wishlist: number;
   averageRating: number;
 }
 
-export function Stats({ total, reading, completed, toRead, averageRating }: StatsProps) {
+export function Stats({ total, reading, completed, toRead, wishlist, averageRating }: StatsProps) {
   const stats = [
     {
       label: 'Total',
@@ -40,6 +41,13 @@ export function Stats({ total, reading, completed, toRead, averageRating }: Stat
       icon: BookOpen,
       color: 'bg-gray-500',
       textColor: 'text-gray-600',
+    },
+    {
+      label: 'Souhaits',
+      value: wishlist,
+      icon: Heart,
+      color: 'bg-red-400',
+      textColor: 'text-red-500',
     },
   ];
 

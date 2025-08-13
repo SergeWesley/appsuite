@@ -214,12 +214,13 @@ export function useBooks() {
     const reading = books.filter(book => book.status === 'reading').length;
     const completed = books.filter(book => book.status === 'completed').length;
     const toRead = books.filter(book => book.status === 'toread').length;
+    const wishlist = books.filter(book => book.status === 'wishlist').length;
     const averageRating = books
       .filter(book => book.rating)
       .reduce((acc, book) => acc + (book.rating || 0), 0) / 
       books.filter(book => book.rating).length || 0;
 
-    return { total, reading, completed, toRead, averageRating };
+    return { total, reading, completed, toRead, wishlist, averageRating };
   };
 
   return {

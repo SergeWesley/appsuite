@@ -15,7 +15,7 @@ export interface Database {
           title: string
           author: string
           cover: string | null
-          status: 'reading' | 'completed' | 'toread'
+          status: 'reading' | 'completed' | 'toread' | 'wishlist'
           progress: number
           total_pages: number | null
           current_page: number | null
@@ -36,7 +36,7 @@ export interface Database {
           title: string
           author: string
           cover?: string | null
-          status: 'reading' | 'completed' | 'toread'
+          status: 'reading' | 'completed' | 'toread' | 'wishlist'
           progress?: number
           total_pages?: number | null
           current_page?: number | null
@@ -57,7 +57,7 @@ export interface Database {
           title?: string
           author?: string
           cover?: string | null
-          status?: 'reading' | 'completed' | 'toread'
+          status?: 'reading' | 'completed' | 'toread' | 'wishlist'
           progress?: number
           total_pages?: number | null
           current_page?: number | null
