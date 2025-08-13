@@ -33,35 +33,122 @@ export function useAuth() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Connexion anonyme pour commencer (peut être remplacé par un vrai système d'auth)
-  const signInAnonymously = async () => {
+  // Connexion avec email/password
+  const signIn = async (email: string, password: string) => {
     if (!isSupabaseConfigured) {
-      // En mode localStorage, on simule une connexion réussie
-      return { user: user, session: null };
+      throw new Error('Supabase n\'est pas configuré. Veuillez configurer vos variables d\'environnement.');
     }
 
     try {
-      const { data, error } = await supabase!.auth.signInAnonymously();
-      if (error) throw error;
+      setError(null);
+      setLoading(true);
+
+      const { data, error } = await supabase!.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setError(getErrorMessage(error));
+        throw error;
+      }
+
       return data;
     } catch (error) {
-      console.error('Erreur lors de la connexion anonyme:', error);
+      console.error('Erreur lors de la connexion:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Inscription avec email/password
+  const signUp = async (email: string, password: string, name: string) => {
+    if (!isSupabaseConfigured) {
+      throw new Error('Supabase n\'est pas configuré. Veuillez configurer vos variables d\'environnement.');
+    }
+
+    try {
+      setError(null);
+      setLoading(true);
+
+      const { data, error } = await supabase!.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name: name,
+          },
+        },
+      });
+
+      if (error) {
+        setError(getErrorMessage(error));
+        throw error;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Erreur lors de l\'inscription:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Déconnexion
   const signOut = async () => {
     if (!isSupabaseConfigured) {
-      // En mode localStorage, on ne fait rien
       return;
     }
 
     try {
+      setError(null);
       const { error } = await supabase!.auth.signOut();
       if (error) throw error;
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
+      setError('Erreur lors de la déconnexion');
       throw error;
+    }
+  };
+
+  // Réinitialisation du mot de passe
+  const resetPassword = async (email: string) => {
+    if (!isSupabaseConfigured) {
+      throw new Error('Supabase n\'est pas configuré. Veuillez configurer vos variables d\'environnement.');
+    }
+
+    try {
+      setError(null);
+      const { error } = await supabase!.auth.resetPasswordForEmail(email);
+      if (error) {
+        setError(getErrorMessage(error));
+        throw error;
+      }
+    } catch (error) {
+      console.error('Erreur lors de la réinitialisation:', error);
+      throw error;
+    }
+  };
+
+  // Helper pour traduire les erreurs
+  const getErrorMessage = (error: AuthError): string => {
+    switch (error.message) {
+      case 'Invalid login credentials':
+        return 'Email ou mot de passe incorrect';
+      case 'User already registered':
+        return 'Un compte existe déjà avec cet email';
+      case 'Email not confirmed':
+        return 'Veuillez confirmer votre email avant de vous connecter';
+      case 'Password should be at least 6 characters':
+        return 'Le mot de passe doit contenir au moins 6 caractères';
+      case 'Unable to validate email address: invalid format':
+        return 'Format d\'email invalide';
+      case 'Signup is disabled':
+        return 'Les inscriptions sont actuellement désactivées';
+      default:
+        return error.message || 'Une erreur inattendue s\'est produite';
     }
   };
 
