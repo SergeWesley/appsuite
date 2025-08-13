@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Book, BookStatus } from '@/types/book';
 import { ProgressCircle } from './ProgressCircle';
-import { useTimer } from '@/hooks/useTimer';
+import { useTimerContext } from './TimerProvider';
 import { BookOpen, Star, Calendar, User, Edit2, Trash2, Timer } from 'lucide-react';
 
 interface BookCardProps {
@@ -22,7 +22,7 @@ const statusConfig = {
 
 export function BookCard({ book, onEdit, onDelete, onStatusChange, onOpenTimer }: BookCardProps) {
   const status = statusConfig[book.status];
-  const { isTimerActive, getFormattedTime } = useTimer();
+  const { isTimerActive, getFormattedTime } = useTimerContext();
   const hasActiveTimer = isTimerActive(book.id);
   const currentTime = getFormattedTime(book.id);
 
