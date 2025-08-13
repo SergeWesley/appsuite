@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { User, AuthError } from '@supabase/supabase-js';
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -10,14 +10,8 @@ export function useAuth() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isSupabaseConfigured) {
-      // Si Supabase n'est pas configuré, on reste non connecté
-      setLoading(false);
-      return;
-    }
-
     // Obtenir la session initiale
-    supabase!.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
     });
@@ -25,7 +19,7 @@ export function useAuth() {
     // Écouter les changements d'authentification
     const {
       data: { subscription },
-    } = supabase!.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
     });
@@ -35,15 +29,11 @@ export function useAuth() {
 
   // Connexion avec email/password
   const signIn = async (email: string, password: string) => {
-    if (!isSupabaseConfigured) {
-      throw new Error('Supabase n\'est pas configuré. Veuillez configurer vos variables d\'environnement.');
-    }
-
     try {
       setError(null);
       setLoading(true);
 
-      const { data, error } = await supabase!.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -64,15 +54,11 @@ export function useAuth() {
 
   // Inscription avec email/password
   const signUp = async (email: string, password: string, name: string) => {
-    if (!isSupabaseConfigured) {
-      throw new Error('Supabase n\'est pas configuré. Veuillez configurer vos variables d\'environnement.');
-    }
-
     try {
       setError(null);
       setLoading(true);
 
-      const { data, error } = await supabase!.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -98,13 +84,9 @@ export function useAuth() {
 
   // Déconnexion
   const signOut = async () => {
-    if (!isSupabaseConfigured) {
-      return;
-    }
-
     try {
       setError(null);
-      const { error } = await supabase!.auth.signOut();
+      const { error } = await supabase.auth.signOut();
       if (error) throw error;
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
@@ -115,13 +97,9 @@ export function useAuth() {
 
   // Réinitialisation du mot de passe
   const resetPassword = async (email: string) => {
-    if (!isSupabaseConfigured) {
-      throw new Error('Supabase n\'est pas configuré. Veuillez configurer vos variables d\'environnement.');
-    }
-
     try {
       setError(null);
-      const { error } = await supabase!.auth.resetPasswordForEmail(email);
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
       if (error) {
         setError(getErrorMessage(error));
         throw error;
@@ -161,6 +139,5 @@ export function useAuth() {
     signOut,
     resetPassword,
     isAuthenticated: !!user,
-    isSupabaseConfigured,
   };
 }
