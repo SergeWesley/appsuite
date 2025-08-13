@@ -155,6 +155,11 @@ export function useReadingSessions(onBookDataChanged?: () => void) {
         return newMap;
       });
 
+      // Déclencher le rafraîchissement des livres après la modification
+      if (onBookDataChanged) {
+        onBookDataChanged();
+      }
+
       return newSession;
     } catch (err) {
       console.error('Erreur lors du démarrage de la session:', err);
@@ -214,6 +219,11 @@ export function useReadingSessions(onBookDataChanged?: () => void) {
         newMap.delete(bookId);
         return newMap;
       });
+
+      // Déclencher le rafraîchissement des livres après la modification
+      if (onBookDataChanged) {
+        onBookDataChanged();
+      }
 
       return updatedSession;
     } catch (err) {
@@ -291,13 +301,18 @@ export function useReadingSessions(onBookDataChanged?: () => void) {
         return newMap;
       });
 
+      // Déclencher le rafraîchissement des livres après la suppression
+      if (onBookDataChanged) {
+        onBookDataChanged();
+      }
+
       return true;
     } catch (err) {
       console.error('Erreur lors de la suppression de la session:', err);
       setError(err instanceof Error ? err.message : 'Erreur inconnue');
       return false;
     }
-  }, [user]);
+  }, [user, onBookDataChanged]);
 
   // Formater la durée en format lisible
   const formatDuration = useCallback((seconds: number): string => {
