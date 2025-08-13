@@ -27,17 +27,13 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const { user, loading, signOut, isSupabaseConfigured } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
   const isAuthenticated = !!user;
 
   useEffect(() => {
-    // Si Supabase n'est pas configuré, on utilise le mode localStorage (pas de protection)
-    if (!isSupabaseConfigured) {
-      return;
-    }
 
     // Si on est sur la page d'auth et qu'on est connecté, rediriger vers l'accueil
     if (isAuthenticated && pathname === '/auth') {
@@ -50,7 +46,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       router.push('/auth');
       return;
     }
-  }, [isAuthenticated, loading, pathname, router, isSupabaseConfigured]);
+  }, [isAuthenticated, loading, pathname, router]);
 
   const value = {
     isAuthenticated,
@@ -60,7 +56,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   // Écran de chargement pendant la vérification de l'authentification
-  if (loading && isSupabaseConfigured) {
+  if (loading ) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -71,28 +67,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
           <p className="text-gray-600">Vérification de votre session...</p>
         </div>
       </div>
-    );
-  }
-
-  // Si Supabase n'est pas configuré, créer un utilisateur fictif et rendre l'app
-  if (!isSupabaseConfigured) {
-    const fakeUser = {
-      id: 'local-user',
-      email: 'local@example.com',
-      user_metadata: { name: 'Utilisateur Local' }
-    };
-
-    const localValue = {
-      isAuthenticated: true,
-      loading: false,
-      user: fakeUser,
-      signOut: async () => {},
-    };
-
-    return (
-      <AuthContext.Provider value={localValue}>
-        {children}
-      </AuthContext.Provider>
     );
   }
 
