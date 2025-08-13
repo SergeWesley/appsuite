@@ -305,6 +305,7 @@ export default function Home() {
           onClose={closeTimer}
           formatDuration={formatDuration}
           getBookStats={getBookStats}
+          stopSession={stopSession}
           onSessionStopped={handleSessionStopped}
         />
       )}
