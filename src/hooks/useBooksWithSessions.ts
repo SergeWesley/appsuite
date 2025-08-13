@@ -14,6 +14,7 @@ export function useBooksWithSessions() {
   
   // Callback pour rafraîchir les livres après modification des sessions
   const handleBookDataChanged = useCallback(() => {
+    console.log('🔄 Hook combiné: Données de session modifiées, rafraîchissement des livres...');
     // Rafraîchir les livres pour récupérer les mises à jour du trigger SQL
     booksHook.refreshBooks();
   }, [booksHook.refreshBooks]);
