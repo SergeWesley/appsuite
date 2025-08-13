@@ -178,10 +178,8 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
 
   const handleDelete = () => {
     if (book && onDelete) {
-      if (confirm('Êtes-vous sûr de vouloir supprimer ce livre ?')) {
         onDelete(book.id);
         onClose();
-      }
     }
   };
 
