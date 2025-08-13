@@ -280,6 +280,33 @@ export function useReadingSessions() {
       const endTime = new Date();
       const duration = Math.floor((endTime.getTime() - activeSession.startTime.getTime()) / 1000);
 
+      const completedSession: ReadingSession = {
+        ...activeSession,
+        endTime,
+        duration,
+        isActive: false,
+        notes: sessionData?.notes,
+        pagesRead: sessionData?.pagesRead,
+      };
+
+      if (!isSupabaseConfigured) {
+        // Mode localStorage
+        const updatedSessions = sessions.map(session =>
+          session.id === activeSession.id ? completedSession : session
+        );
+        localStorage.setItem('reading-sessions', JSON.stringify(updatedSessions));
+        setSessions(updatedSessions);
+
+        setActiveSessions(prev => {
+          const newMap = new Map(prev);
+          newMap.delete(bookId);
+          return newMap;
+        });
+
+        return completedSession;
+      }
+
+      // Mode Supabase
       const updateData: SessionUpdate = {
         end_time: endTime.toISOString(),
         duration,
@@ -288,7 +315,7 @@ export function useReadingSessions() {
         pages_read: sessionData?.pagesRead || null,
       };
 
-      const { data, error } = await supabase
+      const { data, error } = await supabase!
         .from('reading_sessions')
         .update(updateData)
         .eq('id', activeSession.id)
@@ -298,27 +325,27 @@ export function useReadingSessions() {
 
       if (error) throw error;
 
-      const completedSession = mapRowToSession(data);
-      
-      setSessions(prev => 
-        prev.map(session => 
-          session.id === activeSession.id ? completedSession : session
+      const supabaseSession = mapRowToSession(data);
+
+      setSessions(prev =>
+        prev.map(session =>
+          session.id === activeSession.id ? supabaseSession : session
         )
       );
-      
+
       setActiveSessions(prev => {
         const newMap = new Map(prev);
         newMap.delete(bookId);
         return newMap;
       });
 
-      return completedSession;
+      return supabaseSession;
     } catch (err) {
       console.error('Erreur lors de l\'arrêt de la session:', err);
       setError(err instanceof Error ? err.message : 'Erreur inconnue');
       return null;
     }
-  }, [activeSessions, user]);
+  }, [activeSessions, user, sessions]);
 
   // Obtenir les sessions pour un livre
   const getSessionsForBook = useCallback((bookId: string): ReadingSession[] => {
