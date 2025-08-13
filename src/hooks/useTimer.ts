@@ -105,7 +105,7 @@ export function useTimer(onBookDataChanged?: () => void): TimerHookReturn {
   // Effet pour démarrer/arrêter l'intervalle de mise à jour
   useEffect(() => {
     if (activeTimers.size > 0) {
-      // Démarrer l'intervalle pour mettre �� jour toutes les secondes
+      // Démarrer l'intervalle pour mettre à jour toutes les secondes
       intervalRef.current = setInterval(updateTimerDurations, 1000);
     } else {
       // Arrêter l'intervalle s'il n'y a pas de timers actifs
@@ -157,6 +157,11 @@ export function useTimer(onBookDataChanged?: () => void): TimerHookReturn {
         return newMap;
       });
 
+      // Déclencher le rafraîchissement des livres
+      if (onBookDataChanged) {
+        onBookDataChanged();
+      }
+
       return sessionId;
     } catch (err) {
       console.error('Erreur lors du démarrage du timer:', err);
@@ -201,6 +206,12 @@ export function useTimer(onBookDataChanged?: () => void): TimerHookReturn {
           newMap.delete(bookId);
           return newMap;
         });
+
+        // Déclencher le rafraîchissement des livres
+        if (onBookDataChanged) {
+          onBookDataChanged();
+        }
+
         return true;
       }
 
