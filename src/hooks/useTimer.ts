@@ -221,7 +221,7 @@ export function useTimer(onBookDataChanged?: () => void): TimerHookReturn {
       setError(err instanceof Error ? err.message : 'Erreur inconnue');
       return false;
     }
-  }, [user, activeTimers]);
+  }, [user, activeTimers, onBookDataChanged]);
 
   // Vérifier si un timer est actif pour un livre
   const isTimerActive = useCallback((bookId: string): boolean => {
