@@ -114,7 +114,7 @@ export function useReadingSessions() {
   }, [user]);
 
 
-  // Démarrer une session de lecture
+  // Démarrer une session de lecture (utilise maintenant la fonction Supabase)
   const startSession = useCallback(async (bookId: string): Promise<ReadingSession | null> => {
     if (!user) {
       setError('Utilisateur non connecté');
@@ -124,31 +124,31 @@ export function useReadingSessions() {
     try {
       setError(null);
 
-      // Arrêter toute session active existante pour ce livre
-      const existingSession = activeSessions.get(bookId);
-      if (existingSession) {
-        await stopSession(bookId);
-      }
-
-      const sessionData: SessionInsert = {
-        book_id: bookId,
-        start_time: new Date().toISOString(),
-        duration: 0,
-        is_active: true,
-        user_id: user.id,
-      };
-
-      const { data, error } = await supabase
-        .from('reading_sessions')
-        .insert(sessionData)
-        .select()
-        .single();
+      // Utiliser la fonction Supabase qui gère automatiquement les sessions uniques
+      const { data: sessionId, error } = await supabase.rpc('start_reading_session', {
+        p_book_id: bookId,
+        p_user_id: user.id
+      });
 
       if (error) throw error;
 
-      const newSession = mapRowToSession(data);
+      // Récupérer la session créée
+      const { data: sessionData, error: fetchError } = await supabase
+        .from('reading_sessions')
+        .select('*')
+        .eq('id', sessionId)
+        .single();
 
-      setSessions(prev => [newSession, ...prev]);
+      if (fetchError) throw fetchError;
+
+      const newSession = mapRowToSession(sessionData);
+
+      setSessions(prev => {
+        // Retirer toute session active existante pour ce livre
+        const filtered = prev.filter(s => !(s.bookId === bookId && s.isActive));
+        return [newSession, ...filtered];
+      });
+
       setActiveSessions(prev => {
         const newMap = new Map(prev);
         newMap.set(bookId, newSession);
@@ -161,7 +161,7 @@ export function useReadingSessions() {
       setError(err instanceof Error ? err.message : 'Erreur inconnue');
       return null;
     }
-  }, [activeSessions, user, sessions]);
+  }, [user]);
 
   // Arrêter une session de lecture
   const stopSession = useCallback(async (bookId: string, sessionData?: ReadingSessionFormData): Promise<ReadingSession | null> => {
