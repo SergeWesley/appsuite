@@ -70,19 +70,25 @@ export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
       if (timerSuccess) {
         setShowStopForm(false);
         setSessionData({ notes: '', pagesRead: undefined });
+        setIsStopping(false);
+        setIsSyncing(true);
 
         // Attendre que le trigger SQL se déclenche et rafraîchir les livres
         // Le trigger devrait automatiquement mettre à jour les pages du livre
         setTimeout(async () => {
-          await refreshBooks();
-          // Fermer la modal après rafraîchissement pour voir les changements
-          onClose();
+          try {
+            await refreshBooks();
+            // Fermer la modal après rafraîchissement pour voir les changements
+            onClose();
+          } finally {
+            setIsSyncing(false);
+          }
         }, 1000); // Délai plus long pour être sûr que le trigger s'exécute
       }
     } catch (error) {
       console.error('Erreur lors de l\'arrêt du timer:', error);
-    } finally {
       setIsStopping(false);
+      setIsSyncing(false);
     }
   };
 
