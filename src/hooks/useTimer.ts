@@ -25,16 +25,12 @@ interface TimerHookReturn {
   // État de chargement
   loading: boolean;
   error: string | null;
-
-  // Trigger pour forcer les re-renders
-  refreshTrigger: number;
 }
 
 export function useTimer(): TimerHookReturn {
   const [activeTimers, setActiveTimers] = useState<Map<string, ActiveTimer>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { user } = useAuth();
   
   // Référence pour l'intervalle de mise à jour
@@ -161,9 +157,6 @@ export function useTimer(): TimerHookReturn {
         return newMap;
       });
 
-      // Forcer un re-render
-      setRefreshTrigger(prev => prev + 1);
-
       return sessionId;
     } catch (err) {
       console.error('Erreur lors du démarrage du timer:', err);
@@ -208,9 +201,6 @@ export function useTimer(): TimerHookReturn {
           newMap.delete(bookId);
           return newMap;
         });
-
-        // Forcer un re-render
-        setRefreshTrigger(prev => prev + 1);
         return true;
       }
 
@@ -256,6 +246,5 @@ export function useTimer(): TimerHookReturn {
     stopTimer,
     loading,
     error,
-    refreshTrigger,
   };
 }
