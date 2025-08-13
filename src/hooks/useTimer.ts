@@ -168,7 +168,7 @@ export function useTimer(onBookDataChanged?: () => void): TimerHookReturn {
       setError(err instanceof Error ? err.message : 'Erreur inconnue');
       return null;
     }
-  }, [user]);
+  }, [user, onBookDataChanged]);
 
   // Arrêter un timer
   const stopTimer = useCallback(async (
