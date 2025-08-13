@@ -40,8 +40,7 @@ export function BookCard({ book, onEdit, onDelete, onStatusChange, onOpenTimer }
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       whileHover={{ y: -4 }}
-    //   className="book-card p-6 cursor-pointer group"
-      className={`book-card p-6 cursor-pointer group relative overflow-hidden ${
+      className={`book-card h-full p-6 cursor-pointer group relative overflow-hidden ${
         hasActiveTimer ? 'ring-2 ring-green-500 ring-opacity-50' : ''
       }`}
       onClick={() => onEdit(book)}
@@ -53,6 +52,10 @@ export function BookCard({ book, onEdit, onDelete, onStatusChange, onOpenTimer }
           initial={{ opacity: 0, x: -100 }}
           animate={{ opacity: 1, x: 0 }}
           className="absolute top-0 left-0 right-0 bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 text-xs font-medium flex items-center gap-2 z-10"
+          onClick={(e) => {
+            e.stopPropagation(); 
+            onOpenTimer(book); 
+        }}
         >
           <BookOpen size={12} className="animate-pulse" />
           <span>Session en cours: {currentTime}</span>
