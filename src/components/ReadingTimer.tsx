@@ -63,18 +63,18 @@ export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
   const handleConfirmStop = async () => {
     setIsStopping(true);
     try {
-      // Utiliser stopSession qui déclenche automatiquement la synchronisation
-      const session = await stopSession(book.id, sessionData);
+      // Arrêter le timer (qui gère l'état du timer)
       const timerSuccess = await stopTimer(book.id, sessionData.notes, sessionData.pagesRead);
 
-      if (session && timerSuccess) {
+      if (timerSuccess) {
         setShowStopForm(false);
         setSessionData({ notes: '', pagesRead: undefined });
 
-        // Double sécurité : rafraîchir les livres même si la synchronisation automatique échoue
+        // Attendre que le trigger SQL se déclenche et rafraîchir les livres
+        // Le trigger devrait automatiquement mettre à jour les pages du livre
         setTimeout(() => {
           refreshBooks();
-        }, 300);
+        }, 1000); // Délai plus long pour être sûr que le trigger s'exécute
       }
     } catch (error) {
       console.error('Erreur lors de l\'arrêt du timer:', error);
