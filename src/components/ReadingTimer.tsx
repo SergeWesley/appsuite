@@ -18,7 +18,8 @@ export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
   const {
     formatDuration,
     getBookStats,
-    refreshBooks
+    refreshBooks,
+    stopSession
   } = useBooksWithSessions();
 
   const {
