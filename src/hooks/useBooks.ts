@@ -237,6 +237,37 @@ export function useBooks() {
 
     try {
       setError(null);
+
+      if (!isSupabaseConfigured) {
+        // Mode localStorage
+        const updatedBooks = books.map(book => {
+          if (book.id === id) {
+            const updatedBook = { ...book, ...updates };
+
+            // Calculer le progrès
+            if (updates.status === 'completed') {
+              updatedBook.progress = 100;
+              updatedBook.dateCompleted = new Date();
+            } else if (updates.currentPage && updates.totalPages) {
+              updatedBook.progress = Math.round((updates.currentPage / updates.totalPages) * 100);
+            }
+
+            // Mettre à jour les dates
+            if (updates.status === 'reading' && !book.dateStarted) {
+              updatedBook.dateStarted = new Date();
+            }
+
+            return updatedBook;
+          }
+          return book;
+        });
+
+        localStorage.setItem('books', JSON.stringify(updatedBooks));
+        setBooks(updatedBooks);
+        return true;
+      }
+
+      // Mode Supabase
       const updateData: BookUpdate = {};
 
       // Mapper les champs de mise à jour
@@ -268,7 +299,7 @@ export function useBooks() {
         }
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await supabase!
         .from('books')
         .update(updateData)
         .eq('id', id)
