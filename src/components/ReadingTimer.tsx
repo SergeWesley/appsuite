@@ -38,6 +38,7 @@ export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
   const [showStopForm, setShowStopForm] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
   const [isStopping, setIsStopping] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const isActive = isTimerActive(book.id);
   const bookStats = getBookStats(book.id);
