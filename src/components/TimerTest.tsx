@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useTimer } from '@/hooks/useTimer';
+import { useTimerContext } from './TimerProvider';
 import { useAuth } from '@/hooks/useAuth';
 
 interface TimerTestProps {
@@ -17,7 +17,7 @@ export function TimerTest({ bookId }: TimerTestProps) {
     stopTimer,
     loading,
     error
-  } = useTimer();
+  } = useTimerContext();
 
   const isActive = isTimerActive(bookId);
   const currentTime = getFormattedTime(bookId);
