@@ -27,7 +27,7 @@ interface TimerHookReturn {
   error: string | null;
 }
 
-export function useTimer(): TimerHookReturn {
+export function useTimer(onBookDataChanged?: () => void): TimerHookReturn {
   const [activeTimers, setActiveTimers] = useState<Map<string, ActiveTimer>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -105,7 +105,7 @@ export function useTimer(): TimerHookReturn {
   // Effet pour démarrer/arrêter l'intervalle de mise à jour
   useEffect(() => {
     if (activeTimers.size > 0) {
-      // Démarrer l'intervalle pour mettre à jour toutes les secondes
+      // Démarrer l'intervalle pour mettre �� jour toutes les secondes
       intervalRef.current = setInterval(updateTimerDurations, 1000);
     } else {
       // Arrêter l'intervalle s'il n'y a pas de timers actifs
