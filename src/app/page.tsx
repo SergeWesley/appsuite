@@ -268,8 +268,6 @@ export default function Home() {
         <Plus size={24} />
       </motion.button>
 
-      {/* Composant PWA */}
-      <InstallPWA />
 
       {/* Formulaire */}
       <BookForm
