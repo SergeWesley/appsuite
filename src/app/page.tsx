@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, BookOpen, CheckCircle, Clock, Search, Filter } from 'lucide-react';
+import { Plus, BookOpen, CheckCircle, Clock, Search, Filter, LogOut, User } from 'lucide-react';
+import { useAuthContext } from '@/components/AuthProvider';
 import { useBooks } from '@/hooks/useBooks';
 import { Book, BookStatus, BookFormData } from '@/types/book';
 import { BookCard } from '@/components/BookCard';
