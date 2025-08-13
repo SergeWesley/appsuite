@@ -97,7 +97,7 @@ export function useBooks() {
           user_id: user.id,
         };
 
-        const { error } = await supabase
+        const { error } = await supabase!
           .from('books')
           .insert(bookData);
 
