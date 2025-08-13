@@ -114,7 +114,7 @@ export function useBooks() {
     }
   };
 
-  // Charger les livres depuis Supabase
+  // Charger les livres depuis localStorage ou Supabase
   const loadBooks = async () => {
     if (!user) {
       setLoading(false);
@@ -123,7 +123,25 @@ export function useBooks() {
 
     try {
       setError(null);
-      const { data, error } = await supabase
+
+      if (!isSupabaseConfigured) {
+        // Mode localStorage
+        const savedBooks = localStorage.getItem('books');
+        if (savedBooks) {
+          const parsedBooks = JSON.parse(savedBooks).map((book: any) => ({
+            ...book,
+            dateAdded: new Date(book.dateAdded),
+            dateStarted: book.dateStarted ? new Date(book.dateStarted) : undefined,
+            dateCompleted: book.dateCompleted ? new Date(book.dateCompleted) : undefined,
+          }));
+          setBooks(parsedBooks);
+        }
+        setLoading(false);
+        return;
+      }
+
+      // Mode Supabase
+      const { data, error } = await supabase!
         .from('books')
         .select('*')
         .eq('user_id', user.id)
