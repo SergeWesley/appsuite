@@ -13,6 +13,7 @@ interface ReadingTimerProps {
   onClose: () => void;
   formatDuration: (seconds: number) => string;
   getBookStats: (bookId: string) => any;
+  stopSession: (bookId: string, sessionData?: ReadingSessionFormData) => Promise<any>;
   onSessionStopped: () => void; // Callback pour notifier la page principale
 }
 
@@ -22,6 +23,7 @@ export function ReadingTimer({
   onClose,
   formatDuration,
   getBookStats,
+  stopSession,
   onSessionStopped
 }: ReadingTimerProps) {
 
