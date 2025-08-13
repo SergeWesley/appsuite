@@ -5,22 +5,25 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, Square, Clock, BookOpen, X } from 'lucide-react';
 import { Book } from '@/types/book';
 import { ReadingSessionFormData } from '@/types/reading-session';
-import { useBooksWithSessions } from '@/hooks/useBooksWithSessions';
 import { useTimerContext } from './TimerProvider';
 
 interface ReadingTimerProps {
   book: Book;
   isOpen: boolean;
   onClose: () => void;
+  formatDuration: (seconds: number) => string;
+  getBookStats: (bookId: string) => any;
+  onSessionStopped: () => void; // Callback pour notifier la page principale
 }
 
-export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
-  const {
-    formatDuration,
-    getBookStats,
-    refreshBooks,
-    stopSession
-  } = useBooksWithSessions();
+export function ReadingTimer({
+  book,
+  isOpen,
+  onClose,
+  formatDuration,
+  getBookStats,
+  onSessionStopped
+}: ReadingTimerProps) {
 
   const {
     isTimerActive,
