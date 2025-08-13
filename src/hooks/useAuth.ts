@@ -155,7 +155,12 @@ export function useAuth() {
   return {
     user,
     loading,
-    signInAnonymously,
+    error,
+    signIn,
+    signUp,
     signOut,
+    resetPassword,
+    isAuthenticated: !!user,
+    isSupabaseConfigured,
   };
 }
