@@ -6,7 +6,7 @@ import { Play, Pause, Square, Clock, BookOpen, X } from 'lucide-react';
 import { Book } from '@/types/book';
 import { ReadingSessionFormData } from '@/types/reading-session';
 import { useReadingSessions } from '@/hooks/useReadingSessions';
-import { useTimer } from '@/hooks/useTimer';
+import { useTimerContext } from './TimerProvider';
 
 interface ReadingTimerProps {
   book: Book;
@@ -27,7 +27,7 @@ export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
     stopTimer,
     loading: timerLoading,
     error: timerError
-  } = useTimer();
+  } = useTimerContext();
 
   const [sessionData, setSessionData] = useState<ReadingSessionFormData>({
     notes: '',
