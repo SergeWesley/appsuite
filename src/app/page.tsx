@@ -9,7 +9,6 @@ import { Book, BookStatus, BookFormData } from '@/types/book';
 import { BookCard } from '@/components/BookCard';
 import { BookForm } from '@/components/BookForm';
 import { Stats } from '@/components/Stats';
-import { InstallPWA } from '@/components/InstallPWA';
 import { ReadingTimer } from '@/components/ReadingTimer';
 
 export default function Home() {
