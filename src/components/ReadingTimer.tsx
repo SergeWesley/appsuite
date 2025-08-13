@@ -147,7 +147,7 @@ export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
                 <p className="text-sm text-gray-600">
                   {isActive ? (
                     <span className="flex items-center justify-center gap-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                       Session en cours...
                     </span>
                   ) : (
