@@ -45,7 +45,6 @@ export default function RootLayout({
       <body className="antialiased">
         <AuthProvider>
           {children}
-          <UpdateNotification />
         </AuthProvider>
       </body>
     </html>
