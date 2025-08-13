@@ -166,7 +166,7 @@ export function useReadingSessions(onBookDataChanged?: () => void) {
       setError(err instanceof Error ? err.message : 'Erreur inconnue');
       return null;
     }
-  }, [user]);
+  }, [user, onBookDataChanged]);
 
   // Arrêter une session de lecture (utilise maintenant la fonction Supabase)
   const stopSession = useCallback(async (bookId: string, sessionData?: ReadingSessionFormData): Promise<ReadingSession | null> => {
