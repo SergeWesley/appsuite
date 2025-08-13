@@ -12,7 +12,7 @@ import { Stats } from '@/components/Stats';
 import { ReadingTimer } from '@/components/ReadingTimer';
 
 export default function Home() {
-  const { books, loading, error, addBook, updateBook, deleteBook, getStats } = useBooks();
+  const { books, loading, error, addBook, updateBook, deleteBook, getStats, refreshBooks } = useBooks();
   const { user, signOut } = useAuthContext();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | undefined>(undefined);
