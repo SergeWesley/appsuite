@@ -17,7 +17,8 @@ interface ReadingTimerProps {
 export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
   const {
     formatDuration,
-    getBookStats
+    getBookStats,
+    refreshBooks
   } = useBooksWithSessions();
 
   const {
