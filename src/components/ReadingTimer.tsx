@@ -281,13 +281,13 @@ export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
               <div className="flex gap-3 pt-4">
                 <button
                   onClick={handleConfirmStop}
-                  disabled={isStopping}
+                  disabled={isStopping || isSyncing}
                   className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                 >
-                  {isStopping ? (
+                  {(isStopping || isSyncing) ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : null}
-                  {isStopping ? 'Arrêt...' : 'Terminer'}
+                  {isStopping ? 'Arrêt...' : isSyncing ? 'Synchronisation...' : 'Terminer'}
                 </button>
                 <button
                   onClick={handleCancelStop}
