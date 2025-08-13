@@ -69,25 +69,27 @@ export function ReadingTimer({
   const handleConfirmStop = async () => {
     setIsStopping(true);
     try {
-      // Arrêter le timer (qui gère l'état du timer)
+      // Utiliser stopSession du hook combiné qui déclenche automatiquement la synchronisation
+      const sessionResult = await stopSession(book.id, sessionData);
+      // Aussi arrêter le timer pour le contexte
       const timerSuccess = await stopTimer(book.id, sessionData.notes, sessionData.pagesRead);
 
-      if (timerSuccess) {
+      if (sessionResult && timerSuccess) {
         setShowStopForm(false);
         setSessionData({ notes: '', pagesRead: undefined });
         setIsStopping(false);
         setIsSyncing(true);
 
-        // Notifier la page principale pour rafraîchir les livres
-        // Attendre un peu pour que le trigger SQL s'exécute
+        // Le stopSession du hook combiné devrait déjà déclencher refreshBooks
+        // Mais on ajoute un délai pour être sûr et on notifie aussi la page principale
         setTimeout(() => {
           try {
-            onSessionStopped(); // Déclenche le rafraîchissement dans la page principale
+            onSessionStopped(); // Double sécurité : rafraîchissement via la page principale
             onClose(); // Fermer la modal
           } finally {
             setIsSyncing(false);
           }
-        }, 1000);
+        }, 800);
       }
     } catch (error) {
       console.error('Erreur lors de l\'arrêt du timer:', error);
