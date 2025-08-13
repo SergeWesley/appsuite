@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ReadingSession, ReadingSessionFormData, BookReadingStats } from '@/types/reading-session';
 import { Database } from '@/types/supabase';
-import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { useAuth } from './useAuth';
 
 type SessionRow = Database['public']['Tables']['reading_sessions']['Row'];
@@ -31,50 +31,8 @@ export function useReadingSessions() {
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
-  // Fonction pour migrer les données du localStorage vers Supabase
-  const migrateFromLocalStorage = async () => {
-    if (!user) return;
 
-    try {
-      const savedSessions = localStorage.getItem('reading-sessions');
-      if (!savedSessions) return;
-
-      const parsedSessions = JSON.parse(savedSessions);
-      if (!Array.isArray(parsedSessions) || parsedSessions.length === 0) return;
-
-      console.log('Migration des sessions depuis localStorage...');
-      
-      // Insérer chaque session dans Supabase
-      for (const localSession of parsedSessions) {
-        const sessionData: SessionInsert = {
-          book_id: localSession.bookId,
-          start_time: localSession.startTime || new Date().toISOString(),
-          end_time: localSession.endTime || null,
-          duration: localSession.duration || 0,
-          notes: localSession.notes || null,
-          pages_read: localSession.pagesRead || null,
-          is_active: localSession.isActive || false,
-          user_id: user.id,
-        };
-
-        const { error } = await supabase!
-          .from('reading_sessions')
-          .insert(sessionData);
-
-        if (error) {
-          console.error('Erreur lors de la migration de la session:', error);
-        }
-      }
-
-      // Supprimer les données du localStorage après migration réussie
-      localStorage.removeItem('reading-sessions');
-      console.log('Migration des sessions terminée, données localStorage supprimées');
-    } catch (error) {
-      console.error('Erreur lors de la migration des sessions:', error);
-    }
-  };
-
-  // Charger les sessions depuis localStorage ou Supabase
+  // Charger les sessions depuis Supabase
   const loadSessions = async () => {
     if (!user) {
       setLoading(false);
@@ -84,31 +42,7 @@ export function useReadingSessions() {
     try {
       setError(null);
 
-      if (!isSupabaseConfigured) {
-        // Mode localStorage
-        const savedSessions = localStorage.getItem('reading-sessions');
-        if (savedSessions) {
-          const parsedSessions = JSON.parse(savedSessions).map((session: any) => ({
-            ...session,
-            startTime: new Date(session.startTime),
-            endTime: session.endTime ? new Date(session.endTime) : undefined,
-          }));
-          setSessions(parsedSessions);
-
-          const activeSessionsMap = new Map<string, ReadingSession>();
-          parsedSessions.forEach((session: ReadingSession) => {
-            if (session.isActive) {
-              activeSessionsMap.set(session.bookId, session);
-            }
-          });
-          setActiveSessions(activeSessionsMap);
-        }
-        setLoading(false);
-        return;
-      }
-
-      // Mode Supabase
-      const { data, error } = await supabase!
+      const { data, error } = await supabase
         .from('reading_sessions')
         .select('*')
         .eq('user_id', user.id)
@@ -117,7 +51,7 @@ export function useReadingSessions() {
       if (error) throw error;
 
       const mappedSessions = data.map(mapRowToSession);
-      
+
       // Nettoyer les sessions actives trop anciennes (plus de 24h)
       const now = new Date();
       const cleanedSessions = await Promise.all(
@@ -129,7 +63,7 @@ export function useReadingSessions() {
               const endTime = new Date(session.startTime.getTime() + (24 * 60 * 60 * 1000));
               const duration = 24 * 60 * 60;
 
-              const { data: updatedData, error: updateError } = await supabase!
+              const { data: updatedData, error: updateError } = await supabase
                 .from('reading_sessions')
                 .update({
                   is_active: false,
@@ -173,22 +107,12 @@ export function useReadingSessions() {
 
   useEffect(() => {
     if (user) {
-      // Vérifier s'il y a des données à migrer
-      migrateFromLocalStorage().then(() => {
-        loadSessions();
-      });
+      loadSessions();
     } else {
       setLoading(false);
     }
   }, [user]);
 
-  // Fonction pour générer un ID unique
-  function generateId(): string {
-    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-      return crypto.randomUUID();
-    }
-    return 'session-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now().toString(36);
-  }
 
   // Démarrer une session de lecture
   const startSession = useCallback(async (bookId: string): Promise<ReadingSession | null> => {
@@ -206,30 +130,6 @@ export function useReadingSessions() {
         await stopSession(bookId);
       }
 
-      if (!isSupabaseConfigured) {
-        // Mode localStorage
-        const newSession: ReadingSession = {
-          id: generateId(),
-          bookId,
-          startTime: new Date(),
-          duration: 0,
-          isActive: true,
-        };
-
-        const updatedSessions = [newSession, ...sessions];
-        localStorage.setItem('reading-sessions', JSON.stringify(updatedSessions));
-        setSessions(updatedSessions);
-
-        setActiveSessions(prev => {
-          const newMap = new Map(prev);
-          newMap.set(bookId, newSession);
-          return newMap;
-        });
-
-        return newSession;
-      }
-
-      // Mode Supabase
       const sessionData: SessionInsert = {
         book_id: bookId,
         start_time: new Date().toISOString(),
@@ -238,7 +138,7 @@ export function useReadingSessions() {
         user_id: user.id,
       };
 
-      const { data, error } = await supabase!
+      const { data, error } = await supabase
         .from('reading_sessions')
         .insert(sessionData)
         .select()
@@ -289,24 +189,6 @@ export function useReadingSessions() {
         pagesRead: sessionData?.pagesRead,
       };
 
-      if (!isSupabaseConfigured) {
-        // Mode localStorage
-        const updatedSessions = sessions.map(session =>
-          session.id === activeSession.id ? completedSession : session
-        );
-        localStorage.setItem('reading-sessions', JSON.stringify(updatedSessions));
-        setSessions(updatedSessions);
-
-        setActiveSessions(prev => {
-          const newMap = new Map(prev);
-          newMap.delete(bookId);
-          return newMap;
-        });
-
-        return completedSession;
-      }
-
-      // Mode Supabase
       const updateData: SessionUpdate = {
         end_time: endTime.toISOString(),
         duration,
@@ -315,7 +197,7 @@ export function useReadingSessions() {
         pages_read: sessionData?.pagesRead || null,
       };
 
-      const { data, error } = await supabase!
+      const { data, error } = await supabase
         .from('reading_sessions')
         .update(updateData)
         .eq('id', activeSession.id)
@@ -393,7 +275,7 @@ export function useReadingSessions() {
 
     try {
       setError(null);
-      const { error } = await supabase!
+      const { error } = await supabase
         .from('reading_sessions')
         .delete()
         .eq('id', sessionId)
@@ -402,7 +284,7 @@ export function useReadingSessions() {
       if (error) throw error;
 
       setSessions(prev => prev.filter(session => session.id !== sessionId));
-      
+
       // Supprimer des sessions actives si nécessaire
       setActiveSessions(prev => {
         const newMap = new Map(prev);
