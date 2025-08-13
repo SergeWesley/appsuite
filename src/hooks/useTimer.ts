@@ -27,7 +27,7 @@ interface TimerHookReturn {
   error: string | null;
 }
 
-export function useTimer(onBookDataChanged?: () => void): TimerHookReturn {
+export function useTimer(): TimerHookReturn {
   const [activeTimers, setActiveTimers] = useState<Map<string, ActiveTimer>>(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
