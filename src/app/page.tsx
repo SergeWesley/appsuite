@@ -70,6 +70,8 @@ export default function Home() {
   const closeTimer = () => {
     setIsTimerOpen(false);
     setTimerBook(undefined);
+    // Forcer un re-render en mettant à jour l'état
+    // Le hook useTimer va automatiquement déclencher un re-render
   };
 
   // Filtrer les livres
