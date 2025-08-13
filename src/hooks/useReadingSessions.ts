@@ -231,7 +231,7 @@ export function useReadingSessions(onBookDataChanged?: () => void) {
       setError(err instanceof Error ? err.message : 'Erreur inconnue');
       return null;
     }
-  }, [activeSessions, user]);
+  }, [activeSessions, user, onBookDataChanged]);
 
   // Obtenir les sessions pour un livre
   const getSessionsForBook = useCallback((bookId: string): ReadingSession[] => {
