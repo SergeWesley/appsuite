@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, BookOpen, CheckCircle, Clock, Search, Filter, LogOut, User } from 'lucide-react';
 import { useAuthContext } from '@/components/AuthProvider';
 import { useBooks } from '@/hooks/useBooks';
-import { useTimer } from '@/hooks/useTimer';
 import { Book, BookStatus, BookFormData } from '@/types/book';
 import { BookCard } from '@/components/BookCard';
 import { BookForm } from '@/components/BookForm';
@@ -15,7 +14,6 @@ import { ReadingTimer } from '@/components/ReadingTimer';
 export default function Home() {
   const { books, loading, error, addBook, updateBook, deleteBook, getStats } = useBooks();
   const { user, signOut } = useAuthContext();
-  const { refreshTrigger } = useTimer(); // Connecter le hook useTimer pour déclencher les re-renders
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | undefined>(undefined);
   const [selectedStatus, setSelectedStatus] = useState<BookStatus | 'all'>('all');
