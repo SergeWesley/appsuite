@@ -6,7 +6,7 @@ import { Play, Pause, Square, Clock, BookOpen, X } from 'lucide-react';
 import { Book } from '@/types/book';
 import { ReadingSessionFormData } from '@/types/reading-session';
 import { useReadingSessions } from '@/hooks/useReadingSessions';
-// import { useGlobalTimer } from '@/hooks/useGlobalTimer';
+import { useTimer } from '@/hooks/useTimer';
 
 interface ReadingTimerProps {
   book: Book;
@@ -16,28 +16,40 @@ interface ReadingTimerProps {
 
 export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
   const {
-    startSession,
-    stopSession,
-    isSessionActive,
-    getActiveSession,
     formatDuration,
     getBookStats
   } = useReadingSessions();
 
-//   const { getCurrentTime, formatTime: globalFormatTime } = useGlobalTimer();
+  const {
+    isTimerActive,
+    getFormattedTime,
+    startTimer,
+    stopTimer,
+    loading: timerLoading,
+    error: timerError
+  } = useTimer();
+
   const [sessionData, setSessionData] = useState<ReadingSessionFormData>({
     notes: '',
     pagesRead: undefined,
   });
   const [showStopForm, setShowStopForm] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
+  const [isStopping, setIsStopping] = useState(false);
 
-  const isActive = isSessionActive(book.id);
-  const activeSession = getActiveSession(book.id);
+  const isActive = isTimerActive(book.id);
   const bookStats = getBookStats(book.id);
-//   const currentTime = getCurrentTime(book.id);
+  const currentTime = getFormattedTime(book.id);
 
-  const handleStart = () => {
-    startSession(book.id);
+  const handleStart = async () => {
+    setIsStarting(true);
+    try {
+      await startTimer(book.id);
+    } catch (error) {
+      console.error('Erreur lors du démarrage du timer:', error);
+    } finally {
+      setIsStarting(false);
+    }
   };
 
   const handleStop = () => {
@@ -46,10 +58,19 @@ export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
     }
   };
 
-  const handleConfirmStop = () => {
-    stopSession(book.id, sessionData);
-    setShowStopForm(false);
-    setSessionData({ notes: '', pagesRead: undefined });
+  const handleConfirmStop = async () => {
+    setIsStopping(true);
+    try {
+      const success = await stopTimer(book.id, sessionData.notes, sessionData.pagesRead);
+      if (success) {
+        setShowStopForm(false);
+        setSessionData({ notes: '', pagesRead: undefined });
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'arrêt du timer:', error);
+    } finally {
+      setIsStopping(false);
+    }
   };
 
   const handleCancelStop = () => {
@@ -109,12 +130,35 @@ export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
             <>
               {/* Timer display */}
               <div className="text-center mb-8">
-                <div className="text-5xl font-mono font-bold text-gray-900 mb-2">
-                  {/* {globalFormatTime(currentTime)} */}
+                <div className="text-5xl font-mono font-bold text-gray-900 mb-2 min-h-[4rem] flex items-center justify-center">
+                  {isActive ? (
+                    <motion.div
+                      key={currentTime}
+                      initial={{ scale: 0.95 }}
+                      animate={{ scale: 1 }}
+                      className="text-green-600"
+                    >
+                      {currentTime}
+                    </motion.div>
+                  ) : (
+                    <span className="text-gray-400">00:00:00</span>
+                  )}
                 </div>
                 <p className="text-sm text-gray-600">
-                  {isActive ? 'Session en cours...' : 'Prêt à commencer'}
+                  {isActive ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      Session en cours...
+                    </span>
+                  ) : (
+                    'Prêt à commencer'
+                  )}
                 </p>
+                {timerError && (
+                  <p className="text-sm text-red-600 mt-2">
+                    {timerError}
+                  </p>
+                )}
               </div>
 
               {/* Controls */}
@@ -122,15 +166,21 @@ export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
                 {!isActive ? (
                   <button
                     onClick={handleStart}
-                    className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                    disabled={isStarting || timerLoading}
+                    className="flex items-center gap-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-colors"
                   >
-                    <Play size={20} />
-                    Démarrer
+                    {isStarting ? (
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Play size={20} />
+                    )}
+                    {isStarting ? 'Démarrage...' : 'Démarrer'}
                   </button>
                 ) : (
                   <button
                     onClick={handleStop}
-                    className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                    disabled={isStopping}
+                    className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-medium transition-colors"
                   >
                     <Square size={20} />
                     Arrêter
@@ -173,7 +223,7 @@ export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-900">Terminer la session</h3>
               <p className="text-sm text-gray-600">
-                {/* Temps de lecture: <span className="font-semibold">{globalFormatTime(currentTime)}</span> */}
+                Temps de lecture: <span className="font-semibold text-green-600">{currentTime}</span>
               </p>
               
               <div>
@@ -212,13 +262,18 @@ export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
               <div className="flex gap-3 pt-4">
                 <button
                   onClick={handleConfirmStop}
-                  className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg font-medium transition-colors"
+                  disabled={isStopping}
+                  className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                 >
-                  Terminer
+                  {isStopping ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : null}
+                  {isStopping ? 'Arrêt...' : 'Terminer'}
                 </button>
                 <button
                   onClick={handleCancelStop}
-                  className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded-lg font-medium transition-colors"
+                  disabled={isStopping}
+                  className="flex-1 bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 disabled:cursor-not-allowed text-gray-700 py-2 px-4 rounded-lg font-medium transition-colors"
                 >
                   Annuler
                 </button>
