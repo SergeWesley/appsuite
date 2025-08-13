@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Book, BookStatus } from '@/types/book';
 import { ProgressCircle } from './ProgressCircle';
+import { useTimer } from '@/hooks/useTimer';
 import { BookOpen, Star, Calendar, User, Edit2, Trash2, Timer } from 'lucide-react';
 
 interface BookCardProps {
@@ -21,7 +22,9 @@ const statusConfig = {
 
 export function BookCard({ book, onEdit, onDelete, onStatusChange, onOpenTimer }: BookCardProps) {
   const status = statusConfig[book.status];
-  const hasActiveTimer = true; // Placeholder, replace with actual logic to check if a timer is active
+  const { isTimerActive, getFormattedTime } = useTimer();
+  const hasActiveTimer = isTimerActive(book.id);
+  const currentTime = getFormattedTime(book.id);
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('fr-FR', {
@@ -52,7 +55,7 @@ export function BookCard({ book, onEdit, onDelete, onStatusChange, onOpenTimer }
           className="absolute top-0 left-0 right-0 bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 text-xs font-medium flex items-center gap-2 z-10"
         >
           <Timer size={12} className="animate-pulse" />
-          <span>Session de lecture en cours </span>
+          <span>Session en cours: {currentTime}</span>
           <div className="ml-auto flex">
             <div className="w-1 h-1 bg-white rounded-full animate-pulse"></div>
             <div className="w-1 h-1 bg-white rounded-full animate-pulse ml-1" style={{ animationDelay: '0.5s' }}></div>
@@ -98,9 +101,14 @@ export function BookCard({ book, onEdit, onDelete, onStatusChange, onOpenTimer }
               e.stopPropagation();
               onOpenTimer(book);
             }}
-            className="p-1 text-green-400 hover:text-green-500 transition-colors"
+            className={`p-1 transition-colors ${
+              hasActiveTimer
+                ? 'text-green-500 hover:text-green-600'
+                : 'text-gray-400 hover:text-green-500'
+            }`}
+            title={hasActiveTimer ? 'Gérer la session en cours' : 'Démarrer une session'}
           >
-            <Timer size={16} />
+            <Timer size={16} className={hasActiveTimer ? 'animate-pulse' : ''} />
           </button>
           <button
             onClick={(e) => {
@@ -167,4 +175,4 @@ export function BookCard({ book, onEdit, onDelete, onStatusChange, onOpenTimer }
       )}
     </motion.div>
   );
-} 
+}
