@@ -57,7 +57,7 @@ export function useReadingSessions() {
           user_id: user.id,
         };
 
-        const { error } = await supabase
+        const { error } = await supabase!
           .from('reading_sessions')
           .insert(sessionData);
 
@@ -129,7 +129,7 @@ export function useReadingSessions() {
               const endTime = new Date(session.startTime.getTime() + (24 * 60 * 60 * 1000));
               const duration = 24 * 60 * 60;
 
-              const { data: updatedData, error: updateError } = await supabase
+              const { data: updatedData, error: updateError } = await supabase!
                 .from('reading_sessions')
                 .update({
                   is_active: false,
@@ -393,7 +393,7 @@ export function useReadingSessions() {
 
     try {
       setError(null);
-      const { error } = await supabase
+      const { error } = await supabase!
         .from('reading_sessions')
         .delete()
         .eq('id', sessionId)
