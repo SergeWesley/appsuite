@@ -72,8 +72,10 @@ export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
 
         // Attendre que le trigger SQL se déclenche et rafraîchir les livres
         // Le trigger devrait automatiquement mettre à jour les pages du livre
-        setTimeout(() => {
-          refreshBooks();
+        setTimeout(async () => {
+          await refreshBooks();
+          // Fermer la modal après rafraîchissement pour voir les changements
+          onClose();
         }, 1000); // Délai plus long pour être sûr que le trigger s'exécute
       }
     } catch (error) {
