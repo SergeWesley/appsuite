@@ -22,7 +22,8 @@ export default function Home() {
     getStats,
     refreshBooks,
     formatDuration,
-    getBookStats
+    getBookStats,
+    stopSession
   } = useBooksWithSessions();
   const { user, signOut } = useAuthContext();
   const [isFormOpen, setIsFormOpen] = useState(false);
