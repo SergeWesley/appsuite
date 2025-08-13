@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ReadingSession, ReadingSessionFormData, BookReadingStats } from '@/types/reading-session';
 import { Database } from '@/types/supabase';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from './useAuth';
 
 type SessionRow = Database['public']['Tables']['reading_sessions']['Row'];
