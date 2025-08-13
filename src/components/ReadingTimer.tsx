@@ -66,6 +66,12 @@ export function ReadingTimer({ book, isOpen, onClose }: ReadingTimerProps) {
       if (success) {
         setShowStopForm(false);
         setSessionData({ notes: '', pagesRead: undefined });
+
+        // Rafraîchir les livres pour récupérer les mises à jour du trigger SQL
+        // On ajoute un petit délai pour laisser le temps au trigger de s'exécuter
+        setTimeout(() => {
+          refreshBooks();
+        }, 500);
       }
     } catch (error) {
       console.error('Erreur lors de l\'arrêt du timer:', error);
