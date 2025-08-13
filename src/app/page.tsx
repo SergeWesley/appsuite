@@ -14,6 +14,7 @@ import { ReadingTimer } from '@/components/ReadingTimer';
 
 export default function Home() {
   const { books, loading, error, addBook, updateBook, deleteBook, getStats } = useBooks();
+  const { user, signOut } = useAuthContext();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | undefined>(undefined);
   const [selectedStatus, setSelectedStatus] = useState<BookStatus | 'all'>('all');
