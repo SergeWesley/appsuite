@@ -157,18 +157,13 @@ export function useTimer(): TimerHookReturn {
         return newMap;
       });
 
-      // Déclencher le rafraîchissement des livres
-      if (onBookDataChanged) {
-        onBookDataChanged();
-      }
-
       return sessionId;
     } catch (err) {
       console.error('Erreur lors du démarrage du timer:', err);
       setError(err instanceof Error ? err.message : 'Erreur inconnue');
       return null;
     }
-  }, [user, onBookDataChanged]);
+  }, [user]);
 
   // Arrêter un timer
   const stopTimer = useCallback(async (
@@ -207,11 +202,6 @@ export function useTimer(): TimerHookReturn {
           return newMap;
         });
 
-        // Déclencher le rafraîchissement des livres
-        if (onBookDataChanged) {
-          onBookDataChanged();
-        }
-
         return true;
       }
 
@@ -221,7 +211,7 @@ export function useTimer(): TimerHookReturn {
       setError(err instanceof Error ? err.message : 'Erreur inconnue');
       return false;
     }
-  }, [user, activeTimers, onBookDataChanged]);
+  }, [user, activeTimers]);
 
   // Vérifier si un timer est actif pour un livre
   const isTimerActive = useCallback((bookId: string): boolean => {
