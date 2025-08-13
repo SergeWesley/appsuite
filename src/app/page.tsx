@@ -302,6 +302,9 @@ export default function Home() {
           book={timerBook}
           isOpen={isTimerOpen}
           onClose={closeTimer}
+          formatDuration={formatDuration}
+          getBookStats={getBookStats}
+          onSessionStopped={handleSessionStopped}
         />
       )}
     </div>
