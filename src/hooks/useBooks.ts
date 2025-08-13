@@ -170,6 +170,14 @@ export function useBooks() {
     }
   }, [user]);
 
+  // Fonction pour générer un ID unique
+  function generateId(): string {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    return 'id-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now().toString(36);
+  }
+
   // Ajouter un nouveau livre
   const addBook = async (bookData: BookFormData): Promise<Book | null> => {
     if (!user) {
@@ -179,9 +187,30 @@ export function useBooks() {
 
     try {
       setError(null);
+
+      if (!isSupabaseConfigured) {
+        // Mode localStorage
+        const newBook: Book = {
+          id: generateId(),
+          ...bookData,
+          progress: bookData.status === 'completed' ? 100 :
+                    bookData.currentPage && bookData.totalPages ?
+                    Math.round((bookData.currentPage / bookData.totalPages) * 100) : 0,
+          dateAdded: new Date(),
+          dateStarted: bookData.status === 'reading' || bookData.status === 'completed' ? new Date() : undefined,
+          dateCompleted: bookData.status === 'completed' ? new Date() : undefined,
+        };
+
+        const updatedBooks = [newBook, ...books];
+        localStorage.setItem('books', JSON.stringify(updatedBooks));
+        setBooks(updatedBooks);
+        return newBook;
+      }
+
+      // Mode Supabase
       const insertData = mapFormDataToInsert(bookData, user.id);
 
-      const { data, error } = await supabase
+      const { data, error } = await supabase!
         .from('books')
         .insert(insertData)
         .select()
