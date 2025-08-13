@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { TimerProvider } from './TimerProvider';
 import { BookOpen } from 'lucide-react';
 
 interface AuthContextType {
@@ -72,7 +73,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      <TimerProvider>
+        {children}
+      </TimerProvider>
     </AuthContext.Provider>
   );
 }
