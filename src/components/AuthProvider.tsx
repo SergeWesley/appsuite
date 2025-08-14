@@ -38,7 +38,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     // Si on est sur la page d'auth et qu'on est connecté, rediriger vers l'accueil
     if (isAuthenticated && pathname === '/auth') {
-      router.push('/');
+      router.push('/dashboard');
       return;
     }
 

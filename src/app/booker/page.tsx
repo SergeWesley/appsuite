@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, BookOpen, CheckCircle, Clock, Search, Filter, LogOut, User, Heart } from 'lucide-react';
+import { Plus, BookOpen, CheckCircle, Clock, Search, LogOut, User, Heart } from 'lucide-react';
 import { useAuthContext } from '@/components/AuthProvider';
 import { useBooksWithSessions } from '@/hooks/useBooksWithSessions';
 import { Book, BookStatus, BookFormData } from '@/types/book';
@@ -11,7 +11,7 @@ import { BookForm } from '@/components/BookForm';
 import { Stats } from '@/components/Stats';
 import { ReadingTimer } from '@/components/ReadingTimer';
 
-export default function Home() {
+export default function BookerPage() {
   const {
     books,
     loading,
