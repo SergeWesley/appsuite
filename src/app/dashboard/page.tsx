@@ -33,8 +33,8 @@ const tools: Tool[] = [
     description: 'Gérer votre collection de films et séries, suivez vos visionnages',
     icon: Film,
     href: '/watcher',
-    color: 'text-red-600',
-    bgColor: 'bg-red-50 border-red-200',
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-50 border-purple-200',
     available: true,
   },
   // Outils futurs (à implémenter)
@@ -54,8 +54,8 @@ const tools: Tool[] = [
     description: 'Suivez vos habitudes et objectifs quotidiens',
     icon: Zap,
     href: '#',
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-50 border-purple-200',
+    color: 'text-red-600',
+    bgColor: 'bg-red-50 border-red-400',
     available: false,
   },
 ];
