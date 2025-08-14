@@ -78,6 +78,16 @@ export function BookCard({ book, onEdit, onDelete, onStatusChange, onOpenTimer }
                     src={book.coverUrl}
                     alt={`Couverture de ${book.title}`}
                     className="w-12 h-16 object-cover rounded-lg shadow-md flex-shrink-0"
+                    onLoad={(e) => {
+                        const img = e.currentTarget;
+                        // Si largeur ou hauteur très faible → image invalide
+                        if (img.naturalWidth <= 1 || img.naturalHeight <= 1) {
+                        img.src = '/fallback-cover.jpg';
+                        }
+                    }}
+                    onError={(e) => {
+                        e.currentTarget.src = '/fallback-cover.svg';
+                    }}
                 />
                 </div>
             )}
