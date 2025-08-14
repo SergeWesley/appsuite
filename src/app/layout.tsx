@@ -46,7 +46,7 @@ export default function RootLayout({
         <AuthProvider>
           {children}
         </AuthProvider>
-        <script
+        {/* <script
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {
@@ -62,7 +62,7 @@ export default function RootLayout({
               }
             `,
           }}
-        />
+        /> */}
       </body>
     </html>
   );

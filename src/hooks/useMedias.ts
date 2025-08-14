@@ -200,6 +200,8 @@ export function useMedias() {
       if (updates.imdbId !== undefined) updateData.imdb_id = updates.imdbId;
       if (updates.tmdbId !== undefined) updateData.tmdb_id = updates.tmdbId;
 
+      console.log('🔄 Mise à jour du média:', id, updateData);
+
       const { data, error } = await supabase
         .from('medias')
         .update(updateData)

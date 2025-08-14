@@ -29,7 +29,7 @@ export const useFilterPersistence = (
     } catch (error) {
       console.warn(`Erreur lors du chargement des filtres ${storageKey}:`, error);
     }
-  }, [storageKey, defaultValues]);
+  }, [storageKey]);
 
   // Sauvegarder dans localStorage quand les filtres changent
   const updateFilter = useCallback((key: keyof FilterState, value: string) => {
