@@ -46,27 +46,12 @@ function mapRowToMedia(row: MediaRow): Media {
 // Fonction pour convertir MediaFormData vers MediaInsert
 function mapFormDataToInsert(formData: MediaFormData, userId: string): MediaInsert {
   const now = new Date().toISOString();
-  
-  // Calculer le progrès automatiquement
-  let progress = 0;
-  if (formData.status === 'completed') {
-    progress = 100;
-  } else if (formData.status === 'watching') {
-    if (formData.type === 'movie' || formData.type === 'documentary' || formData.type === 'short') {
-      progress = 50; // Valeur par défaut pour films
-    } else if (formData.currentEpisode && formData.totalEpisodes) {
-      progress = Math.round((formData.currentEpisode / formData.totalEpisodes) * 100);
-    } else {
-      progress = 10; // Valeur par défaut pour séries
-    }
-  }
 
   return {
     title: formData.title,
     original_title: formData.originalTitle || null,
     type: formData.type,
     status: formData.status,
-    progress: progress,
     director: formData.director || null,
     creator: formData.creator || null,
     studio: formData.studio || null,
