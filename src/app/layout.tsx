@@ -3,15 +3,15 @@ import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 
 export const metadata: Metadata = {
-  title: "Booker - Gestionnaire de bibliothèque personnelle",
-  description: "Application moderne pour gérer votre collection de livres. Suivez votre progression de lecture, ajoutez des notes et organisez votre bibliothèque personnelle.",
-  keywords: "livres, bibliothèque, lecture, gestion, collection, progression",
-  authors: [{ name: "Booker App" }],
+  title: "AppSuite - Votre suite d'applications",
+  description: "AppSuite regroupe tous vos outils essentiels, dont Booker pour la gestion de livres. Organisez, suivez et optimisez vos tâches avec une suite moderne et intuitive.",
+keywords: "Applications, outils, productivité, gestion, suite",
+  authors: [{ name: "AppSuite" }],
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Booker",
+    title: "AppSuite",
   },
   formatDetection: {
     telephone: false,

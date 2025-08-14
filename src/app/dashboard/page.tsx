@@ -64,7 +64,7 @@ export default function Dashboard() {
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                   <Grid3X3 className="w-5 h-5 text-white" />
                 </div>
-                <h1 className="ml-3 text-xl font-semibold text-gray-900">Suite d'outils</h1>
+                <h1 className="ml-3 text-xl font-semibold text-gray-900">AppSuite</h1>
               </div>
             </div>
 
