@@ -43,6 +43,8 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
   const [isSearchingTitle, setIsSearchingTitle] = useState(false);
   const [isSearchingAuthor, setIsSearchingAuthor] = useState(false);
   const [isSearchingIsbn, setIsSearchingIsbn] = useState(false);
+  const googleBooksTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
 
   const searchBooks = async (query: string, type: 'title' | 'author' | 'isbn' = 'title') => {
     if (query.length < 3  && type !== 'isbn') {
@@ -69,27 +71,53 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
     }
 
     try {
-      let apiUrl: string;
-      
-      if (type === 'isbn') {
-        console.log('isbn', query);
-        // Utiliser l'endpoint spécifique pour l'ISBN
-        apiUrl = `https://openlibrary.org/search.json?isbn=${encodeURIComponent(query)}&fields=key,title,author_name,first_publish_year,isbn,number_of_pages_median&limit=5`;
-      } else {
-        // Utiliser l'endpoint standard pour titre et auteur
-        const searchParam = type === 'title' ? 'title' : 'author';
-        apiUrl = `https://openlibrary.org/search.json?${searchParam}=${encodeURIComponent(query)}&fields=key,title,author_name,first_publish_year,isbn,number_of_pages_median&limit=5`;
+      // Annuler le timeout précédent pour Google Books s'il existe
+      if (googleBooksTimeoutRef.current) {
+        clearTimeout(googleBooksTimeoutRef.current);
+        googleBooksTimeoutRef.current = null;
       }
-      
-      const response = await fetch(apiUrl);
-      const data = await response.json();
-      
-      if (type === 'title' || type === 'isbn') {
-        setTitleSuggestions(data.docs);
-        setAuthorSuggestions([]); // Efface les suggestions d'auteur
+
+      let openLibraryData = await searchOpenLibrary(query, type);
+
+      // Afficher immédiatement les résultats d'OpenLibrary s'il y en a
+      if (openLibraryData && openLibraryData.length > 0) {
+        if (type === 'title' || type === 'isbn') {
+          setTitleSuggestions(openLibraryData);
+          setAuthorSuggestions([]);
+        } else {
+          setAuthorSuggestions(openLibraryData);
+          setTitleSuggestions([]);
+        }
       } else {
-        setAuthorSuggestions(data.docs);
-        setTitleSuggestions([]); // Efface les suggestions de titre
+        // Si aucun résultat avec OpenLibrary, programmer un fallback vers Google Books avec debouncing
+        console.log('Aucun résultat avec OpenLibrary, programmation du fallback Google Books...');
+
+        // Vider les suggestions en attendant
+        if (type === 'title' || type === 'isbn') {
+          setTitleSuggestions([]);
+          setAuthorSuggestions([]);
+        } else {
+          setAuthorSuggestions([]);
+          setTitleSuggestions([]);
+        }
+
+        // Programmer l'appel à Google Books avec un délai (debouncing)
+        googleBooksTimeoutRef.current = setTimeout(async () => {
+          try {
+            console.log('Exécution du fallback Google Books après debouncing...');
+            const googleBooksData = await searchGoogleBooks(query, type);
+
+            if (type === 'title' || type === 'isbn') {
+              setTitleSuggestions(googleBooksData || []);
+              setAuthorSuggestions([]);
+            } else {
+              setAuthorSuggestions(googleBooksData || []);
+              setTitleSuggestions([]);
+            }
+          } catch (error) {
+            console.error('Erreur lors du fallback Google Books:', error);
+          }
+        }, 1000); // Délai de 1 seconde avant d'appeler Google Books
       }
     } catch (error) {
       console.error('Erreur lors de la recherche de livres:', error);
@@ -101,6 +129,78 @@ export function BookForm({ book, isOpen, onClose, onSubmit, onDelete }: BookForm
       } else {
         setIsSearchingIsbn(false);
       }
+    }
+  };
+
+  const searchOpenLibrary = async (query: string, type: 'title' | 'author' | 'isbn'): Promise<BookSuggestion[]> => {
+    try {
+      let apiUrl: string;
+
+      if (type === 'isbn') {
+        // Utiliser l'endpoint spécifique pour l'ISBN
+        apiUrl = `https://openlibrary.org/search.json?isbn=${encodeURIComponent(query)}&fields=key,title,author_name,first_publish_year,isbn,number_of_pages_median&limit=100`;
+      } else {
+        // Utiliser l'endpoint standard pour titre et auteur
+        const searchParam = type === 'title' ? 'title' : 'author';
+        apiUrl = `https://openlibrary.org/search.json?${searchParam}=${encodeURIComponent(query)}&fields=key,title,author_name,first_publish_year,isbn,number_of_pages_median&limit=100`;
+      }
+
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+
+      return data.docs || [];
+    } catch (error) {
+      console.error('Erreur avec OpenLibrary:', error);
+      return [];
+    }
+  };
+
+  const searchGoogleBooks = async (query: string, type: 'title' | 'author' | 'isbn'): Promise<BookSuggestion[]> => {
+    try {
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_BOOKS_API_KEY;
+      if (!apiKey) {
+        console.warn('Clé API Google Books non configurée');
+        return [];
+      }
+
+      let searchQuery: string;
+      if (type === 'isbn') {
+        searchQuery = `isbn:${query}`;
+      } else if (type === 'author') {
+        searchQuery = `inauthor:${query}`;
+      } else {
+        searchQuery = `intitle:${query}`;
+      }
+
+      const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchQuery)}&maxResults=40&key=${apiKey}`;
+
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+
+      if (!data.items) {
+        return [];
+      }
+
+      // Convertir le format Google Books vers le format OpenLibrary
+      return data.items.map((item: any, index: number): BookSuggestion => {
+        const volumeInfo = item.volumeInfo;
+        const industryIdentifiers = volumeInfo.industryIdentifiers || [];
+        const isbn = industryIdentifiers.find((id: any) => id.type === 'ISBN_13')?.identifier ||
+                    industryIdentifiers.find((id: any) => id.type === 'ISBN_10')?.identifier || '';
+
+        return {
+          key: `google_${item.id}_${index}`, // Clé unique pour Google Books
+          title: volumeInfo.title || '',
+          author_name: volumeInfo.authors || [],
+          first_publish_year: volumeInfo.publishedDate ? new Date(volumeInfo.publishedDate).getFullYear() : undefined,
+          isbn: isbn ? [isbn] : [],
+          number_of_pages_median: volumeInfo.pageCount,
+          // Pas de cover_i pour Google Books, on utilisera l'ISBN pour récupérer la couverture
+        };
+      });
+    } catch (error) {
+      console.error('Erreur avec Google Books:', error);
+      return [];
     }
   };
 
