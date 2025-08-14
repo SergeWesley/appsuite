@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { BookOpen, User, LogOut, ArrowRight, Grid3X3, Zap } from 'lucide-react';
+import { BookOpen, User, LogOut, ArrowRight, Grid3X3, Zap, Film } from 'lucide-react';
 import Link from 'next/link';
 import { useAuthContext } from '@/components/AuthProvider';
 
@@ -25,6 +25,16 @@ const tools: Tool[] = [
     href: '/booker',
     color: 'text-blue-600',
     bgColor: 'bg-blue-50 border-blue-200',
+    available: true,
+  },
+  {
+    id: 'watcher',
+    name: 'Watcher',
+    description: 'Gérer votre collection de films et séries, suivez vos visionnages',
+    icon: Film,
+    href: '/watcher',
+    color: 'text-red-600',
+    bgColor: 'bg-red-50 border-red-200',
     available: true,
   },
   // Outils futurs (à implémenter)

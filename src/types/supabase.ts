@@ -115,6 +115,148 @@ export interface Database {
           updated_at?: string
         }
       }
+      medias: {
+        Row: {
+          id: string
+          title: string
+          original_title: string | null
+          type: 'movie' | 'series' | 'anime' | 'documentary' | 'short'
+          status: 'watching' | 'completed' | 'towatch' | 'wishlist' | 'dropped'
+          progress: number
+          director: string | null
+          creator: string | null
+          studio: string | null
+          duration: number | null
+          year: number | null
+          total_episodes: number | null
+          current_episode: number | null
+          total_seasons: number | null
+          current_season: number | null
+          rating: number | null
+          notes: string | null
+          genre: string | null
+          country: string | null
+          language: string | null
+          poster: string | null
+          poster_url: string | null
+          imdb_id: string | null
+          tmdb_id: string | null
+          date_added: string
+          date_started: string | null
+          date_completed: string | null
+          user_id: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          original_title?: string | null
+          type: 'movie' | 'series' | 'anime' | 'documentary' | 'short'
+          status?: 'watching' | 'completed' | 'towatch' | 'wishlist' | 'dropped'
+          progress?: number
+          director?: string | null
+          creator?: string | null
+          studio?: string | null
+          duration?: number | null
+          year?: number | null
+          total_episodes?: number | null
+          current_episode?: number | null
+          total_seasons?: number | null
+          current_season?: number | null
+          rating?: number | null
+          notes?: string | null
+          genre?: string | null
+          country?: string | null
+          language?: string | null
+          poster?: string | null
+          poster_url?: string | null
+          imdb_id?: string | null
+          tmdb_id?: string | null
+          date_added?: string
+          date_started?: string | null
+          date_completed?: string | null
+          user_id: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          original_title?: string | null
+          type?: 'movie' | 'series' | 'anime' | 'documentary' | 'short'
+          status?: 'watching' | 'completed' | 'towatch' | 'wishlist' | 'dropped'
+          progress?: number
+          director?: string | null
+          creator?: string | null
+          studio?: string | null
+          duration?: number | null
+          year?: number | null
+          total_episodes?: number | null
+          current_episode?: number | null
+          total_seasons?: number | null
+          current_season?: number | null
+          rating?: number | null
+          notes?: string | null
+          genre?: string | null
+          country?: string | null
+          language?: string | null
+          poster?: string | null
+          poster_url?: string | null
+          imdb_id?: string | null
+          tmdb_id?: string | null
+          date_added?: string
+          date_started?: string | null
+          date_completed?: string | null
+          user_id?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      watching_sessions: {
+        Row: {
+          id: string
+          media_id: string
+          start_time: string
+          end_time: string | null
+          duration: number | null
+          notes: string | null
+          episode_watched: number | null
+          season_watched: number | null
+          is_active: boolean
+          user_id: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          media_id: string
+          start_time?: string
+          end_time?: string | null
+          duration?: number | null
+          notes?: string | null
+          episode_watched?: number | null
+          season_watched?: number | null
+          is_active?: boolean
+          user_id: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          media_id?: string
+          start_time?: string
+          end_time?: string | null
+          duration?: number | null
+          notes?: string | null
+          episode_watched?: number | null
+          season_watched?: number | null
+          is_active?: boolean
+          user_id?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
