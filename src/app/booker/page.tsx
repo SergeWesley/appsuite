@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, BookOpen, CheckCircle, Clock, Search, LogOut, User, Heart } from 'lucide-react';
 import { useAuthContext } from '@/components/AuthProvider';
 import { useBooksWithSessions } from '@/hooks/useBooksWithSessions';
+import { useFilterPersistence } from '@/hooks/useFilterPersistence';
 import { Book, BookStatus, BookFormData } from '@/types/book';
 import { BookCard } from '@/components/BookCard';
 import { BookForm } from '@/components/BookForm';
@@ -28,11 +29,21 @@ export default function BookerPage() {
   const { user, signOut } = useAuthContext();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | undefined>(undefined);
-  const [selectedStatus, setSelectedStatus] = useState<BookStatus | 'all'>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+//   const [selectedStatus, setSelectedStatus] = useState<BookStatus | 'all'>('all');
+//   const [searchQuery, setSearchQuery] = useState('');
   const [timerBook, setTimerBook] = useState<Book | undefined>(undefined);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
   const stats = getStats();
+
+  // Gestion de la persistance des filtres
+  const {
+    selectedStatus,
+    searchQuery,
+    updateFilter
+  } = useFilterPersistence('booker-filters', {
+    selectedStatus: 'all',
+    searchQuery: ''
+  });
 
   const handleAddBook = (data: BookFormData) => {
     addBook(data);
@@ -196,7 +207,7 @@ export default function BookerPage() {
               type="text"
               placeholder="Rechercher par titre, auteur ou genre..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => updateFilter('searchQuery', e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -206,7 +217,7 @@ export default function BookerPage() {
             {statusFilters.map((filter) => (
               <button
                 key={filter.value}
-                onClick={() => setSelectedStatus(filter.value as BookStatus | 'all')}
+                onClick={() => updateFilter('selectedStatus', filter.value)}
                 className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   selectedStatus === filter.value
                     ? 'bg-blue-100 text-blue-700 border border-blue-200'

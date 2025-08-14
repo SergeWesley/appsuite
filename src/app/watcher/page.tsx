@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Film, CheckCircle, Clock, Search, LogOut, User, Heart, Play, Tv, Camera } from 'lucide-react';
 import { useAuthContext } from '@/components/AuthProvider';
 import { useMediasWithSessions } from '@/hooks/useMediasWithSessions';
+import { useFilterPersistence } from '@/hooks/useFilterPersistence';
 import { Media, MediaStatus, MediaFormData, MediaType } from '@/types/media';
 import { MediaCard } from '@/components/MediaCard';
 import { MediaForm } from '@/components/MediaForm';
@@ -31,11 +32,20 @@ export default function WatcherPage() {
   const { user, signOut } = useAuthContext();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingMedia, setEditingMedia] = useState<Media | undefined>(undefined);
-  const [selectedStatus, setSelectedStatus] = useState<MediaStatus | 'all'>('all');
-  const [selectedType, setSelectedType] = useState<MediaType | 'all'>('all');
-  const [searchQuery, setSearchQuery] = useState('');
   const [timerMedia, setTimerMedia] = useState<Media | undefined>(undefined);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
+
+  // Gestion de la persistance des filtres
+  const {
+    selectedStatus,
+    selectedType,
+    searchQuery,
+    updateFilter
+  } = useFilterPersistence('watcher-filters', {
+    selectedStatus: 'all',
+    selectedType: 'all',
+    searchQuery: ''
+  });
 
   const handleAddMedia = async (data: MediaFormData) => {
     await addMedia(data);
@@ -209,7 +219,7 @@ export default function WatcherPage() {
               type="text"
               placeholder="Rechercher par titre, réalisateur, créateur, studio ou genre..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => updateFilter('searchQuery', e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
@@ -219,7 +229,7 @@ export default function WatcherPage() {
             {statusFilters.map((filter) => (
               <button
                 key={filter.value}
-                onClick={() => setSelectedStatus(filter.value as MediaStatus | 'all')}
+                onClick={() => updateFilter('selectedStatus', filter.value)}
                 className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   selectedStatus === filter.value
                     ? 'bg-purple-100 text-purple-700 border border-purple-200'
@@ -237,7 +247,7 @@ export default function WatcherPage() {
             {typeFilters.map((filter) => (
               <button
                 key={filter.value}
-                onClick={() => setSelectedType(filter.value as MediaType | 'all')}
+                onClick={() => updateFilter('selectedType', filter.value)}
                 className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   selectedType === filter.value
                     ? 'bg-indigo-100 text-indigo-700 border border-indigo-200'
