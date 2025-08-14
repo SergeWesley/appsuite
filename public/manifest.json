@@ -2,7 +2,7 @@
   "name": "Booker - Gestionnaire de bibliothèque",
   "short_name": "Booker",
   "description": "Application moderne pour gérer votre collection de livres personnelle",
-  "start_url": "/",
+  "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#f9fafb",
   "theme_color": "#f9fafb",
