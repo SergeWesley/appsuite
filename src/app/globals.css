@@ -8,7 +8,8 @@
 }
 
 @layer components {
-  .book-card {
+  .book-card,
+  .media-card {
     position: relative;
     overflow: hidden;
     border-radius: theme(borderRadius.xl);
@@ -17,8 +18,9 @@
     box-shadow: theme(boxShadow.sm);
     transition: all 0.3s ease;
   }
-  
-  .book-card:hover {
+
+  .book-card:hover,
+  .media-card:hover {
     box-shadow: theme(boxShadow.lg);
     transform: translateY(-4px);
   }
@@ -39,17 +41,19 @@
     font-weight: theme(fontWeight.medium);
   }
   
-  .status-reading {
+  .status-reading,
+  .status-watching {
     background-color: theme(colors.blue.100);
     color: theme(colors.blue.800);
   }
-  
+
   .status-completed {
     background-color: theme(colors.green.100);
     color: theme(colors.green.800);
   }
-  
-  .status-toread {
+
+  .status-toread,
+  .status-towatch {
     background-color: theme(colors.gray.100);
     color: theme(colors.gray.800);
   }
@@ -57,6 +61,11 @@
   .status-wishlist {
     background-color: theme(colors.red.100);
     color: theme(colors.red.800);
+  }
+
+  .status-dropped {
+    background-color: theme(colors.orange.100);
+    color: theme(colors.orange.800);
   }
 }
 
@@ -70,7 +79,8 @@
 
 /* Améliorations pour le responsive */
 @media (max-width: 640px) {
-  .book-card {
+  .book-card,
+  .media-card {
     padding: theme(spacing.4);
   }
   
@@ -81,7 +91,8 @@
 }
 
 /* Effet de brillance sur les cartes */
-.book-card::before {
+.book-card::before,
+.media-card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -92,7 +103,7 @@
   transition: left 0.5s;
 }
 
-.book-card:hover::before {
+.book-card:hover::before,
+.media-card:hover::before {
   left: 100%;
 }
-
