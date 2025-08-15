@@ -11,6 +11,7 @@ import { MediaCard } from '@/components/MediaCard';
 import { MediaForm } from '@/components/MediaForm';
 import { MediaStats } from '@/components/MediaStats';
 import { WatchingTimer } from '@/components/WatchingTimer';
+import { NavigationMenu } from '@/components/NavigationMenu';
 
 export default function WatcherPage() {
   const {
@@ -34,6 +35,7 @@ export default function WatcherPage() {
   const [editingMedia, setEditingMedia] = useState<Media | undefined>(undefined);
   const [timerMedia, setTimerMedia] = useState<Media | undefined>(undefined);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
+  const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
   // Gestion de la persistance des filtres
   const {
@@ -160,8 +162,14 @@ export default function WatcherPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <Film className="h-8 w-8 text-purple-600" />
-              <h1 className="ml-3 text-xl font-semibold text-gray-900">Watcher</h1>
+               <button
+                onClick={() => setIsNavMenuOpen(true)}
+                className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label="Menu de navigation"
+              >
+                <Film className="h-8 w-8 text-purple-600" />
+                <h1 className="ml-3 text-xl font-semibold text-gray-900">Watcher</h1>
+              </button>
             </div>
 
             <div className="flex items-center gap-4">
@@ -347,6 +355,13 @@ export default function WatcherPage() {
           onClose={closeTimer}
         />
       )}
+
+      {/* Menu de navigation */}
+      <NavigationMenu
+        isOpen={isNavMenuOpen}
+        onClose={() => setIsNavMenuOpen(false)}
+        currentModule="watcher"
+      />
     </div>
   );
 }

@@ -11,6 +11,7 @@ import { BookCard } from '@/components/BookCard';
 import { BookForm } from '@/components/BookForm';
 import { Stats } from '@/components/Stats';
 import { ReadingTimer } from '@/components/ReadingTimer';
+import { NavigationMenu } from '@/components/NavigationMenu';
 
 export default function BookerPage() {
   const {
@@ -33,6 +34,7 @@ export default function BookerPage() {
 //   const [searchQuery, setSearchQuery] = useState('');
   const [timerBook, setTimerBook] = useState<Book | undefined>(undefined);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
+  const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const stats = getStats();
 
   // Gestion de la persistance des filtres
@@ -148,8 +150,14 @@ export default function BookerPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <BookOpen className="h-8 w-8 text-blue-600" />
-              <h1 className="ml-3 text-xl font-semibold text-gray-900">Booker</h1>
+               <button
+                onClick={() => setIsNavMenuOpen(true)}
+                className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label="Menu de navigation"
+              >
+                <BookOpen className="h-8 w-8 text-blue-600" />
+                <h1 className="ml-3 text-xl font-semibold text-gray-900">Booker</h1>
+              </button>
             </div>
 
             <div className="flex items-center gap-4">
@@ -320,6 +328,13 @@ export default function BookerPage() {
           onSessionStopped={handleSessionStopped}
         />
       )}
+
+        {/* Menu de navigation */}
+        <NavigationMenu
+          isOpen={isNavMenuOpen}
+          onClose={() => setIsNavMenuOpen(false)}
+          currentModule="booker"
+        />
     </div>
   );
 }
