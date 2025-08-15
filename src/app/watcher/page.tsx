@@ -175,7 +175,7 @@ export default function WatcherPage() {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => openForm()}
-                className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                className="inline-flex items-center text-sm px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
               >
                 <Plus size={20} className="mr-2" />
                 Ajouter une œuvre
