@@ -30,6 +30,14 @@ const modules: NavigationMenuItem[] = [
     description: 'Gérez votre bibliothèque de livres'
   },
   {
+    name: 'Tracker',
+    path: '/tracker',
+    icon: Activity,
+    color: 'text-green-600',
+    bgColor: 'bg-green-50 hover:bg-green-100',
+    description: 'Suivez vos séances de sport'
+  },
+  {
     name: 'Watcher',
     path: '/watcher',
     icon: Film,
@@ -37,14 +45,6 @@ const modules: NavigationMenuItem[] = [
     bgColor: 'bg-purple-50 hover:bg-purple-100',
     description: 'Suivez vos films et séries'
   },
-  {
-    name: 'Tracker',
-    path: '/tracker',
-    icon: Activity,
-    color: 'text-green-600',
-    bgColor: 'bg-green-50 hover:bg-green-100',
-    description: 'Suivez vos séances de sport'
-  }
 ];
 
 export function NavigationMenu({ isOpen, onClose, currentModule }: NavigationMenuProps) {

@@ -28,16 +28,6 @@ const tools: Tool[] = [
     available: true,
   },
   {
-    id: 'watcher',
-    name: 'Watcher',
-    description: 'Gérer votre collection de films et séries, suivez vos visionnages',
-    icon: Film,
-    href: '/watcher',
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-50 border-purple-200',
-    available: true,
-  },
- {
     id: 'tracker',
     name: 'Tracker',
     description: 'Suivez vos habitudes et objectifs quotidiens',
@@ -45,6 +35,16 @@ const tools: Tool[] = [
     href: '/tracker',
     color: 'text-green-600',
     bgColor: 'bg-green-50 border-green-400',
+    available: true,
+  },
+  {
+    id: 'watcher',
+    name: 'Watcher',
+    description: 'Gérer votre collection de films et séries, suivez vos visionnages',
+    icon: Film,
+    href: '/watcher',
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-50 border-purple-200',
     available: true,
   },
   // Outils futurs (à implémenter)
