@@ -257,6 +257,108 @@ export interface Database {
           updated_at?: string
         }
       }
+      exercises: {
+        Row: {
+          id: string
+          name: string
+          muscle_group: 'upper_body' | 'lower_body' | 'cardio' | 'core' | 'full_body' | 'other'
+          description: string | null
+          is_custom: boolean
+          user_id: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          muscle_group: 'upper_body' | 'lower_body' | 'cardio' | 'core' | 'full_body' | 'other'
+          description?: string | null
+          is_custom?: boolean
+          user_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          muscle_group?: 'upper_body' | 'lower_body' | 'cardio' | 'core' | 'full_body' | 'other'
+          description?: string | null
+          is_custom?: boolean
+          user_id?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      workout_sessions: {
+        Row: {
+          id: string
+          user_id: string
+          date: string
+          notes: string | null
+          total_exercises: number
+          duration: number | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          date: string
+          notes?: string | null
+          total_exercises?: number
+          duration?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          date?: string
+          notes?: string | null
+          total_exercises?: number
+          duration?: number | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      workout_exercises: {
+        Row: {
+          id: string
+          workout_session_id: string
+          exercise_id: string
+          sets: number | null
+          reps: number | null
+          weight: number | null
+          duration: number | null
+          notes: string | null
+          exercise_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          workout_session_id: string
+          exercise_id: string
+          sets?: number | null
+          reps?: number | null
+          weight?: number | null
+          duration?: number | null
+          notes?: string | null
+          exercise_order: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          workout_session_id?: string
+          exercise_id?: string
+          sets?: number | null
+          reps?: number | null
+          weight?: number | null
+          duration?: number | null
+          notes?: string | null
+          exercise_order?: number
+          created_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

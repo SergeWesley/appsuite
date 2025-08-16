@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { BookOpen, Film, ChevronRight } from 'lucide-react';
+import { BookOpen, Film, ChevronRight, Activity } from 'lucide-react';
 
 interface NavigationMenuItem {
   name: string;
@@ -17,7 +17,7 @@ interface NavigationMenuItem {
 interface NavigationMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  currentModule: 'booker' | 'watcher';
+  currentModule: 'booker' | 'watcher'  | 'tracker';
 }
 
 const modules: NavigationMenuItem[] = [
@@ -36,6 +36,14 @@ const modules: NavigationMenuItem[] = [
     color: 'text-purple-600',
     bgColor: 'bg-purple-50 hover:bg-purple-100',
     description: 'Suivez vos films et séries'
+  },
+  {
+    name: 'Tracker',
+    path: '/tracker',
+    icon: Activity,
+    color: 'text-green-600',
+    bgColor: 'bg-green-50 hover:bg-green-100',
+    description: 'Suivez vos séances de sport'
   }
 ];
 

@@ -37,6 +37,16 @@ const tools: Tool[] = [
     bgColor: 'bg-purple-50 border-purple-200',
     available: true,
   },
+ {
+    id: 'tracker',
+    name: 'Tracker',
+    description: 'Suivez vos habitudes et objectifs quotidiens',
+    icon: Zap,
+    href: '/tracker',
+    color: 'text-green-600',
+    bgColor: 'bg-green-50 border-green-400',
+    available: true,
+  },
   // Outils futurs (à implémenter)
   {
     id: 'notes',
@@ -44,20 +54,10 @@ const tools: Tool[] = [
     description: 'Prenez des notes et organisez vos idées',
     icon: Grid3X3,
     href: '#',
-    color: 'text-green-600',
-    bgColor: 'bg-green-50 border-green-200',
+    color: 'text-yellow-600',
+    bgColor: 'bg-yellow-50 border-yellow-200',
     available: false,
-  },
-  {
-    id: 'tracker',
-    name: 'Tracker',
-    description: 'Suivez vos habitudes et objectifs quotidiens',
-    icon: Zap,
-    href: '#',
-    color: 'text-red-600',
-    bgColor: 'bg-red-50 border-red-400',
-    available: false,
-  },
+  }
 ];
 
 export default function Dashboard() {
