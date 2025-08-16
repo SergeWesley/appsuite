@@ -25,9 +25,10 @@ function mapRowToExercise(row: ExerciseRow): Exercise {
 
 // Fonction pour convertir ExerciseFormData vers ExerciseInsert
 function mapFormDataToInsert(formData: ExerciseFormData, userId: string): ExerciseInsert {
+  const muscleGroup = formData.muscleGroup === "all" ? "other" : formData.muscleGroup;
   return {
     name: formData.name,
-    muscle_group: formData.muscleGroup,
+    muscle_group: muscleGroup,
     description: formData.description || null,
     is_custom: true,
     user_id: userId,
@@ -109,9 +110,10 @@ export function useExercises() {
       setError(null);
 
       const updateData: ExerciseUpdate = {};
+      updateData.muscle_group = updates.muscleGroup === "all" ? "other" : updates.muscleGroup;
 
       if (updates.name !== undefined) updateData.name = updates.name;
-      if (updates.muscleGroup !== undefined) updateData.muscle_group = updates.muscleGroup;
+      if (updates.muscleGroup !== undefined) updateData.muscle_group = updates.muscleGroup === "all" ? "other" : updates.muscleGroup;
       if (updates.description !== undefined) updateData.description = updates.description || null;
 
       const { data, error } = await supabase

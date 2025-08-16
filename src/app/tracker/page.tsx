@@ -7,7 +7,7 @@ import { useWorkoutSessions } from '@/hooks/tracker/useWorkoutSessions';
 import { WorkoutSessionCard } from '@/components/tracker/WorkoutSessionCard';
 import { WorkoutStats } from '@/components/tracker/WorkoutStats';
 import { NavigationMenu } from '@/components/NavigationMenu';
-import { Plus, Filter, Search, Activity, LogOut, User, Dumbbell, Calendar, Zap, Target } from 'lucide-react';
+import { Plus, Search, Activity, LogOut, User, Dumbbell, Calendar, Target } from 'lucide-react';
 import { useAuthContext } from '@/components/AuthProvider';
 
 export default function TrackerPage() {
