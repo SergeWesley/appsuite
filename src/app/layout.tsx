@@ -5,7 +5,7 @@ import { AuthProvider } from "@/components/AuthProvider";
 export const metadata: Metadata = {
   title: "AppSuite - Votre suite d'applications",
   description: "AppSuite regroupe tous vos outils essentiels, dont Booker pour la gestion de livres. Organisez, suivez et optimisez vos tâches avec une suite moderne et intuitive.",
-keywords: "Applications, outils, productivité, gestion, suite",
+  keywords: "Applications, outils, productivité, gestion, suite",
   authors: [{ name: "AppSuite" }],
   manifest: "/manifest.json",
   appleWebApp: {
