@@ -224,7 +224,7 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
                 Date de la séance *
               </label>
               <div className="relative">
-                <Calendar size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Calendar size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hidden sm:inline" />
                 <input
                   type="date"
                   required
@@ -233,7 +233,7 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
                     ...prev,
                     date: new Date(e.target.value + 'T12:00:00'),
                   }))}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
             </div>
