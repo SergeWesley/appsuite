@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 export interface FilterState {
   selectedStatus?: string;
+  selectedPeriod?: string;
   selectedType?: string;
   searchQuery?: string;
 }
@@ -60,6 +61,7 @@ export const useFilterPersistence = (
     resetFilters,
     // Getters individuels pour faciliter l'utilisation
     selectedStatus: filters.selectedStatus || defaultValues.selectedStatus || 'all',
+    selectedPeriod: filters.selectedPeriod || defaultValues.selectedPeriod || 'all',
     selectedType: filters.selectedType || defaultValues.selectedType || 'all',
     searchQuery: filters.searchQuery || defaultValues.searchQuery || '',
   };

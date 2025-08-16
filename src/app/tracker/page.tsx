@@ -9,23 +9,33 @@ import { WorkoutStats } from '@/components/tracker/WorkoutStats';
 import { NavigationMenu } from '@/components/NavigationMenu';
 import { Plus, Search, Activity, LogOut, User, Dumbbell, Calendar, Target } from 'lucide-react';
 import { useAuthContext } from '@/components/AuthProvider';
+import { useFilterPersistence } from '@/hooks/useFilterPersistence';
 
 export default function TrackerPage() {
   const router = useRouter();
   const { user, signOut } = useAuthContext();
   const { sessions, loading, error, getStats } = useWorkoutSessions();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState<'all' | 'week' | 'month'>('all');
+  // const [selectedFilter, setSelectedFilter] = useState<'all' | 'week' | 'month'>('all');
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+
+  // Gestion de la persistance des filtres
+  const {
+    selectedPeriod,
+    searchQuery,
+    updateFilter
+  } = useFilterPersistence('tracker-filters', {
+      selectedPeriod: 'all',
+      searchQuery: ''
+  });
 
   // Filtrer les séances selon les critères
   const filteredSessions = sessions.filter(session => {
     // Filtre par période
-    if (selectedFilter === 'week') {
+    if (selectedPeriod === 'week') {
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
       if (session.date < oneWeekAgo) return false;
-    } else if (selectedFilter === 'month') {
+    } else if (selectedPeriod === 'month') {
       const oneMonthAgo = new Date();
       oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
       if (session.date < oneMonthAgo) return false;
@@ -156,7 +166,7 @@ export default function TrackerPage() {
               type="text"
               placeholder="Rechercher dans les notes ou exercices..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => updateFilter('searchQuery', e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
           </div>
@@ -166,9 +176,9 @@ export default function TrackerPage() {
             {periodFilters.map((filter) => (
               <button
                 key={filter.value}
-                onClick={() => setSelectedFilter(filter.value as 'all' | 'week' | 'month')}
+                onClick={() => updateFilter('selectedPeriod', filter.value as 'all' | 'week' | 'month')}
                 className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  selectedFilter === filter.value
+                  selectedPeriod === filter.value
                     ? 'bg-green-100 text-green-700 border border-green-200'
                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
                 }`}
@@ -190,7 +200,7 @@ export default function TrackerPage() {
             >
               <Activity className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-4 text-lg font-medium text-gray-900">
-                {searchQuery || selectedFilter !== 'all' 
+                {searchQuery || selectedPeriod !== 'all' 
                   ? 'Aucune séance trouvée' 
                   : sessions.length === 0 
                   ? 'Aucune séance enregistrée'
@@ -198,14 +208,14 @@ export default function TrackerPage() {
                 }
               </h3>
               <p className="mt-2 text-gray-600">
-                {searchQuery || selectedFilter !== 'all'
+                {searchQuery || selectedPeriod !== 'all'
                   ? 'Essayez de modifier vos critères de recherche.'
                   : sessions.length === 0
                   ? 'Commencez par créer votre première séance d\'entraînement.'
                   : 'Aucune séance ne correspond aux critères.'
                 }
               </p>
-              {sessions.length === 0 && !searchQuery && selectedFilter === 'all' && (
+              {sessions.length === 0 && !searchQuery && selectedPeriod === 'all' && (
                 <button
                   onClick={() => router.push('/tracker/new')}
                   className="mt-4 inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
