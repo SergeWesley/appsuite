@@ -79,6 +79,7 @@ export function useWorkoutSessions() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
+  const { addTemplate } = useWorkoutTemplates();
 
   // Charger les séances
   const loadSessions = async () => {
