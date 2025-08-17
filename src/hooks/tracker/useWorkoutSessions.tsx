@@ -140,8 +140,27 @@ export function useWorkoutSessions() {
     try {
       setError(null);
 
-      // 1. Créer la séance
-      const sessionInsertData = mapFormDataToInsert(sessionData, user.id);
+      let templateId: string | undefined;
+
+      // 1. Si c'est une séance récurrente, créer d'abord le template
+      if (sessionData.recurrence?.type !== 'none' && sessionData.templateName) {
+        const templateData: WorkoutTemplateFormData = {
+          name: sessionData.templateName,
+          description: sessionData.notes,
+          exercises: sessionData.exercises,
+          recurrence: sessionData.recurrence,
+          startDate: sessionData.date,
+        };
+
+        const template = await addTemplate(templateData);
+        if (!template) {
+          throw new Error('Impossible de créer le template');
+        }
+        templateId = template.id;
+      }
+
+      // 2. Créer la séance
+      const sessionInsertData = mapFormDataToInsert(sessionData, user.id, templateId);
 
       const { data: sessionData_db, error: sessionError } = await supabase
         .from('workout_sessions')
