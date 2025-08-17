@@ -39,7 +39,7 @@ export function WorkoutSessionCard({ session, onClick }: WorkoutSessionCardProps
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4, boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
       onClick={onClick}
-      className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-200 hover:shadow-md"
+      className="h-full bg-white rounded-xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-200 hover:shadow-md"
     >
       {/* En-tête avec date */}
       <div className="flex items-center justify-between mb-4">
