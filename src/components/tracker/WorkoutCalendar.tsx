@@ -307,7 +307,11 @@ export function WorkoutCalendar({ sessions, onSessionClick, onOccurrenceClick }:
       <div className="mt-6 flex items-center justify-center gap-6 text-sm text-gray-600">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 bg-green-100 border border-green-200 rounded"></div>
-          <span>Séance d'entraînement</span>
+          <span>Séance réalisée</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 bg-blue-100 border border-blue-200 rounded"></div>
+          <span>Séance planifiée</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 border-2 border-green-500 rounded"></div>
