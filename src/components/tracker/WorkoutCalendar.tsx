@@ -9,6 +9,7 @@ import { useWorkoutTemplates } from '@/hooks/tracker/useWorkoutTemplates';
 interface WorkoutCalendarProps {
   sessions: WorkoutSession[];
   onSessionClick?: (session: WorkoutSession) => void;
+  onOccurrenceClick?: (occurrence: WorkoutOccurrence) => void;
 }
 
 export function WorkoutCalendar({ sessions, onSessionClick }: WorkoutCalendarProps) {
