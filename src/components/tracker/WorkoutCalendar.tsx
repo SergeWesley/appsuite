@@ -267,20 +267,32 @@ export function WorkoutCalendar({ sessions, onSessionClick, onOccurrenceClick }:
                 {/* Liste des activités */}
                 {hasActivities && isCurrentMonthDate && (
                   <div className="mt-1 space-y-1">
-                    {sessionsForDate.slice(0, 2).map((session, sessionIndex) => (
+                    {/* Séances réalisées */}
+                    {sessionsForDate.slice(0, 1).map((session, sessionIndex) => (
                       <div
                         key={session.id}
                         className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded truncate"
                         title={`${session.totalExercises} exercices${session.notes ? ` - ${session.notes}` : ''}`}
                       >
-                        {session.totalExercises} exercice{session.totalExercises > 1 ? 's' : ''}
+                        ✓ {session.totalExercises} exercice{session.totalExercises > 1 ? 's' : ''}
                       </div>
                     ))}
-                    
+
+                    {/* Occurrences planifiées */}
+                    {occurrencesForDate.slice(0, sessionsForDate.length > 0 ? 1 : 2).map((occurrence, occurrenceIndex) => (
+                      <div
+                        key={`${occurrence.templateId}-${occurrence.date.getTime()}`}
+                        className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded truncate"
+                        title={`Séance planifiée: ${occurrence.template.name}`}
+                      >
+                        📅 {occurrence.template.name}
+                      </div>
+                    ))}
+
                     {/* Indicateur s'il y a plus d'activités */}
-                    {sessionsForDate.length > 2 && (
+                    {(sessionsForDate.length + occurrencesForDate.length) > 2 && (
                       <div className="text-xs text-green-600 font-medium">
-                        +{sessionsForDate.length - 2} autre{sessionsForDate.length - 2 > 1 ? 's' : ''}
+                        +{(sessionsForDate.length + occurrencesForDate.length) - 2} autre{(sessionsForDate.length + occurrencesForDate.length) - 2 > 1 ? 's' : ''}
                       </div>
                     )}
                   </div>
