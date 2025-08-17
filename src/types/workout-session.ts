@@ -64,6 +64,8 @@ export interface WorkoutSessionFormData {
   date: Date;
   notes?: string;
   exercises: Omit<WorkoutExercise, 'id' | 'exercise'>[];
+  recurrence?: RecurrenceConfig;
+  templateName?: string; // Nom du template si on veut créer une séance récurrente
 }
 
 export interface ExerciseFormData {
