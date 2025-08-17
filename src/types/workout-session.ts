@@ -89,6 +89,26 @@ export interface WorkoutStats {
   exercisesByMuscleGroup: Record<MuscleGroup, number>;
   sessionsThisWeek: number;
   sessionsThisMonth: number;
+  totalTemplates: number;
+  activeTemplates: number;
+}
+
+// Interface pour les occurrences générées
+export interface WorkoutOccurrence {
+  date: Date;
+  templateId: string;
+  template: WorkoutTemplate;
+  sessionId?: string; // ID de la séance si elle a été créée
+  session?: WorkoutSession; // La séance si elle a été créée
+}
+
+// Types pour les form data des templates
+export interface WorkoutTemplateFormData {
+  name: string;
+  description?: string;
+  exercises: Omit<WorkoutExercise, 'id' | 'exercise'>[];
+  recurrence: RecurrenceConfig;
+  startDate: Date;
 }
 
 // Catalogue d'exercices prédéfinis
