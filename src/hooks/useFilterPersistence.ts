@@ -1,8 +1,10 @@
+import { select } from 'framer-motion/client';
 import { useState, useEffect, useCallback } from 'react';
 
 export interface FilterState {
   selectedStatus?: string;
   selectedPeriod?: string;
+  selectedViewMode?: string;
   selectedType?: string;
   searchQuery?: string;
 }
@@ -62,6 +64,7 @@ export const useFilterPersistence = (
     // Getters individuels pour faciliter l'utilisation
     selectedStatus: filters.selectedStatus || defaultValues.selectedStatus || 'all',
     selectedPeriod: filters.selectedPeriod || defaultValues.selectedPeriod || 'all',
+    selectedViewMode: filters.selectedViewMode || defaultValues.selectedViewMode || 'calendar',
     selectedType: filters.selectedType || defaultValues.selectedType || 'all',
     searchQuery: filters.searchQuery || defaultValues.searchQuery || '',
   };

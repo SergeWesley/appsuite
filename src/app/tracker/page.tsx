@@ -17,11 +17,11 @@ export default function TrackerPage() {
   const { user, signOut } = useAuthContext();
   const { sessions, loading, error, getStats } = useWorkoutSessions();
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
 
   // Gestion de la persistance des filtres
   const {
     selectedPeriod,
+    selectedViewMode,
     searchQuery,
     updateFilter
   } = useFilterPersistence('tracker-filters', {
@@ -195,9 +195,9 @@ export default function TrackerPage() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center bg-gray-100 rounded-lg p-1">
             <button
-              onClick={() => setViewMode('list')}
+              onClick={() => updateFilter('selectedViewMode', 'list')}
               className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                viewMode === 'list'
+                selectedViewMode === 'list'
                   ? 'bg-white text-gray-900 shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
@@ -206,9 +206,9 @@ export default function TrackerPage() {
               Liste
             </button>
             <button
-              onClick={() => setViewMode('calendar')}
+              onClick={() => updateFilter('selectedViewMode', 'calendar')}
               className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                viewMode === 'calendar'
+                selectedViewMode === 'calendar'
                   ? 'bg-white text-gray-900 shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
@@ -227,7 +227,7 @@ export default function TrackerPage() {
 
         {/* Contenu selon le mode de vue */}
         <div className="space-y-6">
-          {viewMode === 'calendar' ? (
+          {selectedViewMode === 'calendar' ? (
             /* Vue Calendrier */
             <motion.div
               key="calendar-view"
