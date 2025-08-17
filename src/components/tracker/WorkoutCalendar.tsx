@@ -48,10 +48,18 @@ export function WorkoutCalendar({ sessions, onSessionClick, onOccurrenceClick }:
     };
   }, [currentDate]);
   
+  // Générer les occurrences de templates pour le mois courant
+  const templateOccurrences = useMemo(() => {
+    const startOfMonth = new Date(calendarData.year, calendarData.month, 1);
+    const endOfMonth = new Date(calendarData.year, calendarData.month + 1, 0);
+
+    return generateAllOccurrences(startOfMonth, endOfMonth);
+  }, [calendarData.year, calendarData.month, generateAllOccurrences]);
+
   // Grouper les séances par date
   const sessionsByDate = useMemo(() => {
     const grouped: Record<string, WorkoutSession[]> = {};
-    
+
     sessions.forEach(session => {
        // Utiliser une clé de date locale pour éviter les problèmes de fuseau horaire
       const year = session.date.getFullYear();
@@ -64,9 +72,37 @@ export function WorkoutCalendar({ sessions, onSessionClick, onOccurrenceClick }:
       }
       grouped[dateKey].push(session);
     });
-    
+
     return grouped;
   }, [sessions]);
+
+  // Grouper les occurrences de templates par date
+  const occurrencesByDate = useMemo(() => {
+    const grouped: Record<string, WorkoutOccurrence[]> = {};
+
+    templateOccurrences.forEach(occurrence => {
+      const year = occurrence.date.getFullYear();
+      const month = String(occurrence.date.getMonth() + 1).padStart(2, '0');
+      const day = String(occurrence.date.getDate()).padStart(2, '0');
+      const dateKey = `${year}-${month}-${day}`;
+
+      if (!grouped[dateKey]) {
+        grouped[dateKey] = [];
+      }
+
+      // Ne pas ajouter l'occurrence si une séance existe déjà pour cette date et ce template
+      const existingSessions = sessionsByDate[dateKey] || [];
+      const hasSessionFromTemplate = existingSessions.some(session =>
+        session.templateId === occurrence.templateId
+      );
+
+      if (!hasSessionFromTemplate) {
+        grouped[dateKey].push(occurrence);
+      }
+    });
+
+    return grouped;
+  }, [templateOccurrences, sessionsByDate]);
   
   // Navigation du calendrier
   const goToPreviousMonth = () => {
