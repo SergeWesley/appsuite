@@ -62,13 +62,15 @@ function mapRowToWorkoutSession(row: WorkoutSessionWithExercises): WorkoutSessio
 }
 
 // Fonction pour convertir WorkoutSessionFormData vers WorkoutSessionInsert
-function mapFormDataToInsert(formData: WorkoutSessionFormData, userId: string): WorkoutSessionInsert {
+function mapFormDataToInsert(formData: WorkoutSessionFormData, userId: string, templateId?: string): WorkoutSessionInsert {
   return {
     user_id: userId,
     date: formData.date.toISOString().split('T')[0],
     notes: formData.notes || null,
     total_exercises: formData.exercises.length,
     duration: null, // Sera calculé automatiquement si nécessaire
+    template_id: templateId || null,
+    is_from_template: !!templateId,
   };
 }
 
