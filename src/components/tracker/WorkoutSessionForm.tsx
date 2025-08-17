@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { WorkoutSession, WorkoutSessionFormData, WorkoutExercise, MuscleGroup, MUSCLE_GROUP_LABELS } from '@/types/workout-session';
+import { WorkoutSession, WorkoutSessionFormData, WorkoutExercise, MuscleGroup, MUSCLE_GROUP_LABELS, RecurrenceType, DayOfWeek, RecurrenceConfig, RECURRENCE_TYPE_LABELS, DAY_OF_WEEK_LABELS } from '@/types/workout-session';
 import { useExercises } from '@/hooks/tracker/useExercices';
 import { Calendar, Plus, X, Search, Filter, Trash2, GripVertical } from 'lucide-react';
 
