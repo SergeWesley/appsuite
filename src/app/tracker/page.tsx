@@ -7,16 +7,17 @@ import { useWorkoutSessions } from '@/hooks/tracker/useWorkoutSessions';
 import { WorkoutSessionCard } from '@/components/tracker/WorkoutSessionCard';
 import { WorkoutStats } from '@/components/tracker/WorkoutStats';
 import { NavigationMenu } from '@/components/NavigationMenu';
-import { Plus, Search, Activity, LogOut, User, Dumbbell, Calendar, Target } from 'lucide-react';
+import { Plus, Search, Activity, LogOut, User, Dumbbell, Calendar, Target, List } from 'lucide-react';
 import { useAuthContext } from '@/components/AuthProvider';
 import { useFilterPersistence } from '@/hooks/useFilterPersistence';
+import { WorkoutCalendar } from '@/components/tracker/WorkoutCalendar';
 
 export default function TrackerPage() {
   const router = useRouter();
   const { user, signOut } = useAuthContext();
   const { sessions, loading, error, getStats } = useWorkoutSessions();
-  // const [selectedFilter, setSelectedFilter] = useState<'all' | 'week' | 'month'>('all');
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
 
   // Gestion de la persistance des filtres
   const {
@@ -190,8 +191,125 @@ export default function TrackerPage() {
           </div>
         </div>
 
-        {/* Liste des séances */}
+        {/* Toggle Vue Liste/Calendrier */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('list')}
+              className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                viewMode === 'list'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <List size={16} className="mr-2" />
+              Liste
+            </button>
+            <button
+              onClick={() => setViewMode('calendar')}
+              className={`inline-flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                viewMode === 'calendar'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <Calendar size={16} className="mr-2" />
+              Calendrier
+            </button>
+          </div>
+
+          {/* Affichage du nombre de séances */}
+          <div className="text-sm text-gray-600">
+            {filteredSessions.length} séance{filteredSessions.length > 1 ? 's' : ''}
+            {searchQuery || selectedPeriod !== 'all' ? ' trouvée' + (filteredSessions.length > 1 ? 's' : '') : ''}
+          </div>
+        </div>
+
+        {/* Contenu selon le mode de vue */}
         <div className="space-y-6">
+          {viewMode === 'calendar' ? (
+            /* Vue Calendrier */
+            <motion.div
+              key="calendar-view"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <WorkoutCalendar
+                sessions={filteredSessions}
+                onSessionClick={(session) => router.push(`/tracker/session/${session.id}`)}
+              />
+            </motion.div>
+          ) : (
+            /* Vue Liste */
+            <motion.div
+              key="list-view"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3 }}
+            >
+              {filteredSessions.length === 0 ? (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-12"
+                >
+                  <Activity className="mx-auto h-12 w-12 text-gray-400" />
+                  <h3 className="mt-4 text-lg font-medium text-gray-900">
+                    {searchQuery || selectedPeriod !== 'all'
+                      ? 'Aucune séance trouvée'
+                      : sessions.length === 0
+                      ? 'Aucune séance enregistrée'
+                      : 'Aucune séance trouvée'
+                    }
+                  </h3>
+                  <p className="mt-2 text-gray-600">
+                    {searchQuery || selectedPeriod !== 'all'
+                      ? 'Essayez de modifier vos critères de recherche.'
+                      : sessions.length === 0
+                      ? 'Commencez par créer votre première séance d\'entraînement.'
+                      : 'Aucune séance ne correspond aux critères.'
+                    }
+                  </p>
+                  {sessions.length === 0 && !searchQuery && selectedPeriod === 'all' && (
+                    <button
+                      onClick={() => router.push('/tracker/new')}
+                      className="mt-4 inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    >
+                      <Plus size={20} className="mr-2" />
+                      Créer ma première séance
+                    </button>
+                  )}
+                </motion.div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <AnimatePresence>
+                    {filteredSessions.map((session, index) => (
+                      <motion.div
+                        key={session.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="h-full"
+                      >
+                        <WorkoutSessionCard
+                          session={session}
+                          onClick={() => router.push(`/tracker/session/${session.id}`)}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </div>
+
+        {/* Liste des séances */}
+        {/* <div className="space-y-6">
           {filteredSessions.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
@@ -246,7 +364,7 @@ export default function TrackerPage() {
               </AnimatePresence>
             </div>
           )}
-        </div>
+        </div> */}
       </main>
 
       {/* Bouton flottant pour mobile */}
