@@ -12,8 +12,9 @@ interface WorkoutCalendarProps {
   onOccurrenceClick?: (occurrence: WorkoutOccurrence) => void;
 }
 
-export function WorkoutCalendar({ sessions, onSessionClick }: WorkoutCalendarProps) {
+export function WorkoutCalendar({ sessions, onSessionClick, onOccurrenceClick }: WorkoutCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const { generateAllOccurrences } = useWorkoutTemplates();
   
   // Obtenir le premier jour du mois et calculer les jours à afficher
   const calendarData = useMemo(() => {
