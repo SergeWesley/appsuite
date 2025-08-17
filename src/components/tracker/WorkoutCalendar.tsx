@@ -132,8 +132,18 @@ export function WorkoutCalendar({ sessions, onSessionClick, onOccurrenceClick }:
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const dateKey = `${year}-${month}-${day}`;
-    
+
     return sessionsByDate[dateKey] || [];
+  };
+
+  // Obtenir les occurrences de templates pour une date donnée
+  const getOccurrencesForDate = (date: Date): WorkoutOccurrence[] => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateKey = `${year}-${month}-${day}`;
+
+    return occurrencesByDate[dateKey] || [];
   };
   
   // Vérifier si une date est aujourd'hui
