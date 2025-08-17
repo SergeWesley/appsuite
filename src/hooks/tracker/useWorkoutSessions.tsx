@@ -377,7 +377,7 @@ export function useWorkoutSessions() {
         throw new Error('Template non trouvé');
       }
 
-      // 2. Créer les données de la séance
+      // 2. Cr��er les données de la séance
       const sessionData: WorkoutSessionFormData = {
         date,
         notes: notes || templateData.description || '',
@@ -506,6 +506,7 @@ export function useWorkoutSessions() {
     updateSession,
     deleteSession,
     duplicateSession,
+    createSessionFromTemplate,
     getSessionById,
     getStats,
     refreshSessions: loadSessions,
