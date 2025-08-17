@@ -216,10 +216,11 @@ export function WorkoutCalendar({ sessions, onSessionClick, onOccurrenceClick }:
         <AnimatePresence mode="wait">
           {calendarData.calendarDays.map((date, index) => {
             const sessionsForDate = getSessionsForDate(date);
-            const hasActivities = sessionsForDate.length > 0;
+            const occurrencesForDate = getOccurrencesForDate(date);
+            const hasActivities = sessionsForDate.length > 0 || occurrencesForDate.length > 0;
             const isCurrentMonthDate = isCurrentMonth(date);
             const isTodayDate = isToday(date);
-            
+
             return (
               <motion.div
                 key={`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`}
@@ -233,8 +234,12 @@ export function WorkoutCalendar({ sessions, onSessionClick, onOccurrenceClick }:
                   ${hasActivities && isCurrentMonthDate ? 'cursor-pointer hover:shadow-md' : ''}
                 `}
                 onClick={() => {
-                  if (hasActivities && sessionsForDate[0] && onSessionClick) {
-                    onSessionClick(sessionsForDate[0]);
+                  if (isCurrentMonthDate) {
+                    if (sessionsForDate.length > 0 && onSessionClick) {
+                      onSessionClick(sessionsForDate[0]);
+                    } else if (occurrencesForDate.length > 0 && onOccurrenceClick) {
+                      onOccurrenceClick(occurrencesForDate[0]);
+                    }
                   }
                 }}
               >
