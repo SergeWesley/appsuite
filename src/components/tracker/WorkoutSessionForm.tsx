@@ -137,6 +137,10 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
     date: new Date(),
     notes: '',
     exercises: [],
+    recurrence: {
+      type: 'none',
+    },
+    templateName: '',
   });
   const [showExerciseModal, setShowExerciseModal] = useState(false);
 
