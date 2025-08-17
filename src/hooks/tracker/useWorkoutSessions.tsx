@@ -5,6 +5,7 @@ import { WorkoutSession, WorkoutSessionFormData, WorkoutExercise, WorkoutStats, 
 import { Database } from '@/types/supabase';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
+import { useWorkoutTemplates } from './useWorkoutTemplates';
 
 type WorkoutSessionRow = Database['public']['Tables']['workout_sessions']['Row'];
 type WorkoutSessionInsert = Database['public']['Tables']['workout_sessions']['Insert'];
