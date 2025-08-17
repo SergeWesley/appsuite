@@ -54,6 +54,8 @@ export interface WorkoutSession {
   totalExercises: number;
   duration?: number; // durée totale de la séance en minutes
   userId: string;
+  templateId?: string; // ID du template si c'est une séance récurrente
+  isFromTemplate?: boolean; // Indique si la séance vient d'un template
   dateCreated: Date;
   dateUpdated: Date;
 }
