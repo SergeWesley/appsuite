@@ -258,7 +258,7 @@ export function WorkoutCalendar({ sessions, onSessionClick, onOccurrenceClick }:
                     <div className="flex items-center gap-1">
                       <Activity className="h-3 w-3 text-green-600" />
                       <span className="text-xs font-medium text-green-600">
-                        {sessionsForDate.length}
+                        {sessionsForDate.length + occurrencesForDate.length}
                       </span>
                     </div>
                   )}
