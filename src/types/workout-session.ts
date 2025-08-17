@@ -1,5 +1,29 @@
 export type MuscleGroup = 'all' | 'upper_body' | 'lower_body' | 'cardio' | 'core' | 'full_body' | 'other';
 
+// Types pour la récurrence
+export type RecurrenceType = 'none' | 'daily' | 'weekly' | 'monthly';
+export type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+
+export interface RecurrenceConfig {
+  type: RecurrenceType;
+  interval?: number; // Ex: tous les 2 jours, toutes les 3 semaines
+  daysOfWeek?: DayOfWeek[]; // Pour la récurrence hebdomadaire
+  endDate?: Date; // Date de fin de récurrence (optionnel)
+  maxOccurrences?: number; // Nombre maximum d'occurrences (optionnel)
+}
+
+export interface WorkoutTemplate {
+  id: string;
+  name: string;
+  description?: string;
+  exercises: WorkoutExercise[];
+  recurrence: RecurrenceConfig;
+  userId: string;
+  dateCreated: Date;
+  dateUpdated: Date;
+  isActive: boolean;
+}
+
 export interface Exercise {
   id: string;
   name: string;
