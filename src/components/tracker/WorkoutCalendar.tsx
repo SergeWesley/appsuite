@@ -3,7 +3,8 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Calendar, Activity } from 'lucide-react';
-import { WorkoutSession } from '@/types/workout-session';
+import { WorkoutSession, WorkoutOccurrence } from '@/types/workout-session';
+import { useWorkoutTemplates } from '@/hooks/tracker/useWorkoutTemplates';
 
 interface WorkoutCalendarProps {
   sessions: WorkoutSession[];
