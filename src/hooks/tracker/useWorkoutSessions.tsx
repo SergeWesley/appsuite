@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { WorkoutSession, WorkoutSessionFormData, WorkoutExercise, WorkoutStats, MuscleGroup } from '@/types/workout-session';
+import { WorkoutSession, WorkoutSessionFormData, WorkoutExercise, WorkoutStats, MuscleGroup, WorkoutTemplateFormData } from '@/types/workout-session';
 import { Database } from '@/types/supabase';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
