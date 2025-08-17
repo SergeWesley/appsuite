@@ -150,6 +150,8 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
         date: session.date,
         notes: session.notes || '',
         exercises: session.exercises.map(({ id, exercise, ...exerciseData }) => exerciseData),
+        recurrence: { type: 'none' }, // Mode édition : pas de récurrence
+        templateName: '',
       });
     }
   }, [session]);
