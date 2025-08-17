@@ -144,7 +144,7 @@ export default function Dashboard() {
             >
               {tool.available ? (
                 <Link href={tool.href}>
-                  <div className={`p-6 rounded-xl border-2 ${tool.bgColor} hover:shadow-lg transition-all duration-200 hover:scale-105 group`}>
+                  <div className={`h-full p-6 rounded-xl border-2 ${tool.bgColor} hover:shadow-lg transition-all duration-200 hover:scale-105 group`}>
                     <div className="flex items-start justify-between mb-4">
                       <div className={`p-3 rounded-lg bg-white ${tool.color}`}>
                         <tool.icon size={24} />
@@ -156,7 +156,7 @@ export default function Dashboard() {
                   </div>
                 </Link>
               ) : (
-                <div className={`p-6 rounded-xl border-2 ${tool.bgColor} relative`}>
+                <div className={`h-full p-6 rounded-xl border-2 ${tool.bgColor} relative`}>
                   <div className="absolute top-4 right-4">
                     <span className="px-2 py-1 text-xs font-medium bg-gray-500 text-white rounded-full">
                       Bientôt
