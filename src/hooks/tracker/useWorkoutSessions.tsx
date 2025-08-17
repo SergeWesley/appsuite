@@ -343,6 +343,118 @@ export function useWorkoutSessions() {
     }
   };
 
+  // Créer une séance depuis un template
+  const createSessionFromTemplate = async (templateId: string, date: Date, notes?: string): Promise<WorkoutSession | null> => {
+    if (!user) {
+      setError('Utilisateur non connecté');
+      return null;
+    }
+
+    try {
+      setError(null);
+
+      // 1. Récupérer les détails du template
+      const { data: templateData, error: templateError } = await supabase
+        .from('workout_templates')
+        .select(`
+          *,
+          workout_template_exercises (
+            *,
+            exercises (
+              id,
+              name,
+              muscle_group,
+              description,
+              is_custom
+            )
+          )
+        `)
+        .eq('id', templateId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (templateError || !templateData) {
+        throw new Error('Template non trouvé');
+      }
+
+      // 2. Créer les données de la séance
+      const sessionData: WorkoutSessionFormData = {
+        date,
+        notes: notes || templateData.description || '',
+        exercises: templateData.workout_template_exercises.map(te => ({
+          exerciseId: te.exercise_id,
+          sets: te.sets || undefined,
+          reps: te.reps || undefined,
+          weight: te.weight || undefined,
+          duration: te.duration || undefined,
+          notes: te.notes || undefined,
+          order: te.exercise_order,
+        })),
+      };
+
+      // 3. Créer la séance en spécifiant le template
+      const sessionInsertData = mapFormDataToInsert(sessionData, user.id, templateId);
+
+      const { data: sessionData_db, error: sessionError } = await supabase
+        .from('workout_sessions')
+        .insert(sessionInsertData)
+        .select()
+        .single();
+
+      if (sessionError) throw sessionError;
+
+      // 4. Ajouter les exercices
+      if (sessionData.exercises.length > 0) {
+        const exerciseInserts: WorkoutExerciseInsert[] = sessionData.exercises.map((exercise) => ({
+          workout_session_id: sessionData_db.id,
+          exercise_id: exercise.exerciseId,
+          sets: exercise.sets || null,
+          reps: exercise.reps || null,
+          weight: exercise.weight || null,
+          duration: exercise.duration || null,
+          notes: exercise.notes || null,
+          exercise_order: exercise.order,
+        }));
+
+        const { error: exercisesError } = await supabase
+          .from('workout_exercises')
+          .insert(exerciseInserts);
+
+        if (exercisesError) throw exercisesError;
+      }
+
+      // 5. Recharger les données pour obtenir la séance complète
+      const { data: fullSessionData, error: fullSessionError } = await supabase
+        .from('workout_sessions')
+        .select(`
+          *,
+          workout_exercises (
+            *,
+            exercises (
+              id,
+              name,
+              muscle_group,
+              description,
+              is_custom
+            )
+          )
+        `)
+        .eq('id', sessionData_db.id)
+        .single();
+
+      if (fullSessionError) throw fullSessionError;
+
+      const newSession = mapRowToWorkoutSession(fullSessionData);
+      setSessions(prev => [newSession, ...prev]);
+
+      return newSession;
+    } catch (err) {
+      console.error('Erreur lors de la création de la séance depuis le template:', err);
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      return null;
+    }
+  };
+
   // Obtenir une séance par ID
   const getSessionById = (id: string): WorkoutSession | undefined => {
     return sessions.find(session => session.id === id);
