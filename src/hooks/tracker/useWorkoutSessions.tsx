@@ -54,6 +54,8 @@ function mapRowToWorkoutSession(row: WorkoutSessionWithExercises): WorkoutSessio
     totalExercises: row.total_exercises,
     duration: row.duration || undefined,
     userId: row.user_id,
+    templateId: row.template_id || undefined,
+    isFromTemplate: row.is_from_template || false,
     dateCreated: new Date(row.created_at),
     dateUpdated: new Date(row.updated_at),
   };
