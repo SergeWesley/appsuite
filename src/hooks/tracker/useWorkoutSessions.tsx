@@ -493,6 +493,8 @@ export function useWorkoutSessions() {
       exercisesByMuscleGroup,
       sessionsThisWeek,
       sessionsThisMonth,
+      totalTemplates: 0, // Sera géré par useWorkoutTemplates
+      activeTemplates: 0, // Sera géré par useWorkoutTemplates
     };
   };
 
