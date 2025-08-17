@@ -3,15 +3,18 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Calendar, Activity } from 'lucide-react';
-import { WorkoutSession } from '@/types/workout-session';
+import { WorkoutSession, WorkoutOccurrence } from '@/types/workout-session';
+import { useWorkoutTemplates } from '@/hooks/tracker/useWorkoutTemplates';
 
 interface WorkoutCalendarProps {
   sessions: WorkoutSession[];
   onSessionClick?: (session: WorkoutSession) => void;
+  onOccurrenceClick?: (occurrence: WorkoutOccurrence) => void;
 }
 
-export function WorkoutCalendar({ sessions, onSessionClick }: WorkoutCalendarProps) {
+export function WorkoutCalendar({ sessions, onSessionClick, onOccurrenceClick }: WorkoutCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const { generateAllOccurrences } = useWorkoutTemplates();
   
   // Obtenir le premier jour du mois et calculer les jours à afficher
   const calendarData = useMemo(() => {
@@ -45,10 +48,18 @@ export function WorkoutCalendar({ sessions, onSessionClick }: WorkoutCalendarPro
     };
   }, [currentDate]);
   
+  // Générer les occurrences de templates pour le mois courant
+  const templateOccurrences = useMemo(() => {
+    const startOfMonth = new Date(calendarData.year, calendarData.month, 1);
+    const endOfMonth = new Date(calendarData.year, calendarData.month + 1, 0);
+
+    return generateAllOccurrences(startOfMonth, endOfMonth);
+  }, [calendarData.year, calendarData.month, generateAllOccurrences]);
+
   // Grouper les séances par date
   const sessionsByDate = useMemo(() => {
     const grouped: Record<string, WorkoutSession[]> = {};
-    
+
     sessions.forEach(session => {
        // Utiliser une clé de date locale pour éviter les problèmes de fuseau horaire
       const year = session.date.getFullYear();
@@ -61,9 +72,37 @@ export function WorkoutCalendar({ sessions, onSessionClick }: WorkoutCalendarPro
       }
       grouped[dateKey].push(session);
     });
-    
+
     return grouped;
   }, [sessions]);
+
+  // Grouper les occurrences de templates par date
+  const occurrencesByDate = useMemo(() => {
+    const grouped: Record<string, WorkoutOccurrence[]> = {};
+
+    templateOccurrences.forEach(occurrence => {
+      const year = occurrence.date.getFullYear();
+      const month = String(occurrence.date.getMonth() + 1).padStart(2, '0');
+      const day = String(occurrence.date.getDate()).padStart(2, '0');
+      const dateKey = `${year}-${month}-${day}`;
+
+      if (!grouped[dateKey]) {
+        grouped[dateKey] = [];
+      }
+
+      // Ne pas ajouter l'occurrence si une séance existe déjà pour cette date et ce template
+      const existingSessions = sessionsByDate[dateKey] || [];
+      const hasSessionFromTemplate = existingSessions.some(session =>
+        session.templateId === occurrence.templateId
+      );
+
+      if (!hasSessionFromTemplate) {
+        grouped[dateKey].push(occurrence);
+      }
+    });
+
+    return grouped;
+  }, [templateOccurrences, sessionsByDate]);
   
   // Navigation du calendrier
   const goToPreviousMonth = () => {
@@ -93,8 +132,18 @@ export function WorkoutCalendar({ sessions, onSessionClick }: WorkoutCalendarPro
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const dateKey = `${year}-${month}-${day}`;
-    
+
     return sessionsByDate[dateKey] || [];
+  };
+
+  // Obtenir les occurrences de templates pour une date donnée
+  const getOccurrencesForDate = (date: Date): WorkoutOccurrence[] => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateKey = `${year}-${month}-${day}`;
+
+    return occurrencesByDate[dateKey] || [];
   };
   
   // Vérifier si une date est aujourd'hui
@@ -167,10 +216,11 @@ export function WorkoutCalendar({ sessions, onSessionClick }: WorkoutCalendarPro
         <AnimatePresence mode="wait">
           {calendarData.calendarDays.map((date, index) => {
             const sessionsForDate = getSessionsForDate(date);
-            const hasActivities = sessionsForDate.length > 0;
+            const occurrencesForDate = getOccurrencesForDate(date);
+            const hasActivities = sessionsForDate.length > 0 || occurrencesForDate.length > 0;
             const isCurrentMonthDate = isCurrentMonth(date);
             const isTodayDate = isToday(date);
-            
+
             return (
               <motion.div
                 key={`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`}
@@ -184,8 +234,12 @@ export function WorkoutCalendar({ sessions, onSessionClick }: WorkoutCalendarPro
                   ${hasActivities && isCurrentMonthDate ? 'cursor-pointer hover:shadow-md' : ''}
                 `}
                 onClick={() => {
-                  if (hasActivities && sessionsForDate[0] && onSessionClick) {
-                    onSessionClick(sessionsForDate[0]);
+                  if (isCurrentMonthDate) {
+                    if (sessionsForDate.length > 0 && onSessionClick) {
+                      onSessionClick(sessionsForDate[0]);
+                    } else if (occurrencesForDate.length > 0 && onOccurrenceClick) {
+                      onOccurrenceClick(occurrencesForDate[0]);
+                    }
                   }
                 }}
               >
@@ -204,7 +258,7 @@ export function WorkoutCalendar({ sessions, onSessionClick }: WorkoutCalendarPro
                     <div className="flex items-center gap-1">
                       <Activity className="h-3 w-3 text-green-600" />
                       <span className="text-xs font-medium text-green-600">
-                        {sessionsForDate.length}
+                        {sessionsForDate.length + occurrencesForDate.length}
                       </span>
                     </div>
                   )}
@@ -213,20 +267,32 @@ export function WorkoutCalendar({ sessions, onSessionClick }: WorkoutCalendarPro
                 {/* Liste des activités */}
                 {hasActivities && isCurrentMonthDate && (
                   <div className="mt-1 space-y-1">
-                    {sessionsForDate.slice(0, 2).map((session, sessionIndex) => (
+                    {/* Séances réalisées */}
+                    {sessionsForDate.slice(0, 1).map((session, sessionIndex) => (
                       <div
                         key={session.id}
                         className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded truncate"
                         title={`${session.totalExercises} exercices${session.notes ? ` - ${session.notes}` : ''}`}
                       >
-                        {session.totalExercises} exercice{session.totalExercises > 1 ? 's' : ''}
+                        ✓ {session.totalExercises} exercice{session.totalExercises > 1 ? 's' : ''}
                       </div>
                     ))}
-                    
+
+                    {/* Occurrences planifiées */}
+                    {occurrencesForDate.slice(0, sessionsForDate.length > 0 ? 1 : 2).map((occurrence, occurrenceIndex) => (
+                      <div
+                        key={`${occurrence.templateId}-${occurrence.date.getTime()}`}
+                        className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded truncate"
+                        title={`Séance planifiée: ${occurrence.template.name}`}
+                      >
+                        📅 {occurrence.template.name}
+                      </div>
+                    ))}
+
                     {/* Indicateur s'il y a plus d'activités */}
-                    {sessionsForDate.length > 2 && (
+                    {(sessionsForDate.length + occurrencesForDate.length) > 2 && (
                       <div className="text-xs text-green-600 font-medium">
-                        +{sessionsForDate.length - 2} autre{sessionsForDate.length - 2 > 1 ? 's' : ''}
+                        +{(sessionsForDate.length + occurrencesForDate.length) - 2} autre{(sessionsForDate.length + occurrencesForDate.length) - 2 > 1 ? 's' : ''}
                       </div>
                     )}
                   </div>
@@ -241,7 +307,11 @@ export function WorkoutCalendar({ sessions, onSessionClick }: WorkoutCalendarPro
       <div className="mt-6 flex items-center justify-center gap-6 text-sm text-gray-600">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 bg-green-100 border border-green-200 rounded"></div>
-          <span>Séance d'entraînement</span>
+          <span>Séance réalisée</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 bg-blue-100 border border-blue-200 rounded"></div>
+          <span>Séance planifiée</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 border-2 border-green-500 rounded"></div>

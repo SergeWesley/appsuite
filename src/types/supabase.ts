@@ -297,6 +297,8 @@ export interface Database {
           notes: string | null
           total_exercises: number
           duration: number | null
+          template_id: string | null
+          is_from_template: boolean
           created_at: string
           updated_at: string
         }
@@ -307,6 +309,8 @@ export interface Database {
           notes?: string | null
           total_exercises?: number
           duration?: number | null
+          template_id?: string | null
+          is_from_template?: boolean
           created_at?: string
           updated_at?: string
         }
@@ -317,8 +321,95 @@ export interface Database {
           notes?: string | null
           total_exercises?: number
           duration?: number | null
+          template_id?: string | null
+          is_from_template?: boolean
           created_at?: string
           updated_at?: string
+        }
+      }
+      workout_templates: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          description: string | null
+          recurrence_type: 'none' | 'daily' | 'weekly' | 'monthly'
+          recurrence_interval: number | null
+          recurrence_days_of_week: string[] | null
+          recurrence_end_date: string | null
+          recurrence_max_occurrences: number | null
+          start_date: string
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          description?: string | null
+          recurrence_type: 'none' | 'daily' | 'weekly' | 'monthly'
+          recurrence_interval?: number | null
+          recurrence_days_of_week?: string[] | null
+          recurrence_end_date?: string | null
+          recurrence_max_occurrences?: number | null
+          start_date: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          description?: string | null
+          recurrence_type?: 'none' | 'daily' | 'weekly' | 'monthly'
+          recurrence_interval?: number | null
+          recurrence_days_of_week?: string[] | null
+          recurrence_end_date?: string | null
+          recurrence_max_occurrences?: number | null
+          start_date?: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      workout_template_exercises: {
+        Row: {
+          id: string
+          template_id: string
+          exercise_id: string
+          sets: number | null
+          reps: number | null
+          weight: number | null
+          duration: number | null
+          notes: string | null
+          exercise_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          template_id: string
+          exercise_id: string
+          sets?: number | null
+          reps?: number | null
+          weight?: number | null
+          duration?: number | null
+          notes?: string | null
+          exercise_order: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          template_id?: string
+          exercise_id?: string
+          sets?: number | null
+          reps?: number | null
+          weight?: number | null
+          duration?: number | null
+          notes?: string | null
+          exercise_order?: number
+          created_at?: string
         }
       }
       workout_exercises: {
