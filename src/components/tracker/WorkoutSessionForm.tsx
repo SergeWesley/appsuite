@@ -667,10 +667,15 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
           </button>
           <button
             type="submit"
-            disabled={formData.exercises.length === 0}
+            disabled={formData.exercises.length === 0 || (!session && formData.recurrence?.type !== 'none' && !formData.templateName?.trim())}
             className="flex-1 px-6 py-3 text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {session ? 'Modifier la séance' : 'Créer la séance'}
+            {session
+              ? 'Modifier la séance'
+              : formData.recurrence?.type !== 'none'
+                ? 'Créer la séance récurrente'
+                : 'Créer la séance'
+            }
           </button>
         </div>
       </form>
