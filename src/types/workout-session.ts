@@ -22,6 +22,9 @@ export interface WorkoutExercise {
   order: number; // ordre dans la séance
 }
 
+export type RecurrencePattern = 'none' | 'daily' | 'weekly' | 'monthly';
+export type WeekDay = 0 | 1 | 2 | 3 | 4 | 5 | 6; // 0 = dimanche
+
 export interface WorkoutSession {
   id: string;
   date: Date;
@@ -32,6 +35,15 @@ export interface WorkoutSession {
   userId: string;
   dateCreated: Date;
   dateUpdated: Date;
+
+  // Récurrence - nouvelles propriétés
+  isRecurring?: boolean; // si cette séance se répète
+  recurrencePattern?: RecurrencePattern; // type de récurrence
+  recurrenceInterval?: number; // ex: tous les 2 jours, toutes les 3 semaines
+  recurrenceDays?: WeekDay[]; // jours de la semaine pour récurrence weekly
+  recurrenceEndDate?: Date; // date de fin de la récurrence
+  parentSessionId?: string; // ID de la séance parente (pour les instances générées)
+  isGenerated?: boolean; // true si cette séance a été générée automatiquement
 }
 
 export interface WorkoutSessionFormData {
