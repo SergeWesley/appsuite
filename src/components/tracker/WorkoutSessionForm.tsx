@@ -150,6 +150,11 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
         date: session.date,
         notes: session.notes || '',
         exercises: session.exercises.map(({ id, exercise, ...exerciseData }) => exerciseData),
+        isRecurring: session.isRecurring || false,
+        recurrencePattern: session.recurrencePattern || 'none',
+        recurrenceInterval: session.recurrenceInterval || 1,
+        recurrenceDays: session.recurrenceDays || [],
+        recurrenceEndDate: session.recurrenceEndDate,
       });
     }
   }, [session]);
