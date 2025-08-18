@@ -346,6 +346,138 @@ export function useWorkoutSessions() {
     return sessions.find(session => session.id === id);
   };
 
+  // Fonction pour calculer les prochaines dates selon la récurrence
+  const calculateNextDates = (
+    startDate: Date,
+    endDate: Date | undefined,
+    pattern: RecurrencePattern,
+    interval: number,
+    weekDays?: WeekDay[],
+    limit: number = 20
+  ): Date[] => {
+    const dates: Date[] = [];
+    const current = new Date(startDate);
+    current.setDate(current.getDate() + 1); // Commencer le lendemain de la date initiale
+    const end = endDate || new Date(startDate.getTime() + 365 * 24 * 60 * 60 * 1000); // 1 an par défaut
+
+    while (current <= end && dates.length < limit) {
+      switch (pattern) {
+        case 'daily':
+          dates.push(new Date(current));
+          current.setDate(current.getDate() + interval);
+          break;
+
+        case 'weekly':
+          if (weekDays && weekDays.length > 0) {
+            // Pour chaque jour de la semaine sélectionné
+            const weekStart = new Date(current);
+            weekStart.setDate(current.getDate() - current.getDay()); // Dimanche de cette semaine
+
+            for (const weekDay of weekDays) {
+              const targetDate = new Date(weekStart);
+              targetDate.setDate(weekStart.getDate() + weekDay);
+
+              if (targetDate >= current && targetDate <= end && dates.length < limit) {
+                dates.push(new Date(targetDate));
+              }
+            }
+
+            // Passer à la semaine suivante selon l'intervalle
+            current.setDate(current.getDate() + 7 * interval);
+          } else {
+            dates.push(new Date(current));
+            current.setDate(current.getDate() + 7 * interval);
+          }
+          break;
+
+        case 'monthly':
+          dates.push(new Date(current));
+          current.setMonth(current.getMonth() + interval);
+          break;
+
+        default:
+          return dates;
+      }
+    }
+
+    return dates.sort((a, b) => a.getTime() - b.getTime());
+  };
+
+  // Générer automatiquement les séances récurrentes
+  const generateRecurringSessions = async (parentSession: WorkoutSession): Promise<boolean> => {
+    if (!user || !parentSession.isRecurring || parentSession.recurrencePattern === 'none') {
+      return false;
+    }
+
+    try {
+      // Calculer les prochaines dates
+      const nextDates = calculateNextDates(
+        parentSession.date,
+        parentSession.recurrenceEndDate,
+        parentSession.recurrencePattern!,
+        parentSession.recurrenceInterval || 1,
+        parentSession.recurrenceDays
+      );
+
+      // Créer les séances générées
+      for (const date of nextDates) {
+        const generatedSessionData: WorkoutSessionFormData = {
+          date,
+          notes: parentSession.notes,
+          exercises: parentSession.exercises.map(({ id, exercise, ...exerciseData }) => exerciseData),
+          isRecurring: false, // Les sessions générées ne sont pas récurrentes
+          recurrencePattern: 'none',
+        };
+
+        // Créer la séance
+        const sessionInsertData = mapFormDataToInsert(generatedSessionData, user.id);
+        sessionInsertData.parent_session_id = parentSession.id;
+        sessionInsertData.is_generated = true;
+
+        const { data: sessionData_db, error: sessionError } = await supabase
+          .from('workout_sessions')
+          .insert(sessionInsertData)
+          .select()
+          .single();
+
+        if (sessionError) {
+          console.error('Erreur lors de la génération d\'une séance:', sessionError);
+          continue;
+        }
+
+        // Ajouter les exercices
+        if (parentSession.exercises.length > 0) {
+          const exerciseInserts: WorkoutExerciseInsert[] = parentSession.exercises.map((exercise) => ({
+            workout_session_id: sessionData_db.id,
+            exercise_id: exercise.exerciseId,
+            sets: exercise.sets || null,
+            reps: exercise.reps || null,
+            weight: exercise.weight || null,
+            duration: exercise.duration || null,
+            notes: exercise.notes || null,
+            exercise_order: exercise.order,
+          }));
+
+          const { error: exercisesError } = await supabase
+            .from('workout_exercises')
+            .insert(exerciseInserts);
+
+          if (exercisesError) {
+            console.error('Erreur lors de l\'ajout des exercices génér��s:', exercisesError);
+          }
+        }
+      }
+
+      // Recharger les séances pour afficher les nouvelles séances générées
+      await loadSessions();
+
+      return true;
+    } catch (err) {
+      console.error('Erreur lors de la génération des séances récurrentes:', err);
+      return false;
+    }
+  };
+
   // Obtenir les statistiques
   const getStats = (): WorkoutStats => {
     const totalSessions = sessions.length;
