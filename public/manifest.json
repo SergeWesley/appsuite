@@ -2,7 +2,7 @@
   "name": "AppSuite - Votre suite d'applications",
   "short_name": "AppSuite",
   "description": "AppSuite regroupe tous vos outils essentiels, dont Booker pour la gestion de livres. Organisez, suivez et optimisez vos tâches avec une suite moderne et intuitive.",
-  "start_url": "/dashboard",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#f9fafb",
   "theme_color": "#f9fafb",
