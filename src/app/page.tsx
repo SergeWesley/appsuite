@@ -3,16 +3,21 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthContext } from '@/components/AuthProvider';
+import { useFilterPersistence } from '@/hooks/useFilterPersistence';
 
 export default function Home() {
   const router = useRouter();
   const { isAuthenticated, loading } = useAuthContext();
 
+  const { selectedApp } = useFilterPersistence('app-filters', {
+      selectedApp: 'dashboard',
+  });
+
   useEffect(() => {
     if (!loading && isAuthenticated) {
-      router.push('/dashboard');
+      router.push(`/${selectedApp}`);
     }
-  }, [isAuthenticated, loading, router]);
+  }, [isAuthenticated, loading, router, selectedApp]);
 
   // Afficher un écran de chargement pendant la redirection
   return (

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
+import AppTracker from "@/components/tracker/AppTracker";
 
 export const metadata: Metadata = {
   title: "AppSuite - Votre suite d'applications",
@@ -44,25 +45,9 @@ export default function RootLayout({
     <html lang="fr">
       <body className="antialiased">
         <AuthProvider>
+          <AppTracker />
           {children}
         </AuthProvider>
-        {/* <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js')
-                    .then(function(registration) {
-                      console.log('Service Worker enregistré avec succès:', registration.scope);
-                    })
-                    .catch(function(error) {
-                      console.log("Échec de l\'enregistrement du Service Worker:", error);
-                    });
-                });
-              }
-            `,
-          }}
-        /> */}
       </body>
     </html>
   );
