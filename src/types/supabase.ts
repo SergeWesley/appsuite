@@ -359,6 +359,243 @@ export interface Database {
           created_at?: string
         }
       }
+      workout_templates: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          estimated_duration: number | null
+          difficulty: 'beginner' | 'intermediate' | 'advanced' | null
+          tags: string[] | null
+          is_public: boolean
+          user_id: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          estimated_duration?: number | null
+          difficulty?: 'beginner' | 'intermediate' | 'advanced' | null
+          tags?: string[] | null
+          is_public?: boolean
+          user_id: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          estimated_duration?: number | null
+          difficulty?: 'beginner' | 'intermediate' | 'advanced' | null
+          tags?: string[] | null
+          is_public?: boolean
+          user_id?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      workout_template_exercises: {
+        Row: {
+          id: string
+          template_id: string
+          exercise_id: string
+          sets: number | null
+          reps: number | null
+          weight: number | null
+          duration: number | null
+          notes: string | null
+          exercise_order: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          template_id: string
+          exercise_id: string
+          sets?: number | null
+          reps?: number | null
+          weight?: number | null
+          duration?: number | null
+          notes?: string | null
+          exercise_order: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          template_id?: string
+          exercise_id?: string
+          sets?: number | null
+          reps?: number | null
+          weight?: number | null
+          duration?: number | null
+          notes?: string | null
+          exercise_order?: number
+          created_at?: string
+        }
+      }
+      workout_programs: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          duration: number
+          level: 'beginner' | 'intermediate' | 'advanced'
+          goals: string[] | null
+          is_public: boolean
+          user_id: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          duration: number
+          level: 'beginner' | 'intermediate' | 'advanced'
+          goals?: string[] | null
+          is_public?: boolean
+          user_id: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          duration?: number
+          level?: 'beginner' | 'intermediate' | 'advanced'
+          goals?: string[] | null
+          is_public?: boolean
+          user_id?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      workout_program_templates: {
+        Row: {
+          id: string
+          program_id: string
+          template_id: string
+          week: number
+          day_of_week: number
+          order_in_day: number | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          program_id: string
+          template_id: string
+          week: number
+          day_of_week: number
+          order_in_day?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          program_id?: string
+          template_id?: string
+          week?: number
+          day_of_week?: number
+          order_in_day?: number | null
+          created_at?: string
+        }
+      }
+      scheduled_workouts: {
+        Row: {
+          id: string
+          name: string
+          template_id: string | null
+          program_id: string | null
+          start_date: string
+          end_date: string | null
+          recurrence_pattern: 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'custom'
+          recurrence_interval: number
+          week_days: number[] | null
+          scheduled_time: string | null
+          reminder_minutes: number | null
+          is_active: boolean
+          auto_generate: boolean
+          user_id: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          template_id?: string | null
+          program_id?: string | null
+          start_date: string
+          end_date?: string | null
+          recurrence_pattern: 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'custom'
+          recurrence_interval?: number
+          week_days?: number[] | null
+          scheduled_time?: string | null
+          reminder_minutes?: number | null
+          is_active?: boolean
+          auto_generate?: boolean
+          user_id: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          template_id?: string | null
+          program_id?: string | null
+          start_date?: string
+          end_date?: string | null
+          recurrence_pattern?: 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'custom'
+          recurrence_interval?: number
+          week_days?: number[] | null
+          scheduled_time?: string | null
+          reminder_minutes?: number | null
+          is_active?: boolean
+          auto_generate?: boolean
+          user_id?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      generated_workouts: {
+        Row: {
+          id: string
+          scheduled_workout_id: string
+          workout_session_id: string | null
+          scheduled_date: string
+          scheduled_time: string | null
+          status: 'scheduled' | 'completed' | 'skipped' | 'rescheduled'
+          skipped_reason: string | null
+          generated_at: string
+          completed_at: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          scheduled_workout_id: string
+          workout_session_id?: string | null
+          scheduled_date: string
+          scheduled_time?: string | null
+          status?: 'scheduled' | 'completed' | 'skipped' | 'rescheduled'
+          skipped_reason?: string | null
+          generated_at?: string
+          completed_at?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          scheduled_workout_id?: string
+          workout_session_id?: string | null
+          scheduled_date?: string
+          scheduled_time?: string | null
+          status?: 'scheduled' | 'completed' | 'skipped' | 'rescheduled'
+          skipped_reason?: string | null
+          generated_at?: string
+          completed_at?: string | null
+          user_id?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
