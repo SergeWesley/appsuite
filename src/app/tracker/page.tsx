@@ -11,6 +11,7 @@ import { Plus, Search, Activity, LogOut, User, Dumbbell, Calendar, Target, List 
 import { useAuthContext } from '@/components/AuthProvider';
 import { useFilterPersistence } from '@/hooks/useFilterPersistence';
 import { WorkoutCalendar } from '@/components/tracker/WorkoutCalendar';
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 
 export default function TrackerPage() {
   const router = useRouter();
@@ -122,33 +123,33 @@ export default function TrackerPage() {
               </button>
 
               {/* Menu utilisateur */}
-              <div className="relative group">
-                <button className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                  <User size={20} />
-                  <span className="hidden sm:block">
-                    {user?.user_metadata?.name || user?.email || 'Utilisateur'}
-                  </span>
-                </button>
+              <Menu as="div" className="relative inline-block text-left">
+                <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                    <User size={20} />
+                    <span className="hidden sm:block">
+                        {user?.user_metadata?.name || user?.email || 'Utilisateur'}
+                    </span>
+                </MenuButton>
 
-                {/* Dropdown menu */}
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
-                  <div className="py-2">
+                <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 focus:outline-none">
+                    <div className="py-2">
                     <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-900">
-                        {user?.user_metadata?.name || 'Utilisateur'}
-                      </p>
-                      <p className="text-xs text-gray-500">{user?.email}</p>
+                        <p className="text-sm font-medium text-gray-900">
+                            {user?.user_metadata?.name || 'Utilisateur'}
+                        </p>
+                        <p className="text-xs text-gray-500">{user?.email}</p>
                     </div>
-                    <button
-                      onClick={signOut}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                    <MenuItem
+                        as="button"
+                        onClick={signOut}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100"
                     >
-                      <LogOut size={16} />
-                      Se déconnecter
-                    </button>
-                  </div>
-                </div>
-              </div>
+                        <LogOut size={16} />
+                        Se déconnecter
+                    </MenuItem>
+                    </div>
+                </MenuItems>
+                </Menu>
             </div>
           </div>
         </div>
