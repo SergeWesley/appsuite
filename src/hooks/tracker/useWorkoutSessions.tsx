@@ -463,7 +463,7 @@ export function useWorkoutSessions() {
             .insert(exerciseInserts);
 
           if (exercisesError) {
-            console.error('Erreur lors de l\'ajout des exercices génér��s:', exercisesError);
+            console.error('Erreur lors de l\'ajout des exercices générés:', exercisesError);
           }
         }
       }
@@ -514,6 +514,56 @@ export function useWorkoutSessions() {
     };
   };
 
+  // Obtenir les séances générées (filles d'une séance récurrente)
+  const getGeneratedSessions = (parentSessionId: string): WorkoutSession[] => {
+    return sessions.filter(session => session.parentSessionId === parentSessionId);
+  };
+
+  // Obtenir les séances principales (non générées)
+  const getMainSessions = (): WorkoutSession[] => {
+    return sessions.filter(session => !session.isGenerated);
+  };
+
+  // Supprimer une séance récurrente et toutes ses instances générées
+  const deleteRecurringSession = async (id: string): Promise<boolean> => {
+    if (!user) {
+      setError('Utilisateur non connecté');
+      return false;
+    }
+
+    try {
+      setError(null);
+
+      // Supprimer d'abord toutes les séances générées
+      const { error: generatedError } = await supabase
+        .from('workout_sessions')
+        .delete()
+        .eq('parent_session_id', id)
+        .eq('user_id', user.id);
+
+      if (generatedError) throw generatedError;
+
+      // Puis supprimer la séance principale
+      const { error } = await supabase
+        .from('workout_sessions')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      setSessions(prev => prev.filter(session =>
+        session.id !== id && session.parentSessionId !== id
+      ));
+
+      return true;
+    } catch (err) {
+      console.error('Erreur lors de la suppression de la séance récurrente:', err);
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      return false;
+    }
+  };
+
   return {
     sessions,
     loading,
@@ -524,6 +574,10 @@ export function useWorkoutSessions() {
     duplicateSession,
     getSessionById,
     getStats,
+    generateRecurringSessions,
+    getGeneratedSessions,
+    getMainSessions,
+    deleteRecurringSession,
     refreshSessions: loadSessions,
   };
 }
