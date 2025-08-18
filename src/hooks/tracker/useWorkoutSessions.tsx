@@ -75,6 +75,15 @@ function mapFormDataToInsert(formData: WorkoutSessionFormData, userId: string): 
     notes: formData.notes || null,
     total_exercises: formData.exercises.length,
     duration: null, // Sera calculé automatiquement si nécessaire
+
+    // Nouvelles propriétés de récurrence
+    is_recurring: formData.isRecurring || false,
+    recurrence_pattern: formData.recurrencePattern || 'none',
+    recurrence_interval: formData.recurrenceInterval || null,
+    recurrence_days: formData.recurrenceDays || null,
+    recurrence_end_date: formData.recurrenceEndDate ? formData.recurrenceEndDate.toISOString().split('T')[0] : null,
+    parent_session_id: null,
+    is_generated: false,
   };
 }
 
