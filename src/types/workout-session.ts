@@ -127,3 +127,31 @@ export const MUSCLE_GROUP_LABELS: Record<MuscleGroup, string> = {
   full_body: 'Full body',
   other: 'Autre',
 };
+
+// Labels pour la récurrence
+export const RECURRENCE_LABELS: Record<RecurrencePattern, string> = {
+  none: 'Aucune récurrence',
+  daily: 'Quotidien',
+  weekly: 'Hebdomadaire',
+  monthly: 'Mensuel',
+};
+
+export const WEEK_DAY_LABELS: Record<WeekDay, string> = {
+  0: 'Dimanche',
+  1: 'Lundi',
+  2: 'Mardi',
+  3: 'Mercredi',
+  4: 'Jeudi',
+  5: 'Vendredi',
+  6: 'Samedi',
+};
+
+export const WEEK_DAY_SHORT_LABELS: Record<WeekDay, string> = {
+  0: 'Dim',
+  1: 'Lun',
+  2: 'Mar',
+  3: 'Mer',
+  4: 'Jeu',
+  5: 'Ven',
+  6: 'Sam',
+};
