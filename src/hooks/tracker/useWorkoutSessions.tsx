@@ -55,6 +55,15 @@ function mapRowToWorkoutSession(row: WorkoutSessionWithExercises): WorkoutSessio
     userId: row.user_id,
     dateCreated: new Date(row.created_at),
     dateUpdated: new Date(row.updated_at),
+
+    // Nouvelles propriétés de récurrence
+    isRecurring: row.is_recurring || false,
+    recurrencePattern: row.recurrence_pattern as any || 'none',
+    recurrenceInterval: row.recurrence_interval || undefined,
+    recurrenceDays: row.recurrence_days as any || undefined,
+    recurrenceEndDate: row.recurrence_end_date ? new Date(row.recurrence_end_date) : undefined,
+    parentSessionId: row.parent_session_id || undefined,
+    isGenerated: row.is_generated || false,
   };
 }
 
