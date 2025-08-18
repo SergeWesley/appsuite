@@ -297,6 +297,13 @@ export interface Database {
           notes: string | null
           total_exercises: number
           duration: number | null
+          is_recurring: boolean | null
+          recurrence_pattern: 'none' | 'daily' | 'weekly' | 'monthly' | null
+          recurrence_interval: number | null
+          recurrence_days: number[] | null
+          recurrence_end_date: string | null
+          parent_session_id: string | null
+          is_generated: boolean | null
           created_at: string
           updated_at: string
         }
@@ -307,6 +314,13 @@ export interface Database {
           notes?: string | null
           total_exercises?: number
           duration?: number | null
+          is_recurring?: boolean | null
+          recurrence_pattern?: 'none' | 'daily' | 'weekly' | 'monthly' | null
+          recurrence_interval?: number | null
+          recurrence_days?: number[] | null
+          recurrence_end_date?: string | null
+          parent_session_id?: string | null
+          is_generated?: boolean | null
           created_at?: string
           updated_at?: string
         }
@@ -317,6 +331,13 @@ export interface Database {
           notes?: string | null
           total_exercises?: number
           duration?: number | null
+          is_recurring?: boolean | null
+          recurrence_pattern?: 'none' | 'daily' | 'weekly' | 'monthly' | null
+          recurrence_interval?: number | null
+          recurrence_days?: number[] | null
+          recurrence_end_date?: string | null
+          parent_session_id?: string | null
+          is_generated?: boolean | null
           created_at?: string
           updated_at?: string
         }
