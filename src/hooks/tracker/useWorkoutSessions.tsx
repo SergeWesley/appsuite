@@ -207,6 +207,11 @@ export function useWorkoutSessions() {
       const newSession = mapRowToWorkoutSession(fullSessionData);
       setSessions(prev => [newSession, ...prev]);
 
+      // Générer automatiquement les séances récurrentes si activé
+      if (newSession.isRecurring && newSession.recurrencePattern !== 'none') {
+        await generateRecurringSessions(newSession);
+      }
+
       return newSession;
     } catch (err) {
       console.error('Erreur lors de l\'ajout de la séance:', err);
