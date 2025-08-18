@@ -50,6 +50,13 @@ export interface WorkoutSessionFormData {
   date: Date;
   notes?: string;
   exercises: Omit<WorkoutExercise, 'id' | 'exercise'>[];
+
+  // Récurrence - nouvelles propriétés pour le formulaire
+  isRecurring?: boolean;
+  recurrencePattern?: RecurrencePattern;
+  recurrenceInterval?: number;
+  recurrenceDays?: WeekDay[];
+  recurrenceEndDate?: Date;
 }
 
 export interface ExerciseFormData {
