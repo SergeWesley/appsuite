@@ -262,6 +262,174 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
           </div>
         </div>
 
+        {/* Récurrence */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="flex items-center gap-2 mb-6">
+            <Repeat size={20} className="text-blue-600" />
+            <h2 className="text-lg font-semibold text-gray-900">
+              Récurrence
+            </h2>
+          </div>
+
+          <div className="space-y-4">
+            {/* Toggle récurrence */}
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="isRecurring"
+                checked={formData.isRecurring}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  isRecurring: e.target.checked,
+                  recurrencePattern: e.target.checked ? 'weekly' : 'none'
+                }))}
+                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor="isRecurring" className="text-sm font-medium text-gray-700">
+                Répéter cette séance
+              </label>
+            </div>
+
+            {/* Options de récurrence */}
+            <AnimatePresence>
+              {formData.isRecurring && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-4 overflow-hidden"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Type de récurrence
+                      </label>
+                      <select
+                        value={formData.recurrencePattern}
+                        onChange={(e) => setFormData(prev => ({
+                          ...prev,
+                          recurrencePattern: e.target.value as RecurrencePattern,
+                          recurrenceDays: e.target.value === 'weekly' ? [new Date(prev.date).getDay() as WeekDay] : []
+                        }))}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        {(Object.keys(RECURRENCE_LABELS) as RecurrencePattern[])
+                          .filter(pattern => pattern !== 'none')
+                          .map((pattern) => (
+                          <option key={pattern} value={pattern}>
+                            {RECURRENCE_LABELS[pattern]}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Intervalle
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-600">Tous les</span>
+                        <input
+                          type="number"
+                          min="1"
+                          max="12"
+                          value={formData.recurrenceInterval}
+                          onChange={(e) => setFormData(prev => ({
+                            ...prev,
+                            recurrenceInterval: parseInt(e.target.value) || 1
+                          }))}
+                          className="w-20 px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center"
+                        />
+                        <span className="text-sm text-gray-600">
+                          {formData.recurrencePattern === 'daily' && (formData.recurrenceInterval || 1) > 1 ? 'jours' : ''}
+                          {formData.recurrencePattern === 'daily' && (formData.recurrenceInterval || 1) === 1 ? 'jour' : ''}
+                          {formData.recurrencePattern === 'weekly' && (formData.recurrenceInterval || 1) > 1 ? 'semaines' : ''}
+                          {formData.recurrencePattern === 'weekly' && (formData.recurrenceInterval || 1) === 1 ? 'semaine' : ''}
+                          {formData.recurrencePattern === 'monthly' && (formData.recurrenceInterval || 1) > 1 ? 'mois' : ''}
+                          {formData.recurrencePattern === 'monthly' && (formData.recurrenceInterval || 1) === 1 ? 'mois' : ''}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Jours de la semaine pour récurrence hebdomadaire */}
+                  {formData.recurrencePattern === 'weekly' && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Jours de la semaine
+                      </label>
+                      <div className="grid grid-cols-7 gap-2">
+                        {(Object.keys(WEEK_DAY_SHORT_LABELS) as unknown as WeekDay[]).map((day) => (
+                          <button
+                            key={day}
+                            type="button"
+                            onClick={() => {
+                              const currentDays = formData.recurrenceDays || [];
+                              const newDays = currentDays.includes(day)
+                                ? currentDays.filter(d => d !== day)
+                                : [...currentDays, day].sort((a, b) => a - b);
+                              setFormData(prev => ({ ...prev, recurrenceDays: newDays }));
+                            }}
+                            className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                              formData.recurrenceDays?.includes(day)
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                          >
+                            {WEEK_DAY_SHORT_LABELS[day]}
+                          </button>
+                        ))}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Sélectionnez les jours où vous voulez répéter cette séance
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Date de fin (optionnel) */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Date de fin (optionnel)
+                    </label>
+                    <div className="relative">
+                      <Clock size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hidden sm:inline" />
+                      <input
+                        type="date"
+                        value={formData.recurrenceEndDate ? formatDateForInput(formData.recurrenceEndDate) : ''}
+                        onChange={(e) => setFormData(prev => ({
+                          ...prev,
+                          recurrenceEndDate: e.target.value ? new Date(e.target.value + 'T12:00:00') : undefined
+                        }))}
+                        className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Laissez vide pour une récurrence illimitée
+                    </p>
+                  </div>
+
+                  {/* Aperçu */}
+                  <div className="p-4 bg-blue-50 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <Repeat size={16} className="text-blue-600 mt-0.5" />
+                      <div className="text-sm text-blue-800">
+                        <p className="font-medium mb-1">Aperçu de la récurrence</p>
+                        <p>
+                          {formData.recurrencePattern === 'daily' && `Tous les ${formData.recurrenceInterval === 1 ? '' : formData.recurrenceInterval + ' '}jour${formData.recurrenceInterval > 1 ? 's' : ''}`}
+                          {formData.recurrencePattern === 'weekly' && formData.recurrenceDays?.length > 0 &&
+                            `Chaque ${formData.recurrenceDays.map(day => WEEK_DAY_SHORT_LABELS[day]).join(', ')}${formData.recurrenceInterval > 1 ? ` (toutes les ${formData.recurrenceInterval} semaines)` : ''}`}
+                          {formData.recurrencePattern === 'monthly' && `Tous les ${formData.recurrenceInterval === 1 ? '' : formData.recurrenceInterval + ' '}mois`}
+                          {formData.recurrenceEndDate && ` jusqu'au ${formData.recurrenceEndDate.toLocaleDateString('fr-FR')}`}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+
         {/* Exercises */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex items-center justify-between mb-6">
