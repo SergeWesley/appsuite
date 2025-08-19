@@ -97,11 +97,12 @@ export function useWorkoutSessions() {
               name,
               muscle_group,
               description,
-              is_custom
+              is_custom,
+              estimated_time_minutes
             )
           )
         `)
-        .eq('user_id', user.id)
+        // .eq('user_id', user.id)
         .order('date', { ascending: false });
 
       if (error) throw error;

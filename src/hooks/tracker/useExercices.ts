@@ -120,7 +120,7 @@ export function useExercises() {
         .from('exercises')
         .update(updateData)
         .eq('id', id)
-        .eq('user_id', user.id)
+        // .eq('user_id', user.id)
         .eq('is_custom', true)
         .select()
         .single();

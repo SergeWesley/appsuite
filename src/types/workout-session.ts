@@ -20,6 +20,7 @@ export interface WorkoutExercise {
   duration?: number; // en minutes pour le cardio
   notes?: string;
   order: number; // ordre dans la séance
+  estimatedTime?: number; // temps estimé pour cet exercice en minutes
 }
 
 export interface WorkoutSession {
@@ -62,41 +63,6 @@ export interface WorkoutStats {
   sessionsThisWeek: number;
   sessionsThisMonth: number;
 }
-
-// Catalogue d'exercices prédéfinis
-export const DEFAULT_EXERCISES: Omit<Exercise, 'id' | 'isCustom' | 'userId' | 'dateCreated'>[] = [
-  // Haut du corps
-  { name: 'Pompes', muscleGroup: 'upper_body', description: 'Exercice de base pour le torse' },
-  { name: 'Tractions', muscleGroup: 'upper_body', description: 'Exercice pour le dos et les biceps' },
-  { name: 'Développé couché', muscleGroup: 'upper_body', description: 'Exercice avec haltères ou barre' },
-  { name: 'Dips', muscleGroup: 'upper_body', description: 'Exercice pour les triceps et pectoraux' },
-  { name: 'Curl biceps', muscleGroup: 'upper_body', description: 'Exercice pour les biceps' },
-  { name: 'Extensions triceps', muscleGroup: 'upper_body', description: 'Exercice pour les triceps' },
-  
-  // Bas du corps
-  { name: 'Squats', muscleGroup: 'lower_body', description: 'Exercice de base pour les jambes' },
-  { name: 'Fentes', muscleGroup: 'lower_body', description: 'Exercice pour les cuisses et fessiers' },
-  { name: 'Soulevé de terre', muscleGroup: 'lower_body', description: 'Exercice pour les jambes et le dos' },
-  { name: 'Extensions mollets', muscleGroup: 'lower_body', description: 'Exercice pour les mollets' },
-  { name: 'Leg press', muscleGroup: 'lower_body', description: 'Exercice à la machine pour les jambes' },
-  
-  // Cardio
-  { name: 'Course à pied', muscleGroup: 'cardio', description: 'Activité cardiovasculaire' },
-  { name: 'Vélo', muscleGroup: 'cardio', description: 'Activité cardiovasculaire' },
-  { name: 'Rameur', muscleGroup: 'cardio', description: 'Exercice cardiovasculaire complet' },
-  { name: 'Elliptique', muscleGroup: 'cardio', description: 'Machine cardiovasculaire' },
-  
-  // Core
-  { name: 'Planche', muscleGroup: 'core', description: 'Exercice de gainage' },
-  { name: 'Crunchs', muscleGroup: 'core', description: 'Exercice pour les abdominaux' },
-  { name: 'Russian twists', muscleGroup: 'core', description: 'Exercice pour les obliques' },
-  { name: 'Mountain climbers', muscleGroup: 'core', description: 'Exercice dynamique pour le core' },
-  
-  // Full body
-  { name: 'Burpees', muscleGroup: 'full_body', description: 'Exercice complet du corps' },
-  { name: 'Thrusters', muscleGroup: 'full_body', description: 'Squat + développé militaire' },
-  { name: 'Man makers', muscleGroup: 'full_body', description: 'Exercice complexe full body' },
-];
 
 // Labels pour les groupes musculaires
 export const MUSCLE_GROUP_LABELS: Record<MuscleGroup, string> = {
