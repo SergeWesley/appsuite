@@ -21,9 +21,27 @@ export function useAuth() {
     // Écouter les changements d'authentification
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      const newUser = session?.user ?? null;
+      const previousUser = user;
+
+      setUser(newUser);
       setLoading(false);
+
+      // Envoyer les événements Kafka selon le type d'événement
+      if (newUser && !previousUser && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
+        // Nouvelle connexion
+        await sendConnectionEvent({
+          userId: newUser.id,
+          email: newUser.email || 'unknown@example.com',
+        });
+      } else if (!newUser && previousUser && event === 'SIGNED_OUT') {
+        // Déconnexion
+        await sendDisconnectionEvent({
+          userId: previousUser.id,
+          email: previousUser.email || 'unknown@example.com',
+        });
+      }
     });
 
     return () => subscription.unsubscribe();
