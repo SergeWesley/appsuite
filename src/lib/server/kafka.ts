@@ -1,4 +1,4 @@
-import { Kafka, Producer, KafkaMessage } from 'kafkajs';
+import { Kafka, Producer } from 'kafkajs';
 
 interface UserConnectionEvent {
   userId: string;
