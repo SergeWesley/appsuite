@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { User, AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
+import { useKafka } from './useKafka';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
