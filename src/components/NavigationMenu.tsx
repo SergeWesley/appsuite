@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
-import { BookOpen, Film, ChevronRight, Activity, HomeIcon } from 'lucide-react';
+import { useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+import { BookOpen, Film, ChevronRight, Activity, HomeIcon } from "lucide-react";
 
 interface NavigationMenuItem {
   name: string;
@@ -17,37 +17,41 @@ interface NavigationMenuItem {
 interface NavigationMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  currentModule: 'booker' | 'watcher'  | 'tracker';
+  currentModule: "booker" | "watcher" | "tracker";
 }
 
 const modules: NavigationMenuItem[] = [
   {
-    name: 'Booker',
-    path: '/booker',
+    name: "Booker",
+    path: "/booker",
     icon: BookOpen,
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-50 hover:bg-blue-100',
-    description: 'Gérez votre bibliothèque de livres'
+    color: "text-blue-600",
+    bgColor: "bg-blue-50 hover:bg-blue-100",
+    description: "Gérez votre bibliothèque de livres",
   },
   {
-    name: 'Tracker',
-    path: '/tracker',
+    name: "Tracker",
+    path: "/tracker",
     icon: Activity,
-    color: 'text-green-600',
-    bgColor: 'bg-green-50 hover:bg-green-100',
-    description: 'Suivez vos séances de sport'
+    color: "text-green-600",
+    bgColor: "bg-green-50 hover:bg-green-100",
+    description: "Suivez vos séances de sport",
   },
   {
-    name: 'Watcher',
-    path: '/watcher',
+    name: "Watcher",
+    path: "/watcher",
     icon: Film,
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-50 hover:bg-purple-100',
-    description: 'Suivez vos films et séries'
+    color: "text-purple-600",
+    bgColor: "bg-purple-50 hover:bg-purple-100",
+    description: "Suivez vos films et séries",
   },
 ];
 
-export function NavigationMenu({ isOpen, onClose, currentModule }: NavigationMenuProps) {
+export function NavigationMenu({
+  isOpen,
+  onClose,
+  currentModule,
+}: NavigationMenuProps) {
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -60,28 +64,28 @@ export function NavigationMenu({ isOpen, onClose, currentModule }: NavigationMen
     }
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen, onClose]);
 
   // Fermer le menu avec Escape
   useEffect(() => {
     function handleEscape(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         onClose();
       }
     }
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
+      document.addEventListener("keydown", handleEscape);
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener("keydown", handleEscape);
     };
   }, [isOpen, onClose]);
 
@@ -91,8 +95,8 @@ export function NavigationMenu({ isOpen, onClose, currentModule }: NavigationMen
   };
 
   // Filtrer les modules pour ne pas afficher le module actuel
-  const availableModules = modules.filter(module => 
-    module.path !== `/${currentModule}`
+  const availableModules = modules.filter(
+    (module) => module.path !== `/${currentModule}`,
   );
 
   return (
@@ -120,7 +124,9 @@ export function NavigationMenu({ isOpen, onClose, currentModule }: NavigationMen
             {/* Header */}
             <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
               <h3 className="text-sm font-medium text-gray-900">Navigation</h3>
-              <p className="text-xs text-gray-500 mt-1">Accédez aux autres modules</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Accédez aux autres modules
+              </p>
             </div>
 
             {/* Menu items */}
@@ -129,11 +135,11 @@ export function NavigationMenu({ isOpen, onClose, currentModule }: NavigationMen
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0 }}
-                onClick={() => router.push('/dashboard')} // ou '/' si tu préfères
+                onClick={() => router.push("/dashboard")} // ou '/' si tu préfères
                 className="w-full px-4 py-3 flex items-center group text-left transition-colors bg-gray-100 hover:bg-gray-200"
               >
                 <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-300 flex items-center justify-center">
-                <HomeIcon size={20} className="text-gray-700" />
+                  <HomeIcon size={20} className="text-gray-700" />
                 </div>
 
                 <div className="ml-3 flex-1 min-w-0">
@@ -145,12 +151,11 @@ export function NavigationMenu({ isOpen, onClose, currentModule }: NavigationMen
                   </p>
                 </div>
 
-                <ChevronRight 
-                  size={16} 
-                  className="text-gray-400 group-hover:text-gray-600 transition-colors" 
+                <ChevronRight
+                  size={16}
+                  className="text-gray-400 group-hover:text-gray-600 transition-colors"
                 />
               </motion.button>
-
 
               {availableModules.map((module, index) => {
                 const IconComponent = module.icon;
@@ -163,10 +168,12 @@ export function NavigationMenu({ isOpen, onClose, currentModule }: NavigationMen
                     onClick={() => handleNavigation(module.path)}
                     className={`w-full px-4 py-3 flex items-center group text-left transition-colors ${module.bgColor}`}
                   >
-                    <div className={`flex-shrink-0 w-10 h-10 rounded-lg ${module.bgColor.replace('hover:', '')} flex items-center justify-center`}>
+                    <div
+                      className={`flex-shrink-0 w-10 h-10 rounded-lg ${module.bgColor.replace("hover:", "")} flex items-center justify-center`}
+                    >
                       <IconComponent size={20} className={module.color} />
                     </div>
-                    
+
                     <div className="ml-3 flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-900 group-hover:text-gray-700">
                         {module.name}
@@ -176,9 +183,9 @@ export function NavigationMenu({ isOpen, onClose, currentModule }: NavigationMen
                       </p>
                     </div>
 
-                    <ChevronRight 
-                      size={16} 
-                      className="text-gray-400 group-hover:text-gray-600 transition-colors" 
+                    <ChevronRight
+                      size={16}
+                      className="text-gray-400 group-hover:text-gray-600 transition-colors"
                     />
                   </motion.button>
                 );

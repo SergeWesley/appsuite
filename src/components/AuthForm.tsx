@@ -1,8 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { BookOpen, Mail, Lock, User, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import {
+  BookOpen,
+  Mail,
+  Lock,
+  User,
+  Eye,
+  EyeOff,
+  AlertCircle,
+} from "lucide-react";
 
 interface AuthFormProps {
   onSignIn: (email: string, password: string) => Promise<void>;
@@ -11,13 +19,18 @@ interface AuthFormProps {
   error?: string | null;
 }
 
-export function AuthForm({ onSignIn, onSignUp, loading = false, error }: AuthFormProps) {
+export function AuthForm({
+  onSignIn,
+  onSignUp,
+  loading = false,
+  error,
+}: AuthFormProps) {
   const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -26,23 +39,23 @@ export function AuthForm({ onSignIn, onSignUp, loading = false, error }: AuthFor
     const errors: Record<string, string> = {};
 
     if (!formData.email) {
-      errors.email = 'L\'email est requis';
+      errors.email = "L'email est requis";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'L\'email n\'est pas valide';
+      errors.email = "L'email n'est pas valide";
     }
 
     if (!formData.password) {
-      errors.password = 'Le mot de passe est requis';
+      errors.password = "Le mot de passe est requis";
     } else if (formData.password.length < 6) {
-      errors.password = 'Le mot de passe doit contenir au moins 6 caractères';
+      errors.password = "Le mot de passe doit contenir au moins 6 caractères";
     }
 
     if (isSignUp) {
       if (!formData.name) {
-        errors.name = 'Le nom est requis';
+        errors.name = "Le nom est requis";
       }
       if (formData.password !== formData.confirmPassword) {
-        errors.confirmPassword = 'Les mots de passe ne correspondent pas';
+        errors.confirmPassword = "Les mots de passe ne correspondent pas";
       }
     }
 
@@ -52,7 +65,7 @@ export function AuthForm({ onSignIn, onSignUp, loading = false, error }: AuthFor
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -71,10 +84,10 @@ export function AuthForm({ onSignIn, onSignUp, loading = false, error }: AuthFor
   const toggleMode = () => {
     setIsSignUp(!isSignUp);
     setFormData({
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
     });
     setFormErrors({});
   };
@@ -97,13 +110,12 @@ export function AuthForm({ onSignIn, onSignUp, loading = false, error }: AuthFor
             <BookOpen className="w-8 h-8 text-blue-600" />
           </motion.div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {isSignUp ? 'Créer un compte' : 'Connexion'}
+            {isSignUp ? "Créer un compte" : "Connexion"}
           </h1>
           <p className="text-gray-600">
-            {isSignUp 
-              ? 'Rejoignez Booker et organisez votre bibliothèque' 
-              : 'Accédez à votre bibliothèque personnelle'
-            }
+            {isSignUp
+              ? "Rejoignez Booker et organisez votre bibliothèque"
+              : "Accédez à votre bibliothèque personnelle"}
           </p>
         </div>
 
@@ -125,7 +137,7 @@ export function AuthForm({ onSignIn, onSignUp, loading = false, error }: AuthFor
           {isSignUp && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
             >
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -136,9 +148,13 @@ export function AuthForm({ onSignIn, onSignUp, loading = false, error }: AuthFor
                 <input
                   type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                   className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                    formErrors.name ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                    formErrors.name
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-300"
                   }`}
                   placeholder="Votre nom complet"
                   disabled={loading}
@@ -160,9 +176,13 @@ export function AuthForm({ onSignIn, onSignUp, loading = false, error }: AuthFor
               <input
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                  formErrors.email ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                  formErrors.email
+                    ? "border-red-300 bg-red-50"
+                    : "border-gray-300"
                 }`}
                 placeholder="votre@email.com"
                 disabled={loading}
@@ -181,11 +201,15 @@ export function AuthForm({ onSignIn, onSignUp, loading = false, error }: AuthFor
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
                 className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                  formErrors.password ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                  formErrors.password
+                    ? "border-red-300 bg-red-50"
+                    : "border-gray-300"
                 }`}
                 placeholder="••••••••"
                 disabled={loading}
@@ -196,7 +220,11 @@ export function AuthForm({ onSignIn, onSignUp, loading = false, error }: AuthFor
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 disabled={loading}
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
             {formErrors.password && (
@@ -208,7 +236,7 @@ export function AuthForm({ onSignIn, onSignUp, loading = false, error }: AuthFor
           {isSignUp && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
             >
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -217,18 +245,27 @@ export function AuthForm({ onSignIn, onSignUp, loading = false, error }: AuthFor
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      confirmPassword: e.target.value,
+                    })
+                  }
                   className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
-                    formErrors.confirmPassword ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                    formErrors.confirmPassword
+                      ? "border-red-300 bg-red-50"
+                      : "border-gray-300"
                   }`}
                   placeholder="••••••••"
                   disabled={loading}
                 />
               </div>
               {formErrors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">{formErrors.confirmPassword}</p>
+                <p className="mt-1 text-sm text-red-600">
+                  {formErrors.confirmPassword}
+                </p>
               )}
             </motion.div>
           )}
@@ -240,18 +277,20 @@ export function AuthForm({ onSignIn, onSignUp, loading = false, error }: AuthFor
             whileHover={{ scale: loading ? 1 : 1.02 }}
             whileTap={{ scale: loading ? 1 : 0.98 }}
             className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-colors ${
-              loading 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-200'
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-200"
             }`}
           >
             {loading ? (
               <div className="flex items-center justify-center gap-2">
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                {isSignUp ? 'Création du compte...' : 'Connexion...'}
+                {isSignUp ? "Création du compte..." : "Connexion..."}
               </div>
+            ) : isSignUp ? (
+              "Créer mon compte"
             ) : (
-              isSignUp ? 'Créer mon compte' : 'Se connecter'
+              "Se connecter"
             )}
           </motion.button>
         </form>
@@ -259,7 +298,9 @@ export function AuthForm({ onSignIn, onSignUp, loading = false, error }: AuthFor
         {/* Toggle mode */}
         <div className="mt-6 text-center">
           <p className="text-gray-600">
-            {isSignUp ? 'Vous avez déjà un compte ?' : 'Vous n\'avez pas encore de compte ?'}
+            {isSignUp
+              ? "Vous avez déjà un compte ?"
+              : "Vous n'avez pas encore de compte ?"}
           </p>
           <button
             type="button"
@@ -267,14 +308,15 @@ export function AuthForm({ onSignIn, onSignUp, loading = false, error }: AuthFor
             disabled={loading}
             className="mt-1 text-blue-600 hover:text-blue-700 font-medium transition-colors disabled:opacity-50"
           >
-            {isSignUp ? 'Se connecter' : 'Créer un compte'}
+            {isSignUp ? "Se connecter" : "Créer un compte"}
           </button>
         </div>
 
         {/* Footer */}
         <div className="mt-8 pt-6 border-t border-gray-200 text-center">
           <p className="text-xs text-gray-500">
-            En continuant, vous acceptez nos conditions d'utilisation et notre politique de confidentialité.
+            En continuant, vous acceptez nos conditions d'utilisation et notre
+            politique de confidentialité.
           </p>
         </div>
       </motion.div>

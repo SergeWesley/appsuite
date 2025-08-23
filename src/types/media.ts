@@ -1,5 +1,10 @@
-export type MediaType = 'movie' | 'series' | 'anime' | 'documentary' | 'short';
-export type MediaStatus = 'watching' | 'completed' | 'towatch' | 'wishlist' | 'dropped';
+export type MediaType = "movie" | "series" | "anime" | "documentary" | "short";
+export type MediaStatus =
+  | "watching"
+  | "completed"
+  | "towatch"
+  | "wishlist"
+  | "dropped";
 
 export interface Media {
   id: string;
@@ -12,16 +17,16 @@ export interface Media {
   status: MediaStatus;
   progress: number; // 0-100
   type: MediaType;
-  
+
   // Pour les films
   duration?: number; // en minutes
-  
+
   // Pour les séries/animés
   totalEpisodes?: number;
   currentEpisode?: number;
   totalSeasons?: number;
   currentSeason?: number;
-  
+
   rating?: number; // 1-5
   notes?: string;
   dateAdded: Date;

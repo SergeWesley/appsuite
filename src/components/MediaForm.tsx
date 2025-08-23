@@ -1,9 +1,22 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Media, MediaFormData, MediaStatus, MediaType } from '@/types/media';
-import { X, Film, Star, User, FileText, Hash, Trash2, Calendar, Clock, Tv, Play, Camera } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Media, MediaFormData, MediaStatus, MediaType } from "@/types/media";
+import {
+  X,
+  Film,
+  Star,
+  User,
+  FileText,
+  Hash,
+  Trash2,
+  Calendar,
+  Clock,
+  Tv,
+  Play,
+  Camera,
+} from "lucide-react";
 
 interface MediaFormProps {
   media?: Media;
@@ -13,39 +26,45 @@ interface MediaFormProps {
   onDelete?: (id: string) => void;
 }
 
-export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaFormProps) {
+export function MediaForm({
+  media,
+  isOpen,
+  onClose,
+  onSubmit,
+  onDelete,
+}: MediaFormProps) {
   const [formData, setFormData] = useState<MediaFormData>({
-    title: '',
-    originalTitle: '',
-    director: '',
-    creator: '',
-    studio: '',
-    status: 'towatch',
-    type: 'movie',
+    title: "",
+    originalTitle: "",
+    director: "",
+    creator: "",
+    studio: "",
+    status: "towatch",
+    type: "movie",
     duration: undefined,
     totalEpisodes: undefined,
     currentEpisode: undefined,
     totalSeasons: undefined,
     currentSeason: undefined,
     rating: undefined,
-    notes: '',
-    genre: '',
+    notes: "",
+    genre: "",
     year: undefined,
-    country: '',
-    language: '',
-    posterUrl: '',
-    imdbId: '',
-    tmdbId: '',
+    country: "",
+    language: "",
+    posterUrl: "",
+    imdbId: "",
+    tmdbId: "",
   });
 
   useEffect(() => {
     if (media) {
       setFormData({
         title: media.title,
-        originalTitle: media.originalTitle || '',
-        director: media.director || '',
-        creator: media.creator || '',
-        studio: media.studio || '',
+        originalTitle: media.originalTitle || "",
+        director: media.director || "",
+        creator: media.creator || "",
+        studio: media.studio || "",
         poster: media.poster,
         status: media.status,
         type: media.type,
@@ -55,65 +74,65 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
         totalSeasons: media.totalSeasons,
         currentSeason: media.currentSeason,
         rating: media.rating,
-        notes: media.notes || '',
-        genre: media.genre || '',
+        notes: media.notes || "",
+        genre: media.genre || "",
         year: media.year,
-        country: media.country || '',
-        language: media.language || '',
-        posterUrl: media.posterUrl || '',
-        imdbId: media.imdbId || '',
-        tmdbId: media.tmdbId || '',
+        country: media.country || "",
+        language: media.language || "",
+        posterUrl: media.posterUrl || "",
+        imdbId: media.imdbId || "",
+        tmdbId: media.tmdbId || "",
       });
     } else {
       setFormData({
-        title: '',
-        originalTitle: '',
-        director: '',
-        creator: '',
-        studio: '',
-        status: 'towatch',
-        type: 'movie',
+        title: "",
+        originalTitle: "",
+        director: "",
+        creator: "",
+        studio: "",
+        status: "towatch",
+        type: "movie",
         duration: undefined,
         totalEpisodes: undefined,
         currentEpisode: undefined,
         totalSeasons: undefined,
         currentSeason: undefined,
         rating: undefined,
-        notes: '',
-        genre: '',
+        notes: "",
+        genre: "",
         year: undefined,
-        country: '',
-        language: '',
-        posterUrl: '',
-        imdbId: '',
-        tmdbId: '',
+        country: "",
+        language: "",
+        posterUrl: "",
+        imdbId: "",
+        tmdbId: "",
       });
     }
   }, [media]);
 
   const resetForm = () => {
     setFormData({
-      title: '',
-      originalTitle: '',
-      director: '',
-      creator: '',
-      studio: '',
-      status: 'towatch',
-      type: 'movie',
+      title: "",
+      originalTitle: "",
+      director: "",
+      creator: "",
+      studio: "",
+      status: "towatch",
+      type: "movie",
       duration: undefined,
       totalEpisodes: undefined,
       currentEpisode: undefined,
       totalSeasons: undefined,
       currentSeason: undefined,
       rating: undefined,
-      notes: '',
-      genre: '',
+      notes: "",
+      genre: "",
       year: undefined,
-      country: '',
-      language: '',
-      posterUrl: '',
-      imdbId: '',
-      tmdbId: '',
+      country: "",
+      language: "",
+      posterUrl: "",
+      imdbId: "",
+      tmdbId: "",
     });
   };
 
@@ -125,7 +144,7 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
   };
 
   const handleInputChange = (field: keyof MediaFormData, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleDelete = () => {
@@ -135,7 +154,7 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
     }
   };
 
-  const isSeriesType = formData.type === 'series' || formData.type === 'anime';
+  const isSeriesType = formData.type === "series" || formData.type === "anime";
 
   return (
     <AnimatePresence>
@@ -157,7 +176,7 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-gray-900">
-                  {media ? 'Modifier l\'œuvre' : 'Ajouter une œuvre'}
+                  {media ? "Modifier l'œuvre" : "Ajouter une œuvre"}
                 </h2>
                 <div className="flex items-center gap-2">
                   {media && onDelete && (
@@ -189,20 +208,26 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                   </label>
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
                     {[
-                      { value: 'movie', label: 'Film', icon: Film },
-                      { value: 'series', label: 'Série', icon: Tv },
-                      { value: 'anime', label: 'Animé', icon: Play },
-                      { value: 'documentary', label: 'Documentaire', icon: Camera },
-                      { value: 'short', label: 'Court-métrage', icon: Clock },
+                      { value: "movie", label: "Film", icon: Film },
+                      { value: "series", label: "Série", icon: Tv },
+                      { value: "anime", label: "Animé", icon: Play },
+                      {
+                        value: "documentary",
+                        label: "Documentaire",
+                        icon: Camera,
+                      },
+                      { value: "short", label: "Court-métrage", icon: Clock },
                     ].map((type) => (
                       <button
                         key={type.value}
                         type="button"
-                        onClick={() => handleInputChange('type', type.value as MediaType)}
+                        onClick={() =>
+                          handleInputChange("type", type.value as MediaType)
+                        }
                         className={`p-3 rounded-lg border transition-colors flex flex-col items-center gap-1 ${
                           formData.type === type.value
-                            ? 'border-purple-500 bg-purple-50 text-purple-700'
-                            : 'border-gray-200 hover:border-gray-300'
+                            ? "border-purple-500 bg-purple-50 text-purple-700"
+                            : "border-gray-200 hover:border-gray-300"
                         }`}
                       >
                         <type.icon size={20} />
@@ -222,12 +247,14 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                       type="text"
                       required
                       value={formData.title}
-                      onChange={(e) => handleInputChange('title', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("title", e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       placeholder="Titre de l'œuvre"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Titre original
@@ -235,7 +262,9 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                     <input
                       type="text"
                       value={formData.originalTitle}
-                      onChange={(e) => handleInputChange('originalTitle', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("originalTitle", e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       placeholder="Titre original"
                     />
@@ -246,24 +275,43 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {formData.type === 'anime' ? 'Studio' : (isSeriesType ? 'Créateur' : 'Réalisateur')}
+                      {formData.type === "anime"
+                        ? "Studio"
+                        : isSeriesType
+                          ? "Créateur"
+                          : "Réalisateur"}
                     </label>
                     <div className="relative">
-                      <User size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <User
+                        size={16}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      />
                       <input
                         type="text"
-                        value={formData.type === 'anime' ? formData.studio : (isSeriesType ? formData.creator : formData.director)}
+                        value={
+                          formData.type === "anime"
+                            ? formData.studio
+                            : isSeriesType
+                              ? formData.creator
+                              : formData.director
+                        }
                         onChange={(e) => {
-                          if (formData.type === 'anime') {
-                            handleInputChange('studio', e.target.value);
+                          if (formData.type === "anime") {
+                            handleInputChange("studio", e.target.value);
                           } else if (isSeriesType) {
-                            handleInputChange('creator', e.target.value);
+                            handleInputChange("creator", e.target.value);
                           } else {
-                            handleInputChange('director', e.target.value);
+                            handleInputChange("director", e.target.value);
                           }
                         }}
                         className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        placeholder={formData.type === 'anime' ? 'Studio d\'animation' : (isSeriesType ? 'Créateur' : 'Réalisateur')}
+                        placeholder={
+                          formData.type === "anime"
+                            ? "Studio d'animation"
+                            : isSeriesType
+                              ? "Créateur"
+                              : "Réalisateur"
+                        }
                       />
                     </div>
                   </div>
@@ -273,13 +321,23 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                       Année
                     </label>
                     <div className="relative">
-                      <Calendar size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <Calendar
+                        size={16}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      />
                       <input
                         type="number"
                         min="1900"
                         max={new Date().getFullYear() + 5}
-                        value={formData.year || ''}
-                        onChange={(e) => handleInputChange('year', e.target.value ? parseInt(e.target.value) : undefined)}
+                        value={formData.year || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "year",
+                            e.target.value
+                              ? parseInt(e.target.value)
+                              : undefined,
+                          )
+                        }
                         className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         placeholder="2024"
                       />
@@ -292,7 +350,12 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                     </label>
                     <select
                       value={formData.status}
-                      onChange={(e) => handleInputChange('status', e.target.value as MediaStatus)}
+                      onChange={(e) =>
+                        handleInputChange(
+                          "status",
+                          e.target.value as MediaStatus,
+                        )
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     >
                       <option value="towatch">À voir</option>
@@ -305,17 +368,29 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                 </div>
 
                 {/* Durée ou Episodes */}
-                {formData.type === 'movie' || formData.type === 'documentary' || formData.type === 'short' ? (
+                {formData.type === "movie" ||
+                formData.type === "documentary" ||
+                formData.type === "short" ? (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Durée (en minutes)
                     </label>
                     <div className="relative">
-                      <Clock size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <Clock
+                        size={16}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      />
                       <input
                         type="number"
-                        value={formData.duration || ''}
-                        onChange={(e) => handleInputChange('duration', e.target.value ? parseInt(e.target.value) : undefined)}
+                        value={formData.duration || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "duration",
+                            e.target.value
+                              ? parseInt(e.target.value)
+                              : undefined,
+                          )
+                        }
                         className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         placeholder="120"
                       />
@@ -329,8 +404,15 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                       </label>
                       <input
                         type="number"
-                        value={formData.totalEpisodes || ''}
-                        onChange={(e) => handleInputChange('totalEpisodes', e.target.value ? parseInt(e.target.value) : undefined)}
+                        value={formData.totalEpisodes || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "totalEpisodes",
+                            e.target.value
+                              ? parseInt(e.target.value)
+                              : undefined,
+                          )
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         placeholder="12"
                       />
@@ -341,8 +423,15 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                       </label>
                       <input
                         type="number"
-                        value={formData.currentEpisode || ''}
-                        onChange={(e) => handleInputChange('currentEpisode', e.target.value ? parseInt(e.target.value) : undefined)}
+                        value={formData.currentEpisode || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "currentEpisode",
+                            e.target.value
+                              ? parseInt(e.target.value)
+                              : undefined,
+                          )
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         placeholder="1"
                       />
@@ -353,8 +442,15 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                       </label>
                       <input
                         type="number"
-                        value={formData.totalSeasons || ''}
-                        onChange={(e) => handleInputChange('totalSeasons', e.target.value ? parseInt(e.target.value) : undefined)}
+                        value={formData.totalSeasons || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "totalSeasons",
+                            e.target.value
+                              ? parseInt(e.target.value)
+                              : undefined,
+                          )
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         placeholder="1"
                       />
@@ -365,8 +461,15 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                       </label>
                       <input
                         type="number"
-                        value={formData.currentSeason || ''}
-                        onChange={(e) => handleInputChange('currentSeason', e.target.value ? parseInt(e.target.value) : undefined)}
+                        value={formData.currentSeason || ""}
+                        onChange={(e) =>
+                          handleInputChange(
+                            "currentSeason",
+                            e.target.value
+                              ? parseInt(e.target.value)
+                              : undefined,
+                          )
+                        }
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         placeholder="1"
                       />
@@ -384,14 +487,21 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                       <button
                         key={rating}
                         type="button"
-                        onClick={() => handleInputChange('rating', rating)}
+                        onClick={() => handleInputChange("rating", rating)}
                         className={`p-1 rounded transition-colors ${
                           formData.rating === rating
-                            ? 'text-yellow-500'
-                            : 'text-gray-300 hover:text-yellow-400'
+                            ? "text-yellow-500"
+                            : "text-gray-300 hover:text-yellow-400"
                         }`}
                       >
-                        <Star size={20} className={formData.rating && formData.rating >= rating ? 'fill-current' : ''} />
+                        <Star
+                          size={20}
+                          className={
+                            formData.rating && formData.rating >= rating
+                              ? "fill-current"
+                              : ""
+                          }
+                        />
                       </button>
                     ))}
                   </div>
@@ -406,12 +516,14 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                     <input
                       type="text"
                       value={formData.genre}
-                      onChange={(e) => handleInputChange('genre', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("genre", e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       placeholder="Action, Drama, etc."
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Pays
@@ -419,7 +531,9 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                     <input
                       type="text"
                       value={formData.country}
-                      onChange={(e) => handleInputChange('country', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("country", e.target.value)
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       placeholder="France, États-Unis, Japon, etc."
                     />
@@ -433,27 +547,37 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                       IMDb ID
                     </label>
                     <div className="relative">
-                      <Hash size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <Hash
+                        size={16}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      />
                       <input
                         type="text"
                         value={formData.imdbId}
-                        onChange={(e) => handleInputChange('imdbId', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("imdbId", e.target.value)
+                        }
                         className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         placeholder="tt1234567"
                       />
                     </div>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       TMDB ID
                     </label>
                     <div className="relative">
-                      <Hash size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <Hash
+                        size={16}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      />
                       <input
                         type="text"
                         value={formData.tmdbId}
-                        onChange={(e) => handleInputChange('tmdbId', e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("tmdbId", e.target.value)
+                        }
                         className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         placeholder="123456"
                       />
@@ -469,7 +593,9 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                   <input
                     type="url"
                     value={formData.posterUrl}
-                    onChange={(e) => handleInputChange('posterUrl', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("posterUrl", e.target.value)
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="https://..."
                   />
@@ -481,10 +607,15 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                     Notes
                   </label>
                   <div className="relative">
-                    <FileText size={16} className="absolute left-3 top-3 text-gray-400" />
+                    <FileText
+                      size={16}
+                      className="absolute left-3 top-3 text-gray-400"
+                    />
                     <textarea
                       value={formData.notes}
-                      onChange={(e) => handleInputChange('notes', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("notes", e.target.value)
+                      }
                       rows={3}
                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
                       placeholder="Vos notes sur cette œuvre..."
@@ -508,7 +639,7 @@ export function MediaForm({ media, isOpen, onClose, onSubmit, onDelete }: MediaF
                     type="submit"
                     className="flex-1 px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
                   >
-                    {media ? 'Modifier' : 'Ajouter'}
+                    {media ? "Modifier" : "Ajouter"}
                   </button>
                 </div>
               </form>

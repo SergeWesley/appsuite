@@ -1,43 +1,47 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { WorkoutSession } from '@/types/workout-session';
-import { MUSCLE_GROUP_LABELS } from '@/types/workout-session';
-import { Calendar, Activity, Clock, FileText } from 'lucide-react';
+import { motion } from "framer-motion";
+import { WorkoutSession } from "@/types/workout-session";
+import { MUSCLE_GROUP_LABELS } from "@/types/workout-session";
+import { Calendar, Activity, Clock, FileText } from "lucide-react";
 
 interface WorkoutSessionCardProps {
   session: WorkoutSession;
   onClick: () => void;
 }
 
-export function WorkoutSessionCard({ session, onClick }: WorkoutSessionCardProps) {
+export function WorkoutSessionCard({
+  session,
+  onClick,
+}: WorkoutSessionCardProps) {
   // Calculer les groupes musculaires travaillés
   const muscleGroups = Array.from(
     new Set(
       session.exercises
-        .map(exercise => exercise.exercise?.muscleGroup)
-        .filter(Boolean)
-    )
+        .map((exercise) => exercise.exercise?.muscleGroup)
+        .filter(Boolean),
+    ),
   );
 
   // Formater la date
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('fr-FR', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return new Intl.DateTimeFormat("fr-FR", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     }).format(date);
   };
 
   // Calculer la durée estimée (par défaut: 45min par séance, ajustable selon le nombre d'exercices)
-  const estimatedDuration = session.duration || Math.max(30, session.totalExercises * 5);
+  const estimatedDuration =
+    session.duration || Math.max(30, session.totalExercises * 5);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4, boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
+      whileHover={{ y: -4, boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }}
       onClick={onClick}
       className="h-full bg-white rounded-xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-200 hover:shadow-md"
     >
@@ -52,7 +56,8 @@ export function WorkoutSessionCard({ session, onClick }: WorkoutSessionCardProps
               {formatDate(session.date)}
             </h3>
             <p className="text-sm text-gray-500">
-              {session.totalExercises} exercice{session.totalExercises > 1 ? 's' : ''}
+              {session.totalExercises} exercice
+              {session.totalExercises > 1 ? "s" : ""}
             </p>
           </div>
         </div>
@@ -116,9 +121,7 @@ export function WorkoutSessionCard({ session, onClick }: WorkoutSessionCardProps
             <FileText size={14} className="text-gray-400" />
             <span className="text-sm font-medium text-gray-600">Notes</span>
           </div>
-          <p className="text-sm text-gray-600 line-clamp-2">
-            {session.notes}
-          </p>
+          <p className="text-sm text-gray-600 line-clamp-2">{session.notes}</p>
         </div>
       )}
     </motion.div>

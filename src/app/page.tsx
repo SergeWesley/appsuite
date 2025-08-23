@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuthContext } from '@/components/AuthProvider';
-import { useFilterPersistence } from '@/hooks/useFilterPersistence';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthContext } from "@/components/AuthProvider";
+import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 
 export default function Home() {
   const router = useRouter();
   const { isAuthenticated, loading } = useAuthContext();
 
-  const { selectedApp } = useFilterPersistence('app-filters', {
-      selectedApp: 'dashboard',
+  const { selectedApp } = useFilterPersistence("app-filters", {
+    selectedApp: "dashboard",
   });
 
   useEffect(() => {

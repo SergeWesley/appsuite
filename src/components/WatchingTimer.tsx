@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Media } from '@/types/media';
-import { X, Play, Square, Clock, Film, Tv } from 'lucide-react';
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Media } from "@/types/media";
+import { X, Play, Square, Clock, Film, Tv } from "lucide-react";
 
 interface WatchingTimerProps {
   media: Media;
@@ -13,7 +13,11 @@ interface WatchingTimerProps {
   getMediaStats?: (mediaId: string) => any;
   stopSession?: (mediaId: string, sessionData?: any) => Promise<any>;
   onSessionStopped?: () => void;
-  startSession?: (mediaId: string, episode?: number, season?: number) => Promise<any>;
+  startSession?: (
+    mediaId: string,
+    episode?: number,
+    season?: number,
+  ) => Promise<any>;
   isSessionActive?: (mediaId: string) => boolean;
   getCurrentSessionTime?: (mediaId: string) => number;
 }
@@ -27,15 +31,21 @@ export function WatchingTimer({
   onSessionStopped,
   startSession,
   isSessionActive,
-  getCurrentSessionTime
+  getCurrentSessionTime,
 }: WatchingTimerProps) {
-  const [sessionNotes, setSessionNotes] = useState('');
-  const [episodeWatched, setEpisodeWatched] = useState<number | undefined>(undefined);
-  const [seasonWatched, setSeasonWatched] = useState<number | undefined>(undefined);
+  const [sessionNotes, setSessionNotes] = useState("");
+  const [episodeWatched, setEpisodeWatched] = useState<number | undefined>(
+    undefined,
+  );
+  const [seasonWatched, setSeasonWatched] = useState<number | undefined>(
+    undefined,
+  );
 
   // Utiliser les hooks pour déterminer l'état
   const isRunning = isSessionActive ? isSessionActive(media.id) : false;
-  const elapsedTime = getCurrentSessionTime ? getCurrentSessionTime(media.id) : 0;
+  const elapsedTime = getCurrentSessionTime
+    ? getCurrentSessionTime(media.id)
+    : 0;
 
   const formatTime = (seconds: number): string => {
     if (formatDuration) {
@@ -47,9 +57,9 @@ export function WatchingTimer({
     const remainingSeconds = seconds % 60;
 
     if (hours > 0) {
-      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+      return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
     } else {
-      return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+      return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
     }
   };
 
@@ -75,12 +85,12 @@ export function WatchingTimer({
   };
 
   const handleReset = () => {
-    setSessionNotes('');
+    setSessionNotes("");
     setEpisodeWatched(undefined);
     setSeasonWatched(undefined);
   };
 
-  const isSeriesType = media.type === 'series' || media.type === 'anime';
+  const isSeriesType = media.type === "series" || media.type === "anime";
 
   return (
     <AnimatePresence>
@@ -103,7 +113,7 @@ export function WatchingTimer({
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  {media.type === 'movie' ? (
+                  {media.type === "movie" ? (
                     <Film className="h-6 w-6 text-purple-600" />
                   ) : (
                     <Tv className="h-6 w-6 text-purple-600" />
@@ -112,7 +122,9 @@ export function WatchingTimer({
                     <h2 className="text-lg font-semibold text-gray-900 truncate">
                       {media.title}
                     </h2>
-                    <p className="text-sm text-gray-600">Session de visionnage</p>
+                    <p className="text-sm text-gray-600">
+                      Session de visionnage
+                    </p>
                   </div>
                 </div>
                 <button
@@ -148,8 +160,14 @@ export function WatchingTimer({
                       <input
                         type="number"
                         min="1"
-                        value={seasonWatched || ''}
-                        onChange={(e) => setSeasonWatched(e.target.value ? parseInt(e.target.value) : undefined)}
+                        value={seasonWatched || ""}
+                        onChange={(e) =>
+                          setSeasonWatched(
+                            e.target.value
+                              ? parseInt(e.target.value)
+                              : undefined,
+                          )
+                        }
                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         placeholder="1"
                       />
@@ -161,8 +179,14 @@ export function WatchingTimer({
                       <input
                         type="number"
                         min="1"
-                        value={episodeWatched || ''}
-                        onChange={(e) => setEpisodeWatched(e.target.value ? parseInt(e.target.value) : undefined)}
+                        value={episodeWatched || ""}
+                        onChange={(e) =>
+                          setEpisodeWatched(
+                            e.target.value
+                              ? parseInt(e.target.value)
+                              : undefined,
+                          )
+                        }
                         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         placeholder="1"
                       />
@@ -234,7 +258,10 @@ export function WatchingTimer({
                     <p>
                       Durée: {formatTime(elapsedTime)}
                       {isSeriesType && episodeWatched && (
-                        <span> • S{seasonWatched || 1}E{episodeWatched}</span>
+                        <span>
+                          {" "}
+                          • S{seasonWatched || 1}E{episodeWatched}
+                        </span>
                       )}
                     </p>
                   </div>

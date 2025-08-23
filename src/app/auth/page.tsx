@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { AuthForm } from '@/components/AuthForm';
-import { useAuth } from '@/hooks/useAuth';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { AuthForm } from "@/components/AuthForm";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function AuthPage() {
   const { signIn, signUp, loading, error } = useAuth();
@@ -14,19 +14,23 @@ export default function AuthPage() {
     try {
       setAuthError(null);
       await signIn(email, password);
-      router.push('/');
+      router.push("/");
     } catch (err) {
       // L'erreur est déjà gérée dans useAuth
       setAuthError(error);
     }
   };
 
-  const handleSignUp = async (email: string, password: string, name: string) => {
+  const handleSignUp = async (
+    email: string,
+    password: string,
+    name: string,
+  ) => {
     try {
       setAuthError(null);
       await signUp(email, password, name);
       // Après inscription, rediriger vers la page d'accueil
-      router.push('/');
+      router.push("/");
     } catch (err) {
       // L'erreur est déjà gérée dans useAuth
       setAuthError(error);

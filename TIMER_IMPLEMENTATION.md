@@ -3,12 +3,14 @@
 ## 🎯 Fonctionnalités implémentées
 
 ### Timer en temps réel
+
 - ✅ Décompte en temps réel visible dans la modale
 - ✅ Affichage du temps actuel sur les cartes de livres
 - ✅ Un seul timer actif par livre à la fois
 - ✅ Gestion automatique des sessions multiples
 
 ### Logique côté Supabase
+
 - ✅ Fonctions stockées pour gérer les sessions uniques
 - ✅ Triggers pour empêcher les sessions multiples
 - ✅ Politiques de sécurité RLS
@@ -31,25 +33,30 @@ Pour activer le système de timer, vous devez exécuter les migrations SQL dans 
 Les migrations créent les fonctions suivantes :
 
 #### `start_reading_session(p_book_id, p_user_id)`
+
 - Démarre une nouvelle session de lecture
 - Arrête automatiquement toute session active existante pour le même livre
 - Retourne l'ID de la nouvelle session
 
 #### `stop_reading_session(p_session_id, p_user_id, p_notes, p_pages_read)`
+
 - Arrête une session active
 - Calcule automatiquement la durée
 - Met à jour les notes et pages lues
 - Retourne true/false selon le succès
 
 #### `get_active_session(p_book_id, p_user_id)`
+
 - Récupère la session active pour un livre donné
 - Calcule la durée actuelle en temps réel
 
 #### `get_user_active_sessions(p_user_id)`
+
 - Récupère toutes les sessions actives d'un utilisateur
 - Utilisé pour initialiser les timers au chargement
 
 #### `cleanup_stale_sessions()`
+
 - Nettoie les sessions actives depuis plus de 24h
 - Peut être appelée périodiquement
 
@@ -61,18 +68,21 @@ Les migrations créent les fonctions suivantes :
 ## 🎮 Utilisation
 
 ### Démarrer une session
+
 ```typescript
 const { startTimer } = useTimer();
 await startTimer(bookId);
 ```
 
 ### Arrêter une session
+
 ```typescript
 const { stopTimer } = useTimer();
 await stopTimer(bookId, notes, pagesRead);
 ```
 
 ### Vérifier l'état d'un timer
+
 ```typescript
 const { isTimerActive, getFormattedTime } = useTimer();
 const isActive = isTimerActive(bookId);
@@ -82,24 +92,30 @@ const currentTime = getFormattedTime(bookId); // Format: "HH:MM:SS"
 ## 🔍 Hooks utilisés
 
 ### `useTimer`
+
 Hook principal pour la gestion des timers :
+
 - Gère l'état des timers actifs
 - Met à jour le temps en temps réel (toutes les secondes)
 - Interface avec les fonctions Supabase
 
 ### `useReadingSessions` (mis à jour)
+
 Hook pour la gestion des sessions :
+
 - Utilise maintenant les fonctions Supabase
 - Maintient la compatibilité avec l'interface existante
 
 ## 📱 Interface utilisateur
 
 ### BookCard
+
 - Affiche un indicateur visuel pour les sessions actives
 - Montre le temps écoulé en temps réel dans la barre verte
 - Bouton timer animé pour les sessions actives
 
 ### ReadingTimer (Modal)
+
 - Timer en temps réel au format HH:MM:SS
 - Animation visuelle pour le temps qui passe
 - États de chargement pour les actions

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { WorkoutStats as WorkoutStatsType } from '@/types/workout-session';
-import { Activity, TrendingUp, Calendar, Target } from 'lucide-react';
+import { motion } from "framer-motion";
+import { WorkoutStats as WorkoutStatsType } from "@/types/workout-session";
+import { Activity, TrendingUp, Calendar, Target } from "lucide-react";
 
 interface WorkoutStatsProps {
   stats: WorkoutStatsType;
@@ -11,64 +11,65 @@ interface WorkoutStatsProps {
 export function WorkoutStats({ stats }: WorkoutStatsProps) {
   const statCards = [
     {
-      id: 'total-sessions',
-      title: 'Séances totales',
+      id: "total-sessions",
+      title: "Séances totales",
       value: stats.totalSessions,
       icon: Activity,
-      color: 'blue',
+      color: "blue",
     },
     {
-      id: 'this-week',
-      title: 'Cette semaine',
+      id: "this-week",
+      title: "Cette semaine",
       value: stats.sessionsThisWeek,
       icon: Calendar,
-      color: 'green',
+      color: "green",
     },
     {
-      id: 'this-month',
-      title: 'Ce mois',
+      id: "this-month",
+      title: "Ce mois",
       value: stats.sessionsThisMonth,
       icon: TrendingUp,
-      color: 'purple',
+      color: "purple",
     },
     {
-      id: 'avg-exercises',
-      title: 'Exercices par séance',
+      id: "avg-exercises",
+      title: "Exercices par séance",
       value: Math.round(stats.averageExercisesPerSession * 10) / 10,
       icon: Target,
-      color: 'orange',
+      color: "orange",
     },
   ];
 
   const colorClasses = {
     blue: {
-      bg: 'bg-blue-50',
-      text: 'text-blue-600',
-      border: 'border-blue-100',
+      bg: "bg-blue-50",
+      text: "text-blue-600",
+      border: "border-blue-100",
     },
     green: {
-      bg: 'bg-green-50',
-      text: 'text-green-600',
-      border: 'border-green-100',
+      bg: "bg-green-50",
+      text: "text-green-600",
+      border: "border-green-100",
     },
     purple: {
-      bg: 'bg-purple-50',
-      text: 'text-purple-600',
-      border: 'border-purple-100',
+      bg: "bg-purple-50",
+      text: "text-purple-600",
+      border: "border-purple-100",
     },
     orange: {
-      bg: 'bg-orange-50',
-      text: 'text-orange-600',
-      border: 'border-orange-100',
+      bg: "bg-orange-50",
+      text: "text-orange-600",
+      border: "border-orange-100",
     },
   };
 
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       {statCards.map((stat, index) => {
-        const colorClass = colorClasses[stat.color as keyof typeof colorClasses];
+        const colorClass =
+          colorClasses[stat.color as keyof typeof colorClasses];
         const IconComponent = stat.icon;
-        
+
         return (
           <motion.div
             key={stat.id}
@@ -86,9 +87,7 @@ export function WorkoutStats({ stats }: WorkoutStatsProps) {
               <p className="text-2xl font-bold text-gray-900 mb-1">
                 {stat.value}
               </p>
-              <p className="text-sm text-gray-600">
-                {stat.title}
-              </p>
+              <p className="text-sm text-gray-600">{stat.title}</p>
             </div>
           </motion.div>
         );

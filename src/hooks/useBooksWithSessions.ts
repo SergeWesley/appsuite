@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
-import { useBooks } from './useBooks';
-import { useReadingSessions } from './useReadingSessions';
+import { useCallback } from "react";
+import { useBooks } from "./useBooks";
+import { useReadingSessions } from "./useReadingSessions";
 
 /**
  * Hook combiné qui synchronise automatiquement les livres et les sessions de lecture.
@@ -11,23 +11,25 @@ import { useReadingSessions } from './useReadingSessions';
  */
 export function useBooksWithSessions() {
   const booksHook = useBooks();
-  
+
   // Callback pour rafraîchir les livres après modification des sessions
   const handleBookDataChanged = useCallback(() => {
-    console.log('🔄 Hook combiné: Données de session modifiées, rafraîchissement des livres...');
+    console.log(
+      "🔄 Hook combiné: Données de session modifiées, rafraîchissement des livres...",
+    );
     // Rafraîchir les livres pour récupérer les mises à jour du trigger SQL
     booksHook.refreshBooks();
   }, [booksHook.refreshBooks]);
-  
+
   // Hook des sessions avec callback de synchronisation
   const sessionsHook = useReadingSessions(handleBookDataChanged);
-  
+
   return {
     // Données des livres
     books: booksHook.books,
     booksLoading: booksHook.loading,
     booksError: booksHook.error,
-    
+
     // Actions sur les livres
     addBook: booksHook.addBook,
     updateBook: booksHook.updateBook,
@@ -35,13 +37,13 @@ export function useBooksWithSessions() {
     getBooksByStatus: booksHook.getBooksByStatus,
     getStats: booksHook.getStats,
     refreshBooks: booksHook.refreshBooks,
-    
+
     // Données des sessions
     sessions: sessionsHook.sessions,
     activeSessions: sessionsHook.activeSessions,
     sessionsLoading: sessionsHook.loading,
     sessionsError: sessionsHook.error,
-    
+
     // Actions sur les sessions
     startSession: sessionsHook.startSession,
     stopSession: sessionsHook.stopSession,
@@ -52,7 +54,7 @@ export function useBooksWithSessions() {
     deleteSession: sessionsHook.deleteSession,
     formatDuration: sessionsHook.formatDuration,
     refreshSessions: sessionsHook.refreshSessions,
-    
+
     // État de chargement combiné
     loading: booksHook.loading || sessionsHook.loading,
     error: booksHook.error || sessionsHook.error,

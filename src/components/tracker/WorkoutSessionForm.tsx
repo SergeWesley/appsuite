@@ -1,10 +1,24 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { WorkoutSession, WorkoutSessionFormData, WorkoutExercise, MuscleGroup, MUSCLE_GROUP_LABELS } from '@/types/workout-session';
-import { useExercises } from '@/hooks/tracker/useExercices';
-import { Calendar, Plus, X, Search, Filter, Trash2, GripVertical } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  WorkoutSession,
+  WorkoutSessionFormData,
+  WorkoutExercise,
+  MuscleGroup,
+  MUSCLE_GROUP_LABELS,
+} from "@/types/workout-session";
+import { useExercises } from "@/hooks/tracker/useExercices";
+import {
+  Calendar,
+  Plus,
+  X,
+  Search,
+  Filter,
+  Trash2,
+  GripVertical,
+} from "lucide-react";
 
 interface WorkoutSessionFormProps {
   session?: WorkoutSession;
@@ -18,14 +32,27 @@ interface ExerciseSelectionModalProps {
   onSelect: (exerciseId: string) => void;
 }
 
-function ExerciseSelectionModal({ isOpen, onClose, onSelect }: ExerciseSelectionModalProps) {
+function ExerciseSelectionModal({
+  isOpen,
+  onClose,
+  onSelect,
+}: ExerciseSelectionModalProps) {
   const { exercises, searchExercises } = useExercises();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<MuscleGroup>('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedMuscleGroup, setSelectedMuscleGroup] =
+    useState<MuscleGroup>("all");
 
   const filteredExercises = searchExercises(searchQuery, selectedMuscleGroup);
 
-  const muscleGroups: MuscleGroup[] = ['all', 'upper_body', 'lower_body', 'cardio', 'core', 'full_body', 'other'];
+  const muscleGroups: MuscleGroup[] = [
+    "all",
+    "upper_body",
+    "lower_body",
+    "cardio",
+    "core",
+    "full_body",
+    "other",
+  ];
 
   return (
     <AnimatePresence>
@@ -60,7 +87,10 @@ function ExerciseSelectionModal({ isOpen, onClose, onSelect }: ExerciseSelection
               {/* Search and Filter */}
               <div className="space-y-4">
                 <div className="relative">
-                  <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <Search
+                    size={20}
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  />
                   <input
                     type="text"
                     placeholder="Rechercher un exercice..."
@@ -78,8 +108,8 @@ function ExerciseSelectionModal({ isOpen, onClose, onSelect }: ExerciseSelection
                       onClick={() => setSelectedMuscleGroup(group)}
                       className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
                         selectedMuscleGroup === group
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
                       {MUSCLE_GROUP_LABELS[group]}
@@ -104,13 +134,17 @@ function ExerciseSelectionModal({ isOpen, onClose, onSelect }: ExerciseSelection
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-medium text-gray-900">{exercise.name}</h3>
+                        <h3 className="font-medium text-gray-900">
+                          {exercise.name}
+                        </h3>
                         <p className="text-sm text-gray-500 mt-1">
                           {MUSCLE_GROUP_LABELS[exercise.muscleGroup]}
-                          {exercise.isCustom && ' • Personnalisé'}
+                          {exercise.isCustom && " • Personnalisé"}
                         </p>
                         {exercise.description && (
-                          <p className="text-sm text-gray-600 mt-1">{exercise.description}</p>
+                          <p className="text-sm text-gray-600 mt-1">
+                            {exercise.description}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -131,11 +165,15 @@ function ExerciseSelectionModal({ isOpen, onClose, onSelect }: ExerciseSelection
   );
 }
 
-export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessionFormProps) {
+export function WorkoutSessionForm({
+  session,
+  onSubmit,
+  onCancel,
+}: WorkoutSessionFormProps) {
   const { getExerciseById } = useExercises();
   const [formData, setFormData] = useState<WorkoutSessionFormData>({
     date: new Date(),
-    notes: '',
+    notes: "",
     exercises: [],
   });
   const [showExerciseModal, setShowExerciseModal] = useState(false);
@@ -144,8 +182,10 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
     if (session) {
       setFormData({
         date: session.date,
-        notes: session.notes || '',
-        exercises: session.exercises.map(({ id, exercise, ...exerciseData }) => exerciseData),
+        notes: session.notes || "",
+        exercises: session.exercises.map(
+          ({ id, exercise, ...exerciseData }) => exerciseData,
+        ),
       });
     }
   }, [session]);
@@ -154,33 +194,40 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
     const exercise = getExerciseById(exerciseId);
     if (!exercise) return;
 
-    const newExercise: Omit<WorkoutExercise, 'id' | 'exercise'> = {
+    const newExercise: Omit<WorkoutExercise, "id" | "exercise"> = {
       exerciseId,
       sets: 3,
-      reps: exercise.muscleGroup === 'cardio' ? undefined : 12,
-      weight: exercise.muscleGroup === 'cardio' ? undefined : undefined,
-      duration: exercise.muscleGroup === 'cardio' ? 30 : undefined,
-      notes: '',
+      reps: exercise.muscleGroup === "cardio" ? undefined : 12,
+      weight: exercise.muscleGroup === "cardio" ? undefined : undefined,
+      duration: exercise.muscleGroup === "cardio" ? 30 : undefined,
+      notes: "",
       order: formData.exercises.length + 1,
     };
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       exercises: [...prev.exercises, newExercise],
     }));
   };
 
   const removeExercise = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      exercises: prev.exercises.filter((_, i) => i !== index).map((ex, i) => ({ ...ex, order: i + 1 })),
+      exercises: prev.exercises
+        .filter((_, i) => i !== index)
+        .map((ex, i) => ({ ...ex, order: i + 1 })),
     }));
   };
 
-  const updateExercise = (index: number, updates: Partial<Omit<WorkoutExercise, 'id' | 'exercise'>>) => {
-    setFormData(prev => ({
+  const updateExercise = (
+    index: number,
+    updates: Partial<Omit<WorkoutExercise, "id" | "exercise">>,
+  ) => {
+    setFormData((prev) => ({
       ...prev,
-      exercises: prev.exercises.map((ex, i) => i === index ? { ...ex, ...updates } : ex),
+      exercises: prev.exercises.map((ex, i) =>
+        i === index ? { ...ex, ...updates } : ex,
+      ),
     }));
   };
 
@@ -192,9 +239,12 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
     newExercises.splice(toIndex, 0, movedExercise);
 
     // Réordonnancer
-    const reorderedExercises = newExercises.map((ex, i) => ({ ...ex, order: i + 1 }));
+    const reorderedExercises = newExercises.map((ex, i) => ({
+      ...ex,
+      order: i + 1,
+    }));
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       exercises: reorderedExercises,
     }));
@@ -206,7 +256,7 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
   };
 
   const formatDateForInput = (date: Date) => {
-    return date.toISOString().split('T')[0];
+    return date.toISOString().split("T")[0];
   };
 
   return (
@@ -217,22 +267,27 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
           <h2 className="text-lg font-semibold text-gray-900 mb-6">
             Informations générales
           </h2>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Date de la séance *
               </label>
               <div className="relative">
-                <Calendar size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hidden sm:inline" />
+                <Calendar
+                  size={16}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hidden sm:inline"
+                />
                 <input
                   type="date"
                   required
                   value={formatDateForInput(formData.date)}
-                  onChange={(e) => setFormData(prev => ({
-                    ...prev,
-                    date: new Date(e.target.value + 'T12:00:00'),
-                  }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      date: new Date(e.target.value + "T12:00:00"),
+                    }))
+                  }
                   className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -244,7 +299,9 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
               </label>
               <textarea
                 value={formData.notes}
-                onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, notes: e.target.value }))
+                }
                 rows={3}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 placeholder="Notes sur cette séance d'entraînement..."
@@ -294,7 +351,7 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
             <div className="space-y-4">
               {formData.exercises.map((exercise, index) => {
                 const exerciseInfo = getExerciseById(exercise.exerciseId);
-                const isCardio = exerciseInfo?.muscleGroup === 'cardio';
+                const isCardio = exerciseInfo?.muscleGroup === "cardio";
 
                 return (
                   <motion.div
@@ -329,10 +386,14 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
                         <div className="flex items-center justify-between mb-4">
                           <div>
                             <h3 className="font-medium text-gray-900">
-                              {exerciseInfo?.name || 'Exercice inconnu'}
+                              {exerciseInfo?.name || "Exercice inconnu"}
                             </h3>
                             <p className="text-sm text-gray-500">
-                              {MUSCLE_GROUP_LABELS[exerciseInfo?.muscleGroup || 'other']}
+                              {
+                                MUSCLE_GROUP_LABELS[
+                                  exerciseInfo?.muscleGroup || "other"
+                                ]
+                              }
                             </p>
                           </div>
                           <button
@@ -354,10 +415,14 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
                                 <input
                                   type="number"
                                   min="1"
-                                  value={exercise.sets || ''}
-                                  onChange={(e) => updateExercise(index, { 
-                                    sets: e.target.value ? parseInt(e.target.value) : undefined 
-                                  })}
+                                  value={exercise.sets || ""}
+                                  onChange={(e) =>
+                                    updateExercise(index, {
+                                      sets: e.target.value
+                                        ? parseInt(e.target.value)
+                                        : undefined,
+                                    })
+                                  }
                                   className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
                               </div>
@@ -368,10 +433,14 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
                                 <input
                                   type="number"
                                   min="1"
-                                  value={exercise.reps || ''}
-                                  onChange={(e) => updateExercise(index, { 
-                                    reps: e.target.value ? parseInt(e.target.value) : undefined 
-                                  })}
+                                  value={exercise.reps || ""}
+                                  onChange={(e) =>
+                                    updateExercise(index, {
+                                      reps: e.target.value
+                                        ? parseInt(e.target.value)
+                                        : undefined,
+                                    })
+                                  }
                                   className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
                               </div>
@@ -383,10 +452,14 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
                                   type="number"
                                   min="0"
                                   step="0.5"
-                                  value={exercise.weight || ''}
-                                  onChange={(e) => updateExercise(index, { 
-                                    weight: e.target.value ? parseFloat(e.target.value) : undefined 
-                                  })}
+                                  value={exercise.weight || ""}
+                                  onChange={(e) =>
+                                    updateExercise(index, {
+                                      weight: e.target.value
+                                        ? parseFloat(e.target.value)
+                                        : undefined,
+                                    })
+                                  }
                                   className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
                               </div>
@@ -400,10 +473,14 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
                               <input
                                 type="number"
                                 min="1"
-                                value={exercise.duration || ''}
-                                onChange={(e) => updateExercise(index, { 
-                                  duration: e.target.value ? parseInt(e.target.value) : undefined 
-                                })}
+                                value={exercise.duration || ""}
+                                onChange={(e) =>
+                                  updateExercise(index, {
+                                    duration: e.target.value
+                                      ? parseInt(e.target.value)
+                                      : undefined,
+                                  })
+                                }
                                 className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                               />
                             </div>
@@ -416,8 +493,10 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
                           </label>
                           <input
                             type="text"
-                            value={exercise.notes || ''}
-                            onChange={(e) => updateExercise(index, { notes: e.target.value })}
+                            value={exercise.notes || ""}
+                            onChange={(e) =>
+                              updateExercise(index, { notes: e.target.value })
+                            }
                             className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="Notes spécifiques à cet exercice..."
                           />
@@ -445,7 +524,7 @@ export function WorkoutSessionForm({ session, onSubmit, onCancel }: WorkoutSessi
             disabled={formData.exercises.length === 0}
             className="flex-1 px-6 py-3 text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {session ? 'Modifier la séance' : 'Créer la séance'}
+            {session ? "Modifier la séance" : "Créer la séance"}
           </button>
         </div>
       </form>

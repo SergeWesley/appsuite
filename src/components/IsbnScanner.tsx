@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useZxing } from 'react-zxing';
-import { ScanLine, Camera, X } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from "react";
+import { useZxing } from "react-zxing";
+import { ScanLine, Camera, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface IsbnScannerProps {
   onScan: (isbn: string) => void;
@@ -21,7 +21,9 @@ export function IsbnScanner({ onScan, onClose }: IsbnScannerProps) {
         onScan(barcode);
         onClose();
       } else {
-        setError("Ce n'est pas un code ISBN valide. Veuillez scanner un code-barres de livre.");
+        setError(
+          "Ce n'est pas un code ISBN valide. Veuillez scanner un code-barres de livre.",
+        );
         setTimeout(() => setError(null), 3000);
       }
     },
@@ -30,10 +32,10 @@ export function IsbnScanner({ onScan, onClose }: IsbnScannerProps) {
       setError("Impossible d'accéder à la caméra. Vérifiez vos permissions.");
     },
     constraints: {
-        video: {
-          facingMode: 'environment'
-        }
+      video: {
+        facingMode: "environment",
       },
+    },
   });
 
   return (
@@ -60,11 +62,8 @@ export function IsbnScanner({ onScan, onClose }: IsbnScannerProps) {
 
       {/* Scanner */}
       <div className="flex-1 relative">
-        <video
-          ref={ref}
-          className="w-full h-full object-cover"
-        />
-        
+        <video ref={ref} className="w-full h-full object-cover" />
+
         {/* Guide visuel */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-64 h-32 border-2 border-white/50 rounded-lg relative overflow-hidden">
@@ -75,7 +74,7 @@ export function IsbnScanner({ onScan, onClose }: IsbnScannerProps) {
               transition={{
                 duration: 2,
                 repeat: Infinity,
-                ease: "linear"
+                ease: "linear",
               }}
             />
           </div>

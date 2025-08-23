@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { Film, Play, CheckCircle, Clock, Heart } from 'lucide-react';
+import { motion } from "framer-motion";
+import { Film, Play, CheckCircle, Clock, Heart } from "lucide-react";
 
 interface MediaStatsProps {
   total: number;
@@ -11,42 +11,48 @@ interface MediaStatsProps {
   wishlist: number;
 }
 
-export function MediaStats({ total, watching, completed, toWatch, wishlist }: MediaStatsProps) {
+export function MediaStats({
+  total,
+  watching,
+  completed,
+  toWatch,
+  wishlist,
+}: MediaStatsProps) {
   const stats = [
     {
-      label: 'Total',
+      label: "Total",
       value: total,
       icon: Film,
-      color: 'text-gray-600',
-      bgColor: 'bg-gray-100',
+      color: "text-gray-600",
+      bgColor: "bg-gray-100",
     },
     {
-      label: 'En cours',
+      label: "En cours",
       value: watching,
       icon: Play,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-100',
+      color: "text-purple-600",
+      bgColor: "bg-purple-100",
     },
     {
-      label: 'Terminés',
+      label: "Terminés",
       value: completed,
       icon: CheckCircle,
-      color: 'text-green-600',
-      bgColor: 'bg-green-100',
+      color: "text-green-600",
+      bgColor: "bg-green-100",
     },
     {
-      label: 'À voir',
+      label: "À voir",
       value: toWatch,
       icon: Clock,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-100',
+      color: "text-orange-600",
+      bgColor: "bg-orange-100",
     },
     {
-      label: 'Souhaits',
+      label: "Souhaits",
       value: wishlist,
       icon: Heart,
-      color: 'text-pink-600',
-      bgColor: 'bg-pink-100',
+      color: "text-pink-600",
+      bgColor: "bg-pink-100",
     },
   ];
 

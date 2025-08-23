@@ -29,17 +29,20 @@ Une application moderne et intuitive pour gérer votre collection de livres avec
 ## 🛠️ Installation et démarrage
 
 1. **Cloner le projet**
+
    ```bash
    git clone <votre-repo>
    cd booker
    ```
 
 2. **Installer les dépendances**
+
    ```bash
    npm install
    ```
 
 3. **Configurer Supabase**
+
    ```bash
    # Créez un fichier .env.local avec vos clés Supabase
    cp .env.example .env.local
@@ -47,6 +50,7 @@ Une application moderne et intuitive pour gérer votre collection de livres avec
    ```
 
 4. **Lancer l'application**
+
    ```bash
    npm run dev
    ```
@@ -68,17 +72,20 @@ Cette application utilise Supabase comme backend. Consultez le guide détaillé 
 ## 📱 Utilisation
 
 ### Ajouter un livre
+
 - Cliquez sur le bouton "Ajouter un livre" dans l'en-tête
 - Remplissez les informations : titre, auteur, statut, pages, etc.
 - Ajoutez une note et une évaluation si souhaité
 
 ### Gérer votre collection
+
 - **Filtrer** : Utilisez les boutons de filtre pour voir les livres par statut
 - **Rechercher** : Tapez dans la barre de recherche pour trouver un livre
 - **Modifier** : Cliquez sur une carte de livre pour la modifier
 - **Supprimer** : Utilisez le bouton de suppression dans chaque carte
 
 ### Suivre votre progression
+
 - Le cercle de progression affiche automatiquement votre avancement
 - Mettez à jour la page actuelle pour voir le progrès se modifier
 - Les statistiques se mettent à jour en temps réel
@@ -86,6 +93,7 @@ Cette application utilise Supabase comme backend. Consultez le guide détaillé 
 ## 🎨 Design
 
 L'application utilise un design moderne avec :
+
 - **Palette de couleurs** : Bleus, verts et gris pour un look professionnel
 - **Animations** : Transitions fluides et micro-interactions
 - **Responsive** : Adaptation parfaite sur tous les écrans

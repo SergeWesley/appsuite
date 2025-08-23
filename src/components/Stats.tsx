@@ -1,7 +1,14 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { BookOpen, CheckCircle, Clock, Heart, Star, TrendingUp } from 'lucide-react';
+import { motion } from "framer-motion";
+import {
+  BookOpen,
+  CheckCircle,
+  Clock,
+  Heart,
+  Star,
+  TrendingUp,
+} from "lucide-react";
 
 interface StatsProps {
   total: number;
@@ -12,42 +19,49 @@ interface StatsProps {
   averageRating: number;
 }
 
-export function Stats({ total, reading, completed, toRead, wishlist, averageRating }: StatsProps) {
+export function Stats({
+  total,
+  reading,
+  completed,
+  toRead,
+  wishlist,
+  averageRating,
+}: StatsProps) {
   const stats = [
     {
-      label: 'Total',
+      label: "Total",
       value: total,
       icon: BookOpen,
-      color: 'bg-blue-500',
-      textColor: 'text-blue-600',
+      color: "bg-blue-500",
+      textColor: "text-blue-600",
     },
     {
-      label: 'En cours',
+      label: "En cours",
       value: reading,
       icon: Clock,
-      color: 'bg-orange-500',
-      textColor: 'text-orange-600',
+      color: "bg-orange-500",
+      textColor: "text-orange-600",
     },
     {
-      label: 'Terminés',
+      label: "Terminés",
       value: completed,
       icon: CheckCircle,
-      color: 'bg-green-500',
-      textColor: 'text-green-600',
+      color: "bg-green-500",
+      textColor: "text-green-600",
     },
     {
-      label: 'À lire',
+      label: "À lire",
       value: toRead,
       icon: BookOpen,
-      color: 'bg-gray-500',
-      textColor: 'text-gray-600',
+      color: "bg-gray-500",
+      textColor: "text-gray-600",
     },
     {
-      label: 'Souhaits',
+      label: "Souhaits",
       value: wishlist,
       icon: Heart,
-      color: 'bg-red-400',
-      textColor: 'text-red-500',
+      color: "bg-red-400",
+      textColor: "text-red-500",
     },
   ];
 
@@ -74,7 +88,7 @@ export function Stats({ total, reading, completed, toRead, wishlist, averageRati
           </div>
         </motion.div>
       ))}
-      
+
       {averageRating > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -96,8 +110,8 @@ export function Stats({ total, reading, completed, toRead, wishlist, averageRati
                       size={16}
                       className={`${
                         star <= Math.round(averageRating)
-                          ? 'fill-yellow-400 text-yellow-400'
-                          : 'text-gray-300'
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-gray-300"
                       }`}
                     />
                   ))}
@@ -112,4 +126,4 @@ export function Stats({ total, reading, completed, toRead, wishlist, averageRati
       )}
     </div>
   );
-} 
+}

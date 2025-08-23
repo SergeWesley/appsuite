@@ -1,9 +1,21 @@
-'use client';
+"use client";
 
-import { motion } from 'framer-motion';
-import { Media, MediaStatus } from '@/types/media';
-import { ProgressCircle } from './ProgressCircle';
-import { Film, Star, Calendar, User, Edit2, Trash2, Play, Tv, Camera, Clock, Hash } from 'lucide-react';
+import { motion } from "framer-motion";
+import { Media, MediaStatus } from "@/types/media";
+import { ProgressCircle } from "./ProgressCircle";
+import {
+  Film,
+  Star,
+  Calendar,
+  User,
+  Edit2,
+  Trash2,
+  Play,
+  Tv,
+  Camera,
+  Clock,
+  Hash,
+} from "lucide-react";
 
 interface MediaCardProps {
   media: Media;
@@ -14,30 +26,40 @@ interface MediaCardProps {
 }
 
 const statusConfig = {
-  watching: { label: 'En cours', color: 'status-watching' },
-  completed: { label: 'Terminé', color: 'status-completed' },
-  towatch: { label: 'À voir', color: 'status-towatch' },
-  wishlist: { label: 'Souhait', color: 'status-wishlist' },
-  dropped: { label: 'Abandonné', color: 'status-dropped' },
+  watching: { label: "En cours", color: "status-watching" },
+  completed: { label: "Terminé", color: "status-completed" },
+  towatch: { label: "À voir", color: "status-towatch" },
+  wishlist: { label: "Souhait", color: "status-wishlist" },
+  dropped: { label: "Abandonné", color: "status-dropped" },
 };
 
 const typeConfig = {
-  movie: { label: 'Film', icon: Film, color: 'text-blue-600' },
-  series: { label: 'Série', icon: Tv, color: 'text-green-600' },
-  anime: { label: 'Animé', icon: Play, color: 'text-pink-600' },
-  documentary: { label: 'Documentaire', icon: Camera, color: 'text-orange-600' },
-  short: { label: 'Court-métrage', icon: Clock, color: 'text-purple-600' },
+  movie: { label: "Film", icon: Film, color: "text-blue-600" },
+  series: { label: "Série", icon: Tv, color: "text-green-600" },
+  anime: { label: "Animé", icon: Play, color: "text-pink-600" },
+  documentary: {
+    label: "Documentaire",
+    icon: Camera,
+    color: "text-orange-600",
+  },
+  short: { label: "Court-métrage", icon: Clock, color: "text-purple-600" },
 };
 
-export function MediaCard({ media, onEdit, onDelete, onStatusChange, onOpenTimer }: MediaCardProps) {
+export function MediaCard({
+  media,
+  onEdit,
+  onDelete,
+  onStatusChange,
+  onOpenTimer,
+}: MediaCardProps) {
   const status = statusConfig[media.status];
   const type = typeConfig[media.type];
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('fr-FR', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
+    return new Intl.DateTimeFormat("fr-FR", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
     }).format(date);
   };
 
@@ -45,29 +67,29 @@ export function MediaCard({ media, onEdit, onDelete, onStatusChange, onOpenTimer
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
     if (hours > 0) {
-      return `${hours}h${remainingMinutes > 0 ? ` ${remainingMinutes}min` : ''}`;
+      return `${hours}h${remainingMinutes > 0 ? ` ${remainingMinutes}min` : ""}`;
     }
     return `${remainingMinutes}min`;
   };
 
   const getProgressInfo = () => {
-    if (media.type === 'movie') {
+    if (media.type === "movie") {
       return media.duration ? `${formatDuration(media.duration)}` : null;
     } else {
       // Pour les séries/animés
-      let info = '';
+      let info = "";
       if (media.currentEpisode && media.totalEpisodes) {
         info = `Ép. ${media.currentEpisode}/${media.totalEpisodes}`;
       } else if (media.totalEpisodes) {
         info = `${media.totalEpisodes} épisodes`;
       }
-      
+
       if (media.currentSeason && media.totalSeasons) {
         info += ` - S${media.currentSeason}/${media.totalSeasons}`;
       } else if (media.totalSeasons) {
         info += ` - ${media.totalSeasons} saisons`;
       }
-      
+
       return info || null;
     }
   };
@@ -83,7 +105,9 @@ export function MediaCard({ media, onEdit, onDelete, onStatusChange, onOpenTimer
     >
       {/* Badge de type */}
       <div className="absolute top-4 right-4 z-10">
-        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white shadow-sm ${type.color}`}>
+        <span
+          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white shadow-sm ${type.color}`}
+        >
           <type.icon size={12} className="mr-1" />
           {type.label}
         </span>
@@ -99,7 +123,7 @@ export function MediaCard({ media, onEdit, onDelete, onStatusChange, onOpenTimer
                 alt={`Poster de ${media.title}`}
                 className="w-16 h-24 object-cover rounded-lg shadow-md flex-shrink-0"
                 onError={(e) => {
-                  e.currentTarget.src = '/fallback-poster.svg';
+                  e.currentTarget.src = "/fallback-poster.svg";
                 }}
               />
             </div>
@@ -114,7 +138,7 @@ export function MediaCard({ media, onEdit, onDelete, onStatusChange, onOpenTimer
                 {media.originalTitle}
               </p>
             )}
-            
+
             {/* Réalisateur/Créateur/Studio */}
             {(media.director || media.creator || media.studio) && (
               <p className="text-sm text-gray-600 flex items-center gap-1 mt-1 truncate">
@@ -122,22 +146,18 @@ export function MediaCard({ media, onEdit, onDelete, onStatusChange, onOpenTimer
                 {media.director || media.creator || media.studio}
               </p>
             )}
-            
+
             {/* Année */}
             {media.year && (
-              <p className="text-xs text-gray-500 mt-1">
-                {media.year}
-              </p>
+              <p className="text-xs text-gray-500 mt-1">{media.year}</p>
             )}
           </div>
         </div>
       </div>
 
       <div className="flex items-center gap-2 mb-4">
-        <span className={`status-badge ${status.color}`}>
-          {status.label}
-        </span>
-        
+        <span className={`status-badge ${status.color}`}>{status.label}</span>
+
         <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
           <button
             onClick={(e) => {
@@ -180,7 +200,7 @@ export function MediaCard({ media, onEdit, onDelete, onStatusChange, onOpenTimer
                 <span>{getProgressInfo()}</span>
               </div>
             )}
-            
+
             {/* Note */}
             {media.rating && (
               <div className="flex items-center gap-1">
@@ -188,21 +208,19 @@ export function MediaCard({ media, onEdit, onDelete, onStatusChange, onOpenTimer
                 <span>{media.rating}/5</span>
               </div>
             )}
-            
+
             {/* Date d'ajout */}
             <div className="flex items-center gap-1">
               <Calendar size={14} />
               <span>{formatDate(media.dateAdded)}</span>
             </div>
           </div>
-          
+
           {/* Genre */}
           {media.genre && (
-            <p className="text-xs text-gray-500 mt-2">
-              {media.genre}
-            </p>
+            <p className="text-xs text-gray-500 mt-2">{media.genre}</p>
           )}
-          
+
           {/* IDs externes */}
           {(media.imdbId || media.tmdbId) && (
             <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
@@ -221,7 +239,7 @@ export function MediaCard({ media, onEdit, onDelete, onStatusChange, onOpenTimer
             </div>
           )}
         </div>
-        
+
         <div className="ml-4">
           <ProgressCircle progress={media.progress} size={50} strokeWidth={3} />
         </div>
@@ -230,9 +248,7 @@ export function MediaCard({ media, onEdit, onDelete, onStatusChange, onOpenTimer
       {/* Notes */}
       {media.notes && (
         <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-          <p className="text-sm text-gray-700 line-clamp-2">
-            {media.notes}
-          </p>
+          <p className="text-sm text-gray-700 line-clamp-2">{media.notes}</p>
         </div>
       )}
     </motion.div>

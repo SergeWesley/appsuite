@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, ReactNode } from 'react';
-import { useTimer } from '@/hooks/useTimer';
+import React, { createContext, useContext, ReactNode } from "react";
+import { useTimer } from "@/hooks/useTimer";
 
 // Créer le contexte pour les timers
 const TimerContext = createContext<ReturnType<typeof useTimer> | null>(null);
@@ -12,11 +12,9 @@ interface TimerProviderProps {
 
 export function TimerProvider({ children }: TimerProviderProps) {
   const timerData = useTimer();
-  
+
   return (
-    <TimerContext.Provider value={timerData}>
-      {children}
-    </TimerContext.Provider>
+    <TimerContext.Provider value={timerData}>{children}</TimerContext.Provider>
   );
 }
 
@@ -24,7 +22,7 @@ export function TimerProvider({ children }: TimerProviderProps) {
 export function useTimerContext() {
   const context = useContext(TimerContext);
   if (!context) {
-    throw new Error('useTimerContext must be used within a TimerProvider');
+    throw new Error("useTimerContext must be used within a TimerProvider");
   }
   return context;
 }

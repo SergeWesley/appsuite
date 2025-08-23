@@ -1,4 +1,11 @@
-export type MuscleGroup = 'all' | 'upper_body' | 'lower_body' | 'cardio' | 'core' | 'full_body' | 'other';
+export type MuscleGroup =
+  | "all"
+  | "upper_body"
+  | "lower_body"
+  | "cardio"
+  | "core"
+  | "full_body"
+  | "other";
 
 export interface Exercise {
   id: string;
@@ -38,7 +45,7 @@ export interface WorkoutSession {
 export interface WorkoutSessionFormData {
   date: Date;
   notes?: string;
-  exercises: Omit<WorkoutExercise, 'id' | 'exercise'>[];
+  exercises: Omit<WorkoutExercise, "id" | "exercise">[];
 }
 
 export interface ExerciseFormData {
@@ -66,11 +73,11 @@ export interface WorkoutStats {
 
 // Labels pour les groupes musculaires
 export const MUSCLE_GROUP_LABELS: Record<MuscleGroup, string> = {
-  all: 'Tous',
-  upper_body: 'Haut du corps',
-  lower_body: 'Bas du corps',
-  cardio: 'Cardio',
-  core: 'Core',
-  full_body: 'Full body',
-  other: 'Autre',
+  all: "Tous",
+  upper_body: "Haut du corps",
+  lower_body: "Bas du corps",
+  cardio: "Cardio",
+  core: "Core",
+  full_body: "Full body",
+  other: "Autre",
 };

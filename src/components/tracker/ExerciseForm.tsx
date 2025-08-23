@@ -1,9 +1,14 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Exercise, ExerciseFormData, MuscleGroup, MUSCLE_GROUP_LABELS } from '@/types/workout-session';
-import { X, Dumbbell } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Exercise,
+  ExerciseFormData,
+  MuscleGroup,
+  MUSCLE_GROUP_LABELS,
+} from "@/types/workout-session";
+import { X, Dumbbell } from "lucide-react";
 
 interface ExerciseFormProps {
   exercise?: Exercise;
@@ -13,11 +18,17 @@ interface ExerciseFormProps {
   onDelete?: (id: string) => void;
 }
 
-export function ExerciseForm({ exercise, isOpen, onClose, onSubmit, onDelete }: ExerciseFormProps) {
+export function ExerciseForm({
+  exercise,
+  isOpen,
+  onClose,
+  onSubmit,
+  onDelete,
+}: ExerciseFormProps) {
   const [formData, setFormData] = useState<ExerciseFormData>({
-    name: '',
-    muscleGroup: 'other',
-    description: '',
+    name: "",
+    muscleGroup: "other",
+    description: "",
   });
 
   useEffect(() => {
@@ -25,13 +36,13 @@ export function ExerciseForm({ exercise, isOpen, onClose, onSubmit, onDelete }: 
       setFormData({
         name: exercise.name,
         muscleGroup: exercise.muscleGroup,
-        description: exercise.description || '',
+        description: exercise.description || "",
       });
     } else {
       setFormData({
-        name: '',
-        muscleGroup: 'other',
-        description: '',
+        name: "",
+        muscleGroup: "other",
+        description: "",
       });
     }
   }, [exercise]);
@@ -45,9 +56,9 @@ export function ExerciseForm({ exercise, isOpen, onClose, onSubmit, onDelete }: 
 
   const resetForm = () => {
     setFormData({
-      name: '',
-      muscleGroup: 'other',
-      description: '',
+      name: "",
+      muscleGroup: "other",
+      description: "",
     });
   };
 
@@ -58,7 +69,14 @@ export function ExerciseForm({ exercise, isOpen, onClose, onSubmit, onDelete }: 
     }
   };
 
-  const muscleGroups: MuscleGroup[] = ['upper_body', 'lower_body', 'cardio', 'core', 'full_body', 'other'];
+  const muscleGroups: MuscleGroup[] = [
+    "upper_body",
+    "lower_body",
+    "cardio",
+    "core",
+    "full_body",
+    "other",
+  ];
 
   return (
     <AnimatePresence>
@@ -80,7 +98,9 @@ export function ExerciseForm({ exercise, isOpen, onClose, onSubmit, onDelete }: 
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-gray-900">
-                  {exercise ? 'Modifier l\'exercice' : 'Nouvel exercice personnalisé'}
+                  {exercise
+                    ? "Modifier l'exercice"
+                    : "Nouvel exercice personnalisé"}
                 </h2>
                 <button
                   onClick={() => {
@@ -100,12 +120,20 @@ export function ExerciseForm({ exercise, isOpen, onClose, onSubmit, onDelete }: 
                     Nom de l'exercice *
                   </label>
                   <div className="relative">
-                    <Dumbbell size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <Dumbbell
+                      size={16}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    />
                     <input
                       type="text"
                       required
                       value={formData.name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="Nom de l'exercice"
                     />
@@ -119,7 +147,12 @@ export function ExerciseForm({ exercise, isOpen, onClose, onSubmit, onDelete }: 
                   </label>
                   <select
                     value={formData.muscleGroup}
-                    onChange={(e) => setFormData(prev => ({ ...prev, muscleGroup: e.target.value as MuscleGroup }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        muscleGroup: e.target.value as MuscleGroup,
+                      }))
+                    }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     {muscleGroups.map((group) => (
@@ -137,7 +170,12 @@ export function ExerciseForm({ exercise, isOpen, onClose, onSubmit, onDelete }: 
                   </label>
                   <textarea
                     value={formData.description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                     placeholder="Description de l'exercice (technique, matériel requis, etc.)"
@@ -169,7 +207,7 @@ export function ExerciseForm({ exercise, isOpen, onClose, onSubmit, onDelete }: 
                     type="submit"
                     className="flex-1 px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
                   >
-                    {exercise ? 'Modifier' : 'Créer'}
+                    {exercise ? "Modifier" : "Créer"}
                   </button>
                 </div>
               </form>

@@ -5,6 +5,7 @@
 Votre système de timer de session de lecture est maintenant complètement implémenté avec toutes les fonctionnalités demandées :
 
 ### ✅ Contraintes respectées
+
 - **Session unique par livre** : Un livre ne peut avoir qu'une seule session active à la fois
 - **Timer unique par session** : Chaque session a son propre timer
 - **Arrêt automatique** : Quand on arrête le timer, la session se termine
@@ -37,11 +38,13 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=votre_cle_anonyme_supabase
 ### Interface utilisateur
 
 #### BookCard (Cartes de livres)
+
 - **Indicateur visuel** : Barre verte en haut pour les sessions actives
 - **Temps en temps réel** : Affichage du temps écoulé sur la barre
 - **Bouton timer animé** : Icône timer qui pulse pour les sessions actives
 
 #### ReadingTimer (Modale)
+
 - **Timer en temps réel** : Format HH:MM:SS qui se met à jour chaque seconde
 - **Boutons intelligents** : Démarrer/Arrêter avec états de chargement
 - **Formulaire d'arrêt** : Notes et pages lues lors de l'arrêt de session
@@ -69,18 +72,20 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=votre_cle_anonyme_supabase
 ### Hooks React
 
 #### `useTimer`
+
 ```typescript
 const {
-  isTimerActive,     // Vérifier si un timer est actif
-  getFormattedTime,  // Obtenir le temps formaté HH:MM:SS
-  startTimer,        // Démarrer un timer
-  stopTimer,         // Arrêter un timer
-  loading,           // État de chargement
-  error              // Gestion d'erreurs
+  isTimerActive, // Vérifier si un timer est actif
+  getFormattedTime, // Obtenir le temps formaté HH:MM:SS
+  startTimer, // Démarrer un timer
+  stopTimer, // Arrêter un timer
+  loading, // État de chargement
+  error, // Gestion d'erreurs
 } = useTimer();
 ```
 
 #### Exemple d'utilisation :
+
 ```typescript
 // Vérifier l'état
 const isActive = isTimerActive(bookId);
@@ -96,6 +101,7 @@ await stopTimer(bookId, "Très bon chapitre", 25);
 ### Fonctions Supabase
 
 #### Automatiquement gérées
+
 - **Session unique** : `start_reading_session()` arrête automatiquement les sessions existantes
 - **Calcul de durée** : `stop_reading_session()` calcule la durée exacte
 - **Sécurité** : Policies RLS pour isoler les données par utilisateur
@@ -137,11 +143,13 @@ Accédez à `/test-timer` dans votre application pour tester :
 ## 🛡️ Sécurité et performance
 
 ### Sécurité
+
 - **RLS activé** : Chaque utilisateur voit seulement ses données
 - **Fonctions sécurisées** : Validation côté serveur
 - **Pas d'exposition de données** : API sécurisée
 
 ### Performance
+
 - **Index optimisés** : Requêtes rapides sur sessions actives
 - **Mise à jour locale** : Timer côté client (pas de requêtes constantes)
 - **Chargement intelligent** : Initialisation efficace

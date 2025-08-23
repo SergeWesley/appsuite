@@ -1,14 +1,18 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Exercise, ExerciseFormData, MuscleGroup } from '@/types/workout-session';
-import { Database } from '@/types/supabase';
-import { supabase } from '@/lib/supabase';
-import { useAuth } from '@/hooks/useAuth';
+import { useState, useEffect } from "react";
+import {
+  Exercise,
+  ExerciseFormData,
+  MuscleGroup,
+} from "@/types/workout-session";
+import { Database } from "@/types/supabase";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/useAuth";
 
-type ExerciseRow = Database['public']['Tables']['exercises']['Row'];
-type ExerciseInsert = Database['public']['Tables']['exercises']['Insert'];
-type ExerciseUpdate = Database['public']['Tables']['exercises']['Update'];
+type ExerciseRow = Database["public"]["Tables"]["exercises"]["Row"];
+type ExerciseInsert = Database["public"]["Tables"]["exercises"]["Insert"];
+type ExerciseUpdate = Database["public"]["Tables"]["exercises"]["Update"];
 
 // Fonction pour convertir les données de la base vers le type Exercise
 function mapRowToExercise(row: ExerciseRow): Exercise {
@@ -24,8 +28,12 @@ function mapRowToExercise(row: ExerciseRow): Exercise {
 }
 
 // Fonction pour convertir ExerciseFormData vers ExerciseInsert
-function mapFormDataToInsert(formData: ExerciseFormData, userId: string): ExerciseInsert {
-  const muscleGroup = formData.muscleGroup === "all" ? "other" : formData.muscleGroup;
+function mapFormDataToInsert(
+  formData: ExerciseFormData,
+  userId: string,
+): ExerciseInsert {
+  const muscleGroup =
+    formData.muscleGroup === "all" ? "other" : formData.muscleGroup;
   return {
     name: formData.name,
     muscle_group: muscleGroup,
@@ -46,19 +54,19 @@ export function useExercises() {
     try {
       setError(null);
       setLoading(true);
-      
+
       const { data, error } = await supabase
-        .from('exercises')
-        .select('*')
-        .order('name');
+        .from("exercises")
+        .select("*")
+        .order("name");
 
       if (error) throw error;
 
       const mappedExercises = data.map(mapRowToExercise);
       setExercises(mappedExercises);
     } catch (err) {
-      console.error('Erreur lors du chargement des exercices:', err);
-      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      console.error("Erreur lors du chargement des exercices:", err);
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
     } finally {
       setLoading(false);
     }
@@ -69,9 +77,11 @@ export function useExercises() {
   }, [user]);
 
   // Ajouter un exercice personnalisé
-  const addCustomExercise = async (exerciseData: ExerciseFormData): Promise<Exercise | null> => {
+  const addCustomExercise = async (
+    exerciseData: ExerciseFormData,
+  ): Promise<Exercise | null> => {
     if (!user) {
-      setError('Utilisateur non connecté');
+      setError("Utilisateur non connecté");
       return null;
     }
 
@@ -81,7 +91,7 @@ export function useExercises() {
       const insertData = mapFormDataToInsert(exerciseData, user.id);
 
       const { data, error } = await supabase
-        .from('exercises')
+        .from("exercises")
         .insert(insertData)
         .select()
         .single();
@@ -89,20 +99,23 @@ export function useExercises() {
       if (error) throw error;
 
       const newExercise = mapRowToExercise(data);
-      setExercises(prev => [...prev, newExercise]);
-      
+      setExercises((prev) => [...prev, newExercise]);
+
       return newExercise;
     } catch (err) {
-      console.error('Erreur lors de l\'ajout de l\'exercice:', err);
-      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      console.error("Erreur lors de l'ajout de l'exercice:", err);
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
       return null;
     }
   };
 
   // Mettre à jour un exercice personnalisé
-  const updateCustomExercise = async (id: string, updates: Partial<ExerciseFormData>): Promise<boolean> => {
+  const updateCustomExercise = async (
+    id: string,
+    updates: Partial<ExerciseFormData>,
+  ): Promise<boolean> => {
     if (!user) {
-      setError('Utilisateur non connecté');
+      setError("Utilisateur non connecté");
       return false;
     }
 
@@ -110,30 +123,38 @@ export function useExercises() {
       setError(null);
 
       const updateData: ExerciseUpdate = {};
-      updateData.muscle_group = updates.muscleGroup === "all" ? "other" : updates.muscleGroup;
+      updateData.muscle_group =
+        updates.muscleGroup === "all" ? "other" : updates.muscleGroup;
 
       if (updates.name !== undefined) updateData.name = updates.name;
-      if (updates.muscleGroup !== undefined) updateData.muscle_group = updates.muscleGroup === "all" ? "other" : updates.muscleGroup;
-      if (updates.description !== undefined) updateData.description = updates.description || null;
+      if (updates.muscleGroup !== undefined)
+        updateData.muscle_group =
+          updates.muscleGroup === "all" ? "other" : updates.muscleGroup;
+      if (updates.description !== undefined)
+        updateData.description = updates.description || null;
 
       const { data, error } = await supabase
-        .from('exercises')
+        .from("exercises")
         .update(updateData)
-        .eq('id', id)
+        .eq("id", id)
         // .eq('user_id', user.id)
-        .eq('is_custom', true)
+        .eq("is_custom", true)
         .select()
         .single();
 
       if (error) throw error;
 
       const updatedExercise = mapRowToExercise(data);
-      setExercises(prev => prev.map(exercise => exercise.id === id ? updatedExercise : exercise));
-      
+      setExercises((prev) =>
+        prev.map((exercise) =>
+          exercise.id === id ? updatedExercise : exercise,
+        ),
+      );
+
       return true;
     } catch (err) {
-      console.error('Erreur lors de la mise à jour de l\'exercice:', err);
-      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      console.error("Erreur lors de la mise à jour de l'exercice:", err);
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
       return false;
     }
   };
@@ -141,7 +162,7 @@ export function useExercises() {
   // Supprimer un exercice personnalisé
   const deleteCustomExercise = async (id: string): Promise<boolean> => {
     if (!user) {
-      setError('Utilisateur non connecté');
+      setError("Utilisateur non connecté");
       return false;
     }
 
@@ -149,59 +170,67 @@ export function useExercises() {
       setError(null);
 
       const { error } = await supabase
-        .from('exercises')
+        .from("exercises")
         .delete()
-        .eq('id', id)
-        .eq('user_id', user.id)
-        .eq('is_custom', true);
+        .eq("id", id)
+        .eq("user_id", user.id)
+        .eq("is_custom", true);
 
       if (error) throw error;
 
-      setExercises(prev => prev.filter(exercise => exercise.id !== id));
-      
+      setExercises((prev) => prev.filter((exercise) => exercise.id !== id));
+
       return true;
     } catch (err) {
-      console.error('Erreur lors de la suppression de l\'exercice:', err);
-      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+      console.error("Erreur lors de la suppression de l'exercice:", err);
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
       return false;
     }
   };
 
   // Obtenir les exercices par groupe musculaire
   const getExercisesByMuscleGroup = (muscleGroup: MuscleGroup): Exercise[] => {
-    if (muscleGroup === 'all') {
+    if (muscleGroup === "all") {
       return exercises;
     }
-    return exercises.filter(exercise => exercise.muscleGroup === muscleGroup);
+    return exercises.filter((exercise) => exercise.muscleGroup === muscleGroup);
   };
 
   // Rechercher des exercices
-  const searchExercises = (query: string, muscleGroup?: MuscleGroup): Exercise[] => {
+  const searchExercises = (
+    query: string,
+    muscleGroup?: MuscleGroup,
+  ): Exercise[] => {
     let filteredExercises = exercises;
-    
-    if (muscleGroup && muscleGroup !== 'all') {
-      filteredExercises = filteredExercises.filter(exercise => exercise.muscleGroup === muscleGroup);
-    }
-    
-    if (query.trim()) {
-      const lowercaseQuery = query.toLowerCase();
-      filteredExercises = filteredExercises.filter(exercise =>
-        exercise.name.toLowerCase().includes(lowercaseQuery) ||
-        exercise.description?.toLowerCase().includes(lowercaseQuery)
+
+    if (muscleGroup && muscleGroup !== "all") {
+      filteredExercises = filteredExercises.filter(
+        (exercise) => exercise.muscleGroup === muscleGroup,
       );
     }
-    
+
+    if (query.trim()) {
+      const lowercaseQuery = query.toLowerCase();
+      filteredExercises = filteredExercises.filter(
+        (exercise) =>
+          exercise.name.toLowerCase().includes(lowercaseQuery) ||
+          exercise.description?.toLowerCase().includes(lowercaseQuery),
+      );
+    }
+
     return filteredExercises;
   };
 
   // Obtenir un exercice par ID
   const getExerciseById = (id: string): Exercise | undefined => {
-    return exercises.find(exercise => exercise.id === id);
+    return exercises.find((exercise) => exercise.id === id);
   };
 
   // Obtenir les exercices personnalisés uniquement
   const getCustomExercises = (): Exercise[] => {
-    return exercises.filter(exercise => exercise.isCustom && exercise.userId === user?.id);
+    return exercises.filter(
+      (exercise) => exercise.isCustom && exercise.userId === user?.id,
+    );
   };
 
   return {

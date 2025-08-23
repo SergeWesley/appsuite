@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { useAuth } from '@/hooks/useAuth';
-import { TimerProvider } from './TimerProvider';
-import { BookOpen } from 'lucide-react';
+import { createContext, useContext, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { TimerProvider } from "./TimerProvider";
+import { BookOpen } from "lucide-react";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -18,7 +18,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function useAuthContext() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuthContext must be used within an AuthProvider');
+    throw new Error("useAuthContext must be used within an AuthProvider");
   }
   return context;
 }
@@ -35,16 +35,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const isAuthenticated = !!user;
 
   useEffect(() => {
-
     // Si on est sur la page d'auth et qu'on est connecté, rediriger vers l'accueil
-    if (isAuthenticated && pathname === '/auth') {
-      router.push('/dashboard');
+    if (isAuthenticated && pathname === "/auth") {
+      router.push("/dashboard");
       return;
     }
 
     // Si on n'est pas connecté et qu'on n'est pas sur la page d'auth, rediriger vers auth
-    if (!loading && !isAuthenticated && pathname !== '/auth') {
-      router.push('/auth');
+    if (!loading && !isAuthenticated && pathname !== "/auth") {
+      router.push("/auth");
       return;
     }
   }, [isAuthenticated, loading, pathname, router]);
@@ -57,7 +56,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   // Écran de chargement pendant la vérification de l'authentification
-  if (loading ) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -73,9 +72,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   return (
     <AuthContext.Provider value={value}>
-      <TimerProvider>
-        {children}
-      </TimerProvider>
+      <TimerProvider>{children}</TimerProvider>
     </AuthContext.Provider>
   );
 }

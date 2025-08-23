@@ -7,6 +7,7 @@ Cette migration ajoute une **synchronisation automatique** entre les sessions de
 ## 📋 Fonctionnalités ajoutées
 
 ### ⚡ **Synchronisation automatique**
+
 - **Trigger SQL** : Met à jour automatiquement `current_page` du livre quand une session est créée/modifiée
 - **Calcul du progrès** : Recalcule automatiquement le pourcentage (0-100%) basé sur `current_page/total_pages`
 - **Changement de statut** :
@@ -15,11 +16,13 @@ Cette migration ajoute une **synchronisation automatique** entre les sessions de
 - **Date de completion** : Définit automatiquement `date_completed`
 
 ### 🔄 **Synchronisation Frontend-Backend**
+
 - **Hook combiné** : `useBooksWithSessions` synchronise automatiquement les données
 - **Rafraîchissement intelligent** : L'interface se met à jour après chaque modification de session
 - **Gestion des erreurs** : Robuste en cas de problème réseau
 
 ### 🛠️ **Fonctions utilitaires**
+
 - `recalculate_book_pages(book_id, user_id)` : Recalcule un livre spécifique
 - `recalculate_all_books_pages(user_id)` : Recalcule tous les livres d'un utilisateur
 
@@ -34,6 +37,7 @@ Cette migration ajoute une **synchronisation automatique** entre les sessions de
 ### 2. **Vérifier l'installation**
 
 La migration ajoute automatiquement :
+
 - ✅ Fonction `sync_book_pages_read()`
 - ✅ Trigger `sync_book_pages_trigger`
 - ✅ Fonctions utilitaires de recalcul
@@ -51,18 +55,21 @@ La migration ajoute automatiquement :
 ## 🔍 **Exemple de fonctionnement**
 
 ### Avant
+
 ```sql
 -- Livre initial
 { id: "livre-1", current_page: 0, progress: 0, status: "toread", total_pages: 300 }
 ```
 
 ### Après ajout d'une session avec 25 pages lues
+
 ```sql
 -- Livre mis à jour automatiquement
 { id: "livre-1", current_page: 25, progress: 8, status: "reading", total_pages: 300 }
 ```
 
 ### Après ajout d'une autre session avec 275 pages lues
+
 ```sql
 -- Livre terminé automatiquement
 { id: "livre-1", current_page: 300, progress: 100, status: "completed", total_pages: 300, date_completed: "2024-..." }
@@ -71,12 +78,15 @@ La migration ajoute automatiquement :
 ## 🐛 **Résolution de problèmes**
 
 ### Problème : Les livres ne se mettent pas à jour
+
 1. **Vérifier** que la migration SQL a été appliquée correctement
 2. **Vérifier** les logs de la console pour des erreurs
 3. **Rafraîchir** la page pour recharger les données
 
 ### Problème : Données incohérentes
+
 1. **Utiliser** la fonction de recalcul manuel :
+
 ```sql
 -- Pour un livre spécifique
 SELECT recalculate_book_pages('uuid-du-livre', 'uuid-utilisateur');
@@ -86,6 +96,7 @@ SELECT recalculate_all_books_pages('uuid-utilisateur');
 ```
 
 ### Problème : Performance lente
+
 1. **Vérifier** que l'index `idx_reading_sessions_book_pages` existe
 2. **Consulter** les requêtes lentes dans Supabase
 

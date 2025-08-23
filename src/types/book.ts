@@ -1,4 +1,4 @@
-export type BookStatus = 'reading' | 'completed' | 'toread'| 'wishlist';
+export type BookStatus = "reading" | "completed" | "toread" | "wishlist";
 
 export interface Book {
   id: string;
@@ -31,4 +31,4 @@ export interface BookFormData {
   genre?: string;
   isbn?: string;
   coverUrl?: string; // URL de la couverture
-} 
+}

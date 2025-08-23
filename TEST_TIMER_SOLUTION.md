@@ -9,16 +9,19 @@
 ## ✅ Changements apportés
 
 ### 1. Nouveau contexte `TimerProvider`
+
 - **Fichier** : `src/components/TimerProvider.tsx`
 - **Fonction** : Partage l'état des timers entre tous les composants
 - **Avantage** : Re-render automatique de tous les composants connectés
 
 ### 2. Mise à jour des composants
+
 - **BookCard** : Utilise maintenant `useTimerContext()` au lieu de `useTimer()`
 - **ReadingTimer** : Utilise maintenant `useTimerContext()`
 - **TimerTest** : Mis à jour pour le contexte
 
 ### 3. Intégration dans l'architecture
+
 - **AuthProvider** : Enveloppe maintenant les enfants avec `TimerProvider`
 - **Application** : Tous les composants partagent le même état de timer
 
@@ -58,15 +61,18 @@
 ## 🔧 Architecture de la solution
 
 ### Avant (problématique)
+
 ```
 Page principale
 ├── BookCard (useTimer indépendant)
-├── BookCard (useTimer indépendant) 
+├── BookCard (useTimer indépendant)
 └── ReadingTimer Modal (useTimer indépendant)
 ```
+
 ❌ **Problème** : États séparés, pas de synchronisation
 
 ### Après (solution)
+
 ```
 AuthProvider
 └── TimerProvider (état centralisé)
@@ -76,11 +82,13 @@ AuthProvider
     │   └── ReadingTimer Modal (useTimerContext)
     └── État partagé pour tous
 ```
+
 ✅ **Solution** : État centralisé, re-render automatique
 
 ## 📋 Checklist de validation
 
 ### Tests fonctionnels
+
 - [ ] Timer démarre dans la modale
 - [ ] Timer visible en temps réel dans la modale
 - [ ] Fermeture de modale n'arrête pas le timer
@@ -90,7 +98,8 @@ AuthProvider
 - [ ] Arrêt timer met à jour toutes les vues
 - [ ] Sessions multiples fonctionnent en parallèle
 
-### Tests techniques  
+### Tests techniques
+
 - [ ] Pas d'erreurs console
 - [ ] Pas de fuites mémoire (intervals nettoyés)
 - [ ] Performance correcte (re-renders optimisés)

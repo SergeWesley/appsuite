@@ -1,18 +1,27 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, BookOpen, CheckCircle, Clock, Search, LogOut, User, Heart } from 'lucide-react';
-import { useAuthContext } from '@/components/AuthProvider';
-import { useBooksWithSessions } from '@/hooks/useBooksWithSessions';
-import { useFilterPersistence } from '@/hooks/useFilterPersistence';
-import { Book, BookStatus, BookFormData } from '@/types/book';
-import { BookCard } from '@/components/BookCard';
-import { BookForm } from '@/components/BookForm';
-import { Stats } from '@/components/Stats';
-import { ReadingTimer } from '@/components/ReadingTimer';
-import { NavigationMenu } from '@/components/NavigationMenu';
-import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/react';
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Plus,
+  BookOpen,
+  CheckCircle,
+  Clock,
+  Search,
+  LogOut,
+  User,
+  Heart,
+} from "lucide-react";
+import { useAuthContext } from "@/components/AuthProvider";
+import { useBooksWithSessions } from "@/hooks/useBooksWithSessions";
+import { useFilterPersistence } from "@/hooks/useFilterPersistence";
+import { Book, BookStatus, BookFormData } from "@/types/book";
+import { BookCard } from "@/components/BookCard";
+import { BookForm } from "@/components/BookForm";
+import { Stats } from "@/components/Stats";
+import { ReadingTimer } from "@/components/ReadingTimer";
+import { NavigationMenu } from "@/components/NavigationMenu";
+import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
 
 export default function BookerPage() {
   const {
@@ -26,27 +35,26 @@ export default function BookerPage() {
     refreshBooks,
     formatDuration,
     getBookStats,
-    stopSession
+    stopSession,
   } = useBooksWithSessions();
   const { user, signOut } = useAuthContext();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | undefined>(undefined);
-//   const [selectedStatus, setSelectedStatus] = useState<BookStatus | 'all'>('all');
-//   const [searchQuery, setSearchQuery] = useState('');
+  //   const [selectedStatus, setSelectedStatus] = useState<BookStatus | 'all'>('all');
+  //   const [searchQuery, setSearchQuery] = useState('');
   const [timerBook, setTimerBook] = useState<Book | undefined>(undefined);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const stats = getStats();
 
   // Gestion de la persistance des filtres
-  const {
-    selectedStatus,
-    searchQuery,
-    updateFilter
-  } = useFilterPersistence('booker-filters', {
-    selectedStatus: 'all',
-    searchQuery: ''
-  });
+  const { selectedStatus, searchQuery, updateFilter } = useFilterPersistence(
+    "booker-filters",
+    {
+      selectedStatus: "all",
+      searchQuery: "",
+    },
+  );
 
   const handleAddBook = (data: BookFormData) => {
     addBook(data);
@@ -59,7 +67,7 @@ export default function BookerPage() {
   };
 
   const handleDeleteBook = (id: string) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce livre ?')) {
+    if (confirm("Êtes-vous sûr de vouloir supprimer ce livre ?")) {
       deleteBook(id);
     }
   };
@@ -102,20 +110,23 @@ export default function BookerPage() {
   };
 
   // Filtrer les livres
-  const filteredBooks = books.filter(book => {
-    const matchesStatus = selectedStatus === 'all' || book.status === selectedStatus;
-    const matchesSearch = book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         (book.genre && book.genre.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredBooks = books.filter((book) => {
+    const matchesStatus =
+      selectedStatus === "all" || book.status === selectedStatus;
+    const matchesSearch =
+      book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (book.genre &&
+        book.genre.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesStatus && matchesSearch;
   });
 
   const statusFilters = [
-    { value: 'all', label: 'Tous', icon: BookOpen },
-    { value: 'reading', label: 'En cours', icon: Clock },
-    { value: 'completed', label: 'Terminés', icon: CheckCircle },
-    { value: 'toread', label: 'À lire', icon: BookOpen },
-    { value: 'wishlist', label: 'Souhaits', icon: Heart },
+    { value: "all", label: "Tous", icon: BookOpen },
+    { value: "reading", label: "En cours", icon: Clock },
+    { value: "completed", label: "Terminés", icon: CheckCircle },
+    { value: "toread", label: "À lire", icon: BookOpen },
+    { value: "wishlist", label: "Souhaits", icon: Heart },
   ];
 
   if (loading) {
@@ -123,7 +134,9 @@ export default function BookerPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement de votre bibliothèque...</p>
+          <p className="mt-4 text-gray-600">
+            Chargement de votre bibliothèque...
+          </p>
         </div>
       </div>
     );
@@ -134,7 +147,9 @@ export default function BookerPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-600 text-6xl mb-4">⚠️</div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Erreur de connexion</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            Erreur de connexion
+          </h2>
           <p className="text-gray-600 mb-4">{error}</p>
         </div>
       </div>
@@ -148,13 +163,15 @@ export default function BookerPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-               <button
+              <button
                 onClick={() => setIsNavMenuOpen(true)}
                 className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
                 aria-label="Menu de navigation"
               >
                 <BookOpen className="h-8 w-8 text-blue-600" />
-                <h1 className="ml-3 text-xl font-semibold text-gray-900">Booker</h1>
+                <h1 className="ml-3 text-xl font-semibold text-gray-900">
+                  Booker
+                </h1>
               </button>
             </div>
 
@@ -170,19 +187,19 @@ export default function BookerPage() {
               {/* Menu utilisateur */}
               <Menu as="div" className="relative inline-block text-left">
                 <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                    <User size={20} />
-                    <span className="hidden sm:block">
-                      {user?.user_metadata?.name || user?.email || 'Utilisateur'}
-                    </span>
+                  <User size={20} />
+                  <span className="hidden sm:block">
+                    {user?.user_metadata?.name || user?.email || "Utilisateur"}
+                  </span>
                 </MenuButton>
 
                 <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 focus:outline-none">
                   <div className="py-2">
                     <div className="px-4 py-2 border-b border-gray-100">
-                        <p className="text-sm font-medium text-gray-900">
-                            {user?.user_metadata?.name || 'Utilisateur'}
-                        </p>
-                        <p className="text-xs text-gray-500">{user?.email}</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {user?.user_metadata?.name || "Utilisateur"}
+                      </p>
+                      <p className="text-xs text-gray-500">{user?.email}</p>
                     </div>
                     <MenuItem
                       as="button"
@@ -208,12 +225,15 @@ export default function BookerPage() {
         <div className="mb-8 space-y-4">
           {/* Barre de recherche */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={20}
+            />
             <input
               type="text"
               placeholder="Rechercher par titre, auteur ou genre..."
               value={searchQuery}
-              onChange={(e) => updateFilter('searchQuery', e.target.value)}
+              onChange={(e) => updateFilter("searchQuery", e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -223,11 +243,11 @@ export default function BookerPage() {
             {statusFilters.map((filter) => (
               <button
                 key={filter.value}
-                onClick={() => updateFilter('selectedStatus', filter.value)}
+                onClick={() => updateFilter("selectedStatus", filter.value)}
                 className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   selectedStatus === filter.value
-                    ? 'bg-blue-100 text-blue-700 border border-blue-200'
-                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                    ? "bg-blue-100 text-blue-700 border border-blue-200"
+                    : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
                 }`}
               >
                 <filter.icon size={16} className="mr-2" />
@@ -247,13 +267,14 @@ export default function BookerPage() {
             >
               <BookOpen className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-4 text-lg font-medium text-gray-900">
-                {books.length === 0 ? 'Aucun livre dans votre bibliothèque' : 'Aucun livre trouvé'}
+                {books.length === 0
+                  ? "Aucun livre dans votre bibliothèque"
+                  : "Aucun livre trouvé"}
               </h3>
               <p className="mt-2 text-gray-600">
-                {books.length === 0 
-                  ? 'Commencez par ajouter votre premier livre !' 
-                  : 'Essayez de modifier vos filtres de recherche'
-                }
+                {books.length === 0
+                  ? "Commencez par ajouter votre premier livre !"
+                  : "Essayez de modifier vos filtres de recherche"}
               </p>
               {books.length === 0 && (
                 <button
@@ -275,7 +296,7 @@ export default function BookerPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ delay: index * 0.1 }}
-                    className="h-full" 
+                    className="h-full"
                   >
                     <BookCard
                       book={book}
@@ -304,7 +325,6 @@ export default function BookerPage() {
         <Plus size={24} />
       </motion.button>
 
-
       {/* Formulaire */}
       <BookForm
         book={editingBook}
@@ -314,7 +334,7 @@ export default function BookerPage() {
         onDelete={handleDeleteBook}
       />
 
-          {/* Timer de lecture */}
+      {/* Timer de lecture */}
       {timerBook && (
         <ReadingTimer
           book={timerBook}
@@ -327,12 +347,12 @@ export default function BookerPage() {
         />
       )}
 
-        {/* Menu de navigation */}
-        <NavigationMenu
-          isOpen={isNavMenuOpen}
-          onClose={() => setIsNavMenuOpen(false)}
-          currentModule="booker"
-        />
+      {/* Menu de navigation */}
+      <NavigationMenu
+        isOpen={isNavMenuOpen}
+        onClose={() => setIsNavMenuOpen(false)}
+        currentModule="booker"
+      />
     </div>
   );
 }

@@ -1,34 +1,40 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter, useParams } from 'next/navigation';
-import { useWorkoutSessions } from '@/hooks/tracker/useWorkoutSessions';
-import { WorkoutSession, MuscleGroup, MUSCLE_GROUP_LABELS } from '@/types/workout-session';
-import { NavigationMenu } from '@/components/NavigationMenu';
-import {  
-  Calendar, 
-  Activity, 
-  Clock, 
-  FileText, 
-  Edit, 
-  Trash2, 
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRouter, useParams } from "next/navigation";
+import { useWorkoutSessions } from "@/hooks/tracker/useWorkoutSessions";
+import {
+  WorkoutSession,
+  MuscleGroup,
+  MUSCLE_GROUP_LABELS,
+} from "@/types/workout-session";
+import { NavigationMenu } from "@/components/NavigationMenu";
+import {
+  Calendar,
+  Activity,
+  Clock,
+  FileText,
+  Edit,
+  Trash2,
   Copy,
   LogOut,
-  User
-} from 'lucide-react';
-import { useAuthContext } from '@/components/AuthProvider';
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
+  User,
+} from "lucide-react";
+import { useAuthContext } from "@/components/AuthProvider";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
 export default function WorkoutSessionDetailPage() {
   const router = useRouter();
   const params = useParams();
   const sessionId = params.id as string;
   const { user, signOut } = useAuthContext();
-  
-  const { sessions, getSessionById, deleteSession, duplicateSession } = useWorkoutSessions();
+
+  const { sessions, getSessionById, deleteSession, duplicateSession } =
+    useWorkoutSessions();
   const [session, setSession] = useState<WorkoutSession | null>(null);
-  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<MuscleGroup>('all');
+  const [selectedMuscleGroup, setSelectedMuscleGroup] =
+    useState<MuscleGroup>("all");
   const [loading, setLoading] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
@@ -56,10 +62,14 @@ export default function WorkoutSessionDetailPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Séance non trouvée</h2>
-          <p className="text-gray-600 mb-6">Cette séance n'existe pas ou a été supprimée.</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            Séance non trouvée
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Cette séance n'existe pas ou a été supprimée.
+          </p>
           <button
-            onClick={() => router.push('/tracker')}
+            onClick={() => router.push("/tracker")}
             className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors"
           >
             Retour aux séances
@@ -70,32 +80,33 @@ export default function WorkoutSessionDetailPage() {
   }
 
   // Filtrer les exercices par groupe musculaire
-  const filteredExercises = selectedMuscleGroup === 'all' 
-    ? session.exercises 
-    : session.exercises.filter(ex => ex.exercise?.muscleGroup === selectedMuscleGroup);
+  const filteredExercises =
+    selectedMuscleGroup === "all"
+      ? session.exercises
+      : session.exercises.filter(
+          (ex) => ex.exercise?.muscleGroup === selectedMuscleGroup,
+        );
 
   // Obtenir la liste des groupes musculaires présents dans la séance
   const availableMuscleGroups = Array.from(
     new Set(
-      session.exercises
-        .map(ex => ex.exercise?.muscleGroup)
-        .filter(Boolean)
-    )
+      session.exercises.map((ex) => ex.exercise?.muscleGroup).filter(Boolean),
+    ),
   );
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('fr-FR', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    return new Intl.DateTimeFormat("fr-FR", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     }).format(date);
   };
 
   const handleDelete = async () => {
     const success = await deleteSession(session.id);
     if (success) {
-      router.push('/tracker');
+      router.push("/tracker");
     }
   };
 
@@ -106,7 +117,8 @@ export default function WorkoutSessionDetailPage() {
     }
   };
 
-  const estimatedDuration = session.duration || Math.max(30, session.totalExercises * 5);
+  const estimatedDuration =
+    session.duration || Math.max(30, session.totalExercises * 5);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -121,7 +133,9 @@ export default function WorkoutSessionDetailPage() {
                 aria-label="Menu de navigation"
               >
                 <Activity className="h-8 w-8 text-green-600" />
-                <h1 className="ml-3 text-xl font-semibold text-gray-900">Tracker</h1>
+                <h1 className="ml-3 text-xl font-semibold text-gray-900">
+                  Tracker
+                </h1>
               </button>
               <span className="text-gray-400">•</span>
               <span className="text-sm text-gray-600 capitalize">
@@ -131,7 +145,7 @@ export default function WorkoutSessionDetailPage() {
 
             <div className="flex items-center gap-4">
               <button
-                onClick={() => router.push('/tracker')}
+                onClick={() => router.push("/tracker")}
                 className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
               >
                 Retour
@@ -140,31 +154,31 @@ export default function WorkoutSessionDetailPage() {
               {/* Menu utilisateur */}
               <Menu as="div" className="relative inline-block text-left">
                 <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                    <User size={20} />
-                    <span className="hidden sm:block">
-                        {user?.user_metadata?.name || user?.email || 'Utilisateur'}
-                    </span>
+                  <User size={20} />
+                  <span className="hidden sm:block">
+                    {user?.user_metadata?.name || user?.email || "Utilisateur"}
+                  </span>
                 </MenuButton>
 
                 <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 focus:outline-none">
-                    <div className="py-2">
+                  <div className="py-2">
                     <div className="px-4 py-2 border-b border-gray-100">
-                        <p className="text-sm font-medium text-gray-900">
-                            {user?.user_metadata?.name || 'Utilisateur'}
-                        </p>
-                        <p className="text-xs text-gray-500">{user?.email}</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {user?.user_metadata?.name || "Utilisateur"}
+                      </p>
+                      <p className="text-xs text-gray-500">{user?.email}</p>
                     </div>
                     <MenuItem
-                        as="button"
-                        onClick={signOut}
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100"
+                      as="button"
+                      onClick={signOut}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100"
                     >
-                        <LogOut size={16} />
-                        Se déconnecter
+                      <LogOut size={16} />
+                      Se déconnecter
                     </MenuItem>
-                    </div>
+                  </div>
                 </MenuItems>
-              </Menu>          
+              </Menu>
             </div>
           </div>
         </div>
@@ -177,7 +191,8 @@ export default function WorkoutSessionDetailPage() {
             {formatDate(session.date)}
           </h1>
           <p className="text-gray-600">
-            {session.totalExercises} exercice{session.totalExercises > 1 ? 's' : ''}
+            {session.totalExercises} exercice
+            {session.totalExercises > 1 ? "s" : ""}
             {estimatedDuration && ` • ${estimatedDuration} min`}
           </p>
         </div>
@@ -193,7 +208,7 @@ export default function WorkoutSessionDetailPage() {
             <Edit size={16} className="mr-2" />
             Modifier
           </motion.button>
-          
+
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -203,7 +218,7 @@ export default function WorkoutSessionDetailPage() {
             <Copy size={16} className="mr-2" />
             Dupliquer
           </motion.button>
-          
+
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -229,7 +244,7 @@ export default function WorkoutSessionDetailPage() {
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <div className="p-3 bg-blue-50 rounded-lg">
                 <Activity size={24} className="text-blue-600" />
@@ -241,7 +256,7 @@ export default function WorkoutSessionDetailPage() {
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <div className="p-3 bg-purple-50 rounded-lg">
                 <Clock size={24} className="text-purple-600" />
@@ -262,9 +277,7 @@ export default function WorkoutSessionDetailPage() {
                 <FileText size={20} className="text-gray-400" />
                 <h3 className="font-semibold text-gray-900">Notes</h3>
               </div>
-              <p className="text-gray-700 leading-relaxed">
-                {session.notes}
-              </p>
+              <p className="text-gray-700 leading-relaxed">{session.notes}</p>
             </div>
           )}
         </div>
@@ -273,25 +286,27 @@ export default function WorkoutSessionDetailPage() {
         <div className="mb-6">
           <div className="flex flex-wrap gap-2">
             <button
-              onClick={() => setSelectedMuscleGroup('all')}
+              onClick={() => setSelectedMuscleGroup("all")}
               className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                selectedMuscleGroup === 'all'
-                  ? 'bg-green-100 text-green-700 border border-green-200'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                selectedMuscleGroup === "all"
+                  ? "bg-green-100 text-green-700 border border-green-200"
+                  : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
               }`}
             >
               Tous ({session.exercises.length})
             </button>
             {availableMuscleGroups.map((group) => {
-              const count = session.exercises.filter(ex => ex.exercise?.muscleGroup === group).length;
+              const count = session.exercises.filter(
+                (ex) => ex.exercise?.muscleGroup === group,
+              ).length;
               return (
                 <button
                   key={group}
                   onClick={() => setSelectedMuscleGroup(group as MuscleGroup)}
                   className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     selectedMuscleGroup === group
-                      ? 'bg-green-100 text-green-700 border border-green-200'
-                      : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+                      ? "bg-green-100 text-green-700 border border-green-200"
+                      : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
                   }`}
                 >
                   {MUSCLE_GROUP_LABELS[group as MuscleGroup]} ({count})
@@ -314,10 +329,12 @@ export default function WorkoutSessionDetailPage() {
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {exercise.exercise?.name || 'Exercice inconnu'}
+                    {exercise.exercise?.name || "Exercice inconnu"}
                   </h3>
                   <span className="inline-block px-3 py-1 bg-gray-50 text-gray-700 text-sm rounded-full border">
-                    {MUSCLE_GROUP_LABELS[exercise.exercise?.muscleGroup as MuscleGroup] || 'Autre'}
+                    {MUSCLE_GROUP_LABELS[
+                      exercise.exercise?.muscleGroup as MuscleGroup
+                    ] || "Autre"}
                   </span>
                 </div>
                 <div className="text-right text-sm text-gray-500">
@@ -330,25 +347,33 @@ export default function WorkoutSessionDetailPage() {
                 {exercise.sets && (
                   <div>
                     <p className="text-sm text-gray-500">Séries</p>
-                    <p className="font-semibold text-gray-900">{exercise.sets}</p>
+                    <p className="font-semibold text-gray-900">
+                      {exercise.sets}
+                    </p>
                   </div>
                 )}
                 {exercise.reps && (
                   <div>
                     <p className="text-sm text-gray-500">Répétitions</p>
-                    <p className="font-semibold text-gray-900">{exercise.reps}</p>
+                    <p className="font-semibold text-gray-900">
+                      {exercise.reps}
+                    </p>
                   </div>
                 )}
                 {exercise.weight && (
                   <div>
                     <p className="text-sm text-gray-500">Poids</p>
-                    <p className="font-semibold text-gray-900">{exercise.weight} kg</p>
+                    <p className="font-semibold text-gray-900">
+                      {exercise.weight} kg
+                    </p>
                   </div>
                 )}
                 {exercise.duration && (
                   <div>
                     <p className="text-sm text-gray-500">Durée</p>
-                    <p className="font-semibold text-gray-900">{exercise.duration} min</p>
+                    <p className="font-semibold text-gray-900">
+                      {exercise.duration} min
+                    </p>
                   </div>
                 )}
               </div>
@@ -387,7 +412,8 @@ export default function WorkoutSessionDetailPage() {
                 Supprimer la séance
               </h3>
               <p className="text-gray-600 mb-6">
-                Êtes-vous sûr de vouloir supprimer cette séance ? Cette action est irréversible.
+                Êtes-vous sûr de vouloir supprimer cette séance ? Cette action
+                est irréversible.
               </p>
               <div className="flex gap-3">
                 <button

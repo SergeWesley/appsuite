@@ -24,14 +24,14 @@
     box-shadow: theme(boxShadow.lg);
     transform: translateY(-4px);
   }
-  
+
   .floating-action {
     position: fixed;
     bottom: theme(spacing.6);
     right: theme(spacing.6);
     z-index: 50;
   }
-  
+
   .status-badge {
     display: inline-flex;
     align-items: center;
@@ -40,7 +40,7 @@
     font-size: theme(fontSize.xs);
     font-weight: theme(fontWeight.medium);
   }
-  
+
   .status-reading,
   .status-watching {
     background-color: theme(colors.blue.100);
@@ -83,7 +83,7 @@
   .media-card {
     padding: theme(spacing.4);
   }
-  
+
   .floating-action {
     bottom: theme(spacing.4);
     right: theme(spacing.4);
@@ -93,13 +93,18 @@
 /* Effet de brillance sur les cartes */
 .book-card::before,
 .media-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
   transition: left 0.5s;
 }
 

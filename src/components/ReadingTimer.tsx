@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Play, Pause, Square, Clock, BookOpen, X } from 'lucide-react';
-import { Book } from '@/types/book';
-import { ReadingSessionFormData } from '@/types/reading-session';
-import { useTimerContext } from './TimerProvider';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Play, Pause, Square, Clock, BookOpen, X } from "lucide-react";
+import { Book } from "@/types/book";
+import { ReadingSessionFormData } from "@/types/reading-session";
+import { useTimerContext } from "./TimerProvider";
 
 interface ReadingTimerProps {
   book: Book;
@@ -13,7 +13,10 @@ interface ReadingTimerProps {
   onClose: () => void;
   formatDuration: (seconds: number) => string;
   getBookStats: (bookId: string) => any;
-  stopSession: (bookId: string, sessionData?: ReadingSessionFormData) => Promise<any>;
+  stopSession: (
+    bookId: string,
+    sessionData?: ReadingSessionFormData,
+  ) => Promise<any>;
   onSessionStopped: () => void; // Callback pour notifier la page principale
 }
 
@@ -24,20 +27,19 @@ export function ReadingTimer({
   formatDuration,
   getBookStats,
   stopSession,
-  onSessionStopped
+  onSessionStopped,
 }: ReadingTimerProps) {
-
   const {
     isTimerActive,
     getFormattedTime,
     startTimer,
     stopTimer,
     loading: timerLoading,
-    error: timerError
+    error: timerError,
   } = useTimerContext();
 
   const [sessionData, setSessionData] = useState<ReadingSessionFormData>({
-    notes: '',
+    notes: "",
     pagesRead: undefined,
   });
   const [showStopForm, setShowStopForm] = useState(false);
@@ -54,7 +56,7 @@ export function ReadingTimer({
     try {
       await startTimer(book.id);
     } catch (error) {
-      console.error('Erreur lors du démarrage du timer:', error);
+      console.error("Erreur lors du démarrage du timer:", error);
     } finally {
       setIsStarting(false);
     }
@@ -72,11 +74,15 @@ export function ReadingTimer({
       // Utiliser stopSession du hook combiné qui déclenche automatiquement la synchronisation
       const sessionResult = await stopSession(book.id, sessionData);
       // Aussi arrêter le timer pour le contexte
-      const timerSuccess = await stopTimer(book.id, sessionData.notes, sessionData.pagesRead);
+      const timerSuccess = await stopTimer(
+        book.id,
+        sessionData.notes,
+        sessionData.pagesRead,
+      );
 
       if (timerSuccess) {
         setShowStopForm(false);
-        setSessionData({ notes: '', pagesRead: undefined });
+        setSessionData({ notes: "", pagesRead: undefined });
         setIsStopping(false);
         setIsSyncing(true);
 
@@ -92,7 +98,7 @@ export function ReadingTimer({
         }, 0);
       }
     } catch (error) {
-      console.error('Erreur lors de l\'arrêt du timer:', error);
+      console.error("Erreur lors de l'arrêt du timer:", error);
       setIsStopping(false);
       setIsSyncing(false);
     }
@@ -100,9 +106,8 @@ export function ReadingTimer({
 
   const handleCancelStop = () => {
     setShowStopForm(false);
-    setSessionData({ notes: '', pagesRead: undefined });
+    setSessionData({ notes: "", pagesRead: undefined });
   };
-
 
   if (!isOpen) return null;
 
@@ -126,7 +131,9 @@ export function ReadingTimer({
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <Clock className="text-blue-600" size={24} />
-              <h2 className="text-xl font-bold text-gray-900">Session de lecture</h2>
+              <h2 className="text-xl font-bold text-gray-900">
+                Session de lecture
+              </h2>
             </div>
             <button
               onClick={onClose}
@@ -144,19 +151,21 @@ export function ReadingTimer({
                 alt={`Couverture de ${book.title}`}
                 className="w-12 h-16 object-cover rounded-lg shadow-sm"
                 onLoad={(e) => {
-                    const img = e.currentTarget;
-                    // Si largeur ou hauteur très faible → image invalide
-                    if (img.naturalWidth <= 1 || img.naturalHeight <= 1) {
-                    img.src = '/fallback-cover.jpg';
-                    }
+                  const img = e.currentTarget;
+                  // Si largeur ou hauteur très faible → image invalide
+                  if (img.naturalWidth <= 1 || img.naturalHeight <= 1) {
+                    img.src = "/fallback-cover.jpg";
+                  }
                 }}
                 onError={(e) => {
-                    e.currentTarget.src = '/fallback-cover.svg';
+                  e.currentTarget.src = "/fallback-cover.svg";
                 }}
               />
             )}
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-gray-900 truncate">{book.title}</h3>
+              <h3 className="font-semibold text-gray-900 truncate">
+                {book.title}
+              </h3>
               <p className="text-sm text-gray-600">{book.author}</p>
             </div>
           </div>
@@ -186,13 +195,11 @@ export function ReadingTimer({
                       Session en cours...
                     </span>
                   ) : (
-                    'Prêt à commencer'
+                    "Prêt à commencer"
                   )}
                 </p>
                 {timerError && (
-                  <p className="text-sm text-red-600 mt-2">
-                    {timerError}
-                  </p>
+                  <p className="text-sm text-red-600 mt-2">{timerError}</p>
                 )}
               </div>
 
@@ -209,7 +216,7 @@ export function ReadingTimer({
                     ) : (
                       <Play size={20} />
                     )}
-                    {isStarting ? 'Démarrage...' : 'Démarrer'}
+                    {isStarting ? "Démarrage..." : "Démarrer"}
                   </button>
                 ) : (
                   <button
@@ -232,7 +239,9 @@ export function ReadingTimer({
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-gray-600">Sessions totales:</span>
-                    <div className="font-semibold">{bookStats.totalSessions}</div>
+                    <div className="font-semibold">
+                      {bookStats.totalSessions}
+                    </div>
                   </div>
                   <div>
                     <span className="text-gray-600">Temps total:</span>
@@ -248,7 +257,9 @@ export function ReadingTimer({
                   </div>
                   <div>
                     <span className="text-gray-600">Pages lues:</span>
-                    <div className="font-semibold">{bookStats.totalPagesRead}</div>
+                    <div className="font-semibold">
+                      {bookStats.totalPagesRead}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -256,11 +267,16 @@ export function ReadingTimer({
           ) : (
             /* Stop form */
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">Terminer la session</h3>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Terminer la session
+              </h3>
               <p className="text-sm text-gray-600">
-                Temps de lecture: <span className="font-semibold text-green-600">{currentTime}</span>
+                Temps de lecture:{" "}
+                <span className="font-semibold text-green-600">
+                  {currentTime}
+                </span>
               </p>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Pages lues (optionnel)
@@ -270,11 +286,15 @@ export function ReadingTimer({
                   min="0"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Nombre de pages"
-                  value={sessionData.pagesRead || ''}
-                  onChange={(e) => setSessionData({
-                    ...sessionData,
-                    pagesRead: e.target.value ? parseInt(e.target.value) : undefined
-                  })}
+                  value={sessionData.pagesRead || ""}
+                  onChange={(e) =>
+                    setSessionData({
+                      ...sessionData,
+                      pagesRead: e.target.value
+                        ? parseInt(e.target.value)
+                        : undefined,
+                    })
+                  }
                 />
               </div>
 
@@ -286,11 +306,13 @@ export function ReadingTimer({
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                   rows={3}
                   placeholder="Vos impressions sur cette session..."
-                  value={sessionData.notes || ''}
-                  onChange={(e) => setSessionData({
-                    ...sessionData,
-                    notes: e.target.value
-                  })}
+                  value={sessionData.notes || ""}
+                  onChange={(e) =>
+                    setSessionData({
+                      ...sessionData,
+                      notes: e.target.value,
+                    })
+                  }
                 />
               </div>
 
@@ -300,10 +322,14 @@ export function ReadingTimer({
                   disabled={isStopping || isSyncing}
                   className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white py-2 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                 >
-                  {(isStopping || isSyncing) ? (
+                  {isStopping || isSyncing ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : null}
-                  {isStopping ? 'Arrêt...' : isSyncing ? 'Synchronisation...' : 'Terminer'}
+                  {isStopping
+                    ? "Arrêt..."
+                    : isSyncing
+                      ? "Synchronisation..."
+                      : "Terminer"}
                 </button>
                 <button
                   onClick={handleCancelStop}
