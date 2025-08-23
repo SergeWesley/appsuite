@@ -113,6 +113,36 @@ docker exec redpanda rpk topic create user-connection-events
 docker exec redpanda rpk topic consume user-connection-events --print-headers
 ```
 
+### Tests et vérification
+
+#### Vérifier le statut de l'API Kafka
+
+```bash
+# Vérifier que l'API fonctionne
+curl -X GET http://localhost:3000/api/events/user-connection
+
+# Réponse attendue si Kafka n'est pas connecté :
+# {"status":"unhealthy","kafka":"disconnected","error":"Connection error: connect ECONNREFUSED 127.0.0.1:9092","timestamp":"..."}
+
+# Réponse attendue si Kafka est connecté :
+# {"status":"healthy","kafka":"connected","timestamp":"..."}
+```
+
+#### Tester l'envoi d'événements manuellement
+
+```bash
+# Envoyer un événement de connexion de test
+curl -X POST http://localhost:3000/api/events/user-connection \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": "test-user-123",
+    "email": "test@example.com",
+    "eventType": "connection",
+    "sessionId": "test-session-456",
+    "userAgent": "test-agent"
+  }'
+```
+
 ## Tolérance aux pannes
 
 Le système est conçu pour être résilient :
