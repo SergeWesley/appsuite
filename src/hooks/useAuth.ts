@@ -3,11 +3,13 @@
 import { useState, useEffect } from 'react';
 import { User, AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
+import { useKafka } from './useKafka';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { sendConnectionEvent, sendDisconnectionEvent } = useKafka();
 
   useEffect(() => {
     // Obtenir la session initiale
@@ -19,9 +21,27 @@ export function useAuth() {
     // Écouter les changements d'authentification
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      const newUser = session?.user ?? null;
+      const previousUser = user;
+
+      setUser(newUser);
       setLoading(false);
+
+      // Envoyer les événements Kafka selon le type d'événement
+      if (newUser && !previousUser && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
+        // Nouvelle connexion
+        await sendConnectionEvent({
+          userId: newUser.id,
+          email: newUser.email || 'unknown@example.com',
+        });
+      } else if (!newUser && previousUser && event === 'SIGNED_OUT') {
+        // Déconnexion
+        await sendDisconnectionEvent({
+          userId: previousUser.id,
+          email: previousUser.email || 'unknown@example.com',
+        });
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -86,6 +106,15 @@ export function useAuth() {
   const signOut = async () => {
     try {
       setError(null);
+
+      // Envoyer l'événement de déconnexion avant de se déconnecter
+      if (user) {
+        await sendDisconnectionEvent({
+          userId: user.id,
+          email: user.email || 'unknown@example.com',
+        });
+      }
+
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
     } catch (error) {
