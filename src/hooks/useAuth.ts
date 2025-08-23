@@ -9,6 +9,7 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { sendConnectionEvent, sendDisconnectionEvent } = useKafka();
 
   useEffect(() => {
     // Obtenir la session initiale
