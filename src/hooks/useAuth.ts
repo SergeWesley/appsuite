@@ -106,6 +106,15 @@ export function useAuth() {
   const signOut = async () => {
     try {
       setError(null);
+
+      // Envoyer l'événement de déconnexion avant de se déconnecter
+      if (user) {
+        await sendDisconnectionEvent({
+          userId: user.id,
+          email: user.email || 'unknown@example.com',
+        });
+      }
+
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
     } catch (error) {
