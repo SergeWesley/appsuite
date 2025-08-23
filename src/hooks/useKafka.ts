@@ -17,7 +17,7 @@ interface UserConnectionEventRequest {
 }
 
 export function useKafka() {
-  const sessionIdRef = useRef<string>();
+  const sessionIdRef = useRef<string | undefined>(undefined);
 
   // Générer un ID de session unique au chargement du hook
   useEffect(() => {
