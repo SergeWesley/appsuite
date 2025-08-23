@@ -82,7 +82,7 @@ class KafkaService {
         throw new Error('Producer Kafka non initialisé');
       }
 
-      const message: KafkaMessage = {
+      const message = {
         key: event.userId,
         value: JSON.stringify({
           ...event,
