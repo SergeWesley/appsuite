@@ -68,8 +68,9 @@ L'intégration est automatique :
 
 ### Fichiers créés/modifiés :
 
-- `src/lib/kafka.ts` : Service Kafka principal
-- `src/hooks/useKafka.ts` : Hook React pour l'intégration Kafka
+- `src/lib/server/kafka.ts` : Service Kafka côté serveur
+- `src/app/api/events/user-connection/route.ts` : Route API pour gérer les événements
+- `src/hooks/useKafka.ts` : Hook React pour communiquer avec l'API
 - `src/hooks/useAuth.ts` : Hook d'authentification modifié pour envoyer les événements
 - `.env.local` : Variables d'environnement
 - `.env.example` : Exemple de configuration
@@ -78,9 +79,17 @@ L'intégration est automatique :
 
 1. L'utilisateur se connecte/déconnecte
 2. Le hook `useAuth` détecte le changement d'état
-3. Le hook `useKafka` est appelé pour envoyer l'événement
-4. Le service `kafkaService` se connecte à RedPanda et envoie l'événement
-5. L'événement est publié dans le topic configuré
+3. Le hook `useKafka` envoie une requête HTTP à l'API `/api/events/user-connection`
+4. L'API valide les données et utilise le service `kafkaService` côté serveur
+5. Le service se connecte à RedPanda et envoie l'événement
+6. L'événement est publié dans le topic configuré
+
+### Avantages de l'architecture côté serveur :
+
+- **Sécurité** : Les credentials Kafka ne sont pas exposés côté client
+- **Performance** : Connexions Kafka réutilisées côté serveur
+- **Fiabilité** : Gestion centralisée des erreurs et retry logic
+- **Conformité** : Respect des bonnes pratiques de sécurité
 
 ## Surveillance et debugging
 
