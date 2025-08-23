@@ -1,12 +1,19 @@
 'use client';
 
 import { useCallback, useRef, useEffect } from 'react';
-import { kafkaService } from '@/lib/kafka';
 
 interface UserConnectionEventData {
   userId: string;
   email: string;
   sessionId?: string;
+}
+
+interface UserConnectionEventRequest {
+  userId: string;
+  email: string;
+  eventType: 'connection' | 'disconnection';
+  sessionId: string;
+  userAgent?: string;
 }
 
 export function useKafka() {
@@ -19,74 +26,87 @@ export function useKafka() {
     }
   }, []);
 
+  // Fonction utilitaire pour envoyer un événement via l'API
+  const sendEventToAPI = useCallback(async (eventType: 'connection' | 'disconnection', userData: UserConnectionEventData) => {
+    try {
+      const sessionId = userData.sessionId || sessionIdRef.current || 'unknown';
+
+      const eventData: UserConnectionEventRequest = {
+        userId: userData.userId,
+        email: userData.email,
+        eventType,
+        sessionId,
+        userAgent: typeof window !== 'undefined' ? navigator.userAgent : undefined,
+      };
+
+      const response = await fetch('/api/events/user-connection', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(eventData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Erreur inconnue' }));
+        throw new Error(`Erreur API: ${response.status} - ${errorData.error || 'Erreur inconnue'}`);
+      }
+
+      const result = await response.json();
+      console.log(`Événement ${eventType} envoyé avec succès:`, result);
+
+      return result;
+    } catch (error) {
+      console.error(`Erreur lors de l'envoi de l'événement ${eventType}:`, error);
+      // Ne pas faire échouer le processus d'authentification/déconnexion
+      throw error;
+    }
+  }, []);
+
   // Fonction pour envoyer un événement de connexion
   const sendConnectionEvent = useCallback(async (userData: UserConnectionEventData) => {
     try {
-      const sessionId = userData.sessionId || sessionIdRef.current || 'unknown';
-      
-      const event = kafkaService.createConnectionEvent(
-        userData.userId,
-        userData.email,
-        sessionId
-      );
-
-      await kafkaService.sendUserConnectionEvent(event);
+      await sendEventToAPI('connection', userData);
     } catch (error) {
       console.error('Erreur lors de l\'envoi de l\'événement de connexion:', error);
       // Ne pas faire échouer le processus d'authentification
     }
-  }, []);
+  }, [sendEventToAPI]);
 
   // Fonction pour envoyer un événement de déconnexion
   const sendDisconnectionEvent = useCallback(async (userData: UserConnectionEventData) => {
     try {
-      const sessionId = userData.sessionId || sessionIdRef.current || 'unknown';
-      
-      const event = kafkaService.createDisconnectionEvent(
-        userData.userId,
-        userData.email,
-        sessionId
-      );
-
-      await kafkaService.sendUserConnectionEvent(event);
+      await sendEventToAPI('disconnection', userData);
     } catch (error) {
       console.error('Erreur lors de l\'envoi de l\'événement de déconnexion:', error);
       // Ne pas faire échouer le processus de déconnexion
     }
-  }, []);
+  }, [sendEventToAPI]);
 
   // Fonction pour obtenir l'ID de session actuel
   const getCurrentSessionId = useCallback(() => {
     return sessionIdRef.current;
   }, []);
 
-  // Initialiser la connexion Kafka (tentative en arrière-plan)
-  useEffect(() => {
-    const initKafka = async () => {
-      try {
-        await kafkaService.connect();
-      } catch (error) {
-        console.warn('Impossible de se connecter à Kafka au démarrage:', error);
-        // L'application continue de fonctionner même si Kafka n'est pas disponible
-      }
-    };
+  // Fonction pour vérifier le statut de Kafka via l'API
+  const checkKafkaStatus = useCallback(async () => {
+    try {
+      const response = await fetch('/api/events/user-connection', {
+        method: 'GET',
+      });
 
-    // Initialiser seulement côté client
-    if (typeof window !== 'undefined') {
-      initKafka();
+      const status = await response.json();
+      return status;
+    } catch (error) {
+      console.error('Erreur lors de la vérification du statut Kafka:', error);
+      return { status: 'error', error: (error as Error).message };
     }
-
-    // Nettoyage lors du démontage du composant
-    return () => {
-      if (typeof window !== 'undefined') {
-        kafkaService.disconnect().catch(console.error);
-      }
-    };
   }, []);
 
   return {
     sendConnectionEvent,
     sendDisconnectionEvent,
     getCurrentSessionId,
+    checkKafkaStatus,
   };
 }
