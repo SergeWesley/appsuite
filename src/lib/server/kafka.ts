@@ -29,7 +29,12 @@ class KafkaService {
       requestTimeout: 30000,
     });
 
-    // Initialiser la connexion lors de la création de l'instance
+    // Ne pas initialiser automatiquement pendant le build
+    if (process.env.NODE_ENV !== 'development' || process.env.NEXT_PHASE === 'phase-production-build') {
+      return;
+    }
+
+    // Initialiser la connexion lors de la création de l'instance (seulement en dev/prod runtime)
     this.initializeConnection();
   }
 
