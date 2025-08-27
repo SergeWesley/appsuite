@@ -64,8 +64,7 @@ export function MediaStats({
       {/* Header cliquable */}
       <button
         onClick={() => {
-          updateFilter("isStatsOpen", !isStatsOpen);
-          console.log(isStatsOpen);
+          updateFilter("isStatsOpen", !isStatsOpen)
         }}
         className="flex items-center justify-between w-full bg-white p-4 rounded-xl shadow-sm border border-gray-200"
       >
