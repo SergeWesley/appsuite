@@ -7,6 +7,7 @@ export interface FilterState {
   selectedType?: string;
   searchQuery?: string;
   selectedApp?: string;
+  isStatsOpen?: boolean;
 }
 
 /**
@@ -39,7 +40,7 @@ export const useFilterPersistence = (
 
   // Sauvegarder dans localStorage quand les filtres changent
   const updateFilter = useCallback(
-    (key: keyof FilterState, value: string) => {
+    (key: keyof FilterState, value: string| boolean) => {
       setFilters((prev) => {
         const newFilters = { ...prev, [key]: value };
         try {
@@ -80,9 +81,13 @@ export const useFilterPersistence = (
       filters.selectedPeriod || defaultValues.selectedPeriod || "all",
     selectedViewMode:
       filters.selectedViewMode || defaultValues.selectedViewMode || "calendar",
-    selectedType: filters.selectedType || defaultValues.selectedType || "all",
-    searchQuery: filters.searchQuery || defaultValues.searchQuery || "",
+    selectedType: 
+      filters.selectedType || defaultValues.selectedType || "all",
+    searchQuery: 
+      filters.searchQuery || defaultValues.searchQuery || "",
     selectedApp:
       filters.selectedApp || defaultValues.selectedApp || "dashboard",
+    isStatsOpen:
+      filters.isStatsOpen ?? defaultValues.isStatsOpen ?? true
   };
 };
