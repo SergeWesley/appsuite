@@ -44,8 +44,6 @@ export default function NewWorkoutSessionPage() {
                   Tracker
                 </h1>
               </button>
-              <span className="text-gray-400">•</span>
-              <span className="text-sm text-gray-600">Nouvelle séance</span>
             </div>
 
             <div className="flex items-center gap-4">
