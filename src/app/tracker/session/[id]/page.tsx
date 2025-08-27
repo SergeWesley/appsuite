@@ -137,10 +137,6 @@ export default function WorkoutSessionDetailPage() {
                   Tracker
                 </h1>
               </button>
-              <span className="text-gray-400">•</span>
-              <span className="text-sm text-gray-600 capitalize">
-                {formatDate(session.date)}
-              </span>
             </div>
 
             <div className="flex items-center gap-4">

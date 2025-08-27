@@ -108,7 +108,7 @@ export default function EditWorkoutSessionPage() {
                 </h1>
               </button>
               <span className="text-gray-400">•</span>
-              <span className="text-sm text-gray-600">Modifier séance</span>
+              <span className="text-sm text-gray-600">Modifier séance</span> 
             </div>
 
             <div className="flex items-center gap-4">
