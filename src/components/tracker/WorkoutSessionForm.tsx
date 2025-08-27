@@ -196,7 +196,7 @@ export function WorkoutSessionForm({
 
     const newExercise: Omit<WorkoutExercise, "id" | "exercise"> = {
       exerciseId,
-      sets: 3,
+      sets: exercise.muscleGroup === "cardio" ? undefined : 3,
       reps: exercise.muscleGroup === "cardio" ? undefined : 12,
       weight: exercise.muscleGroup === "cardio" ? undefined : undefined,
       duration: exercise.muscleGroup === "cardio" ? 30 : undefined,

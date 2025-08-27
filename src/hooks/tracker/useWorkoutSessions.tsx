@@ -181,7 +181,7 @@ export function useWorkoutSessions() {
             notes: exercise.notes || null,
             exercise_order: exercise.order,
           }));
-
+        
         const { error: exercisesError } = await supabase
           .from("workout_exercises")
           .insert(exerciseInserts);
