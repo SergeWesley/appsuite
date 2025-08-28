@@ -3,8 +3,6 @@
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import { AnimatePresence, motion } from "framer-motion";
 import { Film, Play, CheckCircle, Clock, Heart, ChevronDown } from "lucide-react";
-import { useState } from "react";
-
 interface MediaStatsProps {
   total: number;
   watching: number;
