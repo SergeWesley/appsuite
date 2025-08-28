@@ -284,6 +284,7 @@ export interface Database {
           created_at: string;
           updated_at: string;
           estimated_time_minutes: number | null; // Temps estimé pour l'exercice en minutes
+          source: string | null;
         };
         Insert: {
           id?: string;
@@ -301,6 +302,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
           estimated_time_minutes?: number | null; // Temps estimé pour l'exercice en minutes
+          source?: string | null;
         };
         Update: {
           id?: string;
@@ -318,6 +320,7 @@ export interface Database {
           created_at?: string;
           updated_at?: string;
           estimated_time_minutes?: number | null; // Temps estimé pour l'exercice en minutes
+          source?: string | null;
         };
       };
       workout_sessions: {

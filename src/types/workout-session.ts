@@ -15,6 +15,7 @@ export interface Exercise {
   isCustom: boolean;
   userId?: string;
   dateCreated: Date;
+  source?: string;
 }
 
 export interface WorkoutExercise {

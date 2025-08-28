@@ -39,12 +39,9 @@ export default function ExerciseCatalogPage() {
   } = useExercises();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedMuscleGroup, setSelectedMuscleGroup] =
-    useState<MuscleGroup>("all");
+  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<MuscleGroup>("all");
   const [showExerciseForm, setShowExerciseForm] = useState(false);
-  const [editingExercise, setEditingExercise] = useState<
-    Exercise | undefined
-  >();
+  const [editingExercise, setEditingExercise] = useState<Exercise | undefined>();
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
   // Filtrer les exercices
@@ -363,19 +360,32 @@ export default function ExerciseCatalogPage() {
                     }}
                     className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow"
                   >
-                    <div className="mb-3">
-                      <h3 className="font-semibold text-gray-900 mb-2">
-                        {exercise.name}
-                      </h3>
-                      <span className="inline-block px-3 py-1 bg-green-50 text-green-700 text-sm rounded-full border border-green-200">
-                        {MUSCLE_GROUP_LABELS[exercise.muscleGroup]}
-                      </span>
+                    <div className="flex items-start justify-between gap-4">
+                      {/* Texte à gauche */}
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900 mb-2">
+                          {exercise.name}
+                        </h3>
+                        <span className="inline-block px-3 py-1 bg-green-50 text-green-700 text-sm rounded-full border border-green-200">
+                          {MUSCLE_GROUP_LABELS[exercise.muscleGroup]}
+                        </span>
+
+                        {exercise.description && (
+                          <p className="text-sm text-gray-600 mt-2">
+                            {exercise.description}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* GIF à droite */}
+                      {exercise.source && (
+                        <img
+                          src={`/${exercise.source}`}
+                          alt={exercise.name}
+                          className="w-24 h-24 object-contain rounded-lg"
+                        />
+                      )}
                     </div>
-                    {exercise.description && (
-                      <p className="text-sm text-gray-600">
-                        {exercise.description}
-                      </p>
-                    )}
                   </motion.div>
                 ))}
               </div>

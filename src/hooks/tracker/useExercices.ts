@@ -24,6 +24,7 @@ function mapRowToExercise(row: ExerciseRow): Exercise {
     isCustom: row.is_custom,
     userId: row.user_id || undefined,
     dateCreated: new Date(row.created_at),
+    source: row.source || undefined,
   };
 }
 
