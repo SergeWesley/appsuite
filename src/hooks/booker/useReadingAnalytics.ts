@@ -329,9 +329,7 @@ export function useReadingAnalytics() {
           start_time,
           duration,
           pages_read,
-          books (
-            title
-          )
+          books:book_id ( title )
         `)
         .eq("user_id", user.id)
         .eq("is_active", false)
@@ -340,14 +338,17 @@ export function useReadingAnalytics() {
 
       if (error) throw error;
 
-      const recentSessionsArray: RecentSession[] = sessions?.map((session) => ({
-        id: session.id,
-        bookId: session.book_id,
-        bookTitle: session.books?.map(b => b.title).join(", ") || "Livre inconnu",
-        startTime: new Date(session.start_time),
-        duration: session.duration,
-        pagesRead: session.pages_read || undefined,
-      })) || [];
+      const recentSessionsArray: RecentSession[] = sessions?.map((session) => {
+        const book = session.books as unknown as { title: string };
+        return {
+          id: session.id,
+          bookId: session.book_id,
+          bookTitle: book?.title || "Livre inconnu",
+          startTime: new Date(session.start_time),
+          duration: session.duration,
+          pagesRead: session.pages_read || undefined,
+        };
+      }) || [];
 
       setRecentSessions(recentSessionsArray);
     } catch (err) {
