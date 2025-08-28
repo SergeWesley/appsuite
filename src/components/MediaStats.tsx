@@ -57,7 +57,9 @@ export function MediaStats({
       bgColor: "bg-pink-100",
     },
   ];
-  const { isStatsOpen, updateFilter } = useFilterPersistence("watcher-filters", {});
+  const { isStatsOpen, updateFilter } = useFilterPersistence("watcher-filters", {
+    isStatsOpen: false
+  });
 
   return (
     <div className="mb-8">

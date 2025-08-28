@@ -65,7 +65,7 @@ export function WorkoutStats({ stats }: WorkoutStatsProps) {
   };
 
   const { isStatsOpen, updateFilter } = useFilterPersistence("tracker-filters", {
-    isStatsOpen: true,
+    isStatsOpen: false,
   });
 
   return (
@@ -95,7 +95,7 @@ export function WorkoutStats({ stats }: WorkoutStatsProps) {
             transition={{ duration: 0.3 }}
             className="overflow-hidden"
           >
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-4 mb-4">
               {statCards.map((stat, index) => {
                 const colorClass =
                   colorClasses[stat.color as keyof typeof colorClasses];
