@@ -253,7 +253,7 @@ export default function BookerStatsPage() {
             className="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm border border-gray-200"
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Calendrier de lecture (12 derniers mois)
+              Calendrier de lecture (30 derniers jours)
             </h3>
             <ReadingHeatmap data={dailyStats} />
           </motion.div>
