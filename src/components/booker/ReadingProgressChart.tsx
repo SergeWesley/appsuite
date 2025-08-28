@@ -91,7 +91,8 @@ export function ReadingProgressChart({ data }: ReadingProgressChartProps) {
   }
 
   return (
-    <div className="h-64 w-full">
+    // <div className="h-64 w-full">
+    <div className="w-full">
       {/* Graphique SVG */}
       <div className="relative h-48 bg-gray-50 rounded-lg p-4">
         <svg
