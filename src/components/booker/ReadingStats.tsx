@@ -3,6 +3,7 @@
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  BarChart3,
   BookOpen,
   CheckCircle,
   ChevronDown,
@@ -11,6 +12,7 @@ import {
   Star,
   TrendingUp,
 } from "lucide-react";
+import Link from "next/link";
 
 interface StatsProps {
   total: number;
@@ -118,6 +120,23 @@ export function ReadingStats({
                   </div>
                 </motion.div>
               ))}
+
+              {/* Card pour le lien vers les stats détaillées */}
+              <motion.div
+                key="link-to-stats"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: stats.length * 0.1 }}
+                className="bg-white rounded-xl p-4 shadow-sm border border-gray-200 flex items-center justify-center"
+              >
+                <Link
+                  href="/booker/stats"
+                  className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  <BarChart3 size={20} className="mr-2" />
+                  Plus de statistiques
+                </Link>
+              </motion.div>
 
               {averageRating > 0 && (
                 <motion.div
