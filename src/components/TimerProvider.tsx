@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, ReactNode } from "react";
-import { useTimer } from "@/hooks/useTimer";
+import { useTimer } from "@/hooks/booker/useTimer";
 
 // Créer le contexte pour les timers
 const TimerContext = createContext<ReturnType<typeof useTimer> | null>(null);

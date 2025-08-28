@@ -19,7 +19,7 @@ interface StatsProps {
   averageRating: number;
 }
 
-export function Stats({
+export function ReadingStats({
   total,
   reading,
   completed,

@@ -16,13 +16,13 @@ import {
   Camera,
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
-import { useMediasWithSessions } from "@/hooks/useMediasWithSessions";
+import { useMediasWithSessions } from "@/hooks/watcher/useMediasWithSessions";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import { Media, MediaStatus, MediaFormData, MediaType } from "@/types/media";
-import { MediaCard } from "@/components/MediaCard";
-import { MediaForm } from "@/components/MediaForm";
-import { MediaStats } from "@/components/MediaStats";
-import { WatchingTimer } from "@/components/WatchingTimer";
+import { MediaCard } from "@/components/watcher/MediaCard";
+import { MediaForm } from "@/components/watcher/MediaForm";
+import { MediaStats } from "@/components/watcher/MediaStats";
+import { WatchingTimer } from "@/components/watcher/WatchingTimer";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 

@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Book, BookStatus } from "@/types/book";
-import { ProgressCircle } from "./ProgressCircle";
-import { useTimerContext } from "./TimerProvider";
+import { ProgressCircle } from "../ProgressCircle";
+import { useTimerContext } from "../TimerProvider";
 import {
   BookOpen,
   Star,

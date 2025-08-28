@@ -7,7 +7,7 @@ import {
 } from "@/types/watching-session";
 import { Database } from "@/types/supabase";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "./useAuth";
+import { useAuth } from "../useAuth";
 
 type SessionRow = Database["public"]["Tables"]["watching_sessions"]["Row"];
 type SessionInsert =

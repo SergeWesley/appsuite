@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { useBooks } from "./useBooks";
-import { useReadingSessions } from "./useReadingSessions";
+import { useReadingSessions } from "../useReadingSessions";
 
 /**
  * Hook combiné qui synchronise automatiquement les livres et les sessions de lecture.

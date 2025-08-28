@@ -13,13 +13,13 @@ import {
   Heart,
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
-import { useBooksWithSessions } from "@/hooks/useBooksWithSessions";
+import { useBooksWithSessions } from "@/hooks/booker/useBooksWithSessions";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import { Book, BookStatus, BookFormData } from "@/types/book";
-import { BookCard } from "@/components/BookCard";
-import { BookForm } from "@/components/BookForm";
-import { Stats } from "@/components/Stats";
-import { ReadingTimer } from "@/components/ReadingTimer";
+import { BookCard } from "@/components/booker/BookCard";
+import { BookForm } from "@/components/booker/BookForm";
+import { ReadingStats } from "@/components/booker/ReadingStats";
+import { ReadingTimer } from "@/components/booker/ReadingTimer";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
 
@@ -110,14 +110,12 @@ export default function BookerPage() {
   };
 
   // Filtrer les livres
-  const filteredBooks = books.filter((book) => {
-    const matchesStatus =
-      selectedStatus === "all" || book.status === selectedStatus;
+  const filteredBooks = books.filter((book: Book) => {
+    const matchesStatus = selectedStatus === "all" || book.status === selectedStatus;
     const matchesSearch =
       book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (book.genre &&
-        book.genre.toLowerCase().includes(searchQuery.toLowerCase()));
+      (book.genre && book.genre.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesStatus && matchesSearch;
   });
 
@@ -219,7 +217,7 @@ export default function BookerPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Statistiques */}
-        <Stats {...stats} />
+        <ReadingStats {...stats} />
 
         {/* Filtres et recherche */}
         <div className="mb-8 space-y-4">
@@ -289,7 +287,7 @@ export default function BookerPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <AnimatePresence>
-                {filteredBooks.map((book, index) => (
+                {filteredBooks.map((book: Book, index: number) => (
                   <motion.div
                     key={book.id}
                     initial={{ opacity: 0, y: 20 }}

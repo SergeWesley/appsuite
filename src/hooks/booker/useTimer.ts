@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useAuth } from "./useAuth";
+import { useAuth } from "../useAuth";
 import { supabase } from "@/lib/supabase";
 
 interface ActiveTimer {

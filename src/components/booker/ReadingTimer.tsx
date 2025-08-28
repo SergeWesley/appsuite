@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Play, Pause, Square, Clock, BookOpen, X } from "lucide-react";
 import { Book } from "@/types/book";
 import { ReadingSessionFormData } from "@/types/reading-session";
-import { useTimerContext } from "./TimerProvider";
+import { useTimerContext } from "../TimerProvider";
 
 interface ReadingTimerProps {
   book: Book;

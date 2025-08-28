@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Media, MediaFormData, MediaStatus, MediaType } from "@/types/media";
 import { Database } from "@/types/supabase";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "./useAuth";
+import { useAuth } from "../useAuth";
 
 type MediaRow = Database["public"]["Tables"]["medias"]["Row"];
 type MediaInsert = Database["public"]["Tables"]["medias"]["Insert"];

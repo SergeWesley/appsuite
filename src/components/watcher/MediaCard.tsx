@@ -2,7 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Media, MediaStatus } from "@/types/media";
-import { ProgressCircle } from "./ProgressCircle";
+import { ProgressCircle } from "../ProgressCircle";
+
 import {
   Film,
   Star,
