@@ -11,6 +11,7 @@ import {
   LogOut,
   User,
   Heart,
+  BarChart3,
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { useBooksWithSessions } from "@/hooks/booker/useBooksWithSessions";
