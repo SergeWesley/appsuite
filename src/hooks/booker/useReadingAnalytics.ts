@@ -343,7 +343,7 @@ export function useReadingAnalytics() {
       const recentSessionsArray: RecentSession[] = sessions?.map((session) => ({
         id: session.id,
         bookId: session.book_id,
-        bookTitle: session.books[0]?.title || "Livre inconnu",
+        bookTitle: session.books?.map(b => b.title).join(", ") || "Livre inconnu",
         startTime: new Date(session.start_time),
         duration: session.duration,
         pagesRead: session.pages_read || undefined,
