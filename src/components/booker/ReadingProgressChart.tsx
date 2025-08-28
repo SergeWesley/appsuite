@@ -187,30 +187,34 @@ export function ReadingProgressChart({ data }: ReadingProgressChartProps) {
 
       {/* Statistiques du mois en cours */}
       {progressData.length > 0 && (
-        <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-          <div>
-            <div className="text-lg font-semibold text-blue-600">
-              {formatTimeHours(progressData[progressData.length - 1].cumulativeTime)}
+        <div className="mt-4 space-y-3">
+          <div className="grid grid-cols-2 gap-3 text-center">
+            <div className="bg-blue-50 rounded-lg p-3">
+              <div className="text-lg font-semibold text-blue-600">
+                {formatTimeHours(progressData[progressData.length - 1].cumulativeTime)}
+              </div>
+              <div className="text-xs text-gray-600">Temps total</div>
             </div>
-            <div className="text-xs text-gray-600">Temps total</div>
+            <div className="bg-green-50 rounded-lg p-3">
+              <div className="text-lg font-semibold text-green-600">
+                {progressData[progressData.length - 1].cumulativeSessions}
+              </div>
+              <div className="text-xs text-gray-600">Sessions total</div>
+            </div>
           </div>
-          <div>
-            <div className="text-lg font-semibold text-green-600">
-              {progressData[progressData.length - 1].cumulativeSessions}
+          <div className="grid grid-cols-2 gap-3 text-center">
+            <div className="bg-purple-50 rounded-lg p-3">
+              <div className="text-lg font-semibold text-purple-600">
+                {progressData[progressData.length - 1].cumulativePages}
+              </div>
+              <div className="text-xs text-gray-600">Pages lues</div>
             </div>
-            <div className="text-xs text-gray-600">Sessions total</div>
-          </div>
-          <div>
-            <div className="text-lg font-semibold text-purple-600">
-              {progressData[progressData.length - 1].cumulativePages}
+            <div className="bg-orange-50 rounded-lg p-3">
+              <div className="text-lg font-semibold text-orange-600">
+                {progressData[progressData.length - 1].cumulativeBooks}
+              </div>
+              <div className="text-xs text-gray-600">Livres finis</div>
             </div>
-            <div className="text-xs text-gray-600">Pages lues</div>
-          </div>
-          <div>
-            <div className="text-lg font-semibold text-orange-600">
-              {progressData[progressData.length - 1].cumulativeBooks}
-            </div>
-            <div className="text-xs text-gray-600">Livres finis</div>
           </div>
         </div>
       )}
