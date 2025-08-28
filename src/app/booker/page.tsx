@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "lucide-react";
 import {
   Plus,
   BookOpen,
@@ -12,7 +11,6 @@ import {
   LogOut,
   User,
   Heart,
-  BarChart3,
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { useBooksWithSessions } from "@/hooks/booker/useBooksWithSessions";
@@ -176,13 +174,6 @@ export default function BookerPage() {
             </div>
 
             <div className="flex items-center gap-4">
-              {/* <Link
-                href="/booker/stats"
-                className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                <BarChart3 size={20} className="mr-2" />
-                Statistiques
-              </Link> */}
               <button
                 onClick={() => openForm()}
                 className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

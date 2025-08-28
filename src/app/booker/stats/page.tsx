@@ -305,7 +305,7 @@ export default function BookerStatsPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {recentSessions.slice(0, 10).map((session) => (
+                {recentSessions.slice(0, 10).map((session: any) => (
                   <tr key={session.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {session.bookTitle}
