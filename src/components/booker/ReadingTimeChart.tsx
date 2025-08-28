@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { DailyStat } from "@/hooks/booker/useReadingAnalytics";
 
 interface ReadingTimeChartProps {
@@ -38,6 +38,8 @@ export function ReadingTimeChart({ data }: ReadingTimeChartProps) {
     });
   };
 
+  const [activeIndex, setActiveIndex] = useState<number|null>(null);
+
   if (chartData.length === 0) {
     return (
       <div className="h-64 flex items-center justify-center text-gray-500">
@@ -47,17 +49,18 @@ export function ReadingTimeChart({ data }: ReadingTimeChartProps) {
   }
 
   return (
-    <div className="h-64 w-full">
+    <div className="w-full">
       {/* Graphique en barres simple */}
-      <div className="h-full flex items-end justify-between gap-1 px-2">
+      <div className="h-48 flex items-end justify-between gap-1 px-2">
         {chartData.map((day, index) => {
           const height = maxValue > 0 ? (day.readingTime / maxValue) * 100 : 0;
           const hasData = day.readingTime > 0;
+          const isActive = activeIndex === index;
           
           return (
             <div
               key={day.date}
-              className="flex-1 flex flex-col items-center group relative"
+              className="h-full flex-1 flex items-end group relative"
             >
               {/* Barre */}
               <div
@@ -70,10 +73,15 @@ export function ReadingTimeChart({ data }: ReadingTimeChartProps) {
                   height: `${Math.max(height, hasData ? 2 : 1)}%`,
                   minHeight: hasData ? '2px' : '1px'
                 }}
+                onClick={() => setActiveIndex(isActive ? null : index)}
               />
               
               {/* Tooltip au survol */}
-              <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10">
+              <div
+                  className={`absolute bottom-full mb-2 z-10 pointer-events-none 
+                    opacity-0 sm:group-hover:opacity-100 ${isActive ? "opacity-100" : ""}
+                    transition-opacity duration-200 `}
+              >
                 <div className="bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap">
                   <div className="font-semibold">{formatDate(day.date)}</div>
                   <div>{formatTime(day.readingTime)}</div>
@@ -114,20 +122,8 @@ export function ReadingTimeChart({ data }: ReadingTimeChartProps) {
         })}
       </div>
 
-      {/* Légende */}
-      {/* <div className="mt-4 flex justify-center space-x-6 text-sm text-gray-600">
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 bg-blue-500 rounded"></div>
-          <span>Temps de lecture</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <div className="w-3 h-3 bg-gray-200 rounded"></div>
-          <span>Pas de lecture</span>
-        </div>
-      </div> */}
-
       {/* Statistiques rapides */}
-      {/* <div className="mt-4 grid grid-cols-3 gap-4 text-center">
+      <div className="mt-4 grid grid-cols-3 gap-4 text-center">
         <div>
           <div className="text-lg font-semibold text-blue-600">
             {formatTime(chartData.reduce((acc, day) => acc + day.readingTime, 0))}
@@ -149,7 +145,7 @@ export function ReadingTimeChart({ data }: ReadingTimeChartProps) {
           </div>
           <div className="text-xs text-gray-600">Moyenne/jour</div>
         </div>
-      </div> */}
+      </div>
     </div>
   );
 }
