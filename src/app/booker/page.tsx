@@ -176,6 +176,14 @@ export default function BookerPage() {
             </div>
 
             <div className="flex items-center gap-4">
+              <Link
+                href="/booker/stats"
+                className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                <BarChart3 size={20} className="mr-2" />
+                Statistiques
+              </Link>
+
               <button
                 onClick={() => openForm()}
                 className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
