@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { DailyStat } from "@/hooks/booker/useReadingAnalytics";
 
 interface ReadingHeatmapProps {
@@ -8,11 +8,13 @@ interface ReadingHeatmapProps {
 }
 
 export function ReadingHeatmap({ data }: ReadingHeatmapProps) {
-  // Préparer les données pour la heatmap (12 derniers mois)
+  const [selectedDay, setSelectedDay] = useState<DailyStat | null>(null);
+
+  // Préparer les données pour la heatmap (30 derniers jours)
   const heatmapData = useMemo(() => {
     const endDate = new Date();
     const startDate = new Date();
-    startDate.setFullYear(startDate.getFullYear() - 1);
+    startDate.setDate(startDate.getDate() - 29); // 30 jours au total
 
     // Créer un map des données par date
     const dataMap = new Map<string, DailyStat>();
@@ -20,12 +22,12 @@ export function ReadingHeatmap({ data }: ReadingHeatmapProps) {
       dataMap.set(day.date, day);
     });
 
-    // Créer la grille de 52 semaines x 7 jours
+    // Créer la grille des 30 derniers jours organisée par semaines
     const weeks: (DailyStat | null)[][] = [];
     const currentDate = new Date(startDate);
 
-    // Aller au dimanche précédent pour commencer la grille
-    while (currentDate.getDay() !== 0) {
+    // Aller au lundi précédent pour commencer la grille
+    while (currentDate.getDay() !== 1) {
       currentDate.setDate(currentDate.getDate() - 1);
     }
 
@@ -53,7 +55,7 @@ export function ReadingHeatmap({ data }: ReadingHeatmapProps) {
       weeks.push(week);
     }
 
-    return weeks;
+    return weeks.filter(week => week.some(day => day !== null));
   }, [data]);
 
   // Calculer l'intensité maximale pour la mise à l'échelle des couleurs
@@ -99,61 +101,75 @@ export function ReadingHeatmap({ data }: ReadingHeatmapProps) {
     });
   };
 
+  // Fonction pour formater la date courte
+  const formatShortDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("fr-FR", { 
+      day: "numeric",
+      month: "short"
+    });
+  };
+
   // Noms des jours en français
-  const dayNames = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
-  
-  // Noms des mois
-  const monthNames = [
-    "Jan", "Fév", "Mar", "Avr", "Mai", "Jun",
-    "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"
-  ];
+  const dayNames = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+
+  // Gérer le clic/touch sur un jour
+  const handleDayClick = (day: DailyStat | null) => {
+    if (day) {
+      setSelectedDay(selectedDay?.date === day.date ? null : day);
+    }
+  };
 
   return (
     <div className="w-full">
-      {/* En-têtes des mois */}
-      <div className="flex mb-2">
-        <div className="w-8"></div> {/* Espace pour les labels des jours */}
-        <div className="flex-1 flex justify-between text-xs text-gray-600">
-          {Array.from({ length: 12 }, (_, i) => {
-            const date = new Date();
-            date.setMonth(date.getMonth() - 11 + i);
-            return (
-              <span key={i} className="flex-1 text-center">
-                {monthNames[date.getMonth()]}
-              </span>
-            );
-          })}
+      {/* En-têtes des jours de la semaine */}
+      <div className="flex mb-3">
+        <div className="w-12 text-xs text-gray-600">Jour</div>
+        <div className="flex-1 grid grid-cols-7 gap-1 text-center">
+          {dayNames.map((dayName) => (
+            <div key={dayName} className="text-xs text-gray-600 py-1">
+              {dayName}
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Grille principale */}
-      <div className="flex">
-        {/* Labels des jours */}
-        <div className="flex flex-col justify-between w-8 pr-2">
-          {[1, 3, 5].map((dayIndex) => (
-            <div key={dayIndex} className="text-xs text-gray-600 h-3 flex items-center">
-              {dayNames[dayIndex]}
+      <div className="space-y-1">
+        {heatmapData.map((week, weekIndex) => (
+          <div key={weekIndex} className="flex">
+            <div className="w-12 text-xs text-gray-600 flex items-center">
+              {/* Afficher la date de début de semaine */}
+              {week.find(day => day !== null) && (
+                <span>
+                  {formatShortDate(week.find(day => day !== null)!.date)}
+                </span>
+              )}
             </div>
-          ))}
-        </div>
-
-        {/* Grille des semaines */}
-        <div className="flex flex-1 gap-1">
-          {heatmapData.map((week, weekIndex) => (
-            <div key={weekIndex} className="flex flex-col gap-1 flex-1">
+            <div className="flex-1 grid grid-cols-7 gap-1">
               {week.map((day, dayIndex) => (
-                <div
+                <button
                   key={`${weekIndex}-${dayIndex}`}
                   className={`
-                    h-3 rounded-sm cursor-pointer transition-all duration-200 group relative
+                    h-8 sm:h-10 rounded-lg transition-all duration-200 relative group
                     ${day ? getIntensityColor(day.readingTime) : "bg-transparent"}
                     ${day && day.readingTime > 0 ? "hover:ring-2 hover:ring-blue-400 hover:ring-opacity-50" : ""}
+                    ${selectedDay?.date === day?.date ? "ring-2 ring-blue-500 ring-opacity-70 scale-105" : ""}
+                    ${day ? "cursor-pointer active:scale-95" : "cursor-default"}
                   `}
-                  title={day ? `${formatDate(day.date)}: ${formatTime(day.readingTime)}` : ""}
+                  onClick={() => handleDayClick(day)}
+                  disabled={!day}
                 >
-                  {/* Tooltip détaillé */}
+                  {/* Numéro du jour sur mobile */}
                   {day && (
-                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20">
+                    <span className="text-xs font-medium text-gray-700 sm:hidden">
+                      {new Date(day.date).getDate()}
+                    </span>
+                  )}
+
+                  {/* Tooltip pour desktop */}
+                  {day && (
+                    <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20 hidden sm:block">
                       <div className="bg-gray-900 text-white text-xs rounded px-3 py-2 whitespace-nowrap">
                         <div className="font-semibold">{formatDate(day.date)}</div>
                         <div className="text-blue-200">
@@ -176,12 +192,42 @@ export function ReadingHeatmap({ data }: ReadingHeatmapProps) {
                       </div>
                     </div>
                   )}
-                </div>
+                </button>
               ))}
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
+
+      {/* Détails du jour sélectionné (mobile) */}
+      {selectedDay && (
+        <div className="mt-4 sm:hidden bg-gray-900 text-white rounded-lg p-4">
+          <div className="font-semibold text-blue-200 mb-2">
+            {formatDate(selectedDay.date)}
+          </div>
+          <div className="space-y-1">
+            <div className="text-blue-200">
+              {selectedDay.readingTime > 0 ? formatTime(selectedDay.readingTime) : "Pas de lecture"}
+            </div>
+            {selectedDay.sessions > 0 && (
+              <div className="text-green-200">
+                {selectedDay.sessions} session{selectedDay.sessions > 1 ? 's' : ''}
+              </div>
+            )}
+            {selectedDay.pagesRead > 0 && (
+              <div className="text-purple-200">
+                {selectedDay.pagesRead} page{selectedDay.pagesRead > 1 ? 's' : ''}
+              </div>
+            )}
+          </div>
+          <button
+            onClick={() => setSelectedDay(null)}
+            className="mt-3 text-xs text-gray-400 hover:text-white"
+          >
+            Fermer
+          </button>
+        </div>
+      )}
 
       {/* Légende */}
       <div className="flex items-center justify-between mt-4 text-xs text-gray-600">
@@ -197,7 +243,7 @@ export function ReadingHeatmap({ data }: ReadingHeatmapProps) {
         <span>Plus</span>
       </div>
 
-      {/* Statistiques rapides */}
+      {/* Statistiques rapides des 30 derniers jours */}
       <div className="mt-4 grid grid-cols-3 gap-4 text-center">
         <div className="bg-blue-50 rounded-lg p-3">
           <div className="text-lg font-semibold text-blue-600">
@@ -207,7 +253,7 @@ export function ReadingHeatmap({ data }: ReadingHeatmapProps) {
         </div>
         <div className="bg-green-50 rounded-lg p-3">
           <div className="text-lg font-semibold text-green-600">
-            {Math.round((data.filter(day => day.readingTime > 0).length / Math.max(data.length, 1)) * 100)}%
+            {data.length > 0 ? Math.round((data.filter(day => day.readingTime > 0).length / data.length) * 100) : 0}%
           </div>
           <div className="text-xs text-gray-600">Régularité</div>
         </div>
@@ -217,6 +263,11 @@ export function ReadingHeatmap({ data }: ReadingHeatmapProps) {
           </div>
           <div className="text-xs text-gray-600">Record journalier</div>
         </div>
+      </div>
+
+      {/* Note explicative pour mobile */}
+      <div className="mt-3 text-xs text-gray-500 text-center sm:hidden">
+        Touchez un jour pour voir les détails
       </div>
     </div>
   );
