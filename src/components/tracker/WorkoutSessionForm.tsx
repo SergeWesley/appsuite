@@ -201,12 +201,12 @@ export function WorkoutSessionForm({
       weight: exercise.muscleGroup === "cardio" ? undefined : undefined,
       duration: exercise.muscleGroup === "cardio" ? 30 : undefined,
       notes: "",
-      order: formData.exercises.length + 1,
+      order: 1,
     };
 
     setFormData((prev) => ({
       ...prev,
-      exercises: [...prev.exercises, newExercise],
+      exercises: [newExercise, ...prev.exercises],
     }));
   };
 
