@@ -206,7 +206,9 @@ export function WorkoutSessionForm({
 
     setFormData((prev) => ({
       ...prev,
-      exercises: [newExercise, ...prev.exercises],
+      exercises: [newExercise,
+        ...prev.exercises.map((ex) => ({ ...ex, order: ex.order + 1 })), // décale les autres
+      ],
     }));
   };
 
