@@ -146,7 +146,7 @@ export default function BookerPage() {
         <div className="text-center">
           <div className="text-red-600 text-6xl mb-4">⚠️</div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Erreur de connexion
+            Oups, quelque chose a mal tourné
           </h2>
           <p className="text-gray-600 mb-4">{error}</p>
         </div>

@@ -160,16 +160,13 @@ export function useBooks() {
       if (updates.author !== undefined) updateData.author = updates.author;
       if (updates.cover !== undefined) updateData.cover = updates.cover;
       if (updates.status !== undefined) updateData.status = updates.status;
-      if (updates.totalPages !== undefined)
-        updateData.total_pages = updates.totalPages;
-      if (updates.currentPage !== undefined)
-        updateData.current_page = updates.currentPage;
+      if (updates.totalPages !== undefined) updateData.total_pages = updates.totalPages;
+      if (updates.currentPage !== undefined) updateData.current_page = updates.currentPage;
       if (updates.rating !== undefined) updateData.rating = updates.rating;
       if (updates.notes !== undefined) updateData.notes = updates.notes;
       if (updates.genre !== undefined) updateData.genre = updates.genre;
       if (updates.isbn !== undefined) updateData.isbn = updates.isbn;
-      if (updates.coverUrl !== undefined)
-        updateData.cover_url = updates.coverUrl;
+      if (updates.coverUrl !== undefined) updateData.cover_url = updates.coverUrl;
 
       const { data, error } = await supabase
         .from("books")
@@ -186,9 +183,8 @@ export function useBooks() {
         prev.map((book) => (book.id === id ? updatedBook : book)),
       );
       return true;
-    } catch (err) {
-      console.error("Erreur lors de la mise à jour du livre:", err);
-      setError(err instanceof Error ? err.message : "Erreur inconnue");
+    } catch (err : any) {
+      setError(err.message);
       return false;
     }
   };
