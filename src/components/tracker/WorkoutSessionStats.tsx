@@ -388,7 +388,7 @@ export function WorkoutSessionStats({ session }: WorkoutSessionStatsProps) {
                 </div>
 
                 {/* Stats détaillées */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
                   {stats.totalSets > 0 && (
                     <div>
                       <p className="text-gray-500">Séries</p>
