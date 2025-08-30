@@ -64,6 +64,56 @@ export function BookForm({
   const [isSearchingIsbn, setIsSearchingIsbn] = useState(false);
   const googleBooksTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Refs pour les conteneurs de suggestions et inputs
+  const titleSuggestionsRef = useRef<HTMLDivElement>(null);
+  const authorSuggestionsRef = useRef<HTMLDivElement>(null);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const authorInputRef = useRef<HTMLInputElement>(null);
+  const isbnInputRef = useRef<HTMLInputElement>(null);
+
+  // Fonction pour fermer toutes les suggestions
+  const clearAllSuggestions = () => {
+    setTitleSuggestions([]);
+    setAuthorSuggestions([]);
+  };
+
+   // Effet pour gérer les clics en dehors
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      
+      // Vérifier si le clic est en dehors des suggestions de titre
+      const isOutsideTitleSuggestions = titleSuggestionsRef.current && 
+        !titleSuggestionsRef.current.contains(target) &&
+        titleInputRef.current && !titleInputRef.current.contains(target) &&
+        isbnInputRef.current && !isbnInputRef.current.contains(target);
+      
+      // Vérifier si le clic est en dehors des suggestions d'auteur
+      const isOutsideAuthorSuggestions = authorSuggestionsRef.current && 
+        !authorSuggestionsRef.current.contains(target) &&
+        authorInputRef.current && !authorInputRef.current.contains(target);
+
+      // Fermer les suggestions appropriées
+      if (isOutsideTitleSuggestions && titleSuggestions.length > 0) {
+        setTitleSuggestions([]);
+      }
+      if (isOutsideAuthorSuggestions && authorSuggestions.length > 0) {
+        setAuthorSuggestions([]);
+      }
+    };
+
+    // Ajouter l'écouteur d'événement seulement si le formulaire est ouvert
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      
+      // Nettoyer l'écouteur
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [isOpen, titleSuggestions.length, authorSuggestions.length]);
+
+
   const searchBooks = async (
     query: string,
     type: "title" | "author" | "isbn" = "title",
@@ -144,90 +194,6 @@ export function BookForm({
     }
   };
 
-  const searchOpenLibrary = async (
-    query: string,
-    type: "title" | "author" | "isbn",
-  ): Promise<BookSuggestion[]> => {
-    try {
-      let apiUrl: string;
-
-      if (type === "isbn") {
-        // Utiliser l'endpoint spécifique pour l'ISBN
-        apiUrl = `https://openlibrary.org/search.json?isbn=${encodeURIComponent(query)}&fields=key,title,author_name,first_publish_year,isbn,number_of_pages_median&limit=100`;
-      } else {
-        // Utiliser l'endpoint standard pour titre et auteur
-        const searchParam = type === "title" ? "title" : "author";
-        apiUrl = `https://openlibrary.org/search.json?${searchParam}=${encodeURIComponent(query)}&fields=key,title,author_name,first_publish_year,isbn,number_of_pages_median&limit=100`;
-      }
-
-      const response = await fetch(apiUrl);
-      const data = await response.json();
-
-      return data.docs || [];
-    } catch (error) {
-      console.error("Erreur avec OpenLibrary:", error);
-      return [];
-    }
-  };
-
-  const searchGoogleBooks = async (
-    query: string,
-    type: "title" | "author" | "isbn",
-  ): Promise<BookSuggestion[]> => {
-    try {
-      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_BOOKS_API_KEY;
-      if (!apiKey) {
-        console.warn("Clé API Google Books non configurée");
-        return [];
-      }
-
-      let searchQuery: string;
-      if (type === "isbn") {
-        searchQuery = `isbn:${query}`;
-      } else if (type === "author") {
-        searchQuery = `inauthor:${query}`;
-      } else {
-        searchQuery = `intitle:${query}`;
-      }
-
-      const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchQuery)}&maxResults=40&key=${apiKey}`;
-
-      const response = await fetch(apiUrl);
-      const data = await response.json();
-
-      if (!data.items) {
-        return [];
-      }
-
-      // Convertir le format Google Books vers le format OpenLibrary
-      return data.items.map((item: any, index: number): BookSuggestion => {
-        const volumeInfo = item.volumeInfo;
-        const industryIdentifiers = volumeInfo.industryIdentifiers || [];
-        const isbn =
-          industryIdentifiers.find((id: any) => id.type === "ISBN_13")
-            ?.identifier ||
-          industryIdentifiers.find((id: any) => id.type === "ISBN_10")
-            ?.identifier ||
-          "";
-
-        return {
-          key: `google_${item.id}_${index}`, // Clé unique pour Google Books
-          title: volumeInfo.title || "",
-          author_name: volumeInfo.authors || [],
-          first_publish_year: volumeInfo.publishedDate
-            ? new Date(volumeInfo.publishedDate).getFullYear()
-            : undefined,
-          isbn: isbn ? [isbn] : [],
-          number_of_pages_median: volumeInfo.pageCount,
-          // Pas de cover_i pour Google Books, on utilisera l'ISBN pour récupérer la couverture
-        };
-      });
-    } catch (error) {
-      console.error("Erreur avec Google Books:", error);
-      return [];
-    }
-  };
-
   const handleSuggestionSelect = (suggestion: BookSuggestion) => {
     setFormData((prev) => ({
       ...prev,
@@ -286,8 +252,8 @@ export function BookForm({
       genre: "",
       isbn: "",
     });
-    setTitleSuggestions([]);
-    setAuthorSuggestions([]);
+    
+    clearAllSuggestions();
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -371,6 +337,7 @@ export function BookForm({
                     </label>
                     <div className="relative">
                       <input
+                        ref={titleInputRef}
                         type="text"
                         required
                         value={formData.title}
@@ -390,7 +357,9 @@ export function BookForm({
 
                     {/* Liste des suggestions de titre */}
                     {titleSuggestions.length > 0 && (
-                      <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                      <div
+                        ref={titleSuggestionsRef} 
+                        className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
                         {titleSuggestions.map((suggestion) => (
                           <button
                             key={suggestion.key}
@@ -425,6 +394,7 @@ export function BookForm({
                         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                       />
                       <input
+                        ref={authorInputRef}
                         type="text"
                         required
                         value={formData.author}
@@ -444,7 +414,9 @@ export function BookForm({
 
                     {/* Liste des suggestions d'auteur */}
                     {authorSuggestions.length > 0 && (
-                      <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                      <div 
+                        ref={authorSuggestionsRef}
+                        className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
                         {authorSuggestions.map((suggestion) => (
                           <button
                             key={suggestion.key}
@@ -595,6 +567,7 @@ export function BookForm({
                         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                       />
                       <input
+                        ref={isbnInputRef}
                         type="text"
                         value={formData.isbn}
                         onChange={(e) => {
