@@ -38,7 +38,12 @@ Cette application fonctionne entièrement avec Supabase pour la gestion des donn
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=votre_url_projet_supabase
 NEXT_PUBLIC_SUPABASE_ANON_KEY=votre_cle_anonyme_supabase
+GOOGLE_BOOKS_API_KEY=votre_cle_google_books_api
 ```
+
+**Note de sécurité** :
+- La clé `GOOGLE_BOOKS_API_KEY` ne doit **PAS** avoir le préfixe `NEXT_PUBLIC_` car elle est utilisée côté serveur via une API route (`/api/books/search`) pour éviter de l'exposer dans le bundle client.
+- Les clés Supabase conservent le préfixe `NEXT_PUBLIC_` car Supabase est conçu pour fonctionner côté client avec sécurité RLS.
 
 ### 2. Création de la base de données
 
