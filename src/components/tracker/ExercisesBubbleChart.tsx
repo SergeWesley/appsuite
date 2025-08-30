@@ -12,6 +12,7 @@ interface ExercisesBubbleChartProps {
 interface BubbleData {
   id: string;
   name: string;
+  shortName: string;
   x: number;
   y: number;
   size: number;
@@ -19,22 +20,34 @@ interface BubbleData {
   reps: number;
   weight: number;
   color: string;
-  volume: number;
+  colorIntensity: number;
 }
 
-// Couleurs pour les différents exercices
-const COLORS = [
-  "#10b981", // green-500
-  "#3b82f6", // blue-500
-  "#8b5cf6", // violet-500
-  "#f59e0b", // amber-500
-  "#ef4444", // red-500
-  "#06b6d4", // cyan-500
-  "#84cc16", // lime-500
-  "#f97316", // orange-500
-  "#ec4899", // pink-500
-  "#6366f1", // indigo-500
-];
+// Fonction pour générer une couleur basée sur l'intensité des répétitions
+const getColorFromReps = (reps: number, maxReps: number) => {
+  const intensity = maxReps > 0 ? reps / maxReps : 0;
+
+  // Gradient de bleu (faible) à rouge (élevé)
+  if (intensity < 0.33) {
+    // Bleu à cyan
+    const localIntensity = intensity / 0.33;
+    return `hsl(${240 - localIntensity * 60}, 80%, ${60 + localIntensity * 10}%)`;
+  } else if (intensity < 0.66) {
+    // Cyan à jaune
+    const localIntensity = (intensity - 0.33) / 0.33;
+    return `hsl(${180 - localIntensity * 120}, 80%, ${70 + localIntensity * 10}%)`;
+  } else {
+    // Jaune à rouge
+    const localIntensity = (intensity - 0.66) / 0.34;
+    return `hsl(${60 - localIntensity * 60}, 80%, ${80 - localIntensity * 20}%)`;
+  }
+};
+
+// Fonction pour raccourcir les noms d'exercices
+const shortenExerciseName = (name: string, maxLength = 12) => {
+  if (name.length <= maxLength) return name;
+  return name.substring(0, maxLength - 3) + "...";
+};
 
 export function ExercisesBubbleChart({ exercises, className = "" }: ExercisesBubbleChartProps) {
   const bubbleData = useMemo(() => {
@@ -47,22 +60,28 @@ export function ExercisesBubbleChart({ exercises, className = "" }: ExercisesBub
       return [];
     }
 
+    // Calculer les valeurs max pour les échelles
+    const maxReps = Math.max(...validExercises.map(ex => ex.reps || 0));
+
     // Calculer les données pour chaque bulle
     const bubbles: BubbleData[] = validExercises.map((exercise, index) => {
-      const volume = (exercise.sets || 0) * (exercise.reps || 0);
+      const sets = exercise.sets || 0;
+      const reps = exercise.reps || 0;
       const weight = exercise.weight || 0;
-      
+      const name = exercise.exercise?.name || `Exercice ${index + 1}`;
+
       return {
         id: exercise.id,
-        name: exercise.exercise?.name || `Exercice ${index + 1}`,
+        name,
+        shortName: shortenExerciseName(name),
         x: index,
         y: weight,
-        size: volume,
-        sets: exercise.sets || 0,
-        reps: exercise.reps || 0,
+        size: sets, // Taille = nombre de séries
+        sets,
+        reps,
         weight,
-        volume,
-        color: COLORS[index % COLORS.length],
+        color: getColorFromReps(reps, maxReps),
+        colorIntensity: maxReps > 0 ? reps / maxReps : 0,
       };
     });
 
