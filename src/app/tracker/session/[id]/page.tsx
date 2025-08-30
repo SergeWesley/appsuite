@@ -279,6 +279,9 @@ export default function WorkoutSessionDetailPage() {
           )}
         </div>
 
+        {/* Graphique de visualisation des séries */}
+        <WorkoutScatterChart session={session} className="mb-8" />
+
         {/* Exercise Filter */}
         <div className="mb-6">
           <div className="flex flex-wrap gap-2">
