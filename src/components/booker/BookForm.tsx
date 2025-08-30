@@ -98,52 +98,39 @@ export function BookForm({
         googleBooksTimeoutRef.current = null;
       }
 
-      let openLibraryData = await searchOpenLibrary(query, type);
+      // Utiliser notre API route locale avec debouncing
+      googleBooksTimeoutRef.current = setTimeout(async () => {
+        try {
+          const response = await fetch(`/api/books/search?q=${encodeURIComponent(query)}&type=${type}`);
+          const result = await response.json();
 
-      // Afficher immédiatement les résultats d'OpenLibrary s'il y en a
-      if (openLibraryData && openLibraryData.length > 0) {
-        if (type === "title" || type === "isbn") {
-          setTitleSuggestions(openLibraryData);
-          setAuthorSuggestions([]);
-        } else {
-          setAuthorSuggestions(openLibraryData);
-          setTitleSuggestions([]);
-        }
-      } else {
-        // Si aucun résultat avec OpenLibrary, programmer un fallback vers Google Books avec debouncing
-        console.log(
-          "Aucun résultat avec OpenLibrary, programmation du fallback Google Books...",
-        );
-
-        // Vider les suggestions en attendant
-        if (type === "title" || type === "isbn") {
-          setTitleSuggestions([]);
-          setAuthorSuggestions([]);
-        } else {
-          setAuthorSuggestions([]);
-          setTitleSuggestions([]);
-        }
-
-        // Programmer l'appel à Google Books avec un délai (debouncing)
-        googleBooksTimeoutRef.current = setTimeout(async () => {
-          try {
-            console.log(
-              "Exécution du fallback Google Books après debouncing...",
-            );
-            const googleBooksData = await searchGoogleBooks(query, type);
+          if (response.ok) {
+            const bookData = result.data || [];
 
             if (type === "title" || type === "isbn") {
-              setTitleSuggestions(googleBooksData || []);
+              setTitleSuggestions(bookData);
               setAuthorSuggestions([]);
             } else {
-              setAuthorSuggestions(googleBooksData || []);
+              setAuthorSuggestions(bookData);
               setTitleSuggestions([]);
             }
-          } catch (error) {
-            console.error("Erreur lors du fallback Google Books:", error);
+          } else {
+            console.error("Erreur lors de la recherche:", result.error);
           }
-        }, 1000); // Délai de 1 seconde avant d'appeler Google Books
-      }
+        } catch (error) {
+          console.error("Erreur lors de la recherche de livres:", error);
+        } finally {
+          if (type === "title") {
+            setIsSearchingTitle(false);
+          } else if (type === "author") {
+            setIsSearchingAuthor(false);
+          } else {
+            setIsSearchingIsbn(false);
+          }
+        }
+      }, 500); // Délai de 500ms avant de lancer la recherche
+
+
     } catch (error) {
       console.error("Erreur lors de la recherche de livres:", error);
     } finally {
