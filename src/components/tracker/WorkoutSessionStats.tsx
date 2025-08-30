@@ -198,15 +198,15 @@ export function WorkoutSessionStats({ session }: WorkoutSessionStatsProps) {
                   className="p-4 bg-gray-50 rounded-lg"
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h4 className="font-semibold text-gray-900">{exercise.exerciseName}</h4>
-                      <p className="text-sm text-gray-600">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-gray-900 text-sm sm:text-base truncate">{exercise.exerciseName}</h4>
+                      <p className="text-xs sm:text-sm text-gray-600">
                         {MUSCLE_GROUP_LABELS[exercise.muscleGroup as keyof typeof MUSCLE_GROUP_LABELS]}
                       </p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-gray-900">{Math.round(exercise.totalWeight)} kg</p>
-                      <p className="text-sm text-gray-600">volume total</p>
+                    <div className="text-right ml-3 flex-shrink-0">
+                      <p className="text-base sm:text-lg font-bold text-gray-900">{Math.round(exercise.totalWeight)} kg</p>
+                      <p className="text-xs sm:text-sm text-gray-600">volume total</p>
                     </div>
                   </div>
 
