@@ -299,13 +299,13 @@ export function WorkoutSessionStats({ session }: WorkoutSessionStatsProps) {
                   className="p-4 bg-orange-50 rounded-lg"
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h4 className="font-semibold text-gray-900">{exercise.exerciseName}</h4>
-                      <p className="text-sm text-gray-600">Cardio</p>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-gray-900 text-sm sm:text-base truncate">{exercise.exerciseName}</h4>
+                      <p className="text-xs sm:text-sm text-gray-600">Cardio</p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-gray-900">{exercise.totalDuration} min</p>
-                      <p className="text-sm text-gray-600">durée totale</p>
+                    <div className="text-right ml-3 flex-shrink-0">
+                      <p className="text-base sm:text-lg font-bold text-gray-900">{exercise.totalDuration} min</p>
+                      <p className="text-xs sm:text-sm text-gray-600">durée totale</p>
                     </div>
                   </div>
 
