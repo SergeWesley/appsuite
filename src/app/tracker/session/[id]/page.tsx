@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { ExercisesBubbleChart } from "@/components/tracker/ExercisesBubbleChart";
 
 export default function WorkoutSessionDetailPage() {
   const router = useRouter();
@@ -277,6 +278,9 @@ export default function WorkoutSessionDetailPage() {
             </div>
           )}
         </div>
+
+        {/* Graphique à bulles des exercices */}
+        <ExercisesBubbleChart exercises={session.exercises} className="mb-8" />
 
         {/* Exercise Filter */}
         <div className="mb-6">
