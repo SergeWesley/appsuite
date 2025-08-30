@@ -277,19 +277,27 @@ export function WorkoutScatterChart({ session, className }: WorkoutScatterChartP
 
   if (!chartData) {
     return (
-      <div className={`bg-white rounded-xl shadow-sm border border-gray-100 p-6 ${className || ""}`}>
-        <div className="text-center py-12">
-          <div className="text-gray-400 mb-4">
-            <svg className="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
+      <div className={`bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6 ${className || ""}`}>
+        <div className="text-center py-16">
+          <div className="text-gray-400 mb-6">
+            <div className="w-20 h-20 mx-auto bg-gray-100 rounded-full flex items-center justify-center">
+              <svg className="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+            </div>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            Aucune donnée à afficher
+          <h3 className="text-xl font-bold text-gray-900 mb-3">
+            📊 Aucune donnée à visualiser
           </h3>
-          <p className="text-gray-600">
-            Cette séance ne contient pas d'exercices avec poids et répétitions définis.
+          <p className="text-gray-600 max-w-md mx-auto leading-relaxed">
+            Cette séance ne contient pas d'exercices avec des poids et répétitions définis.
+            Ajoutez des exercices avec ces informations pour voir le graphique apparaître.
           </p>
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200 max-w-md mx-auto">
+            <p className="text-sm text-blue-800">
+              💡 Pour afficher le graphique, assurez-vous que vos exercices incluent le poids et le nombre de répétitions.
+            </p>
+          </div>
         </div>
       </div>
     );
