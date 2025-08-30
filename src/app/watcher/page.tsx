@@ -273,7 +273,7 @@ export default function WatcherPage() {
                   onClick={() => {
                     if (filter.value === "all") {
                       // Réinitialiser tous les filtres de statut
-                      toggleArrayFilter("selectedStatus", "all");
+                      updateFilter("selectedStatus", []);
                     } else {
                       toggleArrayFilter("selectedStatus", filter.value);
                     }
@@ -304,7 +304,7 @@ export default function WatcherPage() {
                   onClick={() => {
                     if (filter.value === "all") {
                       // Réinitialiser tous les filtres de type
-                      toggleArrayFilter("selectedType", "all");
+                      updateFilter("selectedType", []);
                     } else {
                       toggleArrayFilter("selectedType", filter.value);
                     }
