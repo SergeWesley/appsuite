@@ -134,6 +134,7 @@ export interface Database {
           current_season: number | null;
           rating: number | null;
           notes: string | null;
+          synopsis: string | null;
           genre: string | null;
           country: string | null;
           language: string | null;
@@ -171,6 +172,7 @@ export interface Database {
           current_season?: number | null;
           rating?: number | null;
           notes?: string | null;
+          synopsis?: string | null;
           genre?: string | null;
           country?: string | null;
           language?: string | null;
@@ -208,6 +210,7 @@ export interface Database {
           current_season?: number | null;
           rating?: number | null;
           notes?: string | null;
+          synopsis?: string | null;
           genre?: string | null;
           country?: string | null;
           language?: string | null;

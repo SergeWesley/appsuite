@@ -30,6 +30,7 @@ function mapRowToMedia(row: MediaRow): Media {
     currentSeason: row.current_season || undefined,
     rating: row.rating || undefined,
     notes: row.notes || undefined,
+    synopsis: row.synopsis || undefined,
     dateAdded: new Date(row.date_added),
     dateStarted: row.date_started ? new Date(row.date_started) : undefined,
     dateCompleted: row.date_completed
@@ -68,6 +69,7 @@ function mapFormDataToInsert(
     current_season: formData.currentSeason || null,
     rating: formData.rating || null,
     notes: formData.notes || null,
+    synopsis: formData.synopsis || null,
     genre: formData.genre || null,
     country: formData.country || null,
     language: formData.language || null,
@@ -174,34 +176,26 @@ export function useMedias() {
 
       // Mapper les champs de mise à jour
       if (updates.title !== undefined) updateData.title = updates.title;
-      if (updates.originalTitle !== undefined)
-        updateData.original_title = updates.originalTitle;
+      if (updates.originalTitle !== undefined) updateData.original_title = updates.originalTitle;
       if (updates.type !== undefined) updateData.type = updates.type;
       if (updates.status !== undefined) updateData.status = updates.status;
-      if (updates.director !== undefined)
-        updateData.director = updates.director;
+      if (updates.director !== undefined) updateData.director = updates.director;
       if (updates.creator !== undefined) updateData.creator = updates.creator;
       if (updates.studio !== undefined) updateData.studio = updates.studio;
-      if (updates.duration !== undefined)
-        updateData.duration = updates.duration;
+      if (updates.duration !== undefined) updateData.duration = updates.duration;
       if (updates.year !== undefined) updateData.year = updates.year;
-      if (updates.totalEpisodes !== undefined)
-        updateData.total_episodes = updates.totalEpisodes;
-      if (updates.currentEpisode !== undefined)
-        updateData.current_episode = updates.currentEpisode;
-      if (updates.totalSeasons !== undefined)
-        updateData.total_seasons = updates.totalSeasons;
-      if (updates.currentSeason !== undefined)
-        updateData.current_season = updates.currentSeason;
+      if (updates.totalEpisodes !== undefined) updateData.total_episodes = updates.totalEpisodes;
+      if (updates.currentEpisode !== undefined) updateData.current_episode = updates.currentEpisode;
+      if (updates.totalSeasons !== undefined) updateData.total_seasons = updates.totalSeasons;
+      if (updates.currentSeason !== undefined) updateData.current_season = updates.currentSeason;
       if (updates.rating !== undefined) updateData.rating = updates.rating;
       if (updates.notes !== undefined) updateData.notes = updates.notes;
+      if (updates.synopsis !== undefined) updateData.synopsis = updates.synopsis;
       if (updates.genre !== undefined) updateData.genre = updates.genre;
       if (updates.country !== undefined) updateData.country = updates.country;
-      if (updates.language !== undefined)
-        updateData.language = updates.language;
+      if (updates.language !== undefined) updateData.language = updates.language;
       if (updates.poster !== undefined) updateData.poster = updates.poster;
-      if (updates.posterUrl !== undefined)
-        updateData.poster_url = updates.posterUrl;
+      if (updates.posterUrl !== undefined) updateData.poster_url = updates.posterUrl;
       if (updates.imdbId !== undefined) updateData.imdb_id = updates.imdbId;
       if (updates.tmdbId !== undefined) updateData.tmdb_id = updates.tmdbId;
 

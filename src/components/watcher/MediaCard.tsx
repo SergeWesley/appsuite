@@ -246,6 +246,13 @@ export function MediaCard({
         </div>
       </div>
 
+      {/* Synopsis */}
+      {media.synopsis && (
+        <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+          <p className="text-sm text-gray-700 line-clamp-3">{media.synopsis}</p>
+        </div>
+      )}
+
       {/* Notes */}
       {media.notes && (
         <div className="mt-4 p-3 bg-gray-50 rounded-lg">

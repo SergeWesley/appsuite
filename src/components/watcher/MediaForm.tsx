@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Media, MediaFormData, MediaStatus, MediaType } from "@/types/media";
+import { Media, MediaFormData, MediaStatus, MediaSuggestion, MediaType } from "@/types/media";
 import {
   X,
   Film,
@@ -16,6 +16,7 @@ import {
   Tv,
   Play,
   Camera,
+  AlignLeft,
 } from "lucide-react";
 
 interface MediaFormProps {
@@ -33,6 +34,16 @@ export function MediaForm({
   onSubmit,
   onDelete,
 }: MediaFormProps) {
+  const [titleSuggestions, setTitleSuggestions] = useState<MediaSuggestion[]>([]);
+  const [directorSuggestions, setDirectorSuggestions] = useState<MediaSuggestion[]>([]);
+  const [creatorSuggestions, setCreatorSuggestions] = useState<MediaSuggestion[]>([]);
+  const [genreSuggestions, setGenreSuggestions] = useState<MediaSuggestion[]>([]);
+  const [isSearchingTitle, setIsSearchingTitle] = useState(false);
+  const [isSearchingDirector, setIsSearchingDirector] = useState(false);
+  const [isSearchingCreator, setIsSearchingCreator] = useState(false);
+  const [isSearchingGenre, setIsSearchingGenre] = useState(false);
+  const tmdbTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const [formData, setFormData] = useState<MediaFormData>({
     title: "",
     originalTitle: "",
@@ -47,6 +58,7 @@ export function MediaForm({
     totalSeasons: undefined,
     currentSeason: undefined,
     rating: undefined,
+    synopsis: "",
     notes: "",
     genre: "",
     year: undefined,
@@ -74,6 +86,7 @@ export function MediaForm({
         totalSeasons: media.totalSeasons,
         currentSeason: media.currentSeason,
         rating: media.rating,
+        synopsis: media.synopsis || "",
         notes: media.notes || "",
         genre: media.genre || "",
         year: media.year,
@@ -98,6 +111,7 @@ export function MediaForm({
         totalSeasons: undefined,
         currentSeason: undefined,
         rating: undefined,
+        synopsis: "",
         notes: "",
         genre: "",
         year: undefined,
@@ -125,6 +139,7 @@ export function MediaForm({
       totalSeasons: undefined,
       currentSeason: undefined,
       rating: undefined,
+      synopsis: "",
       notes: "",
       genre: "",
       year: undefined,
@@ -134,6 +149,12 @@ export function MediaForm({
       imdbId: "",
       tmdbId: "",
     });
+
+    // Clear all suggestions
+    setTitleSuggestions([]);
+    setDirectorSuggestions([]);
+    setCreatorSuggestions([]);
+    setGenreSuggestions([]);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -145,6 +166,153 @@ export function MediaForm({
 
   const handleInputChange = (field: keyof MediaFormData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const searchMedia = async (
+    query: string,
+    type: "title" | "director" | "creator" | "genre" = "title",
+  ) => {
+    if (query.length < 3) {
+      // Clear suggestions if query is too short
+      switch (type) {
+        case "title":
+          setTitleSuggestions([]);
+          break;
+        case "director":
+          setDirectorSuggestions([]);
+          break;
+        case "creator":
+          setCreatorSuggestions([]);
+          break;
+        case "genre":
+          setGenreSuggestions([]);
+          break;
+      }
+      return;
+    }
+
+    // Set loading state
+    switch (type) {
+      case "title":
+        setIsSearchingTitle(true);
+        break;
+      case "director":
+        setIsSearchingDirector(true);
+        break;
+      case "creator":
+        setIsSearchingCreator(true);
+        break;
+      case "genre":
+        setIsSearchingGenre(true);
+        break;
+    }
+
+    try {
+      // Clear previous timeout
+      if (tmdbTimeoutRef.current) {
+        clearTimeout(tmdbTimeoutRef.current);
+        tmdbTimeoutRef.current = null;
+      }
+
+      // Debounced search
+      tmdbTimeoutRef.current = setTimeout(async () => {
+        try {
+          const mediaTypeParam = formData.type === "series" || formData.type === "anime" ? "tv" :
+                                formData.type === "movie" || formData.type === "documentary" || formData.type === "short" ? "movie" : "all";
+
+          const response = await fetch(`/api/medias/search?q=${encodeURIComponent(query)}&type=${type}&mediaType=${mediaTypeParam}`);
+          const result = await response.json();
+
+          if (response.ok) {
+            const suggestions = result.data || [];
+
+            switch (type) {
+              case "title":
+                setTitleSuggestions(suggestions);
+                setDirectorSuggestions([]);
+                setCreatorSuggestions([]);
+                setGenreSuggestions([]);
+                break;
+              case "director":
+                setDirectorSuggestions(suggestions);
+                setTitleSuggestions([]);
+                setCreatorSuggestions([]);
+                setGenreSuggestions([]);
+                break;
+              case "creator":
+                setCreatorSuggestions(suggestions);
+                setTitleSuggestions([]);
+                setDirectorSuggestions([]);
+                setGenreSuggestions([]);
+                break;
+              case "genre":
+                setGenreSuggestions(suggestions);
+                setTitleSuggestions([]);
+                setDirectorSuggestions([]);
+                setCreatorSuggestions([]);
+                break;
+            }
+          } else {
+            console.error("Erreur lors de la recherche:", result.error);
+          }
+        } catch (error) {
+          console.error("Erreur lors de la recherche TMDB:", error);
+        } finally {
+          // Clear loading states
+          setIsSearchingTitle(false);
+          setIsSearchingDirector(false);
+          setIsSearchingCreator(false);
+          setIsSearchingGenre(false);
+        }
+      }, 500); // 500ms debounce
+    } catch (error) {
+      console.error("Erreur lors de la recherche TMDB:", error);
+      // Clear loading states
+      setIsSearchingTitle(false);
+      setIsSearchingDirector(false);
+      setIsSearchingCreator(false);
+      setIsSearchingGenre(false);
+    }
+  };
+
+  const handleSuggestionSelect = (suggestion: MediaSuggestion) => {
+    // Map TMDB data to form fields
+    const year = suggestion.release_date
+      ? new Date(suggestion.release_date).getFullYear()
+      : undefined;
+
+    const posterUrl = suggestion.poster_path
+      ? `https://image.tmdb.org/t/p/w500${suggestion.poster_path}`
+      : "";
+
+    // Determine media type based on TMDB media_type
+    let mediaType: MediaType = formData.type;
+    if (suggestion.media_type === "movie") {
+      mediaType = "movie";
+    } else if (suggestion.media_type === "tv") {
+      mediaType = "series";
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      title: suggestion.title,
+      originalTitle: suggestion.original_title || "",
+      director: suggestion.director || prev.director,
+      creator: suggestion.creator || prev.creator,
+      type: mediaType,
+      year,
+      posterUrl,
+      tmdbId: suggestion.id.toString(),
+      synopsis: suggestion.overview || prev.synopsis,
+      rating: suggestion.vote_average ? Math.round(suggestion.vote_average / 2) : prev.rating, // Convert 10-scale to 5-scale
+      genre: suggestion.genre_name || prev.genre,
+    }));
+
+    // Clear all suggestions
+    setTitleSuggestions([]);
+    setDirectorSuggestions([]);
+    setCreatorSuggestions([]);
+    setGenreSuggestions([]);
   };
 
   const handleDelete = () => {
@@ -239,20 +407,71 @@ export function MediaForm({
 
                 {/* Titre */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                  <div className="relative">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Titre *
                     </label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.title}
-                      onChange={(e) =>
-                        handleInputChange("title", e.target.value)
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      placeholder="Titre de l'œuvre"
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        required
+                        value={formData.title}
+                        onChange={(e) => {
+                          handleInputChange("title", e.target.value);
+                          searchMedia(e.target.value, "title");
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="Titre de l'œuvre"
+                      />
+                      {isSearchingTitle && (
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                          <div className="animate-spin h-5 w-5 border-2 border-purple-600 rounded-full border-t-transparent"></div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Liste des suggestions de titre */}
+                    {titleSuggestions.length > 0 && (
+                      <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                        {titleSuggestions.map((suggestion) => (
+                          <button
+                            key={`${suggestion.media_type}-${suggestion.id}`}
+                            type="button"
+                            onClick={() => handleSuggestionSelect(suggestion)}
+                            className="w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors"
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1">
+                                <div className="font-medium text-gray-900">
+                                  {suggestion.title}
+                                </div>
+                                {suggestion.original_title && suggestion.original_title !== suggestion.title && (
+                                  <div className="text-sm text-gray-500">
+                                    {suggestion.original_title}
+                                  </div>
+                                )}
+                                <div className="text-sm text-gray-600">
+                                  {suggestion.media_type === "tv" ? "Série" : "Film"}
+                                  {suggestion.release_date && (
+                                    ` • ${new Date(suggestion.release_date).getFullYear()}`
+                                  )}
+                                  {suggestion.vote_average && (
+                                    ` • ⭐ ${suggestion.vote_average.toFixed(1)}`
+                                  )}
+                                </div>
+                              </div>
+                              {suggestion.poster_path && (
+                                <img
+                                  src={`https://image.tmdb.org/t/p/w92${suggestion.poster_path}`}
+                                  alt={suggestion.title}
+                                  className="w-8 h-12 object-cover rounded"
+                                />
+                              )}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -273,7 +492,7 @@ export function MediaForm({
 
                 {/* Créateur/Réalisateur/Studio */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
+                  <div className="relative">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       {formData.type === "anime"
                         ? "Studio"
@@ -300,11 +519,13 @@ export function MediaForm({
                             handleInputChange("studio", e.target.value);
                           } else if (isSeriesType) {
                             handleInputChange("creator", e.target.value);
+                            searchMedia(e.target.value, "creator");
                           } else {
                             handleInputChange("director", e.target.value);
+                            searchMedia(e.target.value, "director");
                           }
                         }}
-                        className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         placeholder={
                           formData.type === "anime"
                             ? "Studio d'animation"
@@ -313,7 +534,60 @@ export function MediaForm({
                               : "Réalisateur"
                         }
                       />
+                      {((isSeriesType && isSearchingCreator) || (!isSeriesType && formData.type !== "anime" && isSearchingDirector)) && (
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                          <div className="animate-spin h-5 w-5 border-2 border-purple-600 rounded-full border-t-transparent"></div>
+                        </div>
+                      )}
                     </div>
+
+                    {/* Suggestions pour créateur */}
+                    {isSeriesType && creatorSuggestions.length > 0 && (
+                      <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                        {creatorSuggestions.map((suggestion) => (
+                          <button
+                            key={`creator-${suggestion.media_type}-${suggestion.id}`}
+                            type="button"
+                            onClick={() => handleSuggestionSelect(suggestion)}
+                            className="w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors"
+                          >
+                            <div className="font-medium text-gray-900">
+                              {suggestion.title}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {suggestion.creator && `par ${suggestion.creator}`}
+                              {suggestion.release_date && (
+                                ` • ${new Date(suggestion.release_date).getFullYear()}`
+                              )}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Suggestions pour réalisateur */}
+                    {!isSeriesType && formData.type !== "anime" && directorSuggestions.length > 0 && (
+                      <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                        {directorSuggestions.map((suggestion) => (
+                          <button
+                            key={`director-${suggestion.media_type}-${suggestion.id}`}
+                            type="button"
+                            onClick={() => handleSuggestionSelect(suggestion)}
+                            className="w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors"
+                          >
+                            <div className="font-medium text-gray-900">
+                              {suggestion.title}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {suggestion.director && `réalisé par ${suggestion.director}`}
+                              {suggestion.release_date && (
+                                ` • ${new Date(suggestion.release_date).getFullYear()}`
+                              )}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -509,21 +783,55 @@ export function MediaForm({
 
                 {/* Genre et informations */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                  <div className="relative">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Genre
                     </label>
-                    <input
-                      type="text"
-                      value={formData.genre}
-                      onChange={(e) =>
-                        handleInputChange("genre", e.target.value)
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      placeholder="Action, Drama, etc."
-                    />
-                  </div>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={formData.genre}
+                        onChange={(e) => {
+                          handleInputChange("genre", e.target.value);
+                          searchMedia(e.target.value, "genre");
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="Action, Drama, etc."
+                      />
+                      {isSearchingGenre && (
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                          <div className="animate-spin h-5 w-5 border-2 border-purple-600 rounded-full border-t-transparent"></div>
+                        </div>
+                      )}
+                    </div>
 
+                    {/* Suggestions de genre */}
+                    {genreSuggestions.length > 0 && (
+                      <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                        {genreSuggestions.map((suggestion) => (
+                          <button
+                            key={`genre-${suggestion.media_type}-${suggestion.id}`}
+                            type="button"
+                            onClick={() => handleSuggestionSelect(suggestion)}
+                            className="w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors"
+                          >
+                            <div className="font-medium text-gray-900">
+                              {suggestion.title}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {suggestion.genre_name}
+                              {suggestion.release_date && (
+                                ` • ${new Date(suggestion.release_date).getFullYear()}`
+                              )}
+                              {suggestion.vote_average && (
+                                ` • ⭐ ${suggestion.vote_average.toFixed(1)}`
+                              )}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Pays
@@ -601,10 +909,32 @@ export function MediaForm({
                   />
                 </div>
 
+                {/* Synopsis */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Synopsis
+                  </label>
+                  <div className="relative">
+                    <AlignLeft
+                      size={16}
+                      className="absolute left-3 top-3 text-gray-400"
+                    />
+                    <textarea
+                      value={formData.synopsis}
+                      onChange={(e) =>
+                        handleInputChange("synopsis", e.target.value)
+                      }
+                      rows={3}
+                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                      placeholder="Le synopsis de l'œuvre..."
+                    />
+                  </div>
+                </div>
+
                 {/* Notes */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Notes
+                    Vos notes
                   </label>
                   <div className="relative">
                     <FileText
