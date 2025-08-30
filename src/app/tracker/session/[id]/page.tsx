@@ -279,8 +279,8 @@ export default function WorkoutSessionDetailPage() {
           )}
         </div>
 
-        {/* Workout Scatter Chart */}
-        <WorkoutScatterChart session={session} className="mb-8" />
+        {/* Workout Stacked Bar Chart */}
+        <WorkoutStackedBarChart session={session} className="mb-8" />
 
         {/* Exercise Filter */}
         <div className="mb-6">
