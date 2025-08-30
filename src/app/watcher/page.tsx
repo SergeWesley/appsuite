@@ -54,7 +54,7 @@ export default function WatcherPage() {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
   // Gestion de la persistance des filtres
-  const { selectedStatus, selectedType, searchQuery, toggleArrayFilter, isFilterSelected } =
+  const { selectedStatus, selectedType, searchQuery, updateFilter, toggleArrayFilter, isFilterSelected } =
     useFilterPersistence("watcher-filters", {
       selectedStatus: [],
       selectedType: [],
