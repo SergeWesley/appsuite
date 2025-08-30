@@ -44,6 +44,18 @@ export function MediaForm({
   const [isSearchingGenre, setIsSearchingGenre] = useState(false);
   const tmdbTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Refs pour les conteneurs de suggestions
+  const titleSuggestionsRef = useRef<HTMLDivElement>(null);
+  const directorSuggestionsRef = useRef<HTMLDivElement>(null);
+  const creatorSuggestionsRef = useRef<HTMLDivElement>(null);
+  const genreSuggestionsRef = useRef<HTMLDivElement>(null);
+
+  // Refs pour les inputs
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const directorInputRef = useRef<HTMLInputElement>(null);
+  const creatorInputRef = useRef<HTMLInputElement>(null);
+  const genreInputRef = useRef<HTMLInputElement>(null);
+
   const [formData, setFormData] = useState<MediaFormData>({
     title: "",
     originalTitle: "",
@@ -68,6 +80,63 @@ export function MediaForm({
     imdbId: "",
     tmdbId: "",
   });
+
+  // Fonction pour fermer toutes les suggestions
+  const clearAllSuggestions = () => {
+    setTitleSuggestions([]);
+    setDirectorSuggestions([]);
+    setCreatorSuggestions([]);
+    setGenreSuggestions([]);
+  };
+
+  // Effet pour gérer les clics en dehors
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      
+      // Vérifier si le clic est en dehors de tous les conteneurs de suggestions et inputs
+      const isOutsideTitleSuggestions = titleSuggestionsRef.current && 
+        !titleSuggestionsRef.current.contains(target) &&
+        titleInputRef.current && !titleInputRef.current.contains(target);
+      
+      const isOutsideDirectorSuggestions = directorSuggestionsRef.current && 
+        !directorSuggestionsRef.current.contains(target) &&
+        directorInputRef.current && !directorInputRef.current.contains(target);
+      
+      const isOutsideCreatorSuggestions = creatorSuggestionsRef.current && 
+        !creatorSuggestionsRef.current.contains(target) &&
+        creatorInputRef.current && !creatorInputRef.current.contains(target);
+      
+      const isOutsideGenreSuggestions = genreSuggestionsRef.current && 
+        !genreSuggestionsRef.current.contains(target) &&
+        genreInputRef.current && !genreInputRef.current.contains(target);
+
+      // Fermer les suggestions appropriées
+      if (isOutsideTitleSuggestions && titleSuggestions.length > 0) {
+        setTitleSuggestions([]);
+      }
+      if (isOutsideDirectorSuggestions && directorSuggestions.length > 0) {
+        setDirectorSuggestions([]);
+      }
+      if (isOutsideCreatorSuggestions && creatorSuggestions.length > 0) {
+        setCreatorSuggestions([]);
+      }
+      if (isOutsideGenreSuggestions && genreSuggestions.length > 0) {
+        setGenreSuggestions([]);
+      }
+    };
+
+    // Ajouter l'écouteur d'événement seulement si le formulaire est ouvert
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      
+      // Nettoyer l'écouteur
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [isOpen, titleSuggestions.length, directorSuggestions.length, creatorSuggestions.length, genreSuggestions.length]);
+
 
   useEffect(() => {
     if (media) {
@@ -150,11 +219,7 @@ export function MediaForm({
       tmdbId: "",
     });
 
-    // Clear all suggestions
-    setTitleSuggestions([]);
-    setDirectorSuggestions([]);
-    setCreatorSuggestions([]);
-    setGenreSuggestions([]);
+    clearAllSuggestions();
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -413,6 +478,7 @@ export function MediaForm({
                     </label>
                     <div className="relative">
                       <input
+                        ref={titleInputRef}
                         type="text"
                         required
                         value={formData.title}
@@ -432,7 +498,9 @@ export function MediaForm({
 
                     {/* Liste des suggestions de titre */}
                     {titleSuggestions.length > 0 && (
-                      <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                      <div 
+                        ref={titleSuggestionsRef}
+                        className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
                         {titleSuggestions.map((suggestion) => (
                           <button
                             key={`${suggestion.media_type}-${suggestion.id}`}
@@ -506,6 +574,7 @@ export function MediaForm({
                         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                       />
                       <input
+                        ref={isSeriesType ? creatorInputRef : directorInputRef}
                         type="text"
                         value={
                           formData.type === "anime"
@@ -543,7 +612,9 @@ export function MediaForm({
 
                     {/* Suggestions pour créateur */}
                     {isSeriesType && creatorSuggestions.length > 0 && (
-                      <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                      <div 
+                        ref={creatorSuggestionsRef}
+                        className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
                         {creatorSuggestions.map((suggestion) => (
                           <button
                             key={`creator-${suggestion.media_type}-${suggestion.id}`}
@@ -567,7 +638,9 @@ export function MediaForm({
 
                     {/* Suggestions pour réalisateur */}
                     {!isSeriesType && formData.type !== "anime" && directorSuggestions.length > 0 && (
-                      <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                      <div 
+                        ref={directorSuggestionsRef}
+                        className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
                         {directorSuggestions.map((suggestion) => (
                           <button
                             key={`director-${suggestion.media_type}-${suggestion.id}`}
@@ -789,6 +862,7 @@ export function MediaForm({
                     </label>
                     <div className="relative">
                       <input
+                        ref={genreInputRef}
                         type="text"
                         value={formData.genre}
                         onChange={(e) => {
@@ -807,7 +881,9 @@ export function MediaForm({
 
                     {/* Suggestions de genre */}
                     {genreSuggestions.length > 0 && (
-                      <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                      <div 
+                        ref={genreSuggestionsRef}
+                        className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
                         {genreSuggestions.map((suggestion) => (
                           <button
                             key={`genre-${suggestion.media_type}-${suggestion.id}`}
