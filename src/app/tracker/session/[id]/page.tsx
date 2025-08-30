@@ -10,6 +10,7 @@ import {
   MUSCLE_GROUP_LABELS,
 } from "@/types/workout-session";
 import { NavigationMenu } from "@/components/NavigationMenu";
+import { WorkoutScatterChart } from "@/components/tracker/WorkoutScatterChart";
 import {
   Calendar,
   Activity,
@@ -277,6 +278,9 @@ export default function WorkoutSessionDetailPage() {
             </div>
           )}
         </div>
+
+        {/* Graphique de visualisation des séries */}
+        <WorkoutScatterChart session={session} className="mb-8" />
 
         {/* Exercise Filter */}
         <div className="mb-6">
