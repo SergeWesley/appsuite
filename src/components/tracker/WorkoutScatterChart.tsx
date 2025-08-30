@@ -296,26 +296,59 @@ export function WorkoutScatterChart({ session, className }: WorkoutScatterChartP
   }
 
   return (
-    <div className={`bg-white rounded-xl shadow-sm border border-gray-100 p-6 ${className || ""}`}>
-      <div className="h-80 md:h-96">
+    <div className={`bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6 ${className || ""}`}>
+      {/* En-tête avec statistiques rapides */}
+      <div className="mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+          <h3 className="text-lg md:text-xl font-bold text-gray-900 flex items-center gap-2">
+            📊 Visualisation des Séries
+          </h3>
+          <div className="flex flex-wrap gap-3 text-xs md:text-sm">
+            <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-200">
+              {chartData.dataPoints.length} séries
+            </div>
+            <div className="bg-green-50 text-green-700 px-3 py-1 rounded-full border border-green-200">
+              {exerciseLabels.length} exercices
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Graphique */}
+      <div className="h-80 md:h-96 lg:h-[28rem] mb-6">
         <Scatter data={chartData} options={options} />
       </div>
-      
-      {/* Légende personnalisée */}
-      <div className="mt-6 pt-4 border-t border-gray-100">
-        <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-gradient-to-r from-blue-400 to-red-400"></div>
-            <span>Couleur : Volume (kg × reps)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex gap-1">
-              <div className="w-2 h-2 rounded-full bg-gray-400"></div>
-              <div className="w-3 h-3 rounded-full bg-gray-400"></div>
-              <div className="w-4 h-4 rounded-full bg-gray-400"></div>
+
+      {/* Légende personnalisée améliorée */}
+      <div className="pt-6 border-t border-gray-200">
+        <h4 className="text-sm font-semibold text-gray-900 mb-4">📖 Légende</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-100">
+            <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-400 via-purple-500 to-red-400 shadow-sm"></div>
+            <div>
+              <div className="text-sm font-medium text-gray-900">Couleur des points</div>
+              <div className="text-xs text-gray-600">Volume (poids × répétitions)</div>
             </div>
-            <span>Taille : Nombre de répétitions</span>
           </div>
+          <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-100">
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+              <div className="w-3 h-3 rounded-full bg-gray-500"></div>
+              <div className="w-4 h-4 rounded-full bg-gray-500"></div>
+            </div>
+            <div>
+              <div className="text-sm font-medium text-gray-900">Taille des points</div>
+              <div className="text-xs text-gray-600">Nombre de répétitions</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Note explicative */}
+        <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+          <p className="text-xs md:text-sm text-blue-800">
+            💡 <strong>Astuce :</strong> Passez votre souris sur les points pour voir les détails de chaque série.
+            Les points plus gros indiquent plus de répétitions, et les couleurs chaudes (rouge/orange) indiquent un volume plus élevé.
+          </p>
         </div>
       </div>
     </div>
