@@ -41,6 +41,7 @@ export default function WorkoutSessionDetailPage() {
   const [loading, setLoading] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+  const [showStats, setShowStats] = useState(false);
 
   useEffect(() => {
     if (sessions.length > 0) {
