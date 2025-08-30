@@ -306,38 +306,72 @@ export function ExercisesBubbleChart({ exercises, className = "" }: ExercisesBub
       </div>
 
       {/* Légende et informations */}
-      <div className="mt-4 space-y-3">
+      <div className="mt-4 space-y-4">
+        {/* Légende des exercices */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
           {bubbleData.map((bubble) => (
             <motion.div
               key={bubble.id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg text-sm"
+              className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg text-sm border"
             >
               <div
-                className="w-3 h-3 rounded-full flex-shrink-0"
-                style={{ backgroundColor: bubble.color }}
+                className="w-4 h-4 rounded-full flex-shrink-0 border-2 border-white shadow-sm"
+                style={{
+                  backgroundColor: bubble.color,
+                  transform: `scale(${0.8 + (bubble.size - minSets) / (maxSets - minSets || 1) * 0.6})`
+                }}
               />
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-900 truncate">
+                <p className="font-medium text-gray-900 truncate" title={bubble.name}>
                   {bubble.name}
                 </p>
                 <p className="text-gray-600 text-xs">
-                  {bubble.weight}kg • {bubble.sets}×{bubble.reps} • Vol: {bubble.volume}
+                  <span className="font-medium">{bubble.weight}kg</span> •
+                  <span className="ml-1">{bubble.sets} séries</span> •
+                  <span className="ml-1">{bubble.reps} reps</span>
                 </p>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Explication */}
-        <div className="text-xs text-gray-500 border-t border-gray-200 pt-3">
-          <p>
-            <strong>Axe vertical :</strong> Poids (kg) • 
-            <strong className="ml-2">Taille des bulles :</strong> Volume (séries × répétitions) • 
-            <strong className="ml-2">Étiquettes :</strong> Séries × Répétitions
-          </p>
+        {/* Guide de lecture */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <h4 className="font-medium text-blue-900 mb-2">Guide de lecture</h4>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-blue-800">
+            <div>
+              <div className="font-medium mb-1">📊 Position verticale</div>
+              <div>Plus haut = plus lourd</div>
+            </div>
+            <div>
+              <div className="font-medium mb-1">⭕ Taille des bulles</div>
+              <div>Plus gros = plus de séries</div>
+            </div>
+            <div>
+              <div className="font-medium mb-1">🎨 Couleur</div>
+              <div>Bleu → Rouge (peu → beaucoup de reps)</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Échelle des répétitions */}
+        <div className="flex items-center justify-between text-xs text-gray-500 border-t border-gray-200 pt-3">
+          <div>
+            <strong>Échelle répétitions:</strong>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getColorFromReps(Math.min(...bubbleData.map(b => b.reps)), Math.max(...bubbleData.map(b => b.reps))) }}></div>
+              <span>{Math.min(...bubbleData.map(b => b.reps))} reps</span>
+            </div>
+            <div className="text-gray-300">→</div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getColorFromReps(Math.max(...bubbleData.map(b => b.reps)), Math.max(...bubbleData.map(b => b.reps))) }}></div>
+              <span>{Math.max(...bubbleData.map(b => b.reps))} reps</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
