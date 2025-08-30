@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 
 export interface FilterState {
-  selectedStatus?: string;
+  selectedStatus?: string | string[];
   selectedPeriod?: string;
   selectedViewMode?: string;
-  selectedType?: string;
+  selectedType?: string | string[];
   searchQuery?: string;
   selectedApp?: string;
   isStatsOpen?: boolean;
@@ -40,7 +40,7 @@ export const useFilterPersistence = (
 
   // Sauvegarder dans localStorage quand les filtres changent
   const updateFilter = useCallback(
-    (key: keyof FilterState, value: string| boolean) => {
+    (key: keyof FilterState, value: string| string[] | boolean) => {
       setFilters((prev) => {
         const newFilters = { ...prev, [key]: value };
         try {
@@ -70,9 +70,61 @@ export const useFilterPersistence = (
     }
   }, [storageKey, defaultValues]);
 
+
+  // Utilitaires pour la multi-sélection
+  const toggleArrayFilter = useCallback(
+    (key: keyof FilterState, value: string) => {
+      setFilters((prev) => {
+        const currentValue = prev[key] as string[] | string | undefined;
+        let newValue: string[];
+
+        if (Array.isArray(currentValue)) {
+          // Si la valeur est déjà dans l'array, on la retire, sinon on l'ajoute
+          if (currentValue.includes(value)) {
+            newValue = currentValue.filter(v => v !== value);
+          } else {
+            newValue = [...currentValue, value];
+          }
+        } else {
+          // Conversion d'une valeur string vers array
+          if (currentValue === value || (currentValue === "all" && value !== "all")) {
+            newValue = [];
+          } else {
+            newValue = [value];
+          }
+        }
+
+        const newFilters = { ...prev, [key]: newValue };
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(newFilters));
+        } catch (error) {
+          console.warn(
+            `Erreur lors de la sauvegarde des filtres ${storageKey}:`,
+            error,
+          );
+        }
+        return newFilters;
+      });
+    },
+    [storageKey],
+  );
+
+  const isFilterSelected = useCallback(
+    (key: keyof FilterState, value: string) => {
+      const currentValue = filters[key] as string[] | string | undefined;
+      if (Array.isArray(currentValue)) {
+        return currentValue.includes(value);
+      }
+      return currentValue === value;
+    },
+    [filters],
+  );
+
   return {
     filters,
     updateFilter,
+    toggleArrayFilter,
+    isFilterSelected,
     resetFilters,
     // Getters individuels pour faciliter l'utilisation
     selectedStatus:
@@ -81,9 +133,9 @@ export const useFilterPersistence = (
       filters.selectedPeriod || defaultValues.selectedPeriod || "all",
     selectedViewMode:
       filters.selectedViewMode || defaultValues.selectedViewMode || "calendar",
-    selectedType: 
+    selectedType:
       filters.selectedType || defaultValues.selectedType || "all",
-    searchQuery: 
+    searchQuery:
       filters.searchQuery || defaultValues.searchQuery || "",
     selectedApp:
       filters.selectedApp || defaultValues.selectedApp || "dashboard",
