@@ -153,22 +153,27 @@ export function WorkoutScatterChart({ session, className }: WorkoutScatterChartP
           label: (context: any) => {
             const dataPoint = chartData?.dataPoints?.[context.dataIndex];
             if (!dataPoint) return "";
-            
+
             return [
-              `${dataPoint.exerciseName}`,
-              `Série ${dataPoint.setNumber}/${dataPoint.sets}`,
-              `${dataPoint.weight} kg × ${dataPoint.reps} reps`,
-              `Volume: ${dataPoint.volume} kg`,
+              `🏋️ ${dataPoint.exerciseName}`,
+              `📊 Série ${dataPoint.setNumber}/${dataPoint.sets}`,
+              `⚖️ ${dataPoint.weight} kg × ${dataPoint.reps} reps`,
+              `💪 Volume: ${dataPoint.volume} kg`,
             ];
           },
         },
-        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        backgroundColor: "rgba(0, 0, 0, 0.9)",
         titleColor: "white",
         bodyColor: "white",
-        borderColor: "rgba(255, 255, 255, 0.2)",
-        borderWidth: 1,
-        cornerRadius: 8,
-        padding: 12,
+        borderColor: "rgba(59, 130, 246, 0.5)",
+        borderWidth: 2,
+        cornerRadius: 12,
+        padding: 16,
+        bodyFont: {
+          size: 13,
+          weight: "500",
+        },
+        displayColors: false,
       },
     },
     scales: {
