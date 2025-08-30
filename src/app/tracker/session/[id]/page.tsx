@@ -10,6 +10,7 @@ import {
   MUSCLE_GROUP_LABELS,
 } from "@/types/workout-session";
 import { NavigationMenu } from "@/components/NavigationMenu";
+import { WorkoutSessionStats } from "@/components/tracker/WorkoutSessionStats";
 import {
   Calendar,
   Activity,
@@ -20,6 +21,8 @@ import {
   Copy,
   LogOut,
   User,
+  BarChart3,
+  ChevronDown,
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
