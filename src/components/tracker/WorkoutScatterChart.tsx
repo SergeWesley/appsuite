@@ -188,47 +188,83 @@ export function WorkoutScatterChart({ session, className }: WorkoutScatterChartP
         position: "bottom" as const,
         title: {
           display: true,
-          text: "Exercices",
+          text: "🏃 Exercices",
           font: {
-            size: 14,
-            weight: "bold" as const,
+            size: window.innerWidth < 768 ? 12 : 14,
+            weight: "600" as const,
+            family: "system-ui, -apple-system, sans-serif",
+          },
+          color: "#374151",
+          padding: {
+            top: 15,
           },
         },
         ticks: {
           stepSize: 1,
           callback: function(value: any) {
             const index = Math.round(value);
-            return exerciseLabels[index] || "";
+            const label = exerciseLabels[index] || "";
+            // Tronquer les noms longs sur mobile
+            if (window.innerWidth < 768 && label.length > 12) {
+              return label.substring(0, 12) + "...";
+            }
+            return label;
           },
-          maxRotation: 45,
+          maxRotation: window.innerWidth < 768 ? 65 : 45,
+          minRotation: window.innerWidth < 768 ? 45 : 0,
           font: {
-            size: 12,
+            size: window.innerWidth < 768 ? 10 : 12,
+            weight: "500" as const,
           },
+          color: "#6b7280",
+          padding: 8,
         },
         min: -0.5,
         max: exerciseLabels.length - 0.5,
         grid: {
           display: true,
-          color: "rgba(0, 0, 0, 0.1)",
+          color: "rgba(107, 114, 128, 0.1)",
+          lineWidth: 1,
+        },
+        border: {
+          color: "#d1d5db",
+          width: 1,
         },
       },
       y: {
         title: {
           display: true,
-          text: "Poids (kg)",
+          text: "⚖️ Poids (kg)",
           font: {
-            size: 14,
-            weight: "bold" as const,
+            size: window.innerWidth < 768 ? 12 : 14,
+            weight: "600" as const,
+            family: "system-ui, -apple-system, sans-serif",
+          },
+          color: "#374151",
+          padding: {
+            bottom: 15,
           },
         },
         beginAtZero: true,
+        grace: "5%", // Ajouter un peu d'espace en haut
         grid: {
           display: true,
-          color: "rgba(0, 0, 0, 0.1)",
+          color: "rgba(107, 114, 128, 0.1)",
+          lineWidth: 1,
+        },
+        border: {
+          color: "#d1d5db",
+          width: 1,
         },
         ticks: {
           font: {
-            size: 12,
+            size: window.innerWidth < 768 ? 10 : 12,
+            weight: "500" as const,
+          },
+          color: "#6b7280",
+          padding: 8,
+          callback: function(value: any) {
+            return value + " kg";
           },
         },
       },
