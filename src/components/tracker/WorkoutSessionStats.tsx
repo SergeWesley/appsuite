@@ -221,7 +221,7 @@ export function WorkoutSessionStats({ session }: WorkoutSessionStatsProps) {
                   </div>
 
                   {/* Détails des performances */}
-                  <div className="grid grid-cols-3 md:grid-cols-5 gap-3 text-sm">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 text-sm">
                     <div>
                       <p className="text-gray-500">Séries</p>
                       <p className="font-semibold text-gray-900">{exercise.totalSets}</p>
