@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Media, MediaFormData, MediaStatus, MediaType } from "@/types/media";
+import { Media, MediaFormData, MediaStatus, MediaType, MediaSuggestion } from "@/types/media";
 import {
   X,
   Film,
@@ -33,6 +33,16 @@ export function MediaForm({
   onSubmit,
   onDelete,
 }: MediaFormProps) {
+  const [titleSuggestions, setTitleSuggestions] = useState<MediaSuggestion[]>([]);
+  const [directorSuggestions, setDirectorSuggestions] = useState<MediaSuggestion[]>([]);
+  const [creatorSuggestions, setCreatorSuggestions] = useState<MediaSuggestion[]>([]);
+  const [genreSuggestions, setGenreSuggestions] = useState<MediaSuggestion[]>([]);
+  const [isSearchingTitle, setIsSearchingTitle] = useState(false);
+  const [isSearchingDirector, setIsSearchingDirector] = useState(false);
+  const [isSearchingCreator, setIsSearchingCreator] = useState(false);
+  const [isSearchingGenre, setIsSearchingGenre] = useState(false);
+  const tmdbTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const [formData, setFormData] = useState<MediaFormData>({
     title: "",
     originalTitle: "",
@@ -145,6 +155,153 @@ export function MediaForm({
 
   const handleInputChange = (field: keyof MediaFormData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const searchMedia = async (
+    query: string,
+    type: "title" | "director" | "creator" | "genre" = "title",
+  ) => {
+    if (query.length < 3) {
+      // Clear suggestions if query is too short
+      switch (type) {
+        case "title":
+          setTitleSuggestions([]);
+          break;
+        case "director":
+          setDirectorSuggestions([]);
+          break;
+        case "creator":
+          setCreatorSuggestions([]);
+          break;
+        case "genre":
+          setGenreSuggestions([]);
+          break;
+      }
+      return;
+    }
+
+    // Set loading state
+    switch (type) {
+      case "title":
+        setIsSearchingTitle(true);
+        break;
+      case "director":
+        setIsSearchingDirector(true);
+        break;
+      case "creator":
+        setIsSearchingCreator(true);
+        break;
+      case "genre":
+        setIsSearchingGenre(true);
+        break;
+    }
+
+    try {
+      // Clear previous timeout
+      if (tmdbTimeoutRef.current) {
+        clearTimeout(tmdbTimeoutRef.current);
+        tmdbTimeoutRef.current = null;
+      }
+
+      // Debounced search
+      tmdbTimeoutRef.current = setTimeout(async () => {
+        try {
+          const mediaTypeParam = formData.type === "series" || formData.type === "anime" ? "tv" :
+                                formData.type === "movie" || formData.type === "documentary" || formData.type === "short" ? "movie" : "all";
+
+          const response = await fetch(`/api/media/search?q=${encodeURIComponent(query)}&type=${type}&mediaType=${mediaTypeParam}`);
+          const result = await response.json();
+
+          if (response.ok) {
+            const suggestions = result.data || [];
+
+            switch (type) {
+              case "title":
+                setTitleSuggestions(suggestions);
+                setDirectorSuggestions([]);
+                setCreatorSuggestions([]);
+                setGenreSuggestions([]);
+                break;
+              case "director":
+                setDirectorSuggestions(suggestions);
+                setTitleSuggestions([]);
+                setCreatorSuggestions([]);
+                setGenreSuggestions([]);
+                break;
+              case "creator":
+                setCreatorSuggestions(suggestions);
+                setTitleSuggestions([]);
+                setDirectorSuggestions([]);
+                setGenreSuggestions([]);
+                break;
+              case "genre":
+                setGenreSuggestions(suggestions);
+                setTitleSuggestions([]);
+                setDirectorSuggestions([]);
+                setCreatorSuggestions([]);
+                break;
+            }
+          } else {
+            console.error("Erreur lors de la recherche:", result.error);
+          }
+        } catch (error) {
+          console.error("Erreur lors de la recherche TMDB:", error);
+        } finally {
+          // Clear loading states
+          setIsSearchingTitle(false);
+          setIsSearchingDirector(false);
+          setIsSearchingCreator(false);
+          setIsSearchingGenre(false);
+        }
+      }, 500); // 500ms debounce
+    } catch (error) {
+      console.error("Erreur lors de la recherche TMDB:", error);
+      // Clear loading states
+      setIsSearchingTitle(false);
+      setIsSearchingDirector(false);
+      setIsSearchingCreator(false);
+      setIsSearchingGenre(false);
+    }
+  };
+
+  const handleSuggestionSelect = (suggestion: MediaSuggestion) => {
+    // Map TMDB data to form fields
+    const year = suggestion.release_date
+      ? new Date(suggestion.release_date).getFullYear()
+      : undefined;
+
+    const posterUrl = suggestion.poster_path
+      ? `https://image.tmdb.org/t/p/w500${suggestion.poster_path}`
+      : "";
+
+    // Determine media type based on TMDB media_type
+    let mediaType: MediaType = formData.type;
+    if (suggestion.media_type === "movie") {
+      mediaType = "movie";
+    } else if (suggestion.media_type === "tv") {
+      mediaType = "series";
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      title: suggestion.title,
+      originalTitle: suggestion.original_title || "",
+      director: suggestion.director || prev.director,
+      creator: suggestion.creator || prev.creator,
+      type: mediaType,
+      year,
+      posterUrl,
+      tmdbId: suggestion.id.toString(),
+      notes: suggestion.overview || prev.notes,
+      rating: suggestion.vote_average ? Math.round(suggestion.vote_average / 2) : prev.rating, // Convert 10-scale to 5-scale
+      genre: suggestion.genre_name || prev.genre,
+    }));
+
+    // Clear all suggestions
+    setTitleSuggestions([]);
+    setDirectorSuggestions([]);
+    setCreatorSuggestions([]);
+    setGenreSuggestions([]);
   };
 
   const handleDelete = () => {
