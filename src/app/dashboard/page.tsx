@@ -23,6 +23,7 @@ interface Tool {
   color: string;
   bgColor: string;
   available: boolean;
+  beta?: boolean;
 }
 
 const tools: Tool[] = [
@@ -57,6 +58,7 @@ const tools: Tool[] = [
     color: "text-purple-600",
     bgColor: "bg-purple-50 border-purple-200",
     available: true,
+    beta: true,
   },
   // Outils futurs (à implémenter)
   {
@@ -161,8 +163,14 @@ export default function Dashboard() {
               {tool.available ? (
                 <Link href={tool.href}>
                   <div
-                    className={`h-full p-6 rounded-xl border-2 ${tool.bgColor} hover:shadow-lg transition-all duration-200 hover:scale-105 group`}
+                    className={`h-full p-6 rounded-xl border-2 ${tool.bgColor} hover:shadow-lg transition-all duration-200 hover:scale-105 group relative`}
                   >
+                    {/* Badge Beta */}
+                    {tool.beta && (
+                      <span className="absolute top-4 right-4 px-2 py-1 text-xs font-medium bg-purple-500 text-white rounded-full">
+                        Beta
+                      </span>
+                    )}
                     <div className="flex items-start justify-between mb-4">
                       <div className={`p-3 rounded-lg bg-white ${tool.color}`}>
                         <tool.icon size={24} />
