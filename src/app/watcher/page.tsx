@@ -54,10 +54,10 @@ export default function WatcherPage() {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
   // Gestion de la persistance des filtres
-  const { selectedStatus, selectedType, searchQuery, updateFilter } =
+  const { selectedStatus, selectedType, searchQuery, toggleArrayFilter, isFilterSelected } =
     useFilterPersistence("watcher-filters", {
-      selectedStatus: "all",
-      selectedType: "all",
+      selectedStatus: [],
+      selectedType: [],
       searchQuery: "",
     });
 
@@ -111,8 +111,14 @@ export default function WatcherPage() {
 
   // Filtrer les médias
   const filteredMedias = medias.filter((media) => {
-    const matchesStatus = selectedStatus === "all" || media.status === selectedStatus;
-    const matchesType = selectedType === "all" || media.type === selectedType;
+    // Si aucun filtre de statut n'est sélectionné, on affiche tout
+    const statusArray = Array.isArray(selectedStatus) ? selectedStatus : [];
+    const matchesStatus = statusArray.length === 0 || statusArray.includes(media.status);
+
+    // Si aucun filtre de type n'est sélectionné, on affiche tout
+    const typeArray = Array.isArray(selectedType) ? selectedType : [];
+    const matchesType = typeArray.length === 0 || typeArray.includes(media.type);
+
     const matchesSearch =
       media.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (media.director &&
@@ -256,38 +262,64 @@ export default function WatcherPage() {
 
           {/* Filtres par statut */}
           <div className="flex flex-wrap gap-2">
-            {statusFilters.map((filter) => (
-              <button
-                key={filter.value}
-                onClick={() => updateFilter("selectedStatus", filter.value)}
-                className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  selectedStatus === filter.value
-                    ? "bg-purple-100 text-purple-700 border border-purple-200"
-                    : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
-                }`}
-              >
-                <filter.icon size={16} className="mr-2" />
-                {filter.label}
-              </button>
-            ))}
+            {statusFilters.map((filter) => {
+              const isSelected = filter.value === "all"
+                ? (Array.isArray(selectedStatus) ? selectedStatus.length === 0 : selectedStatus === "all")
+                : isFilterSelected("selectedStatus", filter.value);
+
+              return (
+                <button
+                  key={filter.value}
+                  onClick={() => {
+                    if (filter.value === "all") {
+                      // Réinitialiser tous les filtres de statut
+                      toggleArrayFilter("selectedStatus", "all");
+                    } else {
+                      toggleArrayFilter("selectedStatus", filter.value);
+                    }
+                  }}
+                  className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isSelected
+                      ? "bg-purple-100 text-purple-700 border border-purple-200"
+                      : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                  }`}
+                >
+                  <filter.icon size={16} className="mr-2" />
+                  {filter.label}
+                </button>
+              );
+            })}
           </div>
 
           {/* Filtres par type */}
           <div className="flex flex-wrap gap-2">
-            {typeFilters.map((filter) => (
-              <button
-                key={filter.value}
-                onClick={() => updateFilter("selectedType", filter.value)}
-                className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  selectedType === filter.value
-                    ? "bg-indigo-100 text-indigo-700 border border-indigo-200"
-                    : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
-                }`}
-              >
-                <filter.icon size={16} className="mr-2" />
-                {filter.label}
-              </button>
-            ))}
+            {typeFilters.map((filter) => {
+              const isSelected = filter.value === "all"
+                ? (Array.isArray(selectedType) ? selectedType.length === 0 : selectedType === "all")
+                : isFilterSelected("selectedType", filter.value);
+
+              return (
+                <button
+                  key={filter.value}
+                  onClick={() => {
+                    if (filter.value === "all") {
+                      // Réinitialiser tous les filtres de type
+                      toggleArrayFilter("selectedType", "all");
+                    } else {
+                      toggleArrayFilter("selectedType", filter.value);
+                    }
+                  }}
+                  className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isSelected
+                      ? "bg-indigo-100 text-indigo-700 border border-indigo-200"
+                      : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                  }`}
+                >
+                  <filter.icon size={16} className="mr-2" />
+                  {filter.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
