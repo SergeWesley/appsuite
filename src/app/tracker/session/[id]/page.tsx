@@ -10,6 +10,7 @@ import {
   MUSCLE_GROUP_LABELS,
 } from "@/types/workout-session";
 import { NavigationMenu } from "@/components/NavigationMenu";
+import { WorkoutScatterChart } from "@/components/tracker/WorkoutScatterChart";
 import {
   Calendar,
   Activity,
