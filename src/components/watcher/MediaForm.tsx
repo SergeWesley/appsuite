@@ -369,7 +369,7 @@ export function MediaForm({
       posterUrl,
       tmdbId: suggestion.id.toString(),
       synopsis: suggestion.overview || prev.synopsis,
-      rating: suggestion.vote_average ? Math.round(suggestion.vote_average / 2) : prev.rating, // Convert 10-scale to 5-scale
+      rating: suggestion.vote_average ? Math.round(suggestion.vote_average) : prev.rating, // Convert 10-scale to 5-scale
       genre: suggestion.genre_name || prev.genre,
     }));
 
@@ -830,7 +830,7 @@ export function MediaForm({
                     Note
                   </label>
                   <div className="flex items-center gap-2">
-                    {[1, 2, 3, 4, 5].map((rating) => (
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
                       <button
                         key={rating}
                         type="button"

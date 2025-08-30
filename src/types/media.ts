@@ -27,7 +27,7 @@ export interface Media {
   totalSeasons?: number;
   currentSeason?: number;
 
-  rating?: number; // 1-5
+  rating?: number; // 1-10
   notes?: string;
   synopsis?: string;
   dateAdded: Date;

@@ -206,7 +206,7 @@ export function MediaCard({
             {media.rating && (
               <div className="flex items-center gap-1">
                 <Star size={14} className="fill-yellow-400 text-yellow-400" />
-                <span>{media.rating}/5</span>
+                <span>{media.rating}/10</span>
               </div>
             )}
 
