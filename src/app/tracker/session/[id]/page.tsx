@@ -10,6 +10,7 @@ import {
   MUSCLE_GROUP_LABELS,
 } from "@/types/workout-session";
 import { NavigationMenu } from "@/components/NavigationMenu";
+import { WorkoutSessionStats } from "@/components/tracker/WorkoutSessionStats";
 import {
   Calendar,
   Activity,
@@ -20,6 +21,8 @@ import {
   Copy,
   LogOut,
   User,
+  BarChart3,
+  ChevronDown,
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
@@ -38,6 +41,7 @@ export default function WorkoutSessionDetailPage() {
   const [loading, setLoading] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+  const [showStats, setShowStats] = useState(false);
 
   useEffect(() => {
     if (sessions.length > 0) {
@@ -276,6 +280,49 @@ export default function WorkoutSessionDetailPage() {
               <p className="text-gray-700 leading-relaxed">{session.notes}</p>
             </div>
           )}
+        </div>
+
+        {/* Section Statistiques */}
+        <div className="mb-8">
+          {/* Header cliquable pour les statistiques */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setShowStats(!showStats)}
+            className="flex items-center justify-between w-full bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-indigo-50 rounded-lg">
+                <BarChart3 className="h-6 w-6 text-indigo-600" />
+              </div>
+              <div className="text-left">
+                <h3 className="text-lg font-semibold text-gray-900">Statistiques de la séance</h3>
+                <p className="text-sm text-gray-600">Analyse détaillée des performances</p>
+              </div>
+            </div>
+            <ChevronDown
+              className={`h-5 w-5 text-gray-600 transform transition-transform duration-300 ${
+                showStats ? "rotate-180" : ""
+              }`}
+            />
+          </motion.button>
+
+          {/* Contenu collapsible des statistiques */}
+          <AnimatePresence initial={false}>
+            {showStats && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <div className="mt-4">
+                  <WorkoutSessionStats session={session} />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Exercise Filter */}
