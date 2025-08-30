@@ -53,40 +53,42 @@ const getColorFromVolume = (volume: number, minVolume: number, maxVolume: number
 
 export function WorkoutScatterChart({ session, className }: WorkoutScatterChartProps) {
   const { chartData, exerciseLabels } = useMemo(() => {
-    // Filtrer les exercices qui ont un poids défini
-    const exercicesWithWeight = session.exercises.filter(
-      (ex) => ex.weight && ex.weight > 0 && ex.reps && ex.reps > 0
+    // Convertir la session en version détaillée
+    const detailedSession = convertToDetailedSession(session);
+
+    // Filtrer les exercices qui ont des séries avec poids défini
+    const exercicesWithSets = detailedSession.exercises.filter(
+      (ex) => ex.sets.length > 0 && ex.sets.some(set => set.weight > 0 && set.reps > 0 && set.completed)
     );
 
-    if (exercicesWithWeight.length === 0) {
+    if (exercicesWithSets.length === 0) {
       return { chartData: null, exerciseLabels: [] };
     }
 
     const dataPoints: ScatterDataPoint[] = [];
     const exerciseLabels: string[] = [];
 
-    exercicesWithWeight.forEach((exercise, exerciseIndex) => {
+    exercicesWithSets.forEach((exercise, exerciseIndex) => {
       const exerciseName = exercise.exercise?.name || "Exercice inconnu";
       exerciseLabels.push(exerciseName);
-      
-      const weight = exercise.weight!;
-      const reps = exercise.reps!;
-      const sets = exercise.sets || 1;
-      const volume = weight * reps;
 
-      // Créer un point pour chaque série
-      for (let setIndex = 0; setIndex < sets; setIndex++) {
-        dataPoints.push({
-          x: exerciseIndex,
-          y: weight,
-          exerciseName,
-          sets,
-          reps,
-          weight,
-          volume,
-          setNumber: setIndex + 1,
+      // Créer un point pour chaque série complétée
+      exercise.sets
+        .filter(set => set.completed && set.weight > 0 && set.reps > 0)
+        .forEach((set) => {
+          const volume = set.weight * set.reps;
+
+          dataPoints.push({
+            x: exerciseIndex,
+            y: set.weight,
+            exerciseName,
+            sets: exercise.sets.length,
+            reps: set.reps,
+            weight: set.weight,
+            volume,
+            setNumber: set.setNumber,
+          });
         });
-      }
     });
 
     if (dataPoints.length === 0) {
