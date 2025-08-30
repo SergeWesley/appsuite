@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { WorkoutScatterChart } from "@/components/tracker/WorkoutScatterChart";
 
 export default function WorkoutSessionDetailPage() {
   const router = useRouter();
@@ -277,6 +278,9 @@ export default function WorkoutSessionDetailPage() {
             </div>
           )}
         </div>
+
+        {/* Workout Scatter Chart */}
+        <WorkoutScatterChart session={session} className="mb-8" />
 
         {/* Exercise Filter */}
         <div className="mb-6">
