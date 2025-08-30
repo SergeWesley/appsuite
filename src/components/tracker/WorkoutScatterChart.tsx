@@ -13,6 +13,7 @@ import {
 } from "chart.js";
 import { Scatter } from "react-chartjs-2";
 import { WorkoutSession } from "@/types/workout-session";
+import { convertToDetailedSession, DetailedWorkoutSession } from "@/types/detailed-workout";
 
 ChartJS.register(
   CategoryScale,
