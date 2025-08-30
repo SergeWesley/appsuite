@@ -368,12 +368,12 @@ export function WorkoutSessionStats({ session }: WorkoutSessionStatsProps) {
                 className="p-4 bg-purple-50 rounded-lg"
               >
                 <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-semibold text-gray-900">
+                  <h4 className="font-semibold text-gray-900 text-sm sm:text-base flex-1 min-w-0 truncate">
                     {MUSCLE_GROUP_LABELS[stats.muscleGroup as keyof typeof MUSCLE_GROUP_LABELS]}
                   </h4>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-gray-900">{stats.exerciseCount}</p>
-                    <p className="text-sm text-gray-600">exercices</p>
+                  <div className="text-right ml-3 flex-shrink-0">
+                    <p className="text-base sm:text-lg font-bold text-gray-900">{stats.exerciseCount}</p>
+                    <p className="text-xs sm:text-sm text-gray-600">exercices</p>
                   </div>
                 </div>
 
