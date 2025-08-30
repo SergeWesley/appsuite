@@ -108,32 +108,47 @@ export function ExercisesBubbleChart({ exercises, className = "" }: ExercisesBub
 
   // Calculer les échelles
   const maxWeight = Math.max(...bubbleData.map(d => d.y));
-  const maxVolume = Math.max(...bubbleData.map(d => d.size));
-  const minVolume = Math.min(...bubbleData.map(d => d.size));
+  const minWeight = Math.min(...bubbleData.map(d => d.y));
+  const maxSets = Math.max(...bubbleData.map(d => d.size));
+  const minSets = Math.min(...bubbleData.map(d => d.size));
 
   // Dimensions du graphique
-  const width = 100; // pourcentage
-  const height = 300; // pixels
-  const padding = 40;
+  const width = 100; // pourcentage pour le viewBox
+  const height = 80; // pourcentage pour le viewBox
+  const paddingLeft = 8;
+  const paddingRight = 4;
+  const paddingTop = 8;
+  const paddingBottom = 20; // Plus d'espace pour les noms d'exercices
 
   // Fonction pour calculer la position Y (poids)
   const getY = (weight: number) => {
-    const normalizedY = maxWeight > 0 ? 1 - (weight / maxWeight) : 0.5;
-    return padding + normalizedY * (height - 2 * padding);
+    if (maxWeight === minWeight) return height / 2;
+    const normalizedY = (weight - minWeight) / (maxWeight - minWeight);
+    return paddingTop + (1 - normalizedY) * (height - paddingTop - paddingBottom);
   };
 
-  // Fonction pour calculer la position X (répartie uniformément)
+  // Fonction pour calculer la position X (exercices)
   const getX = (index: number) => {
-    const normalizedX = bubbleData.length > 1 ? index / (bubbleData.length - 1) : 0.5;
-    return padding + normalizedX * (width - 2 * padding);
+    if (bubbleData.length === 1) return width / 2;
+    const spacing = (width - paddingLeft - paddingRight) / (bubbleData.length - 1);
+    return paddingLeft + index * spacing;
   };
 
-  // Fonction pour calculer la taille de la bulle
-  const getBubbleSize = (volume: number) => {
-    if (maxVolume === minVolume) return 15;
-    const normalized = (volume - minVolume) / (maxVolume - minVolume);
-    return 8 + normalized * 20; // Entre 8 et 28 pixels de rayon
+  // Fonction pour calculer la taille de la bulle (basée sur les séries)
+  const getBubbleSize = (sets: number) => {
+    if (maxSets === minSets) return 2;
+    const normalized = (sets - minSets) / (maxSets - minSets);
+    return 1.5 + normalized * 3; // Entre 1.5 et 4.5 unités de rayon
   };
+
+  // Générer les valeurs pour l'axe Y (poids)
+  const getYAxisValues = () => {
+    const range = maxWeight - minWeight;
+    const step = range / 4;
+    return [0, 1, 2, 3, 4].map(i => Math.round((minWeight + i * step) * 10) / 10);
+  };
+
+  const yAxisValues = getYAxisValues();
 
   return (
     <div className={`bg-white rounded-xl border border-gray-100 p-6 ${className}`}>
