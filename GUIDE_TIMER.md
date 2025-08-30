@@ -31,7 +31,10 @@ Assurez-vous que vos variables Supabase sont configurées dans `.env.local` :
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=votre_url_projet_supabase
 NEXT_PUBLIC_SUPABASE_ANON_KEY=votre_cle_anonyme_supabase
+GOOGLE_BOOKS_API_KEY=votre_cle_google_books_api
 ```
+
+**Important** : La clé Google Books API ne doit pas avoir le préfixe `NEXT_PUBLIC_` pour des raisons de sécurité (utilisation côté serveur uniquement).
 
 ## 📱 Utilisation
 
