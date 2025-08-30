@@ -157,7 +157,9 @@ export function ExercisesBubbleChart({ exercises, className = "" }: ExercisesBub
           Visualisation des exercices
         </h3>
         <p className="text-sm text-gray-600">
-          Poids (vertical) • Volume = Séries × Répétitions (taille des bulles)
+          <span className="font-medium">Axe Y:</span> Poids (kg) •
+          <span className="font-medium ml-2">Taille:</span> Séries •
+          <span className="font-medium ml-2">Couleur:</span> Répétitions (bleu = faible, rouge = élevé)
         </p>
       </div>
 
@@ -168,50 +170,107 @@ export function ExercisesBubbleChart({ exercises, className = "" }: ExercisesBub
           className="w-full h-80 sm:h-96"
           preserveAspectRatio="xMidYMid meet"
         >
-          {/* Grille horizontale */}
-          {[0, 0.25, 0.5, 0.75, 1].map((ratio) => (
-            <g key={ratio}>
-              <line
-                x1={padding}
-                y1={padding + ratio * (height - 2 * padding)}
-                x2={width - padding}
-                y2={padding + ratio * (height - 2 * padding)}
-                stroke="#e5e7eb"
-                strokeWidth="0.5"
-                strokeDasharray="2,2"
-              />
-              <text
-                x={padding - 5}
-                y={padding + ratio * (height - 2 * padding)}
-                fontSize="3"
-                fill="#6b7280"
-                textAnchor="end"
-                dominantBaseline="central"
-              >
-                {Math.round((1 - ratio) * maxWeight)}kg
-              </text>
-            </g>
+          {/* Grille horizontale pour le poids */}
+          {yAxisValues.map((value, index) => {
+            const y = paddingTop + index * (height - paddingTop - paddingBottom) / 4;
+            return (
+              <g key={value}>
+                <line
+                  x1={paddingLeft}
+                  y1={y}
+                  x2={width - paddingRight}
+                  y2={y}
+                  stroke="#e5e7eb"
+                  strokeWidth="0.3"
+                  strokeDasharray="1,1"
+                />
+                <text
+                  x={paddingLeft - 1}
+                  y={y}
+                  fontSize="2.5"
+                  fill="#6b7280"
+                  textAnchor="end"
+                  dominantBaseline="central"
+                >
+                  {value}kg
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Lignes verticales pour les exercices */}
+          {bubbleData.map((bubble, index) => (
+            <line
+              key={`vline-${bubble.id}`}
+              x1={getX(index)}
+              y1={paddingTop}
+              x2={getX(index)}
+              y2={height - paddingBottom}
+              stroke="#f3f4f6"
+              strokeWidth="0.3"
+            />
           ))}
 
-          {/* Axes */}
+          {/* Axes principaux */}
           <line
-            x1={padding}
-            y1={padding}
-            x2={padding}
-            y2={height - padding}
+            x1={paddingLeft}
+            y1={paddingTop}
+            x2={paddingLeft}
+            y2={height - paddingBottom}
             stroke="#374151"
-            strokeWidth="1"
+            strokeWidth="0.5"
           />
           <line
-            x1={padding}
-            y1={height - padding}
-            x2={width - padding}
-            y2={height - padding}
+            x1={paddingLeft}
+            y1={height - paddingBottom}
+            x2={width - paddingRight}
+            y2={height - paddingBottom}
             stroke="#374151"
-            strokeWidth="1"
+            strokeWidth="0.5"
           />
 
-          {/* Bulles */}
+          {/* Noms des exercices sur l'axe X */}
+          {bubbleData.map((bubble, index) => (
+            <text
+              key={`xlabel-${bubble.id}`}
+              x={getX(index)}
+              y={height - paddingBottom + 5}
+              fontSize="2.2"
+              fill="#374151"
+              textAnchor="middle"
+              dominantBaseline="hanging"
+              className="font-medium"
+            >
+              {bubble.shortName}
+            </text>
+          ))}
+
+          {/* Titre des axes */}
+          <text
+            x={paddingLeft - 3}
+            y={paddingTop / 2}
+            fontSize="2.5"
+            fill="#374151"
+            textAnchor="middle"
+            dominantBaseline="central"
+            className="font-medium"
+          >
+            Poids (kg)
+          </text>
+
+          <text
+            x={width / 2}
+            y={height - 4}
+            fontSize="2.5"
+            fill="#374151"
+            textAnchor="middle"
+            dominantBaseline="central"
+            className="font-medium"
+          >
+            Exercices
+          </text>
+
+          {/* Bulles des exercices */}
           {bubbleData.map((bubble, index) => (
             <motion.g
               key={bubble.id}
@@ -224,28 +283,26 @@ export function ExercisesBubbleChart({ exercises, className = "" }: ExercisesBub
                 cy={getY(bubble.y)}
                 r={getBubbleSize(bubble.size)}
                 fill={bubble.color}
-                opacity="0.7"
+                opacity="0.8"
                 stroke="white"
-                strokeWidth="1"
-                className="hover:opacity-90 transition-opacity cursor-pointer"
+                strokeWidth="0.5"
+                className="hover:opacity-100 transition-opacity cursor-pointer"
               />
               <text
                 x={getX(index)}
                 y={getY(bubble.y)}
-                fontSize="2.5"
+                fontSize="1.8"
                 fill="white"
                 textAnchor="middle"
                 dominantBaseline="central"
-                fontWeight="600"
+                fontWeight="700"
                 className="pointer-events-none"
               >
-                {bubble.sets}×{bubble.reps}
+                {bubble.sets}
               </text>
             </motion.g>
           ))}
         </svg>
-
-        {/* Tooltip personnalisé au survol - pour mobile on affichera les infos en bas */}
       </div>
 
       {/* Légende et informations */}
