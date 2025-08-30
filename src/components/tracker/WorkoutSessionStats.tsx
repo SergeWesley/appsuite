@@ -140,7 +140,7 @@ export function WorkoutSessionStats({ session }: WorkoutSessionStatsProps) {
           <h3 className="text-lg font-semibold text-gray-900">Aperçu de la séance</h3>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="text-center p-4 bg-green-50 rounded-lg">
             <Weight className="h-6 w-6 text-green-600 mx-auto mb-2" />
             <p className="text-2xl font-bold text-gray-900">{Math.round(sessionTotals.totalVolume)}</p>
