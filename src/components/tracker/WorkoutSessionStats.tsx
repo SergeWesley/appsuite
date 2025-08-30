@@ -322,7 +322,7 @@ export function WorkoutSessionStats({ session }: WorkoutSessionStatsProps) {
                   {/* Détail de chaque session cardio */}
                   <div className="mt-3 pt-3 border-t border-orange-200">
                     <p className="text-xs text-gray-500 mb-2">Détail des sessions:</p>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1 sm:gap-2">
                       {exercise.instances.map((instance, idx) => (
                         <span
                           key={instance.id}
