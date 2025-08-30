@@ -134,15 +134,21 @@ export function WorkoutScatterChart({ session, className }: WorkoutScatterChartP
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    devicePixelRatio: 2, // Pour une meilleure qualité sur les écrans haute résolution
     plugins: {
       title: {
         display: true,
-        text: "Analyse de la séance par série",
+        text: "📊 Analyse de la séance par série",
         font: {
-          size: 16,
+          size: window.innerWidth < 768 ? 14 : 18,
           weight: "bold" as const,
+          family: "system-ui, -apple-system, sans-serif",
         },
-        padding: 20,
+        padding: {
+          top: 10,
+          bottom: 20,
+        },
+        color: "#1f2937",
       },
       legend: {
         display: false,
