@@ -14,6 +14,7 @@ import {
   Play,
   Tv,
   Camera,
+  Trash,
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { useMediasWithSessions } from "@/hooks/watcher/useMediasWithSessions";
@@ -108,15 +109,9 @@ export default function WatcherPage() {
     setTimerMedia(undefined);
   };
 
-  const handleSessionStopped = async () => {
-    // Rafraîchir les médias quand une session se termine
-    await refreshMedias();
-  };
-
   // Filtrer les médias
   const filteredMedias = medias.filter((media) => {
-    const matchesStatus =
-      selectedStatus === "all" || media.status === selectedStatus;
+    const matchesStatus = selectedStatus === "all" || media.status === selectedStatus;
     const matchesType = selectedType === "all" || media.type === selectedType;
     const matchesSearch =
       media.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -137,6 +132,7 @@ export default function WatcherPage() {
     { value: "completed", label: "Terminés", icon: CheckCircle },
     { value: "towatch", label: "À voir", icon: Clock },
     { value: "wishlist", label: "Souhaits", icon: Heart },
+    { value: "dropped", label: "Abandonnés", icon: Trash },
   ];
 
   const typeFilters = [
