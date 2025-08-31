@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import {
   Plus,
   Film,
@@ -25,6 +26,7 @@ import { MediaForm } from "@/components/watcher/MediaForm";
 import { MediaStats } from "@/components/watcher/MediaStats";
 import { WatchingTimer } from "@/components/watcher/WatchingTimer";
 import { NavigationMenu } from "@/components/NavigationMenu";
+import { DroppableStatusColumn } from "@/components/watcher/DroppableStatusColumn";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
 export default function WatcherPage() {
