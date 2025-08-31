@@ -92,6 +92,7 @@ export default function WatcherPage() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [draggedMedia, setDraggedMedia] = useState<Media | null>(null);
   const [dragStartPosition, setDragStartPosition] = useState<{x: number, y: number} | null>(null);
+  const [hoveredDropZone, setHoveredDropZone] = useState<string | null>(null);
 
   // DnD sensors avec support mobile amélioré
   const sensors = useSensors(
