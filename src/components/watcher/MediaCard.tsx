@@ -123,7 +123,7 @@ export function MediaCard({
       whileHover={!isDraggingFromHook ? { y: -4 } : {}}
       className={`media-card h-full p-6 group relative overflow-hidden transition-all duration-200 ${
         isDraggingFromHook || isDragging
-          ? 'opacity-50 scale-105 shadow-xl z-50 cursor-grabbing'
+          ? 'opacity-30 scale-95 border-dashed border-purple-300 bg-purple-50'
           : 'cursor-grab hover:shadow-lg touch-manipulation'
       }`}
       onClick={(e) => {
