@@ -97,9 +97,9 @@ export default function WatcherPage() {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
-        delay: 150, // Délai pour éviter les conflits avec le scroll
-        tolerance: 5,
+        distance: 10, // Distance minimum pour activer le drag
+        delay: 100, // Délai pour éviter les conflits avec le scroll
+        tolerance: 8,
       },
     })
   );
