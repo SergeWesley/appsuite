@@ -159,6 +159,15 @@ export default function WatcherPage() {
     return matchesStatus && matchesType && matchesSearch;
   });
 
+  // Organiser les médias par statut pour le mode kanban
+  const mediasByStatus = {
+    towatch: filteredMedias.filter((media) => media.status === "towatch"),
+    watching: filteredMedias.filter((media) => media.status === "watching"),
+    completed: filteredMedias.filter((media) => media.status === "completed"),
+    wishlist: filteredMedias.filter((media) => media.status === "wishlist"),
+    dropped: filteredMedias.filter((media) => media.status === "dropped"),
+  };
+
   const statusFilters = [
     { value: "all", label: "Tous", icon: Film },
     { value: "watching", label: "En cours", icon: Play },
