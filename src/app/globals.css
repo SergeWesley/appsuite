@@ -98,6 +98,30 @@
   .drag-overlay {
     pointer-events: none;
     z-index: 999;
+    filter: drop-shadow(0 25px 25px rgb(0 0 0 / 0.15));
+  }
+
+  /* Drop zone hover effects */
+  .drop-zone-hovered {
+    animation: pulse-glow 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% {
+      box-shadow: 0 0 20px rgba(139, 69, 219, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 30px rgba(139, 69, 219, 0.6);
+    }
+  }
+
+  /* Drag preview compact card */
+  .drag-preview-card {
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(139, 69, 219, 0.3);
+    box-shadow:
+      0 25px 50px -12px rgba(0, 0, 0, 0.25),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
   }
 
   /* Mobile touch optimizations */
@@ -109,6 +133,10 @@
     .media-card .grip-handle {
       opacity: 1 !important; /* Always visible on mobile */
       padding: 8px; /* Larger touch target */
+    }
+
+    .drag-preview-card {
+      min-width: 180px; /* Smaller on mobile */
     }
   }
 }
