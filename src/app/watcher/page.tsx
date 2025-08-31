@@ -177,6 +177,44 @@ export default function WatcherPage() {
     { value: "dropped", label: "Abandonnés", icon: Trash },
   ];
 
+  const statusColumns = [
+    {
+      status: "towatch" as MediaStatus,
+      title: "À voir",
+      icon: Clock,
+      color: "text-gray-600",
+      medias: mediasByStatus.towatch
+    },
+    {
+      status: "watching" as MediaStatus,
+      title: "En cours",
+      icon: Play,
+      color: "text-blue-600",
+      medias: mediasByStatus.watching
+    },
+    {
+      status: "completed" as MediaStatus,
+      title: "Terminés",
+      icon: CheckCircle,
+      color: "text-green-600",
+      medias: mediasByStatus.completed
+    },
+    {
+      status: "wishlist" as MediaStatus,
+      title: "Souhaits",
+      icon: Heart,
+      color: "text-pink-600",
+      medias: mediasByStatus.wishlist
+    },
+    {
+      status: "dropped" as MediaStatus,
+      title: "Abandonnés",
+      icon: Trash,
+      color: "text-red-600",
+      medias: mediasByStatus.dropped
+    },
+  ];
+
   const typeFilters = [
     { value: "all", label: "Tous types", icon: Film },
     { value: "movie", label: "Films", icon: Film },
