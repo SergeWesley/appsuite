@@ -54,6 +54,7 @@ export default function WatcherPage() {
   const [timerMedia, setTimerMedia] = useState<Media | undefined>(undefined);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'kanban'>('kanban');
 
   // Gestion de la persistance des filtres
   const { selectedStatus, selectedType, searchQuery, updateFilter, toggleArrayFilter, isFilterSelected } =
