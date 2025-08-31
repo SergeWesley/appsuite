@@ -458,16 +458,37 @@ export default function WatcherPage() {
                 </p>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                {dropZoneFilters.map((zone) => (
-                  <DropZone
-                    key={zone.value}
-                    id={zone.value}
-                    className={`p-4 md:p-6 rounded-xl border-2 border-dashed ${zone.borderColor} ${zone.bgColor} text-center transition-all duration-200 hover:scale-105 touch-manipulation`}
-                  >
-                    <zone.icon size={32} className="mx-auto mb-2 text-gray-600" />
-                    <p className="text-sm font-medium text-gray-700">{zone.label}</p>
-                  </DropZone>
-                ))}
+                {dropZoneFilters.map((zone) => {
+                  const isHovered = hoveredDropZone === zone.value;
+                  return (
+                    <DropZone
+                      key={zone.value}
+                      id={zone.value}
+                      className={`p-4 md:p-6 rounded-xl border-2 border-dashed text-center transition-all duration-300 touch-manipulation ${
+                        isHovered
+                          ? 'border-purple-500 bg-purple-100 scale-110 shadow-lg ring-4 ring-purple-200'
+                          : `${zone.borderColor} ${zone.bgColor} hover:scale-105`
+                      }`}
+                    >
+                      <zone.icon
+                        size={32}
+                        className={`mx-auto mb-2 transition-colors duration-200 ${
+                          isHovered ? 'text-purple-600' : 'text-gray-600'
+                        }`}
+                      />
+                      <p className={`text-sm font-medium transition-colors duration-200 ${
+                        isHovered ? 'text-purple-800' : 'text-gray-700'
+                      }`}>
+                        {zone.label}
+                      </p>
+                      {isHovered && (
+                        <div className="mt-2">
+                          <div className="w-8 h-1 bg-purple-500 rounded-full mx-auto"></div>
+                        </div>
+                      )}
+                    </DropZone>
+                  );
+                })}
               </div>
             </div>
           )}
