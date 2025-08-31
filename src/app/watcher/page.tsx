@@ -91,6 +91,7 @@ export default function WatcherPage() {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [draggedMedia, setDraggedMedia] = useState<Media | null>(null);
+  const [dragStartPosition, setDragStartPosition] = useState<{x: number, y: number} | null>(null);
 
   // DnD sensors avec support mobile amélioré
   const sensors = useSensors(
