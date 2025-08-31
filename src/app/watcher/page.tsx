@@ -62,6 +62,17 @@ export default function WatcherPage() {
   const [timerMedia, setTimerMedia] = useState<Media | undefined>(undefined);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [draggedMedia, setDraggedMedia] = useState<Media | null>(null);
+
+  // DnD sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   // Gestion de la persistance des filtres
   const { selectedStatus, selectedType, searchQuery, updateFilter, toggleArrayFilter, isFilterSelected } =
