@@ -91,7 +91,7 @@ export function ExerciseBubblePlot({ exercises, className = "" }: ExerciseBubble
       } else {
         exerciseGroups.set(key, {
           name: ex.exercise!.name,
-          weight: ex.weight!,
+          weight: ex.weight ?? 0,
           reps: ex.reps!,
           sets: ex.sets!,
           count: 1,
