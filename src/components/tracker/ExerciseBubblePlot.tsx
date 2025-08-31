@@ -191,17 +191,6 @@ export function ExerciseBubblePlot({ exercises, className = "" }: ExerciseBubble
     setHoveredBubble(null);
   };
 
-  // Légende
-  const uniqueExercises = useMemo(() => {
-    const seen = new Set();
-    return processedData.filter(ex => {
-      if (seen.has(ex.name)) {
-        return false;
-      }
-      seen.add(ex.name);
-      return true;
-    });
-  }, [processedData]);
 
   if (processedData.length === 0) {
     return (
