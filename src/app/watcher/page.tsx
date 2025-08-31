@@ -482,8 +482,11 @@ export default function WatcherPage() {
                         {zone.label}
                       </p>
                       {isHovered && (
-                        <div className="mt-2">
+                        <div className="mt-2 animate-bounce">
                           <div className="w-8 h-1 bg-purple-500 rounded-full mx-auto"></div>
+                          <p className="text-xs text-purple-600 mt-1 font-semibold">
+                            Déposer ici
+                          </p>
                         </div>
                       )}
                     </DropZone>
