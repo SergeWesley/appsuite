@@ -112,3 +112,87 @@
 .media-card:hover::before {
   left: 100%;
 }
+
+/* Styles pour le drag and drop */
+.dragging {
+  opacity: 0.8;
+  transform: rotate(5deg) scale(1.05);
+  z-index: 1000;
+  box-shadow: theme(boxShadow.2xl);
+}
+
+.drop-zone {
+  transition: all 0.2s ease;
+}
+
+.drop-zone-active {
+  background-color: theme(colors.purple.50);
+  border-color: theme(colors.purple.400);
+  transform: scale(1.02);
+}
+
+.drop-zone-over {
+  background-color: theme(colors.purple.100);
+  border-color: theme(colors.purple.500);
+  transform: scale(1.05);
+}
+
+/* Animation pour les cartes draggables */
+.draggable-card {
+  cursor: grab;
+  transition: all 0.2s ease;
+}
+
+.draggable-card:active {
+  cursor: grabbing;
+}
+
+.draggable-card:hover {
+  transform: translateY(-2px);
+  box-shadow: theme(boxShadow.lg);
+}
+
+/* Pulse animation pour les zones de dépôt vides */
+.empty-drop-zone {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Style pour l'overlay de drag */
+.drag-overlay {
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* Amélioration de la vue kanban */
+.kanban-column {
+  min-height: 400px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.kanban-column::-webkit-scrollbar {
+  width: 6px;
+}
+
+.kanban-column::-webkit-scrollbar-track {
+  background: theme(colors.gray.100);
+  border-radius: 3px;
+}
+
+.kanban-column::-webkit-scrollbar-thumb {
+  background: theme(colors.gray.300);
+  border-radius: 3px;
+}
+
+.kanban-column::-webkit-scrollbar-thumb:hover {
+  background: theme(colors.gray.400);
+}
