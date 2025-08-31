@@ -124,7 +124,7 @@ export function MediaCard({
       className={`media-card h-full p-6 group relative overflow-hidden transition-all duration-200 ${
         isDraggingFromHook || isDragging
           ? 'opacity-50 scale-105 shadow-xl z-50 cursor-grabbing'
-          : 'cursor-grab hover:shadow-lg'
+          : 'cursor-grab hover:shadow-lg touch-manipulation'
       }`}
       onClick={(e) => {
         if (!isDraggingFromHook && !isDragging) {
