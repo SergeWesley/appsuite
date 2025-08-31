@@ -169,11 +169,12 @@ export default function WatcherPage() {
     setActiveId(mediaId);
     setDraggedMedia(media || null);
 
-    // Capturer la position de départ
-    if (event.active.rect.current.translated) {
+    // Capturer la position initiale de l'élément
+    const rect = event.active.rect.current.initial;
+    if (rect) {
       setDragStartPosition({
-        x: event.active.rect.current.translated.left,
-        y: event.active.rect.current.translated.top
+        x: rect.left,
+        y: rect.top
       });
     }
   };
