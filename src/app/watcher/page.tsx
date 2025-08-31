@@ -591,8 +591,8 @@ export default function WatcherPage() {
       {/* Drag Overlay */}
       <DragOverlay>
         {activeId && draggedMedia ? (
-          <div className="transform rotate-2 scale-75 opacity-95 shadow-2xl">
-            <div className="bg-white rounded-xl border-2 border-purple-300 p-3 min-w-[200px] backdrop-blur-sm bg-white/95">
+          <div className="transform rotate-2 scale-75 opacity-95">
+            <div className="drag-preview-card bg-white/95 rounded-xl p-3 min-w-[200px]">
               <div className="flex items-center gap-3">
                 {draggedMedia.posterUrl && (
                   <img
