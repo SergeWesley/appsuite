@@ -83,8 +83,8 @@ export function ExerciseBubblePlot({ exercises, className = "" }: ExerciseBubble
     }>();
 
     validExercises.forEach((ex) => {
-      const weight = ex.weight ?? 0;
-      const key = `${ex.exercise!.name}-${ex.weight}-${ex.reps}-${ex.sets}`;
+      const weight = ex.weight ?? 0; // Traiter le poids null comme 0
+      const key = `${ex.exercise!.name}-${weight}-${ex.reps}-${ex.sets}`;
       
       if (exerciseGroups.has(key)) {
         exerciseGroups.get(key)!.count += 1;
@@ -110,7 +110,7 @@ export function ExerciseBubblePlot({ exercises, className = "" }: ExerciseBubble
     return groupedExercises.map((ex, index) => ({
       id: `bubble-${index}`,
       name: ex.name,
-      weight: ex.weight ?? 0,
+      weight: ex.weight,
       reps: ex.reps,
       sets: ex.sets,
       color: colors[index] || "#6b7280",
