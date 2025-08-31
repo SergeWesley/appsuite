@@ -421,61 +421,79 @@ export default function WatcherPage() {
         </div>
 
         {/* Liste des médias */}
-        <div className="space-y-6">
-          {filteredMedias.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-12"
-            >
-              <Film className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-4 text-lg font-medium text-gray-900">
-                {medias.length === 0
-                  ? "Aucune œuvre dans votre médiathèque"
-                  : "Aucune œuvre trouvée"}
-              </h3>
-              <p className="mt-2 text-gray-600">
-                {medias.length === 0
-                  ? "Commencez par ajouter votre première œuvre !"
-                  : "Essayez de modifier vos filtres de recherche"}
-              </p>
-              {medias.length === 0 && (
-                <button
-                  onClick={() => openForm()}
-                  className="mt-4 inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                >
-                  <Plus size={20} className="mr-2" />
-                  Ajouter une œuvre
-                </button>
-              )}
-            </motion.div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <AnimatePresence>
-                {filteredMedias.map((media, index) => (
-                  <motion.div
-                    key={media.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="h-full"
-                  >
-                    <MediaCard
-                      media={media}
-                      onEdit={openForm}
-                      onDelete={handleDeleteMedia}
-                      onStatusChange={handleStatusChange}
-                      onOpenTimer={openTimer}
-                      //   isSessionActive={isSessionActive(media.id)}
-                      //   currentSessionTime={getFormattedCurrentTime(media.id)}
-                    />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+        {filteredMedias.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <Film className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-4 text-lg font-medium text-gray-900">
+              {medias.length === 0
+                ? "Aucune œuvre dans votre médiathèque"
+                : "Aucune œuvre trouvée"}
+            </h3>
+            <p className="mt-2 text-gray-600">
+              {medias.length === 0
+                ? "Commencez par ajouter votre première œuvre !"
+                : "Essayez de modifier vos filtres de recherche"}
+            </p>
+            {medias.length === 0 && (
+              <button
+                onClick={() => openForm()}
+                className="mt-4 inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                <Plus size={20} className="mr-2" />
+                Ajouter une œuvre
+              </button>
+            )}
+          </motion.div>
+        ) : viewMode === 'kanban' ? (
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <div className="flex gap-6 overflow-x-auto pb-4">
+              {statusColumns.map((column) => (
+                <div key={column.status} className="flex-shrink-0 w-80">
+                  <DroppableStatusColumn
+                    status={column.status}
+                    title={column.title}
+                    medias={column.medias}
+                    onEdit={openForm}
+                    onDelete={handleDeleteMedia}
+                    onStatusChange={handleStatusChange}
+                    onOpenTimer={openTimer}
+                    icon={column.icon}
+                    color={column.color}
+                  />
+                </div>
+              ))}
             </div>
-          )}
-        </div>
+          </DragDropContext>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence>
+              {filteredMedias.map((media, index) => (
+                <motion.div
+                  key={media.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="h-full"
+                >
+                  <MediaCard
+                    media={media}
+                    onEdit={openForm}
+                    onDelete={handleDeleteMedia}
+                    onStatusChange={handleStatusChange}
+                    onOpenTimer={openTimer}
+                    //   isSessionActive={isSessionActive(media.id)}
+                    //   currentSessionTime={getFormattedCurrentTime(media.id)}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
       </main>
 
       {/* Bouton flottant pour mobile */}
