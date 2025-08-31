@@ -112,3 +112,35 @@
 .media-card:hover::before {
   left: 100%;
 }
+
+/* Styles pour le drag and drop */
+.media-card.dragging {
+  transform: rotate(3deg) scale(1.05);
+  box-shadow: theme(boxShadow.2xl);
+  z-index: 1000;
+}
+
+.droppable-column {
+  transition: background-color 0.2s ease;
+}
+
+.droppable-column.dragging-over {
+  background-color: rgba(147, 51, 234, 0.1);
+  border-color: theme(colors.purple.300);
+}
+
+/* Animation des cards qui tombent */
+@keyframes dropCard {
+  0% {
+    transform: translateY(-10px);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.dropped-card {
+  animation: dropCard 0.3s ease-out;
+}
