@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useDraggable } from "@dnd-kit/core";
 import { Media, MediaStatus } from "@/types/media";
 import { ProgressCircle } from "../ProgressCircle";
 
@@ -16,6 +17,7 @@ import {
   Camera,
   Clock,
   Hash,
+  GripVertical,
 } from "lucide-react";
 
 interface MediaCardProps {
@@ -24,6 +26,7 @@ interface MediaCardProps {
   onDelete: (id: string) => void;
   onStatusChange: (id: string, status: MediaStatus) => void;
   onOpenTimer: (media: Media) => void;
+  isDragging?: boolean;
 }
 
 const statusConfig = {
@@ -52,9 +55,24 @@ export function MediaCard({
   onDelete,
   onStatusChange,
   onOpenTimer,
+  isDragging = false,
 }: MediaCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    isDragging: isDraggingFromHook,
+  } = useDraggable({
+    id: media.id,
+  });
+
   const status = statusConfig[media.status];
   const type = typeConfig[media.type];
+
+  const style = transform ? {
+    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+  } : undefined;
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("fr-FR", {
@@ -97,15 +115,38 @@ export function MediaCard({
 
   return (
     <motion.div
+      ref={setNodeRef}
+      style={style}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      whileHover={{ y: -4 }}
-      className="media-card h-full p-6 cursor-pointer group relative overflow-hidden"
-      onClick={() => onEdit(media)}
+      whileHover={!isDraggingFromHook ? { y: -4 } : {}}
+      className={`media-card h-full p-6 group relative overflow-hidden transition-all duration-200 ${
+        isDraggingFromHook || isDragging
+          ? 'opacity-50 scale-105 shadow-xl z-50 cursor-grabbing'
+          : 'cursor-grab hover:shadow-lg touch-manipulation'
+      }`}
+      onClick={(e) => {
+        if (!isDraggingFromHook && !isDragging) {
+          onEdit(media);
+        }
+      }}
+      {...attributes}
     >
-      {/* Badge de type */}
-      <div className="absolute top-4 right-4 z-10">
+      {/* Badge de type et handle de drag */}
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+        <button
+          {...listeners}
+          className={`grip-handle p-2 md:p-1 rounded bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-all duration-200 touch-manipulation ${
+            isDraggingFromHook || isDragging
+              ? 'opacity-100'
+              : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'
+          }`}
+          onClick={(e) => e.stopPropagation()}
+          title="Glisser pour changer de statut"
+        >
+          <GripVertical size={16} className="text-gray-600 md:w-3.5 md:h-3.5" />
+        </button>
         <span
           className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white shadow-sm ${type.color}`}
         >

@@ -67,6 +67,50 @@
     background-color: theme(colors.orange.100);
     color: theme(colors.orange.800);
   }
+
+  /* Drag and Drop styles */
+  .media-card.dragging {
+    opacity: 0.5;
+    transform: scale(1.05);
+    z-index: 50;
+    cursor: grabbing;
+  }
+
+  .media-card {
+    cursor: grab;
+  }
+
+  .media-card:active {
+    cursor: grabbing;
+  }
+
+  .drop-zone {
+    transition: all 0.2s ease;
+  }
+
+  .drop-zone.drag-over {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(139, 69, 219, 0.3);
+    border-color: theme(colors.purple.400);
+    background-color: theme(colors.purple.50);
+  }
+
+  .drag-overlay {
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* Mobile touch optimizations */
+  @media (max-width: 768px) {
+    .media-card {
+      touch-action: none; /* Prevents scrolling during drag */
+    }
+
+    .media-card .grip-handle {
+      opacity: 1 !important; /* Always visible on mobile */
+      padding: 8px; /* Larger touch target */
+    }
+  }
 }
 
 /* Utilitaires supplémentaires */

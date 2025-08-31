@@ -16,6 +16,17 @@ import {
   Camera,
   Trash,
 } from "lucide-react";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  closestCorners,
+  useDroppable,
+} from "@dnd-kit/core";
 import { useAuthContext } from "@/components/AuthProvider";
 import { useMediasWithSessions } from "@/hooks/watcher/useMediasWithSessions";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
@@ -26,6 +37,32 @@ import { MediaStats } from "@/components/watcher/MediaStats";
 import { WatchingTimer } from "@/components/watcher/WatchingTimer";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+
+// Composant zone de drop
+function DropZone({ 
+  id, 
+  children, 
+  className,
+  isOver 
+}: { 
+  id: string; 
+  children: React.ReactNode; 
+  className?: string;
+  isOver?: boolean;
+}) {
+  const { setNodeRef } = useDroppable({
+    id,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`${className} ${isOver ? 'ring-2 ring-purple-500 ring-opacity-50 bg-purple-50' : ''} transition-all duration-200`}
+    >
+      {children}
+    </div>
+  );
+}
 
 export default function WatcherPage() {
   const {
@@ -52,6 +89,19 @@ export default function WatcherPage() {
   const [timerMedia, setTimerMedia] = useState<Media | undefined>(undefined);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [draggedMedia, setDraggedMedia] = useState<Media | null>(null);
+
+  // DnD sensors avec support mobile amélioré
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+        delay: 150, // Délai pour éviter les conflits avec le scroll
+        tolerance: 5,
+      },
+    })
+  );
 
   // Gestion de la persistance des filtres
   const { selectedStatus, selectedType, searchQuery, updateFilter, toggleArrayFilter, isFilterSelected } =
@@ -109,6 +159,35 @@ export default function WatcherPage() {
     setTimerMedia(undefined);
   };
 
+  // Drag and drop handlers
+  const handleDragStart = (event: DragStartEvent) => {
+    const mediaId = event.active.id as string;
+    const media = medias.find(m => m.id === mediaId);
+    setActiveId(mediaId);
+    setDraggedMedia(media || null);
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (!over || !draggedMedia) {
+      setActiveId(null);
+      setDraggedMedia(null);
+      return;
+    }
+
+    const mediaId = active.id as string;
+    const newStatus = over.id as MediaStatus;
+
+    // Si le statut change, on met à jour le média
+    if (draggedMedia.status !== newStatus) {
+      await handleStatusChange(mediaId, newStatus);
+    }
+
+    setActiveId(null);
+    setDraggedMedia(null);
+  };
+
   // Filtrer les médias
   const filteredMedias = medias.filter((media) => {
     // Si aucun filtre de statut n'est sélectionné, on affiche tout
@@ -139,6 +218,14 @@ export default function WatcherPage() {
     { value: "towatch", label: "À voir", icon: Clock },
     { value: "wishlist", label: "Souhaits", icon: Heart },
     { value: "dropped", label: "Abandonnés", icon: Trash },
+  ];
+
+  const dropZoneFilters = [
+    { value: "watching", label: "En cours", icon: Play, bgColor: "bg-purple-50", borderColor: "border-purple-200" },
+    { value: "completed", label: "Terminés", icon: CheckCircle, bgColor: "bg-green-50", borderColor: "border-green-200" },
+    { value: "towatch", label: "À voir", icon: Clock, bgColor: "bg-orange-50", borderColor: "border-orange-200" },
+    { value: "wishlist", label: "Souhaits", icon: Heart, bgColor: "bg-pink-50", borderColor: "border-pink-200" },
+    { value: "dropped", label: "Abandonnés", icon: Trash, bgColor: "bg-gray-50", borderColor: "border-gray-200" },
   ];
 
   const typeFilters = [
@@ -179,244 +266,287 @@ export default function WatcherPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <button
-                onClick={() => setIsNavMenuOpen(true)}
-                className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                aria-label="Menu de navigation"
-              >
-                <Film className="h-8 w-8 text-purple-600" />
-                <h1 className="ml-3 text-xl font-semibold text-gray-900">
-                  Watcher
-                </h1>
-              </button>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => openForm()}
-                className="inline-flex items-center text-sm px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                <Plus size={20} className="mr-2" />
-                Ajouter une œuvre
-              </button>
-
-              {/* Menu utilisateur */}
-              <Menu as="div" className="relative inline-block text-left">
-                <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                  <User size={20} />
-                  <span className="hidden sm:block">
-                    {user?.user_metadata?.name || user?.email || "Utilisateur"}
-                  </span>
-                </MenuButton>
-
-                <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 focus:outline-none">
-                  <div className="py-2">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-900">
-                        {user?.user_metadata?.name || "Utilisateur"}
-                      </p>
-                      <p className="text-xs text-gray-500">{user?.email}</p>
-                    </div>
-                    <MenuItem
-                      as="button"
-                      onClick={signOut}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100"
-                    >
-                      <LogOut size={16} />
-                      Se déconnecter
-                    </MenuItem>
-                  </div>
-                </MenuItems>
-              </Menu>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Statistiques */}
-        <MediaStats {...stats} />
-
-        {/* Filtres et recherche */}
-        <div className="mb-8 space-y-4">
-          {/* Barre de recherche */}
-          <div className="relative">
-            <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              size={20}
-            />
-            <input
-              type="text"
-              placeholder="Rechercher par titre, réalisateur, créateur, studio ou genre..."
-              value={searchQuery}
-              onChange={(e) => updateFilter("searchQuery", e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
-          </div>
-
-          {/* Filtres par statut */}
-          <div className="flex flex-wrap gap-2">
-            {statusFilters.map((filter) => {
-              const isSelected = filter.value === "all"
-                ? (Array.isArray(selectedStatus) ? selectedStatus.length === 0 : selectedStatus === "all")
-                : isFilterSelected("selectedStatus", filter.value);
-
-              return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCorners}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <header className="bg-white shadow-sm border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              <div className="flex items-center">
                 <button
-                  key={filter.value}
-                  onClick={() => {
-                    if (filter.value === "all") {
-                      // Réinitialiser tous les filtres de statut
-                      updateFilter("selectedStatus", []);
-                    } else {
-                      toggleArrayFilter("selectedStatus", filter.value);
-                    }
-                  }}
-                  className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isSelected
-                      ? "bg-purple-100 text-purple-700 border border-purple-200"
-                      : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
-                  }`}
+                  onClick={() => setIsNavMenuOpen(true)}
+                  className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                  aria-label="Menu de navigation"
                 >
-                  <filter.icon size={16} className="mr-2" />
-                  {filter.label}
+                  <Film className="h-8 w-8 text-purple-600" />
+                  <h1 className="ml-3 text-xl font-semibold text-gray-900">
+                    Watcher
+                  </h1>
                 </button>
-              );
-            })}
-          </div>
+              </div>
 
-          {/* Filtres par type */}
-          <div className="flex flex-wrap gap-2">
-            {typeFilters.map((filter) => {
-              const isSelected = filter.value === "all"
-                ? (Array.isArray(selectedType) ? selectedType.length === 0 : selectedType === "all")
-                : isFilterSelected("selectedType", filter.value);
-
-              return (
-                <button
-                  key={filter.value}
-                  onClick={() => {
-                    if (filter.value === "all") {
-                      // Réinitialiser tous les filtres de type
-                      updateFilter("selectedType", []);
-                    } else {
-                      toggleArrayFilter("selectedType", filter.value);
-                    }
-                  }}
-                  className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isSelected
-                      ? "bg-indigo-100 text-indigo-700 border border-indigo-200"
-                      : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
-                  }`}
-                >
-                  <filter.icon size={16} className="mr-2" />
-                  {filter.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Liste des médias */}
-        <div className="space-y-6">
-          {filteredMedias.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-12"
-            >
-              <Film className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-4 text-lg font-medium text-gray-900">
-                {medias.length === 0
-                  ? "Aucune œuvre dans votre médiathèque"
-                  : "Aucune œuvre trouvée"}
-              </h3>
-              <p className="mt-2 text-gray-600">
-                {medias.length === 0
-                  ? "Commencez par ajouter votre première œuvre !"
-                  : "Essayez de modifier vos filtres de recherche"}
-              </p>
-              {medias.length === 0 && (
+              <div className="flex items-center gap-4">
                 <button
                   onClick={() => openForm()}
-                  className="mt-4 inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  className="inline-flex items-center text-sm px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
                 >
                   <Plus size={20} className="mr-2" />
                   Ajouter une œuvre
                 </button>
-              )}
-            </motion.div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <AnimatePresence>
-                {filteredMedias.map((media, index) => (
-                  <motion.div
-                    key={media.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="h-full"
+
+                {/* Menu utilisateur */}
+                <Menu as="div" className="relative inline-block text-left">
+                  <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                    <User size={20} />
+                    <span className="hidden sm:block">
+                      {user?.user_metadata?.name || user?.email || "Utilisateur"}
+                    </span>
+                  </MenuButton>
+
+                  <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 focus:outline-none">
+                    <div className="py-2">
+                      <div className="px-4 py-2 border-b border-gray-100">
+                        <p className="text-sm font-medium text-gray-900">
+                          {user?.user_metadata?.name || "Utilisateur"}
+                        </p>
+                        <p className="text-xs text-gray-500">{user?.email}</p>
+                      </div>
+                      <MenuItem
+                        as="button"
+                        onClick={signOut}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100"
+                      >
+                        <LogOut size={16} />
+                        Se déconnecter
+                      </MenuItem>
+                    </div>
+                  </MenuItems>
+                </Menu>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Statistiques */}
+          <MediaStats {...stats} />
+
+          {/* Filtres et recherche */}
+          <div className="mb-8 space-y-4">
+            {/* Barre de recherche */}
+            <div className="relative">
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={20}
+              />
+              <input
+                type="text"
+                placeholder="Rechercher par titre, réalisateur, créateur, studio ou genre..."
+                value={searchQuery}
+                onChange={(e) => updateFilter("searchQuery", e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+
+            {/* Filtres par statut */}
+            <div className="flex flex-wrap gap-2">
+              {statusFilters.map((filter) => {
+                const isSelected = filter.value === "all"
+                  ? (Array.isArray(selectedStatus) ? selectedStatus.length === 0 : selectedStatus === "all")
+                  : isFilterSelected("selectedStatus", filter.value);
+
+                return (
+                  <button
+                    key={filter.value}
+                    onClick={() => {
+                      if (filter.value === "all") {
+                        // Réinitialiser tous les filtres de statut
+                        updateFilter("selectedStatus", []);
+                      } else {
+                        toggleArrayFilter("selectedStatus", filter.value);
+                      }
+                    }}
+                    className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isSelected
+                        ? "bg-purple-100 text-purple-700 border border-purple-200"
+                        : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                    }`}
                   >
-                    <MediaCard
-                      media={media}
-                      onEdit={openForm}
-                      onDelete={handleDeleteMedia}
-                      onStatusChange={handleStatusChange}
-                      onOpenTimer={openTimer}
-                      //   isSessionActive={isSessionActive(media.id)}
-                      //   currentSessionTime={getFormattedCurrentTime(media.id)}
-                    />
-                  </motion.div>
+                    <filter.icon size={16} className="mr-2" />
+                    {filter.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Filtres par type */}
+            <div className="flex flex-wrap gap-2">
+              {typeFilters.map((filter) => {
+                const isSelected = filter.value === "all"
+                  ? (Array.isArray(selectedType) ? selectedType.length === 0 : selectedType === "all")
+                  : isFilterSelected("selectedType", filter.value);
+
+                return (
+                  <button
+                    key={filter.value}
+                    onClick={() => {
+                      if (filter.value === "all") {
+                        // Réinitialiser tous les filtres de type
+                        updateFilter("selectedType", []);
+                      } else {
+                        toggleArrayFilter("selectedType", filter.value);
+                      }
+                    }}
+                    className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isSelected
+                        ? "bg-indigo-100 text-indigo-700 border border-indigo-200"
+                        : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                    }`}
+                  >
+                    <filter.icon size={16} className="mr-2" />
+                    {filter.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Zones de drop pour les statuts */}
+          {activeId && (
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Glissez votre média vers un statut :
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {dropZoneFilters.map((zone) => (
+                  <DropZone
+                    key={zone.value}
+                    id={zone.value}
+                    className={`p-4 md:p-6 rounded-xl border-2 border-dashed ${zone.borderColor} ${zone.bgColor} text-center transition-all duration-200 hover:scale-105 touch-manipulation`}
+                  >
+                    <zone.icon size={32} className="mx-auto mb-2 text-gray-600" />
+                    <p className="text-sm font-medium text-gray-700">{zone.label}</p>
+                  </DropZone>
                 ))}
-              </AnimatePresence>
+              </div>
             </div>
           )}
-        </div>
-      </main>
 
-      {/* Bouton flottant pour mobile */}
-      <motion.button
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => openForm()}
-        className="floating-action md:hidden inline-flex items-center justify-center w-14 h-14 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 transition-colors"
-      >
-        <Plus size={24} />
-      </motion.button>
+          {/* Liste des médias */}
+          <div className="space-y-6">
+            {filteredMedias.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-12"
+              >
+                <Film className="mx-auto h-12 w-12 text-gray-400" />
+                <h3 className="mt-4 text-lg font-medium text-gray-900">
+                  {medias.length === 0
+                    ? "Aucune œuvre dans votre médiathèque"
+                    : "Aucune œuvre trouvée"}
+                </h3>
+                <p className="mt-2 text-gray-600">
+                  {medias.length === 0
+                    ? "Commencez par ajouter votre première œuvre !"
+                    : "Essayez de modifier vos filtres de recherche"}
+                </p>
+                {medias.length === 0 && (
+                  <button
+                    onClick={() => openForm()}
+                    className="mt-4 inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  >
+                    <Plus size={20} className="mr-2" />
+                    Ajouter une œuvre
+                  </button>
+                )}
+              </motion.div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <AnimatePresence>
+                  {filteredMedias.map((media, index) => (
+                    <motion.div
+                      key={media.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="h-full"
+                    >
+                      <MediaCard
+                        media={media}
+                        onEdit={openForm}
+                        onDelete={handleDeleteMedia}
+                        onStatusChange={handleStatusChange}
+                        onOpenTimer={openTimer}
+                        isDragging={activeId === media.id}
+                      />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            )}
+          </div>
+        </main>
 
-      {/* Formulaire */}
-      <MediaForm
-        media={editingMedia}
-        isOpen={isFormOpen}
-        onClose={closeForm}
-        onSubmit={handleSubmit}
-        onDelete={handleDeleteMedia}
-      />
+        {/* Bouton flottant pour mobile */}
+        <motion.button
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => openForm()}
+          className="floating-action md:hidden inline-flex items-center justify-center w-14 h-14 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 transition-colors"
+        >
+          <Plus size={24} />
+        </motion.button>
 
-      {/* Timer de visionnage */}
-      {timerMedia && (
-        <WatchingTimer
-          media={timerMedia}
-          isOpen={isTimerOpen}
-          onClose={closeTimer}
+        {/* Formulaire */}
+        <MediaForm
+          media={editingMedia}
+          isOpen={isFormOpen}
+          onClose={closeForm}
+          onSubmit={handleSubmit}
+          onDelete={handleDeleteMedia}
         />
-      )}
 
-      {/* Menu de navigation */}
-      <NavigationMenu
-        isOpen={isNavMenuOpen}
-        onClose={() => setIsNavMenuOpen(false)}
-        currentModule="watcher"
-      />
-    </div>
+        {/* Timer de visionnage */}
+        {timerMedia && (
+          <WatchingTimer
+            media={timerMedia}
+            isOpen={isTimerOpen}
+            onClose={closeTimer}
+          />
+        )}
+
+        {/* Menu de navigation */}
+        <NavigationMenu
+          isOpen={isNavMenuOpen}
+          onClose={() => setIsNavMenuOpen(false)}
+          currentModule="watcher"
+        />
+      </div>
+
+      {/* Drag Overlay */}
+      <DragOverlay>
+        {activeId && draggedMedia ? (
+          <div className="transform rotate-3 opacity-90">
+            <MediaCard
+              media={draggedMedia}
+              onEdit={() => {}}
+              onDelete={() => {}}
+              onStatusChange={() => {}}
+              onOpenTimer={() => {}}
+              isDragging={true}
+            />
+          </div>
+        ) : null}
+      </DragOverlay>
+    </DndContext>
   );
 }
