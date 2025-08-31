@@ -26,6 +26,7 @@ interface MediaCardProps {
   onDelete: (id: string) => void;
   onStatusChange: (id: string, status: MediaStatus) => void;
   onOpenTimer: (media: Media) => void;
+  isDragging?: boolean;
 }
 
 const statusConfig = {
