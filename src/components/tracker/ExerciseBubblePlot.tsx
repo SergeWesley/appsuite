@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { WorkoutExercise } from "@/types/workout-session";
 import { BarChart3 } from "lucide-react";
