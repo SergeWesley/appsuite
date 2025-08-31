@@ -64,12 +64,11 @@ export function ExerciseBubblePlot({ exercises, className = "" }: ExerciseBubble
     const validExercises = exercises.filter(
       (ex) =>
         ex.exercise?.name &&
-        typeof ex.weight === "number" &&
         typeof ex.reps === "number" &&
         typeof ex.sets === "number" &&
-        ex.weight > 0 &&
         ex.reps > 0 &&
         ex.sets > 0
+        // Le poids peut être absent (sera traité comme 0)
     );
 
     if (validExercises.length === 0) return [];
