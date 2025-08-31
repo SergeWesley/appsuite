@@ -166,14 +166,37 @@ export default function WatcherPage() {
     const media = medias.find(m => m.id === mediaId);
     setActiveId(mediaId);
     setDraggedMedia(media || null);
+
+    // Capturer la position de départ
+    if (event.active.rect.current.translated) {
+      setDragStartPosition({
+        x: event.active.rect.current.translated.left,
+        y: event.active.rect.current.translated.top
+      });
+    }
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
-    
-    if (!over || !draggedMedia) {
-      setActiveId(null);
-      setDraggedMedia(null);
+
+    // Calculer la distance de déplacement
+    let dragDistance = 0;
+    if (dragStartPosition && event.active.rect.current.translated) {
+      const endX = event.active.rect.current.translated.left;
+      const endY = event.active.rect.current.translated.top;
+      dragDistance = Math.sqrt(
+        Math.pow(endX - dragStartPosition.x, 2) +
+        Math.pow(endY - dragStartPosition.y, 2)
+      );
+    }
+
+    // Réinitialiser les états
+    setActiveId(null);
+    setDraggedMedia(null);
+    setDragStartPosition(null);
+
+    // Vérifier qu'il y a eu un déplacement minimum (50px) et une zone de drop valide
+    if (!over || !draggedMedia || dragDistance < 50) {
       return;
     }
 
@@ -184,9 +207,6 @@ export default function WatcherPage() {
     if (draggedMedia.status !== newStatus) {
       await handleStatusChange(mediaId, newStatus);
     }
-
-    setActiveId(null);
-    setDraggedMedia(null);
   };
 
   // Filtrer les médias
