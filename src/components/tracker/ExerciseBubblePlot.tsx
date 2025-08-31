@@ -124,9 +124,9 @@ export function ExerciseBubblePlot({ exercises, className = "" }: ExerciseBubble
   const baseHeight = 300;
 
   // Adapter la taille selon l'écran
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  const plotWidth = isMobile ? Math.min(baseWidth, window.innerWidth - 100) : baseWidth;
-  const plotHeight = isMobile ? Math.min(baseHeight, 250) : baseHeight;
+  const isMobile = windowWidth < 768;
+  const plotWidth = isMobile ? Math.min(baseWidth, windowWidth - 120) : baseWidth;
+  const plotHeight = isMobile ? Math.min(baseHeight, 280) : baseHeight;
   const totalWidth = plotWidth + margins.left + margins.right;
   const totalHeight = plotHeight + margins.top + margins.bottom;
 
