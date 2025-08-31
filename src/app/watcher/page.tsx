@@ -130,6 +130,35 @@ export default function WatcherPage() {
     setTimerMedia(undefined);
   };
 
+  // Drag and drop handlers
+  const handleDragStart = (event: DragStartEvent) => {
+    const mediaId = event.active.id as string;
+    const media = medias.find(m => m.id === mediaId);
+    setActiveId(mediaId);
+    setDraggedMedia(media || null);
+  };
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (!over || !draggedMedia) {
+      setActiveId(null);
+      setDraggedMedia(null);
+      return;
+    }
+
+    const mediaId = active.id as string;
+    const newStatus = over.id as MediaStatus;
+
+    // Si le statut change, on met à jour le média
+    if (draggedMedia.status !== newStatus) {
+      await handleStatusChange(mediaId, newStatus);
+    }
+
+    setActiveId(null);
+    setDraggedMedia(null);
+  };
+
   // Filtrer les médias
   const filteredMedias = medias.filter((media) => {
     // Si aucun filtre de statut n'est sélectionné, on affiche tout
