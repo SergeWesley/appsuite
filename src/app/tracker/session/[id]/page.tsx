@@ -10,6 +10,7 @@ import {
   MUSCLE_GROUP_LABELS,
 } from "@/types/workout-session";
 import { NavigationMenu } from "@/components/NavigationMenu";
+import { ExerciseBubblePlot } from "@/components/tracker/ExerciseBubblePlot";
 import {
   Calendar,
   Activity,
