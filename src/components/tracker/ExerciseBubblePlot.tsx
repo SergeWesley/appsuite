@@ -84,14 +84,16 @@ export function ExerciseBubblePlot({ exercises, className = "" }: ExerciseBubble
     }>();
 
     validExercises.forEach((ex) => {
-      const key = `${ex.exercise!.name}-${ex.weight}-${ex.reps}-${ex.sets}`;
+      // Traiter le poids manquant comme 0
+      const weight = ex.weight ?? 0;
+      const key = `${ex.exercise!.name}-${weight}-${ex.reps}-${ex.sets}`;
 
       if (exerciseGroups.has(key)) {
         exerciseGroups.get(key)!.count += 1;
       } else {
         exerciseGroups.set(key, {
           name: ex.exercise!.name,
-          weight: ex.weight!,
+          weight: weight,
           reps: ex.reps!,
           sets: ex.sets!,
           count: 1,
