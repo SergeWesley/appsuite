@@ -138,7 +138,9 @@ export function MediaCard({
         <button
           {...listeners}
           className={`p-1 rounded bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-all duration-200 ${
-            isDraggingFromHook || isDragging ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+            isDraggingFromHook || isDragging
+              ? 'opacity-100'
+              : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'
           }`}
           onClick={(e) => e.stopPropagation()}
           title="Glisser pour changer de statut"
