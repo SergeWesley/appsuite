@@ -73,11 +73,12 @@ export function ExerciseBubblePlot({ exercises, className = "" }: ExerciseBubble
       reps: number;
       sets: number;
       count: number;
+      uniqueKey: string;
     }>();
 
     validExercises.forEach((ex) => {
       const key = `${ex.exercise!.name}-${ex.weight}-${ex.reps}-${ex.sets}`;
-      
+
       if (exerciseGroups.has(key)) {
         exerciseGroups.get(key)!.count += 1;
       } else {
@@ -87,17 +88,16 @@ export function ExerciseBubblePlot({ exercises, className = "" }: ExerciseBubble
           reps: ex.reps!,
           sets: ex.sets!,
           count: 1,
+          uniqueKey: key,
         });
       }
     });
 
-    // Convertir en tableau et assigner des couleurs
+    // Convertir en tableau et assigner des couleurs uniques à chaque combinaison
     const groupedExercises = Array.from(exerciseGroups.values());
-    
-    // Obtenir les noms d'exercices uniques pour les couleurs
-    const uniqueExerciseNames = Array.from(new Set(groupedExercises.map(ex => ex.name)));
-    const colors = generateColors(uniqueExerciseNames.length);
-    const colorMap = new Map(uniqueExerciseNames.map((name, index) => [name, colors[index]]));
+
+    // Générer des couleurs pour chaque combinaison unique (pas seulement par nom d'exercice)
+    const colors = generateColors(groupedExercises.length);
 
     return groupedExercises.map((ex, index) => ({
       id: `bubble-${index}`,
@@ -105,15 +105,20 @@ export function ExerciseBubblePlot({ exercises, className = "" }: ExerciseBubble
       weight: ex.weight,
       reps: ex.reps,
       sets: ex.sets,
-      color: colorMap.get(ex.name) || "#6b7280",
+      color: colors[index],
       count: ex.count,
     }));
   }, [exercises]);
 
-  // Configuration du graphique
+  // Configuration du graphique responsive
   const margins = { top: 20, right: 20, bottom: 60, left: 60 };
-  const plotWidth = 400;
-  const plotHeight = 300;
+  const baseWidth = 400;
+  const baseHeight = 300;
+
+  // Adapter la taille selon l'écran
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const plotWidth = isMobile ? Math.min(baseWidth, window.innerWidth - 100) : baseWidth;
+  const plotHeight = isMobile ? Math.min(baseHeight, 250) : baseHeight;
   const totalWidth = plotWidth + margins.left + margins.right;
   const totalHeight = plotHeight + margins.top + margins.bottom;
 
@@ -227,13 +232,14 @@ export function ExerciseBubblePlot({ exercises, className = "" }: ExerciseBubble
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Graphique */}
-        <div className="flex-1">
-          <div className="relative">
+        <div className="flex-1 overflow-x-auto">
+          <div className="relative min-w-0">
             <svg
               width={totalWidth}
               height={totalHeight}
-              className="border border-gray-200 rounded-lg bg-gray-50"
-              style={{ maxWidth: "100%", height: "auto" }}
+              viewBox={`0 0 ${totalWidth} ${totalHeight}`}
+              className="border border-gray-200 rounded-lg bg-gray-50 w-full h-auto"
+              style={{ minWidth: `${totalWidth}px`, maxWidth: "100%" }}
             >
               {/* Grille de fond */}
               <defs>
@@ -374,28 +380,32 @@ export function ExerciseBubblePlot({ exercises, className = "" }: ExerciseBubble
         </div>
 
         {/* Légende */}
-        <div className="lg:w-64">
+        <div className="lg:w-64 mt-4 lg:mt-0">
           <h4 className="text-sm font-semibold text-gray-900 mb-3">Exercices</h4>
-          <div className="space-y-2">
-            {uniqueExercises.map((exercise) => (
-              <div key={exercise.name} className="flex items-center gap-2">
+          <div className="space-y-2 max-h-60 overflow-y-auto">
+            {processedData.map((exercise, index) => (
+              <div key={`${exercise.name}-${exercise.weight}-${exercise.reps}-${exercise.sets}`} className="flex items-center gap-2">
                 <div
-                  className="w-4 h-4 rounded-full border border-gray-300"
+                  className="w-4 h-4 rounded-full border border-gray-300 flex-shrink-0"
                   style={{ backgroundColor: exercise.color }}
                 />
                 <span className="text-sm text-gray-700 truncate">
-                  {exercise.name}
+                  {exercise.name} ({exercise.weight}kg × {exercise.reps} × {exercise.sets})
+                  {exercise.count > 1 && (
+                    <span className="text-gray-500 ml-1">×{exercise.count}</span>
+                  )}
                 </span>
               </div>
             ))}
           </div>
-          
+
           <div className="mt-6 pt-4 border-t border-gray-200">
             <h5 className="text-xs font-semibold text-gray-600 mb-2">LÉGENDE</h5>
             <div className="space-y-1 text-xs text-gray-500">
               <div>• Axe X = Poids (kg)</div>
               <div>• Axe Y = Répétitions</div>
               <div>• Taille = Nombre de séries</div>
+              <div>• Couleur = Combinaison unique</div>
             </div>
           </div>
         </div>
