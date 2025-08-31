@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import {
   Plus,
   Film,
@@ -25,6 +26,7 @@ import { MediaForm } from "@/components/watcher/MediaForm";
 import { MediaStats } from "@/components/watcher/MediaStats";
 import { WatchingTimer } from "@/components/watcher/WatchingTimer";
 import { NavigationMenu } from "@/components/NavigationMenu";
+import { DroppableStatusColumn } from "@/components/watcher/DroppableStatusColumn";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
 export default function WatcherPage() {
@@ -52,6 +54,7 @@ export default function WatcherPage() {
   const [timerMedia, setTimerMedia] = useState<Media | undefined>(undefined);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'kanban'>('kanban');
 
   // Gestion de la persistance des filtres
   const { selectedStatus, selectedType, searchQuery, updateFilter, toggleArrayFilter, isFilterSelected } =
@@ -79,6 +82,30 @@ export default function WatcherPage() {
 
   const handleStatusChange = async (id: string, status: MediaStatus) => {
     await updateMedia(id, { status });
+  };
+
+  const handleDragEnd = async (result: DropResult) => {
+    const { source, destination, draggableId } = result;
+
+    // Si pas de destination (dropped outside), on ne fait rien
+    if (!destination) {
+      return;
+    }
+
+    // Si l'élément est dropped au même endroit, on ne fait rien
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    ) {
+      return;
+    }
+
+    // Le droppableId correspond au statut
+    const newStatus = destination.droppableId as MediaStatus;
+    const mediaId = draggableId;
+
+    // Mettre à jour le statut du média
+    await handleStatusChange(mediaId, newStatus);
   };
 
   const openForm = (media?: Media) => {
@@ -132,6 +159,15 @@ export default function WatcherPage() {
     return matchesStatus && matchesType && matchesSearch;
   });
 
+  // Organiser les médias par statut pour le mode kanban
+  const mediasByStatus = {
+    towatch: filteredMedias.filter((media) => media.status === "towatch"),
+    watching: filteredMedias.filter((media) => media.status === "watching"),
+    completed: filteredMedias.filter((media) => media.status === "completed"),
+    wishlist: filteredMedias.filter((media) => media.status === "wishlist"),
+    dropped: filteredMedias.filter((media) => media.status === "dropped"),
+  };
+
   const statusFilters = [
     { value: "all", label: "Tous", icon: Film },
     { value: "watching", label: "En cours", icon: Play },
@@ -139,6 +175,44 @@ export default function WatcherPage() {
     { value: "towatch", label: "À voir", icon: Clock },
     { value: "wishlist", label: "Souhaits", icon: Heart },
     { value: "dropped", label: "Abandonnés", icon: Trash },
+  ];
+
+  const statusColumns = [
+    {
+      status: "towatch" as MediaStatus,
+      title: "À voir",
+      icon: Clock,
+      color: "text-gray-600",
+      medias: mediasByStatus.towatch
+    },
+    {
+      status: "watching" as MediaStatus,
+      title: "En cours",
+      icon: Play,
+      color: "text-blue-600",
+      medias: mediasByStatus.watching
+    },
+    {
+      status: "completed" as MediaStatus,
+      title: "Terminés",
+      icon: CheckCircle,
+      color: "text-green-600",
+      medias: mediasByStatus.completed
+    },
+    {
+      status: "wishlist" as MediaStatus,
+      title: "Souhaits",
+      icon: Heart,
+      color: "text-pink-600",
+      medias: mediasByStatus.wishlist
+    },
+    {
+      status: "dropped" as MediaStatus,
+      title: "Abandonnés",
+      icon: Trash,
+      color: "text-red-600",
+      medias: mediasByStatus.dropped
+    },
   ];
 
   const typeFilters = [
@@ -198,6 +272,29 @@ export default function WatcherPage() {
             </div>
 
             <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                    viewMode === 'grid'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Grille
+                </button>
+                <button
+                  onClick={() => setViewMode('kanban')}
+                  className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                    viewMode === 'kanban'
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  Kanban
+                </button>
+              </div>
+
               <button
                 onClick={() => openForm()}
                 className="inline-flex items-center text-sm px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
@@ -324,61 +421,79 @@ export default function WatcherPage() {
         </div>
 
         {/* Liste des médias */}
-        <div className="space-y-6">
-          {filteredMedias.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-12"
-            >
-              <Film className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-4 text-lg font-medium text-gray-900">
-                {medias.length === 0
-                  ? "Aucune œuvre dans votre médiathèque"
-                  : "Aucune œuvre trouvée"}
-              </h3>
-              <p className="mt-2 text-gray-600">
-                {medias.length === 0
-                  ? "Commencez par ajouter votre première œuvre !"
-                  : "Essayez de modifier vos filtres de recherche"}
-              </p>
-              {medias.length === 0 && (
-                <button
-                  onClick={() => openForm()}
-                  className="mt-4 inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                >
-                  <Plus size={20} className="mr-2" />
-                  Ajouter une œuvre
-                </button>
-              )}
-            </motion.div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <AnimatePresence>
-                {filteredMedias.map((media, index) => (
-                  <motion.div
-                    key={media.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="h-full"
-                  >
-                    <MediaCard
-                      media={media}
-                      onEdit={openForm}
-                      onDelete={handleDeleteMedia}
-                      onStatusChange={handleStatusChange}
-                      onOpenTimer={openTimer}
-                      //   isSessionActive={isSessionActive(media.id)}
-                      //   currentSessionTime={getFormattedCurrentTime(media.id)}
-                    />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+        {filteredMedias.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <Film className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-4 text-lg font-medium text-gray-900">
+              {medias.length === 0
+                ? "Aucune œuvre dans votre médiathèque"
+                : "Aucune œuvre trouvée"}
+            </h3>
+            <p className="mt-2 text-gray-600">
+              {medias.length === 0
+                ? "Commencez par ajouter votre première œuvre !"
+                : "Essayez de modifier vos filtres de recherche"}
+            </p>
+            {medias.length === 0 && (
+              <button
+                onClick={() => openForm()}
+                className="mt-4 inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                <Plus size={20} className="mr-2" />
+                Ajouter une œuvre
+              </button>
+            )}
+          </motion.div>
+        ) : viewMode === 'kanban' ? (
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <div className="flex gap-6 overflow-x-auto pb-4">
+              {statusColumns.map((column) => (
+                <div key={column.status} className="flex-shrink-0 w-80">
+                  <DroppableStatusColumn
+                    status={column.status}
+                    title={column.title}
+                    medias={column.medias}
+                    onEdit={openForm}
+                    onDelete={handleDeleteMedia}
+                    onStatusChange={handleStatusChange}
+                    onOpenTimer={openTimer}
+                    icon={column.icon}
+                    color={column.color}
+                  />
+                </div>
+              ))}
             </div>
-          )}
-        </div>
+          </DragDropContext>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence>
+              {filteredMedias.map((media, index) => (
+                <motion.div
+                  key={media.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="h-full"
+                >
+                  <MediaCard
+                    media={media}
+                    onEdit={openForm}
+                    onDelete={handleDeleteMedia}
+                    onStatusChange={handleStatusChange}
+                    onOpenTimer={openTimer}
+                    //   isSessionActive={isSessionActive(media.id)}
+                    //   currentSessionTime={getFormattedCurrentTime(media.id)}
+                  />
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
       </main>
 
       {/* Bouton flottant pour mobile */}
