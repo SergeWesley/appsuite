@@ -424,10 +424,10 @@ export default function WatcherPage() {
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {dropZoneFilters.map((zone) => (
-                  <DropZone 
-                    key={zone.value} 
+                  <DropZone
+                    key={zone.value}
                     id={zone.value}
-                    className={`p-6 rounded-xl border-2 border-dashed ${zone.borderColor} ${zone.bgColor} text-center transition-all duration-200 hover:scale-105`}
+                    className={`p-4 md:p-6 rounded-xl border-2 border-dashed ${zone.borderColor} ${zone.bgColor} text-center transition-all duration-200 hover:scale-105 touch-manipulation`}
                   >
                     <zone.icon size={32} className="mx-auto mb-2 text-gray-600" />
                     <p className="text-sm font-medium text-gray-700">{zone.label}</p>
