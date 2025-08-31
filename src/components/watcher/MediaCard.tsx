@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useDraggable } from "@dnd-kit/core";
 import { Media, MediaStatus } from "@/types/media";
 import { ProgressCircle } from "../ProgressCircle";
 
@@ -16,6 +17,7 @@ import {
   Camera,
   Clock,
   Hash,
+  GripVertical,
 } from "lucide-react";
 
 interface MediaCardProps {
