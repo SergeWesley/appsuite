@@ -49,6 +49,14 @@ function generateColors(count: number): string[] {
 export function ExerciseBubblePlot({ exercises, className = "" }: ExerciseBubblePlotProps) {
   const [hoveredBubble, setHoveredBubble] = useState<ProcessedExercise | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 768);
+
+  // Hook pour détecter la taille de l'écran
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Traitement des données selon les règles
   const processedData = useMemo(() => {
