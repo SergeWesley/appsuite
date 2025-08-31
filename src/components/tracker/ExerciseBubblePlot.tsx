@@ -110,7 +110,7 @@ export function ExerciseBubblePlot({ exercises, className = "" }: ExerciseBubble
     return groupedExercises.map((ex, index) => ({
       id: `bubble-${index}`,
       name: ex.name,
-      weight: ex.weight,
+      weight: ex.weight ?? 0,
       reps: ex.reps,
       sets: ex.sets,
       color: colors[index] || "#6b7280",
