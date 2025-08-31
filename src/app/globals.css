@@ -99,6 +99,18 @@
     pointer-events: none;
     z-index: 999;
   }
+
+  /* Mobile touch optimizations */
+  @media (max-width: 768px) {
+    .media-card {
+      touch-action: none; /* Prevents scrolling during drag */
+    }
+
+    .media-card .grip-handle {
+      opacity: 1 !important; /* Always visible on mobile */
+      padding: 8px; /* Larger touch target */
+    }
+  }
 }
 
 /* Utilitaires supplémentaires */
