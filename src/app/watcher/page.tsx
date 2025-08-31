@@ -92,11 +92,13 @@ export default function WatcherPage() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [draggedMedia, setDraggedMedia] = useState<Media | null>(null);
 
-  // DnD sensors
+  // DnD sensors avec support mobile amélioré
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 8,
+        delay: 150, // Délai pour éviter les conflits avec le scroll
+        tolerance: 5,
       },
     })
   );
