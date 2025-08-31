@@ -178,6 +178,11 @@ export default function WatcherPage() {
     }
   };
 
+  const handleDragOver = (event: DragOverEvent) => {
+    const { over } = event;
+    setHoveredDropZone(over ? over.id as string : null);
+  };
+
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -196,6 +201,7 @@ export default function WatcherPage() {
     setActiveId(null);
     setDraggedMedia(null);
     setDragStartPosition(null);
+    setHoveredDropZone(null);
 
     // Vérifier qu'il y a eu un déplacement minimum (50px) et une zone de drop valide
     if (!over || !draggedMedia || dragDistance < 50) {
