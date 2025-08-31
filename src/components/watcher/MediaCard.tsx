@@ -55,9 +55,24 @@ export function MediaCard({
   onDelete,
   onStatusChange,
   onOpenTimer,
+  isDragging = false,
 }: MediaCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    isDragging: isDraggingFromHook,
+  } = useDraggable({
+    id: media.id,
+  });
+
   const status = statusConfig[media.status];
   const type = typeConfig[media.type];
+
+  const style = transform ? {
+    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+  } : undefined;
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("fr-FR", {
