@@ -101,6 +101,29 @@ export default function WatcherPage() {
     await updateMedia(id, { status });
   };
 
+  // Gestion du drag and drop
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over) {
+      const mediaId = active.id as string;
+      const newStatus = over.id as MediaStatus;
+
+      // Trouver le média à mettre à jour
+      const media = medias.find(m => m.id === mediaId);
+
+      if (media && media.status !== newStatus) {
+        handleStatusChange(mediaId, newStatus);
+      }
+    }
+
+    setActiveId(null);
+  };
+
   const openForm = (media?: Media) => {
     setEditingMedia(media || undefined);
     setIsFormOpen(true);
