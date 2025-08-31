@@ -84,6 +84,30 @@ export default function WatcherPage() {
     await updateMedia(id, { status });
   };
 
+  const handleDragEnd = async (result: DropResult) => {
+    const { source, destination, draggableId } = result;
+
+    // Si pas de destination (dropped outside), on ne fait rien
+    if (!destination) {
+      return;
+    }
+
+    // Si l'élément est dropped au même endroit, on ne fait rien
+    if (
+      source.droppableId === destination.droppableId &&
+      source.index === destination.index
+    ) {
+      return;
+    }
+
+    // Le droppableId correspond au statut
+    const newStatus = destination.droppableId as MediaStatus;
+    const mediaId = draggableId;
+
+    // Mettre à jour le statut du média
+    await handleStatusChange(mediaId, newStatus);
+  };
+
   const openForm = (media?: Media) => {
     setEditingMedia(media || undefined);
     setIsFormOpen(true);
