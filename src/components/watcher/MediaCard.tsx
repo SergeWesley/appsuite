@@ -137,7 +137,7 @@ export function MediaCard({
       <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
         <button
           {...listeners}
-          className={`p-2 md:p-1 rounded bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-all duration-200 touch-manipulation ${
+          className={`grip-handle p-2 md:p-1 rounded bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-all duration-200 touch-manipulation ${
             isDraggingFromHook || isDragging
               ? 'opacity-100'
               : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'
