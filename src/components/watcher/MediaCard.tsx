@@ -133,8 +133,18 @@ export function MediaCard({
       }}
       {...attributes}
     >
-      {/* Badge de type */}
-      <div className="absolute top-4 right-4 z-10">
+      {/* Badge de type et handle de drag */}
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+        <button
+          {...listeners}
+          className={`p-1 rounded bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-all duration-200 ${
+            isDraggingFromHook || isDragging ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+          }`}
+          onClick={(e) => e.stopPropagation()}
+          title="Glisser pour changer de statut"
+        >
+          <GripVertical size={14} className="text-gray-600" />
+        </button>
         <span
           className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white shadow-sm ${type.color}`}
         >
