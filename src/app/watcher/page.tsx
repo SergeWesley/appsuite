@@ -591,15 +591,46 @@ export default function WatcherPage() {
       {/* Drag Overlay */}
       <DragOverlay>
         {activeId && draggedMedia ? (
-          <div className="transform rotate-3 opacity-90">
-            <MediaCard
-              media={draggedMedia}
-              onEdit={() => {}}
-              onDelete={() => {}}
-              onStatusChange={() => {}}
-              onOpenTimer={() => {}}
-              isDragging={true}
-            />
+          <div className="transform rotate-2 scale-75 opacity-95 shadow-2xl">
+            <div className="bg-white rounded-xl border-2 border-purple-300 p-3 min-w-[200px] backdrop-blur-sm bg-white/95">
+              <div className="flex items-center gap-3">
+                {draggedMedia.posterUrl && (
+                  <img
+                    src={draggedMedia.posterUrl}
+                    alt={`Poster de ${draggedMedia.title}`}
+                    className="w-12 h-16 object-cover rounded-lg shadow-sm flex-shrink-0"
+                    onError={(e) => {
+                      e.currentTarget.src = "/fallback-poster.svg";
+                    }}
+                  />
+                )}
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-semibold text-gray-900 truncate">
+                    {draggedMedia.title}
+                  </h3>
+                  <p className="text-xs text-gray-600 truncate">
+                    {draggedMedia.type === "movie" ? "Film" :
+                     draggedMedia.type === "series" ? "Série" :
+                     draggedMedia.type === "anime" ? "Animé" :
+                     draggedMedia.type === "documentary" ? "Documentaire" : "Court-métrage"}
+                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      draggedMedia.status === "watching" ? "bg-purple-100 text-purple-700" :
+                      draggedMedia.status === "completed" ? "bg-green-100 text-green-700" :
+                      draggedMedia.status === "towatch" ? "bg-orange-100 text-orange-700" :
+                      draggedMedia.status === "wishlist" ? "bg-pink-100 text-pink-700" :
+                      "bg-gray-100 text-gray-700"
+                    }`}>
+                      {draggedMedia.status === "watching" ? "En cours" :
+                       draggedMedia.status === "completed" ? "Terminé" :
+                       draggedMedia.status === "towatch" ? "À voir" :
+                       draggedMedia.status === "wishlist" ? "Souhait" : "Abandonné"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         ) : null}
       </DragOverlay>
