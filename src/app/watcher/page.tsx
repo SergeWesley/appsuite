@@ -189,14 +189,16 @@ export default function WatcherPage() {
 
     // Calculer la distance de déplacement
     let dragDistance = 0;
-    if (dragStartPosition && event.active.rect.current.translated) {
-      const endX = event.active.rect.current.translated.left;
-      const endY = event.active.rect.current.translated.top;
+    const currentRect = event.active.rect.current.translated;
+
+    if (dragStartPosition && currentRect) {
       dragDistance = Math.sqrt(
-        Math.pow(endX - dragStartPosition.x, 2) +
-        Math.pow(endY - dragStartPosition.y, 2)
+        Math.pow(currentRect.left - dragStartPosition.x, 2) +
+        Math.pow(currentRect.top - dragStartPosition.y, 2)
       );
     }
+
+    console.log('Drag distance:', dragDistance, 'Start pos:', dragStartPosition, 'Current rect:', currentRect);
 
     // Réinitialiser les états
     setActiveId(null);
@@ -204,18 +206,27 @@ export default function WatcherPage() {
     setDragStartPosition(null);
     setHoveredDropZone(null);
 
-    // Vérifier qu'il y a eu un déplacement minimum (50px) et une zone de drop valide
-    if (!over || !draggedMedia || dragDistance < 50) {
+    // Vérifier qu'il y a une zone de drop valide et un minimum de mouvement
+    if (!over || !draggedMedia) {
+      console.log('No drop zone or media');
       return;
     }
 
-    const mediaId = active.id as string;
+    // Si on a une zone de drop différente du statut actuel, on considère que c'est intentionnel
     const newStatus = over.id as MediaStatus;
-
-    // Si le statut change, on met à jour le média
-    if (draggedMedia.status !== newStatus) {
-      await handleStatusChange(mediaId, newStatus);
+    if (draggedMedia.status === newStatus) {
+      console.log('Same status, no change needed');
+      return;
     }
+
+    // Vérifier qu'il y a eu un minimum de mouvement (30px au lieu de 50)
+    if (dragDistance > 0 && dragDistance < 30) {
+      console.log('Movement too small:', dragDistance);
+      return;
+    }
+
+    console.log('Updating status from', draggedMedia.status, 'to', newStatus);
+    await handleStatusChange(active.id as string, newStatus);
   };
 
   // Filtrer les médias
