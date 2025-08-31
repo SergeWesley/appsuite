@@ -137,7 +137,7 @@ export function MediaCard({
       <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
         <button
           {...listeners}
-          className={`p-1 rounded bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-all duration-200 ${
+          className={`p-2 md:p-1 rounded bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-all duration-200 touch-manipulation ${
             isDraggingFromHook || isDragging
               ? 'opacity-100'
               : 'opacity-100 md:opacity-0 md:group-hover:opacity-100'
@@ -145,7 +145,7 @@ export function MediaCard({
           onClick={(e) => e.stopPropagation()}
           title="Glisser pour changer de statut"
         >
-          <GripVertical size={14} className="text-gray-600" />
+          <GripVertical size={16} className="text-gray-600 md:w-3.5 md:h-3.5" />
         </button>
         <span
           className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white shadow-sm ${type.color}`}
