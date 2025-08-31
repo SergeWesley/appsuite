@@ -115,12 +115,23 @@ export function MediaCard({
 
   return (
     <motion.div
+      ref={setNodeRef}
+      style={style}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      whileHover={{ y: -4 }}
-      className="media-card h-full p-6 cursor-pointer group relative overflow-hidden"
-      onClick={() => onEdit(media)}
+      whileHover={!isDraggingFromHook ? { y: -4 } : {}}
+      className={`media-card h-full p-6 group relative overflow-hidden transition-all duration-200 ${
+        isDraggingFromHook || isDragging
+          ? 'opacity-50 scale-105 shadow-xl z-50 cursor-grabbing'
+          : 'cursor-grab hover:shadow-lg'
+      }`}
+      onClick={(e) => {
+        if (!isDraggingFromHook && !isDragging) {
+          onEdit(media);
+        }
+      }}
+      {...attributes}
     >
       {/* Badge de type */}
       <div className="absolute top-4 right-4 z-10">
