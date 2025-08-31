@@ -440,9 +440,14 @@ export default function WatcherPage() {
           {/* Zones de drop pour les statuts */}
           {activeId && (
             <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Glissez votre média vers un statut :
-              </h3>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Glissez votre média vers un statut :
+                </h3>
+                <p className="text-sm text-blue-600">
+                  💡 Déplacez la carte d'au moins 50px pour changer le statut
+                </p>
+              </div>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {dropZoneFilters.map((zone) => (
                   <DropZone
