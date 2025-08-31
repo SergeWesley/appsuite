@@ -16,6 +16,16 @@ import {
   Camera,
   Trash,
 } from "lucide-react";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import { useAuthContext } from "@/components/AuthProvider";
 import { useMediasWithSessions } from "@/hooks/watcher/useMediasWithSessions";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
