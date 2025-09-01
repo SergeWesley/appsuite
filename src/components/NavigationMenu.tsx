@@ -147,10 +147,10 @@ export function NavigationMenu({
                 </div>
 
                 <div className="ml-3 flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 group-hover:text-gray-700">
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-200">
                     Tableu de bord
                   </p>
-                  <p className="text-xs text-gray-500 truncate">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                     Retour à la page principale
                   </p>
                 </div>
