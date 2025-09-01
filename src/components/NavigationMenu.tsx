@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { BookOpen, Film, ChevronRight, Activity, HomeIcon } from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface NavigationMenuItem {
   name: string;
