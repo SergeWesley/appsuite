@@ -86,12 +86,12 @@ export function WorkoutSessionCard({
       {/* Aperçu des exercices */}
       <div className="mb-4">
         <div className="flex items-center gap-2 mb-2">
-          <Activity size={16} className="text-gray-400" />
-          <span className="text-sm font-medium text-gray-600">Exercices</span>
+          <Activity size={16} className="text-gray-400 dark:text-gray-500" />
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Exercices</span>
         </div>
         <div className="space-y-1">
           {session.exercises.slice(0, 3).map((exercise, index) => (
-            <div key={exercise.id} className="text-sm text-gray-600">
+            <div key={exercise.id} className="text-sm text-gray-600 dark:text-gray-400">
               {exercise.exercise?.name}
               {exercise.sets && exercise.reps && (
                 <span className="text-gray-400 ml-2">
@@ -107,7 +107,7 @@ export function WorkoutSessionCard({
             </div>
           ))}
           {session.exercises.length > 3 && (
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-gray-400 dark:text-gray-500">
               +{session.exercises.length - 3} autres exercices
             </div>
           )}
@@ -116,12 +116,12 @@ export function WorkoutSessionCard({
 
       {/* Notes (aperçu) */}
       {session.notes && (
-        <div className="border-t border-gray-100 pt-3">
+        <div className="border-t border-gray-100 dark:border-gray-700 pt-3">
           <div className="flex items-center gap-2 mb-2">
-            <FileText size={14} className="text-gray-400" />
-            <span className="text-sm font-medium text-gray-600">Notes</span>
+            <FileText size={14} className="text-gray-400 dark:text-gray-500" />
+            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Notes</span>
           </div>
-          <p className="text-sm text-gray-600 line-clamp-2">{session.notes}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{session.notes}</p>
         </div>
       )}
     </motion.div>
