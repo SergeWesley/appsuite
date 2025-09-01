@@ -89,19 +89,19 @@ function ExerciseSelectionModal({
                 <div className="relative">
                   <Search
                     size={20}
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500"
                   />
                   <input
                     type="text"
                     placeholder="Rechercher un exercice..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
                 <div className="flex items-center gap-2 flex-wrap">
-                  <Filter size={16} className="text-gray-400" />
+                  <Filter size={16} className="text-gray-400 dark:text-gray-500" />
                   {muscleGroups.map((group) => (
                     <button
                       key={group}
@@ -109,7 +109,7 @@ function ExerciseSelectionModal({
                       className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
                         selectedMuscleGroup === group
                           ? "bg-blue-600 text-white"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                       }`}
                     >
                       {MUSCLE_GROUP_LABELS[group]}
