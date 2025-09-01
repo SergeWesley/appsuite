@@ -48,21 +48,21 @@ export function WorkoutSessionCard({
       {/* En-tête avec date */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-50 rounded-lg">
-            <Calendar size={20} className="text-blue-600" />
+          <div className="p-2 bg-blue-50 dark:bg-blue-900 rounded-lg">
+            <Calendar size={20} className="text-blue-600 dark:text-blue-300" />
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900 capitalize">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 capitalize">
               {formatDate(session.date)}
             </h3>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               {session.totalExercises} exercice
               {session.totalExercises > 1 ? "s" : ""}
             </p>
           </div>
         </div>
         <div className="text-right">
-          <div className="flex items-center gap-1 text-gray-500 text-sm">
+          <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-sm">
             <Clock size={14} />
             <span>{estimatedDuration} min</span>
           </div>
@@ -75,7 +75,7 @@ export function WorkoutSessionCard({
           {muscleGroups.map((group) => (
             <span
               key={group}
-              className="px-3 py-1 bg-gray-50 text-gray-700 text-sm rounded-full border"
+              className="px-3 py-1 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-full border border-gray-200 dark:border-gray-600"
             >
               {MUSCLE_GROUP_LABELS[group as keyof typeof MUSCLE_GROUP_LABELS]}
             </span>
