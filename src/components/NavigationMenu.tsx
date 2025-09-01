@@ -140,10 +140,10 @@ export function NavigationMenu({
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0 }}
                 onClick={() => router.push("/dashboard")} // ou '/' si tu préfères
-                className="w-full px-4 py-3 flex items-center group text-left transition-colors bg-gray-100 hover:bg-gray-200"
+                className="w-full px-4 py-3 flex items-center group text-left transition-colors bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500"
               >
-                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-300 flex items-center justify-center">
-                  <HomeIcon size={20} className="text-gray-700" />
+                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-300 dark:bg-gray-500 flex items-center justify-center">
+                  <HomeIcon size={20} className="text-gray-700 dark:text-gray-200" />
                 </div>
 
                 <div className="ml-3 flex-1 min-w-0">
