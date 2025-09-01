@@ -360,7 +360,7 @@ export function WorkoutSessionForm({
                     key={`${exercise.exerciseId}-${index}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="border border-gray-200 rounded-lg p-4"
+                    className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-lg p-4"
                   >
                     <div className="flex items-start gap-4">
                       {/* Drag Handle */}
