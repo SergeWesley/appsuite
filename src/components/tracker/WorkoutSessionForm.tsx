@@ -517,7 +517,7 @@ export function WorkoutSessionForm({
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 px-6 py-3 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+            className="flex-1 px-6 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
           >
             Annuler
           </button>
