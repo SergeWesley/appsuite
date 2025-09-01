@@ -119,7 +119,7 @@ export function WatchingTimer({
                     <Tv className="h-6 w-6 text-purple-600" />
                   )}
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900 truncate">
+                    <h2 className="text-lg font-semibold text-gray-900 line-clamp-2">
                       {media.title}
                     </h2>
                     <p className="text-sm text-gray-600">
