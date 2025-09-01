@@ -50,15 +50,15 @@
     position: relative;
     overflow: hidden;
     border-radius: theme(borderRadius.xl);
-    background-color: theme(colors.white);
-    border: 1px solid theme(colors.gray.200);
-    box-shadow: theme(boxShadow.sm);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    box-shadow: var(--shadow-sm);
     transition: all 0.3s ease;
   }
 
   .book-card:hover,
   .media-card:hover {
-    box-shadow: theme(boxShadow.lg);
+    box-shadow: var(--shadow-lg);
     transform: translateY(-4px);
   }
 
@@ -84,9 +84,20 @@
     color: theme(colors.blue.800);
   }
 
+  .dark .status-reading,
+  .dark .status-watching {
+    background-color: theme(colors.blue.900);
+    color: theme(colors.blue.200);
+  }
+
   .status-completed {
     background-color: theme(colors.green.100);
     color: theme(colors.green.800);
+  }
+
+  .dark .status-completed {
+    background-color: theme(colors.green.900);
+    color: theme(colors.green.200);
   }
 
   .status-toread,
@@ -95,14 +106,30 @@
     color: theme(colors.gray.800);
   }
 
+  .dark .status-toread,
+  .dark .status-towatch {
+    background-color: theme(colors.gray.700);
+    color: theme(colors.gray.200);
+  }
+
   .status-wishlist {
     background-color: theme(colors.red.100);
     color: theme(colors.red.800);
   }
 
+  .dark .status-wishlist {
+    background-color: theme(colors.red.900);
+    color: theme(colors.red.200);
+  }
+
   .status-dropped {
     background-color: theme(colors.orange.100);
     color: theme(colors.orange.800);
+  }
+
+  .dark .status-dropped {
+    background-color: theme(colors.orange.900);
+    color: theme(colors.orange.200);
   }
 }
 
