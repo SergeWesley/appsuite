@@ -256,7 +256,13 @@ export function ExerciseBubblePlot({ exercises, className = "" }: ExerciseBubble
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Graphique */}
-        <div className="flex-1 overflow-x-auto">
+        <div 
+          className="flex-1 overflow-x-auto"
+          style={{
+            scrollbarWidth: "none", // Firefox
+            msOverflowStyle: "none" // IE et Edge
+          }}
+        >
           <div className="relative min-w-0">
             <svg
               width={totalWidth}
