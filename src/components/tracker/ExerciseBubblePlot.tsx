@@ -23,10 +23,26 @@ interface ExerciseBubblePlotProps {
 // Fonction pour générer des couleurs distinctes
 function generateColors(count: number): string[] {
   const colors = [
-    "#ef4444", "#f97316", "#f59e0b", "#eab308", "#84cc16",
-    "#22c55e", "#10b981", "#14b8a6", "#06b6d4", "#0ea5e9",
-    "#3b82f6", "#6366f1", "#8b5cf6", "#a855f7", "#d946ef",
-    "#ec4899", "#f43f5e", "#be123c", "#dc2626", "#ea580c"
+    "#e6194B", // rouge vif
+    "#3cb44b", // vert vif
+    "#ffe119", // jaune vif
+    "#4363d8", // bleu vif
+    "#f58231", // orange vif
+    "#911eb4", // violet
+    "#46f0f0", // cyan clair
+    "#f032e6", // magenta
+    "#bcf60c", // vert clair
+    "#fabebe", // rose clair
+    "#008080", // teal
+    "#e6beff", // lavande clair
+    "#9a6324", // marron foncé
+    "#fffac8", // jaune pâle
+    "#800000", // marron rouge
+    "#aaffc3", // vert très clair
+    "#808000", // olive
+    "#ffd8b1", // pêche
+    "#000075", // bleu marine foncé
+    "#808080"  // gris
   ];
   
   if (count <= colors.length) {
@@ -103,17 +119,24 @@ export function ExerciseBubblePlot({ exercises, className = "" }: ExerciseBubble
     // Convertir en tableau et assigner des couleurs
     const groupedExercises = Array.from(exerciseGroups.values());
 
-    // Générer des couleurs pour chaque combinaison unique (pas seulement par nom d'exercice)
-    const colors = generateColors(groupedExercises.length);
+    // Trouver tous les noms uniques d'exercices
+    const uniqueNames = Array.from(new Set(groupedExercises.map(ex => ex.name)));
 
+    // Générer des couleurs par nom d'exercice
+    const colors = generateColors(uniqueNames.length);
 
-    return groupedExercises.map((ex, index) => ({
-      id: `bubble-${index}`,
+    const colorMap = new Map<string, string>();
+    uniqueNames.forEach((name, index) => {
+      colorMap.set(name, colors[index]);
+    });
+
+    return groupedExercises.map((ex) => ({
+      id: `bubble-${ex.uniqueKey}`,
       name: ex.name,
       weight: ex.weight,
       reps: ex.reps,
       sets: ex.sets,
-      color: colors[index] || "#6b7280",
+      color: colorMap.get(ex.name) || "#6b7280",
       count: ex.count,
     }));
   }, [exercises]);
