@@ -157,7 +157,7 @@ export function NavigationMenu({
 
                 <ChevronRight
                   size={16}
-                  className="text-gray-400 group-hover:text-gray-600 transition-colors"
+                  className="text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors"
                 />
               </motion.button>
 
