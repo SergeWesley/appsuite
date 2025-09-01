@@ -378,7 +378,7 @@ export function WorkoutSessionForm({
                           type="button"
                           onClick={() => moveExercise(index, index + 1)}
                           disabled={index === formData.exercises.length - 1}
-                          className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           ↓
                         </button>
