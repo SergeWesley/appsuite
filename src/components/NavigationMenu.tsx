@@ -127,7 +127,7 @@ export function NavigationMenu({
               <div>
                 <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Navigation</h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Accédez aux autres modules
+                  Acc��dez aux autres modules
                 </p>
               </div>
               <ThemeToggle size="sm" />
@@ -197,8 +197,8 @@ export function NavigationMenu({
             </div>
 
             {/* Footer */}
-            <div className="px-4 py-2 border-t border-gray-100 bg-gray-50">
-              <p className="text-xs text-gray-500 text-center">
+            <div className="px-4 py-2 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+              <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
                 Cliquez sur un module pour y accéder
               </p>
             </div>
