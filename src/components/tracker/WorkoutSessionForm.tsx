@@ -130,19 +130,19 @@ function ExerciseSelectionModal({
                       onSelect(exercise.id);
                       onClose();
                     }}
-                    className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
+                    className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-medium text-gray-900">
+                        <h3 className="font-medium text-gray-900 dark:text-gray-100">
                           {exercise.name}
                         </h3>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                           {MUSCLE_GROUP_LABELS[exercise.muscleGroup]}
                           {exercise.isCustom && " • Personnalisé"}
                         </p>
                         {exercise.description && (
-                          <p className="text-sm text-gray-600 mt-1">
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                             {exercise.description}
                           </p>
                         )}
