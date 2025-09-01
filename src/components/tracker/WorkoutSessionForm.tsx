@@ -296,7 +296,7 @@ export function WorkoutSessionForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Notes (optionnel)
               </label>
               <textarea
@@ -305,7 +305,7 @@ export function WorkoutSessionForm({
                   setFormData((prev) => ({ ...prev, notes: e.target.value }))
                 }
                 rows={3}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 placeholder="Notes sur cette séance d'entraînement..."
               />
             </div>
