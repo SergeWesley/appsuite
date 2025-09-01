@@ -26,24 +26,24 @@ const modules: NavigationMenuItem[] = [
     name: "Booker",
     path: "/booker",
     icon: BookOpen,
-    color: "text-blue-600",
-    bgColor: "bg-blue-50 hover:bg-blue-100",
+    color: "text-blue-600 dark:text-blue-400",
+    bgColor: "bg-blue-50 hover:bg-blue-100 dark:bg-blue-900 dark:hover:bg-blue-800",
     description: "Gérez votre bibliothèque de livres",
   },
   {
     name: "Tracker",
     path: "/tracker",
     icon: Activity,
-    color: "text-green-600",
-    bgColor: "bg-green-50 hover:bg-green-100",
+    color: "text-green-600 dark:text-green-400",
+    bgColor: "bg-green-50 hover:bg-green-100 dark:bg-green-900 dark:hover:bg-green-800",
     description: "Suivez vos séances de sport",
   },
   {
     name: "Watcher",
     path: "/watcher",
     icon: Film,
-    color: "text-purple-600",
-    bgColor: "bg-purple-50 hover:bg-purple-100",
+    color: "text-purple-600 dark:text-purple-400",
+    bgColor: "bg-purple-50 hover:bg-purple-100 dark:bg-purple-900 dark:hover:bg-purple-800",
     description: "Suivez vos films et séries",
   },
 ];
@@ -127,7 +127,7 @@ export function NavigationMenu({
               <div>
                 <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Navigation</h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                  Acc��dez aux autres modules
+                  Accédez aux autres modules
                 </p>
               </div>
               <ThemeToggle size="sm" />
