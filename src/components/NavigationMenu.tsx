@@ -193,8 +193,8 @@ export function NavigationMenu({
             </div>
 
             {/* Footer */}
-            <div className="px-4 py-2 border-t border-gray-100 bg-gray-50">
-              <p className="text-xs text-gray-500 text-center">
+            <div className="px-4 py-2 border-t border-gray-600 bg-gray-700">
+              <p className="text-xs text-gray-300 text-center">
                 Cliquez sur un module pour y accéder
               </p>
             </div>
