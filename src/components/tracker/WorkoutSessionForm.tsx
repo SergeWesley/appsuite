@@ -373,7 +373,7 @@ export function WorkoutSessionForm({
                         >
                           ↑
                         </button>
-                        <GripVertical size={16} className="text-gray-400" />
+                        <GripVertical size={16} className="text-gray-400 dark:text-gray-500" />
                         <button
                           type="button"
                           onClick={() => moveExercise(index, index + 1)}
@@ -387,10 +387,10 @@ export function WorkoutSessionForm({
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-4">
                           <div>
-                            <h3 className="font-medium text-gray-900">
+                            <h3 className="font-medium text-gray-900 dark:text-gray-100">
                               {exerciseInfo?.name || "Exercice inconnu"}
                             </h3>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
                               {
                                 MUSCLE_GROUP_LABELS[
                                   exerciseInfo?.muscleGroup || "other"
