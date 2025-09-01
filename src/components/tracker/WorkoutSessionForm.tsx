@@ -154,7 +154,7 @@ function ExerciseSelectionModal({
 
               {filteredExercises.length === 0 && (
                 <div className="text-center py-8">
-                  <p className="text-gray-500">Aucun exercice trouvé</p>
+                  <p className="text-gray-500 dark:text-gray-400">Aucun exercice trouvé</p>
                 </div>
               )}
             </div>
