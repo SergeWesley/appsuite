@@ -100,7 +100,7 @@ export function WorkoutSessionCard({
                 </span>
               )}
               {exercise.duration && (
-                <span className="text-gray-400 ml-2">
+                <span className="text-gray-400 dark:text-gray-500 ml-2">
                   {exercise.duration} min
                 </span>
               )}
