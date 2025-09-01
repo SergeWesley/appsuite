@@ -179,17 +179,17 @@ export function NavigationMenu({
                     </div>
 
                     <div className="ml-3 flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 group-hover:text-gray-700">
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-200">
                         {module.name}
                       </p>
-                      <p className="text-xs text-gray-500 truncate">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                         {module.description}
                       </p>
                     </div>
 
                     <ChevronRight
                       size={16}
-                      className="text-gray-400 group-hover:text-gray-600 transition-colors"
+                      className="text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors"
                     />
                   </motion.button>
                 );
