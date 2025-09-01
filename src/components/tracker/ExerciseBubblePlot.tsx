@@ -181,6 +181,11 @@ export function ExerciseBubblePlot({ exercises, className = "" }: ExerciseBubble
   const scaleSize = (value: number) => {
     if (!scales) return 8;
     const { domain, range } = scales.sizeScale;
+    const domainRange = domain[1] - domain[0];
+    if (domainRange === 0) {
+      // Éviter division par zéro, retourner taille min ou max
+      return range[0];
+    }
     const ratio = (value - domain[0]) / (domain[1] - domain[0]);
     return range[0] + ratio * (range[1] - range[0]);
   };
