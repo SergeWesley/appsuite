@@ -59,6 +59,12 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       root.classList.remove("light", "dark");
       root.classList.add(theme);
       localStorage.setItem("theme", theme);
+
+      // Mettre à jour le meta theme-color
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', theme === 'dark' ? '#111827' : '#f9fafb');
+      }
     }
   }, [theme, mounted]);
 
