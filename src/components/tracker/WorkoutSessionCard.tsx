@@ -43,26 +43,26 @@ export function WorkoutSessionCard({
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4, boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }}
       onClick={onClick}
-      className="h-full bg-white rounded-xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-200 hover:shadow-md"
+      className="h-full bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 cursor-pointer transition-all duration-200 hover:shadow-md"
     >
       {/* En-tête avec date */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-50 rounded-lg">
-            <Calendar size={20} className="text-blue-600" />
+          <div className="p-2 bg-blue-50 dark:bg-blue-900 rounded-lg">
+            <Calendar size={20} className="text-blue-600 dark:text-blue-300" />
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900 capitalize">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100 capitalize">
               {formatDate(session.date)}
             </h3>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               {session.totalExercises} exercice
               {session.totalExercises > 1 ? "s" : ""}
             </p>
           </div>
         </div>
         <div className="text-right">
-          <div className="flex items-center gap-1 text-gray-500 text-sm">
+          <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400 text-sm">
             <Clock size={14} />
             <span>{estimatedDuration} min</span>
           </div>
@@ -75,7 +75,7 @@ export function WorkoutSessionCard({
           {muscleGroups.map((group) => (
             <span
               key={group}
-              className="px-3 py-1 bg-gray-50 text-gray-700 text-sm rounded-full border"
+              className="px-3 py-1 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-full border border-gray-200 dark:border-gray-600"
             >
               {MUSCLE_GROUP_LABELS[group as keyof typeof MUSCLE_GROUP_LABELS]}
             </span>
@@ -86,28 +86,28 @@ export function WorkoutSessionCard({
       {/* Aperçu des exercices */}
       <div className="mb-4">
         <div className="flex items-center gap-2 mb-2">
-          <Activity size={16} className="text-gray-400" />
-          <span className="text-sm font-medium text-gray-600">Exercices</span>
+          <Activity size={16} className="text-gray-400 dark:text-gray-500" />
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Exercices</span>
         </div>
         <div className="space-y-1">
           {session.exercises.slice(0, 3).map((exercise, index) => (
-            <div key={exercise.id} className="text-sm text-gray-600">
+            <div key={exercise.id} className="text-sm text-gray-600 dark:text-gray-400">
               {exercise.exercise?.name}
               {exercise.sets && exercise.reps && (
-                <span className="text-gray-400 ml-2">
+                <span className="text-gray-400 dark:text-gray-500 ml-2">
                   {exercise.sets}×{exercise.reps}
                   {exercise.weight && ` • ${exercise.weight}kg`}
                 </span>
               )}
               {exercise.duration && (
-                <span className="text-gray-400 ml-2">
+                <span className="text-gray-400 dark:text-gray-500 ml-2">
                   {exercise.duration} min
                 </span>
               )}
             </div>
           ))}
           {session.exercises.length > 3 && (
-            <div className="text-sm text-gray-400">
+            <div className="text-sm text-gray-400 dark:text-gray-500">
               +{session.exercises.length - 3} autres exercices
             </div>
           )}
@@ -116,12 +116,12 @@ export function WorkoutSessionCard({
 
       {/* Notes (aperçu) */}
       {session.notes && (
-        <div className="border-t border-gray-100 pt-3">
+        <div className="border-t border-gray-100 dark:border-gray-700 pt-3">
           <div className="flex items-center gap-2 mb-2">
-            <FileText size={14} className="text-gray-400" />
-            <span className="text-sm font-medium text-gray-600">Notes</span>
+            <FileText size={14} className="text-gray-400 dark:text-gray-500" />
+            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Notes</span>
           </div>
-          <p className="text-sm text-gray-600 line-clamp-2">{session.notes}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{session.notes}</p>
         </div>
       )}
     </motion.div>

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import AppTracker from "@/components/tracker/AppTracker";
 
 export const metadata: Metadata = {
@@ -32,7 +33,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#f9fafb",
+  themeColor: "#f9fafb", // light mode, sera géré dynamiquement par le ThemeProvider
 };
 
 export default function RootLayout({
@@ -43,10 +44,12 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className="antialiased">
-        <AuthProvider>
-          <AppTracker />
-          {children}
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <AppTracker />
+            {children}
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

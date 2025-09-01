@@ -68,17 +68,17 @@ function ExerciseSelectionModal({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                   Choisir un exercice
                 </h2>
                 <button
                   onClick={onClose}
-                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-lg hover:bg-gray-100"
+                  className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
                   <X size={20} />
                 </button>
@@ -89,19 +89,19 @@ function ExerciseSelectionModal({
                 <div className="relative">
                   <Search
                     size={20}
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500"
                   />
                   <input
                     type="text"
                     placeholder="Rechercher un exercice..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
                 <div className="flex items-center gap-2 flex-wrap">
-                  <Filter size={16} className="text-gray-400" />
+                  <Filter size={16} className="text-gray-400 dark:text-gray-500" />
                   {muscleGroups.map((group) => (
                     <button
                       key={group}
@@ -109,7 +109,7 @@ function ExerciseSelectionModal({
                       className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
                         selectedMuscleGroup === group
                           ? "bg-blue-600 text-white"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                       }`}
                     >
                       {MUSCLE_GROUP_LABELS[group]}
@@ -130,19 +130,19 @@ function ExerciseSelectionModal({
                       onSelect(exercise.id);
                       onClose();
                     }}
-                    className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
+                    className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-left"
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-medium text-gray-900">
+                        <h3 className="font-medium text-gray-900 dark:text-gray-100">
                           {exercise.name}
                         </h3>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                           {MUSCLE_GROUP_LABELS[exercise.muscleGroup]}
                           {exercise.isCustom && " • Personnalisé"}
                         </p>
                         {exercise.description && (
-                          <p className="text-sm text-gray-600 mt-1">
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                             {exercise.description}
                           </p>
                         )}
@@ -154,7 +154,7 @@ function ExerciseSelectionModal({
 
               {filteredExercises.length === 0 && (
                 <div className="text-center py-8">
-                  <p className="text-gray-500">Aucun exercice trouvé</p>
+                  <p className="text-gray-500 dark:text-gray-400">Aucun exercice trouvé</p>
                 </div>
               )}
             </div>
@@ -265,20 +265,20 @@ export function WorkoutSessionForm({
     <div className="max-w-4xl mx-auto">
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Date and Notes */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">
             Informations générales
           </h2>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Date de la séance *
               </label>
               <div className="relative">
                 <Calendar
                   size={16}
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 hidden sm:inline"
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hidden sm:inline"
                 />
                 <input
                   type="date"
@@ -290,13 +290,13 @@ export function WorkoutSessionForm({
                       date: new Date(e.target.value + "T12:00:00"),
                     }))
                   }
-                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-12 pr-4 py-3 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Notes (optionnel)
               </label>
               <textarea
@@ -305,7 +305,7 @@ export function WorkoutSessionForm({
                   setFormData((prev) => ({ ...prev, notes: e.target.value }))
                 }
                 rows={3}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 placeholder="Notes sur cette séance d'entraînement..."
               />
             </div>
@@ -313,9 +313,9 @@ export function WorkoutSessionForm({
         </div>
 
         {/* Exercises */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               Exercices ({formData.exercises.length})
             </h2>
             <motion.button
@@ -332,13 +332,13 @@ export function WorkoutSessionForm({
 
           {formData.exercises.length === 0 ? (
             <div className="text-center py-12">
-              <div className="p-4 bg-gray-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <Plus size={24} className="text-gray-400" />
+              <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <Plus size={24} className="text-gray-400 dark:text-gray-500" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                 Aucun exercice ajouté
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
                 Commencez par ajouter des exercices à votre séance.
               </p>
               <button
@@ -360,7 +360,7 @@ export function WorkoutSessionForm({
                     key={`${exercise.exerciseId}-${index}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="border border-gray-200 rounded-lg p-4"
+                    className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 rounded-lg p-4"
                   >
                     <div className="flex items-start gap-4">
                       {/* Drag Handle */}
@@ -369,16 +369,16 @@ export function WorkoutSessionForm({
                           type="button"
                           onClick={() => moveExercise(index, index - 1)}
                           disabled={index === 0}
-                          className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           ↑
                         </button>
-                        <GripVertical size={16} className="text-gray-400" />
+                        <GripVertical size={16} className="text-gray-400 dark:text-gray-500" />
                         <button
                           type="button"
                           onClick={() => moveExercise(index, index + 1)}
                           disabled={index === formData.exercises.length - 1}
-                          className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           ↓
                         </button>
@@ -387,10 +387,10 @@ export function WorkoutSessionForm({
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-4">
                           <div>
-                            <h3 className="font-medium text-gray-900">
+                            <h3 className="font-medium text-gray-900 dark:text-gray-100">
                               {exerciseInfo?.name || "Exercice inconnu"}
                             </h3>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
                               {
                                 MUSCLE_GROUP_LABELS[
                                   exerciseInfo?.muscleGroup || "other"
@@ -411,7 +411,7 @@ export function WorkoutSessionForm({
                           {!isCardio && (
                             <>
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                   Séries
                                 </label>
                                 <input
@@ -425,11 +425,11 @@ export function WorkoutSessionForm({
                                         : undefined,
                                     })
                                   }
-                                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
                               </div>
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                   Répétitions
                                 </label>
                                 <input
@@ -443,11 +443,11 @@ export function WorkoutSessionForm({
                                         : undefined,
                                     })
                                   }
-                                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
                               </div>
                               <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                   Poids (kg)
                                 </label>
                                 <input
@@ -462,14 +462,14 @@ export function WorkoutSessionForm({
                                         : undefined,
                                     })
                                   }
-                                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
                               </div>
                             </>
                           )}
                           {isCardio && (
                             <div className="col-span-2">
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Durée (minutes)
                               </label>
                               <input
@@ -483,14 +483,14 @@ export function WorkoutSessionForm({
                                       : undefined,
                                   })
                                 }
-                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                               />
                             </div>
                           )}
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             Notes (optionnel)
                           </label>
                           <input
@@ -499,7 +499,7 @@ export function WorkoutSessionForm({
                             onChange={(e) =>
                               updateExercise(index, { notes: e.target.value })
                             }
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             placeholder="Notes spécifiques à cet exercice..."
                           />
                         </div>
@@ -517,7 +517,7 @@ export function WorkoutSessionForm({
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 px-6 py-3 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors"
+            className="flex-1 px-6 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
           >
             Annuler
           </button>

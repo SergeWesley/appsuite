@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { BookOpen, Film, ChevronRight, Activity, HomeIcon } from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface NavigationMenuItem {
   name: string;
@@ -25,24 +26,24 @@ const modules: NavigationMenuItem[] = [
     name: "Booker",
     path: "/booker",
     icon: BookOpen,
-    color: "text-blue-600",
-    bgColor: "bg-blue-50 hover:bg-blue-100",
+    color: "text-blue-600 dark:text-blue-400",
+    bgColor: "bg-blue-50 hover:bg-blue-100 dark:bg-blue-900 dark:hover:bg-blue-800",
     description: "Gérez votre bibliothèque de livres",
   },
   {
     name: "Tracker",
     path: "/tracker",
     icon: Activity,
-    color: "text-green-600",
-    bgColor: "bg-green-50 hover:bg-green-100",
+    color: "text-green-600 dark:text-green-400",
+    bgColor: "bg-green-50 hover:bg-green-100 dark:bg-green-900 dark:hover:bg-green-800",
     description: "Suivez vos séances de sport",
   },
   {
     name: "Watcher",
     path: "/watcher",
     icon: Film,
-    color: "text-purple-600",
-    bgColor: "bg-purple-50 hover:bg-purple-100",
+    color: "text-purple-600 dark:text-purple-400",
+    bgColor: "bg-purple-50 hover:bg-purple-100 dark:bg-purple-900 dark:hover:bg-purple-800",
     description: "Suivez vos films et séries",
   },
 ];
@@ -119,14 +120,17 @@ export function NavigationMenu({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="fixed top-16 left-4 sm:left-8 z-50 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden"
+            className="fixed top-16 left-4 sm:left-8 z-50 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
           >
             {/* Header */}
-            <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
-              <h3 className="text-sm font-medium text-gray-900">Navigation</h3>
-              <p className="text-xs text-gray-500 mt-1">
-                Accédez aux autres modules
-              </p>
+            <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Navigation</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Accédez aux autres modules
+                </p>
+              </div>
+              <ThemeToggle size="sm" />
             </div>
 
             {/* Menu items */}
@@ -136,24 +140,24 @@ export function NavigationMenu({
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0 }}
                 onClick={() => router.push("/dashboard")} // ou '/' si tu préfères
-                className="w-full px-4 py-3 flex items-center group text-left transition-colors bg-gray-100 hover:bg-gray-200"
+                className="w-full px-4 py-3 flex items-center group text-left transition-colors bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500"
               >
-                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-300 flex items-center justify-center">
-                  <HomeIcon size={20} className="text-gray-700" />
+                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-300 dark:bg-gray-500 flex items-center justify-center">
+                  <HomeIcon size={20} className="text-gray-700 dark:text-gray-200" />
                 </div>
 
                 <div className="ml-3 flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 group-hover:text-gray-700">
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-200">
                     Tableu de bord
                   </p>
-                  <p className="text-xs text-gray-500 truncate">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                     Retour à la page principale
                   </p>
                 </div>
 
                 <ChevronRight
                   size={16}
-                  className="text-gray-400 group-hover:text-gray-600 transition-colors"
+                  className="text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors"
                 />
               </motion.button>
 
@@ -175,17 +179,17 @@ export function NavigationMenu({
                     </div>
 
                     <div className="ml-3 flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 group-hover:text-gray-700">
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-200">
                         {module.name}
                       </p>
-                      <p className="text-xs text-gray-500 truncate">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                         {module.description}
                       </p>
                     </div>
 
                     <ChevronRight
                       size={16}
-                      className="text-gray-400 group-hover:text-gray-600 transition-colors"
+                      className="text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors"
                     />
                   </motion.button>
                 );
@@ -193,8 +197,8 @@ export function NavigationMenu({
             </div>
 
             {/* Footer */}
-            <div className="px-4 py-2 border-t border-gray-100 bg-gray-50">
-              <p className="text-xs text-gray-500 text-center">
+            <div className="px-4 py-2 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+              <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
                 Cliquez sur un module pour y accéder
               </p>
             </div>
