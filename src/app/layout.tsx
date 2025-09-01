@@ -33,7 +33,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#f9fafb",
+  themeColor: "#f9fafb", // light mode, sera géré dynamiquement par le ThemeProvider
 };
 
 export default function RootLayout({
