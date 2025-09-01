@@ -166,26 +166,26 @@ export function NavigationMenu({
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
                     onClick={() => handleNavigation(module.path)}
-                    className={`w-full px-4 py-3 flex items-center group text-left transition-colors ${module.bgColor}`}
+                    className={`w-full px-4 py-3 flex items-center group text-left transition-colors bg-gray-700 hover:bg-gray-600`}
                   >
                     <div
-                      className={`flex-shrink-0 w-10 h-10 rounded-lg ${module.bgColor.replace("hover:", "")} flex items-center justify-center`}
+                      className={`flex-shrink-0 w-10 h-10 rounded-lg bg-gray-600 flex items-center justify-center`}
                     >
                       <IconComponent size={20} className={module.color} />
                     </div>
 
                     <div className="ml-3 flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 group-hover:text-gray-700">
+                      <p className="text-sm font-medium text-gray-100 group-hover:text-gray-200">
                         {module.name}
                       </p>
-                      <p className="text-xs text-gray-500 truncate">
+                      <p className="text-xs text-gray-300 truncate">
                         {module.description}
                       </p>
                     </div>
 
                     <ChevronRight
                       size={16}
-                      className="text-gray-400 group-hover:text-gray-600 transition-colors"
+                      className="text-gray-400 group-hover:text-gray-300 transition-colors"
                     />
                   </motion.button>
                 );
