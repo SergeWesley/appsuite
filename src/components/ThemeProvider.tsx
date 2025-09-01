@@ -28,6 +28,17 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
+  // Script pour éviter le flash de thème (injecté côté serveur)
+  const themeScript = `
+    (function() {
+      const savedTheme = localStorage.getItem('theme');
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      const theme = savedTheme || systemTheme;
+      document.documentElement.classList.add(theme);
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#111827' : '#f9fafb');
+    })();
+  `;
+
   // Initialiser le thème depuis localStorage ou système
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as Theme;
