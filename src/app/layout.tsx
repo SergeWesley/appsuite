@@ -44,10 +44,12 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className="antialiased">
-        <AuthProvider>
-          <AppTracker />
-          {children}
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <AppTracker />
+            {children}
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
