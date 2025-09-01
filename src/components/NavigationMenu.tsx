@@ -123,11 +123,14 @@ export function NavigationMenu({
             className="fixed top-16 left-4 sm:left-8 z-50 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
           >
             {/* Header */}
-            <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
-              <h3 className="text-sm font-medium text-gray-900">Navigation</h3>
-              <p className="text-xs text-gray-500 mt-1">
-                Accédez aux autres modules
-              </p>
+            <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Navigation</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Accédez aux autres modules
+                </p>
+              </div>
+              <ThemeToggle size="sm" />
             </div>
 
             {/* Menu items */}
