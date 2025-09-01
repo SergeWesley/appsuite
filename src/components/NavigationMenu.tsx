@@ -119,12 +119,12 @@ export function NavigationMenu({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="fixed top-16 left-4 sm:left-8 z-50 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden"
+            className="fixed top-16 left-4 sm:left-8 z-50 w-80 max-w-[calc(100vw-2rem)] bg-gray-800 rounded-lg shadow-xl border border-gray-700 overflow-hidden"
           >
             {/* Header */}
-            <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
-              <h3 className="text-sm font-medium text-gray-900">Navigation</h3>
-              <p className="text-xs text-gray-500 mt-1">
+            <div className="px-4 py-3 border-b border-gray-600 bg-gray-700">
+              <h3 className="text-sm font-medium text-gray-100">Navigation</h3>
+              <p className="text-xs text-gray-300 mt-1">
                 Accédez aux autres modules
               </p>
             </div>
@@ -136,17 +136,17 @@ export function NavigationMenu({
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0 }}
                 onClick={() => router.push("/dashboard")} // ou '/' si tu préfères
-                className="w-full px-4 py-3 flex items-center group text-left transition-colors bg-gray-100 hover:bg-gray-200"
+                className="w-full px-4 py-3 flex items-center group text-left transition-colors bg-gray-700 hover:bg-gray-600"
               >
-                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-300 flex items-center justify-center">
-                  <HomeIcon size={20} className="text-gray-700" />
+                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-600 flex items-center justify-center">
+                  <HomeIcon size={20} className="text-gray-200" />
                 </div>
 
                 <div className="ml-3 flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 group-hover:text-gray-700">
+                  <p className="text-sm font-medium text-gray-100 group-hover:text-gray-200">
                     Tableu de bord
                   </p>
-                  <p className="text-xs text-gray-500 truncate">
+                  <p className="text-xs text-gray-300 truncate">
                     Retour à la page principale
                   </p>
                 </div>
@@ -166,26 +166,26 @@ export function NavigationMenu({
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.05 }}
                     onClick={() => handleNavigation(module.path)}
-                    className={`w-full px-4 py-3 flex items-center group text-left transition-colors ${module.bgColor}`}
+                    className={`w-full px-4 py-3 flex items-center group text-left transition-colors bg-gray-700 hover:bg-gray-600`}
                   >
                     <div
-                      className={`flex-shrink-0 w-10 h-10 rounded-lg ${module.bgColor.replace("hover:", "")} flex items-center justify-center`}
+                      className={`flex-shrink-0 w-10 h-10 rounded-lg bg-gray-600 flex items-center justify-center`}
                     >
                       <IconComponent size={20} className={module.color} />
                     </div>
 
                     <div className="ml-3 flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 group-hover:text-gray-700">
+                      <p className="text-sm font-medium text-gray-100 group-hover:text-gray-200">
                         {module.name}
                       </p>
-                      <p className="text-xs text-gray-500 truncate">
+                      <p className="text-xs text-gray-300 truncate">
                         {module.description}
                       </p>
                     </div>
 
                     <ChevronRight
                       size={16}
-                      className="text-gray-400 group-hover:text-gray-600 transition-colors"
+                      className="text-gray-400 group-hover:text-gray-300 transition-colors"
                     />
                   </motion.button>
                 );
@@ -193,8 +193,8 @@ export function NavigationMenu({
             </div>
 
             {/* Footer */}
-            <div className="px-4 py-2 border-t border-gray-100 bg-gray-50">
-              <p className="text-xs text-gray-500 text-center">
+            <div className="px-4 py-2 border-t border-gray-600 bg-gray-700">
+              <p className="text-xs text-gray-300 text-center">
                 Cliquez sur un module pour y accéder
               </p>
             </div>

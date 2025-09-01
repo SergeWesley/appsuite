@@ -32,7 +32,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#f9fafb",
+  themeColor: "#111827",
 };
 
 export default function RootLayout({
@@ -41,8 +41,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
-      <body className="antialiased">
+    <html lang="fr" className="dark">
+      <body className="antialiased dark:bg-gray-900 dark:text-gray-100">
         <AuthProvider>
           <AppTracker />
           {children}

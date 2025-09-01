@@ -2,8 +2,8 @@
 
 @layer base {
   body {
-    background-color: theme(colors.gray.50);
-    color: theme(colors.gray.900);
+    background-color: theme(colors.gray.900);
+    color: theme(colors.gray.100);
   }
 
   /* Désactiver la sélection de texte pour toute l'app */
@@ -22,8 +22,8 @@
     position: relative;
     overflow: hidden;
     border-radius: theme(borderRadius.xl);
-    background-color: theme(colors.white);
-    border: 1px solid theme(colors.gray.200);
+    background-color: theme(colors.gray.800);
+    border: 1px solid theme(colors.gray.700);
     box-shadow: theme(boxShadow.sm);
     transition: all 0.3s ease;
   }
@@ -52,29 +52,29 @@
 
   .status-reading,
   .status-watching {
-    background-color: theme(colors.blue.100);
-    color: theme(colors.blue.800);
+    background-color: theme(colors.blue.900);
+    color: theme(colors.blue.200);
   }
 
   .status-completed {
-    background-color: theme(colors.green.100);
-    color: theme(colors.green.800);
+    background-color: theme(colors.green.900);
+    color: theme(colors.green.200);
   }
 
   .status-toread,
   .status-towatch {
-    background-color: theme(colors.gray.100);
-    color: theme(colors.gray.800);
+    background-color: theme(colors.gray.700);
+    color: theme(colors.gray.200);
   }
 
   .status-wishlist {
-    background-color: theme(colors.red.100);
-    color: theme(colors.red.800);
+    background-color: theme(colors.red.900);
+    color: theme(colors.red.200);
   }
 
   .status-dropped {
-    background-color: theme(colors.orange.100);
-    color: theme(colors.orange.800);
+    background-color: theme(colors.orange.900);
+    color: theme(colors.orange.200);
   }
 }
 
@@ -111,7 +111,7 @@
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.1),
     transparent
   );
   transition: left 0.5s;
