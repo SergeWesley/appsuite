@@ -82,8 +82,12 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   }
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
+    <>
+      {/* Script pour éviter le flash de thème */}
+      <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
+        {children}
+      </ThemeContext.Provider>
+    </>
   );
 }
