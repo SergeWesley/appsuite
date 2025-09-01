@@ -172,6 +172,16 @@
   transition: left 0.5s;
 }
 
+.dark .book-card::before,
+.dark .media-card::before {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+}
+
 .book-card:hover::before,
 .media-card:hover::before {
   left: 100%;
