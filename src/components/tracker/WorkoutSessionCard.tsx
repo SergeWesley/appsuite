@@ -94,7 +94,7 @@ export function WorkoutSessionCard({
             <div key={exercise.id} className="text-sm text-gray-600 dark:text-gray-400">
               {exercise.exercise?.name}
               {exercise.sets && exercise.reps && (
-                <span className="text-gray-400 ml-2">
+                <span className="text-gray-400 dark:text-gray-500 ml-2">
                   {exercise.sets}×{exercise.reps}
                   {exercise.weight && ` • ${exercise.weight}kg`}
                 </span>
