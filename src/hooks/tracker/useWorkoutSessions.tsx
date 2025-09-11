@@ -62,6 +62,8 @@ function mapRowToWorkoutSession(
       reps: we.reps || undefined,
       weight: we.weight || undefined,
       duration: we.duration || undefined,
+      speed: we.speed || undefined,
+      slope: we.slope || undefined,
       notes: we.notes || undefined,
       order: we.exercise_order,
     })),
@@ -178,6 +180,8 @@ export function useWorkoutSessions() {
             reps: exercise.reps || null,
             weight: exercise.weight || null,
             duration: exercise.duration || null,
+            speed: exercise.speed || null,
+            slope : exercise.slope || null,
             notes: exercise.notes || null,
             exercise_order: exercise.order,
           }));

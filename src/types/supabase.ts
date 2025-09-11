@@ -367,6 +367,8 @@ export interface Database {
           reps: number | null;
           weight: number | null;
           duration: number | null;
+          speed: number | null;
+          slope: number | null
           notes: string | null;
           exercise_order: number;
           created_at: string;
@@ -379,6 +381,8 @@ export interface Database {
           reps?: number | null;
           weight?: number | null;
           duration?: number | null;
+          speed?: number | null;
+          slope?: number | null;
           notes?: string | null;
           exercise_order: number;
           created_at?: string;
@@ -391,6 +395,8 @@ export interface Database {
           reps?: number | null;
           weight?: number | null;
           duration?: number | null;
+          speed?: number | null;
+          slope?: number | null;
           notes?: string | null;
           exercise_order?: number;
           created_at?: string;

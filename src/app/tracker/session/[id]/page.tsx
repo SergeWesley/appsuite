@@ -376,6 +376,22 @@ export default function WorkoutSessionDetailPage() {
                     </p>
                   </div>
                 )}
+                {exercise.speed && (
+                  <div>
+                    <p className="text-sm text-gray-500">Vitesse</p>
+                    <p className="font-semibold text-gray-900">
+                      {exercise.speed} km/h
+                    </p>
+                  </div>
+                )}
+                {exercise.slope && (
+                  <div>
+                    <p className="text-sm text-gray-500">Pente</p>
+                    <p className="font-semibold text-gray-900">
+                      {exercise.slope}
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Exercise Notes */}

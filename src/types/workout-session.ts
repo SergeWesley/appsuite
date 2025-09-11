@@ -26,6 +26,8 @@ export interface WorkoutExercise {
   reps?: number;
   weight?: number; // en kg
   duration?: number; // en minutes pour le cardio
+  speed?: number; // en km/h pour le cardio
+  slope?: number; // en pourcentage pour le cardio
   notes?: string;
   order: number; // ordre dans la séance
   estimatedTime?: number; // temps estimé pour cet exercice en minutes

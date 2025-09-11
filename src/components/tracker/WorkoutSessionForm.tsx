@@ -200,6 +200,8 @@ export function WorkoutSessionForm({
       reps: exercise.muscleGroup === "cardio" ? undefined : 12,
       weight: exercise.muscleGroup === "cardio" ? undefined : undefined,
       duration: exercise.muscleGroup === "cardio" ? 30 : undefined,
+      speed: exercise.muscleGroup === "cardio" ? 5 : undefined,
+      slope: exercise.muscleGroup === "cardio" ? 0 : undefined,
       notes: "",
       order: 1,
     };
@@ -468,24 +470,62 @@ export function WorkoutSessionForm({
                             </>
                           )}
                           {isCardio && (
-                            <div className="col-span-2">
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Durée (minutes)
-                              </label>
-                              <input
-                                type="number"
-                                min="1"
-                                value={exercise.duration || ""}
-                                onChange={(e) =>
-                                  updateExercise(index, {
-                                    duration: e.target.value
-                                      ? parseInt(e.target.value)
-                                      : undefined,
-                                  })
-                                }
-                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              />
-                            </div>
+                            <>
+                              <div className="col-span-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Durée (minutes)
+                                </label>
+                                <input
+                                  type="number"
+                                  min="1"
+                                  value={exercise.duration || ""}
+                                  onChange={(e) =>
+                                    updateExercise(index, {
+                                      duration: e.target.value
+                                        ? parseInt(e.target.value)
+                                        : undefined,
+                                    })
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                              </div>
+                              <div className="col-span-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Vitesse (km/h)
+                                </label>
+                                <input
+                                  type="number"
+                                  min="1"
+                                  value={exercise.speed || ""}
+                                  onChange={(e) =>
+                                    updateExercise(index, {
+                                      speed: e.target.value
+                                        ? parseInt(e.target.value)
+                                        : undefined,
+                                    })
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                              </div>
+                              <div className="col-span-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Pente (%)
+                                </label>
+                                <input
+                                  type="number"
+                                  min="1"
+                                  value={exercise.slope || ""}
+                                  onChange={(e) =>
+                                    updateExercise(index, {
+                                      slope: e.target.value
+                                        ? parseInt(e.target.value)
+                                        : undefined,
+                                    })
+                                  }
+                                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                              </div>
+                            </>
                           )}
                         </div>
 
