@@ -38,6 +38,7 @@ export default function WorkoutSessionDetailPage() {
     useState<MuscleGroup>("all");
   const [loading, setLoading] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -111,7 +112,7 @@ export default function WorkoutSessionDetailPage() {
     }
   };
 
-  const handleDuplicate = async () => {
+  const handleDuplicate: any = async () => {
     const duplicated = await duplicateSession(session.id);
     if (duplicated) {
       router.push(`/tracker/session/${duplicated.id}`);
@@ -209,11 +210,10 @@ export default function WorkoutSessionDetailPage() {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={handleDuplicate}
+            onClick={() => setShowDuplicateConfirm(true)}
             className="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
           >
             <Copy size={16} className="mr-2" />
-            Dupliquer
           </motion.button>
 
           <motion.button
@@ -427,6 +427,48 @@ export default function WorkoutSessionDetailPage() {
                   className="flex-1 px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
                 >
                   Supprimer
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Duplicate Confirmation Modal */}
+      <AnimatePresence>
+        {showDuplicateConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowDuplicateConfirm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                Dupliquer la séance
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Voulez vous dupliquer cette séance ?
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowDuplicateConfirm(false)}
+                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={handleDuplicate}
+                  className="flex-1 px-4 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  Dupliquer
                 </button>
               </div>
             </motion.div>
