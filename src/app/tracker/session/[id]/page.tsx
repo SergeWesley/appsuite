@@ -388,7 +388,7 @@ export default function WorkoutSessionDetailPage() {
                   <div>
                     <p className="text-sm text-gray-500">Pente</p>
                     <p className="font-semibold text-gray-900">
-                      {exercise.slope}
+                      {exercise.slope} %
                     </p>
                   </div>
                 )}
