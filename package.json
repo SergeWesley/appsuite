@@ -17,7 +17,7 @@
     "framer-motion": "^12.23.12",
     "kafkajs": "^2.2.4",
     "lucide-react": "^0.536.0",
-    "next": "15.4.5",
+    "next": "15.4.10",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-zxing": "^2.1.0",
