@@ -10,7 +10,7 @@ import {
   MUSCLE_GROUP_LABELS,
 } from "@/types/workout-session";
 import { NavigationMenu } from "@/components/NavigationMenu";
-import { ExerciseBubblePlot } from "@/components/tracker/ExerciseBubblePlot";
+import { ExerciseDistributionChart } from "@/components/tracker/ExerciseDistributionChart";
 import {
   Calendar,
   Activity,
@@ -281,7 +281,7 @@ export default function WorkoutSessionDetailPage() {
         </div>
 
         {/* Exercise Bubble Plot */}
-        <ExerciseBubblePlot exercises={session.exercises} className="mb-8" />
+        <ExerciseDistributionChart exercises={session.exercises} className="mb-8" />
 
         {/* Exercise Filter */}
         <div className="mb-6">
