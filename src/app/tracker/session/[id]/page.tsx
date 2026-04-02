@@ -42,6 +42,7 @@ export default function WorkoutSessionDetailPage() {
   const [showAddExerciseModal, setShowAddExerciseModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [exerciseToDelete, setExerciseToDelete] = useState<string | null>(null);
   const [addingExercise, setAddingExercise] = useState(false);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
@@ -169,6 +170,30 @@ export default function WorkoutSessionDetailPage() {
     setSelectedExercise(null);
   };
 
+  // Delete a single exercise from the session
+  const handleDeleteExercise = async () => {
+    if (!session || !exerciseToDelete) return;
+
+    try {
+      const remainingExercises = session.exercises
+        .filter((ex) => ex.id !== exerciseToDelete)
+        .map(({ id, exercise, ...rest }, idx) => ({
+          ...rest,
+          order: idx + 1,
+        }));
+
+      await updateSession(session.id, {
+        date: session.date,
+        notes: session.notes,
+        exercises: remainingExercises,
+      });
+    } catch (err) {
+      console.error("Erreur lors de la suppression de l'exercice:", err);
+    } finally {
+      setExerciseToDelete(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -268,6 +293,7 @@ export default function WorkoutSessionDetailPage() {
               key={exercise.id}
               exercise={exercise}
               index={index}
+              onDelete={(id) => setExerciseToDelete(id)}
             />
           ))}
         </div>
@@ -294,7 +320,18 @@ export default function WorkoutSessionDetailPage() {
         onConfirm={handleDetailsConfirmed}
       />
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Exercise Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={!!exerciseToDelete}
+        onClose={() => setExerciseToDelete(null)}
+        onConfirm={handleDeleteExercise}
+        title="Supprimer l'exercice"
+        message="Voulez-vous retirer cet exercice de la séance ?"
+        confirmLabel="Supprimer"
+        confirmColor="bg-red-600 hover:bg-red-700"
+      />
+
+      {/* Delete Session Confirmation Modal */}
       <ConfirmationModal
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
