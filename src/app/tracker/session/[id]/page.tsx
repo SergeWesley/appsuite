@@ -1,27 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useParams } from "next/navigation";
 import { useWorkoutSessions } from "@/hooks/tracker/useWorkoutSessions";
+import { useExercises } from "@/hooks/tracker/useExercices";
 import {
   WorkoutSession,
+  Exercise,
   MuscleGroup,
-  MUSCLE_GROUP_LABELS,
 } from "@/types/workout-session";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import { ExerciseDistributionChart } from "@/components/tracker/ExerciseDistributionChart";
-import {
-  Calendar,
-  Activity,
-  Clock,
-  FileText,
-  Edit,
-  Trash2,
-  Copy,
-  LogOut,
-  User,
-} from "lucide-react";
+import { ExerciseSelectionModal } from "@/components/tracker/ExerciseSelectionModal";
+import { ExerciseDetailsModal } from "@/components/tracker/ExerciseDetailsModal";
+import type { ExerciseDetails } from "@/components/tracker/ExerciseDetailsModal";
+import { SessionInfoCard } from "@/components/tracker/SessionInfoCard";
+import { SessionActions } from "@/components/tracker/SessionActions";
+import { ExerciseCard } from "@/components/tracker/ExerciseCard";
+import { MuscleGroupFilter } from "@/components/tracker/MuscleGroupFilter";
+import { ConfirmationModal } from "@/components/tracker/ConfirmationModal";
+import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
+import { Activity, LogOut, User } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
@@ -31,14 +30,19 @@ export default function WorkoutSessionDetailPage() {
   const sessionId = params.id as string;
   const { user, signOut } = useAuthContext();
 
-  const { sessions, getSessionById, deleteSession, duplicateSession } =
+  const { sessions, getSessionById, deleteSession, duplicateSession, updateSession } =
     useWorkoutSessions();
+  const { getExerciseById } = useExercises();
   const [session, setSession] = useState<WorkoutSession | null>(null);
   const [selectedMuscleGroup, setSelectedMuscleGroup] =
     useState<MuscleGroup>("all");
   const [loading, setLoading] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
+  const [showAddExerciseModal, setShowAddExerciseModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [addingExercise, setAddingExercise] = useState(false);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -68,7 +72,7 @@ export default function WorkoutSessionDetailPage() {
             Séance non trouvée
           </h2>
           <p className="text-gray-600 mb-6">
-            Cette séance n'existe pas ou a été supprimée.
+            Cette séance n&apos;existe pas ou a été supprimée.
           </p>
           <button
             onClick={() => router.push("/tracker")}
@@ -81,21 +85,6 @@ export default function WorkoutSessionDetailPage() {
     );
   }
 
-  // Filtrer les exercices par groupe musculaire
-  const filteredExercises =
-    selectedMuscleGroup === "all"
-      ? session.exercises
-      : session.exercises.filter(
-          (ex) => ex.exercise?.muscleGroup === selectedMuscleGroup,
-        );
-
-  // Obtenir la liste des groupes musculaires présents dans la séance
-  const availableMuscleGroups = Array.from(
-    new Set(
-      session.exercises.map((ex) => ex.exercise?.muscleGroup).filter(Boolean),
-    ),
-  );
-
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("fr-FR", {
       weekday: "long",
@@ -105,6 +94,16 @@ export default function WorkoutSessionDetailPage() {
     }).format(date);
   };
 
+  const filteredExercises =
+    selectedMuscleGroup === "all"
+      ? session.exercises
+      : session.exercises.filter(
+          (ex) => ex.exercise?.muscleGroup === selectedMuscleGroup,
+        );
+
+  const estimatedDuration =
+    session.duration || Math.max(30, session.totalExercises * 5);
+
   const handleDelete = async () => {
     const success = await deleteSession(session.id);
     if (success) {
@@ -112,15 +111,63 @@ export default function WorkoutSessionDetailPage() {
     }
   };
 
-  const handleDuplicate: any = async () => {
+  const handleDuplicate = async () => {
     const duplicated = await duplicateSession(session.id);
     if (duplicated) {
       router.push(`/tracker/session/${duplicated.id}`);
     }
   };
 
-  const estimatedDuration =
-    session.duration || Math.max(30, session.totalExercises * 5);
+  // Step 1: User selects an exercise from the list
+  const handleExerciseSelected = (exerciseId: string) => {
+    const exerciseInfo = getExerciseById(exerciseId);
+    if (!exerciseInfo) return;
+
+    setSelectedExercise(exerciseInfo);
+    setShowDetailsModal(true);
+  };
+
+  // Step 2: User confirms the details (sets, reps, weight, etc.)
+  const handleDetailsConfirmed = async (details: ExerciseDetails) => {
+    if (!session || !selectedExercise || addingExercise) return;
+
+    setAddingExercise(true);
+    setShowDetailsModal(false);
+
+    try {
+      const newExercise = {
+        exerciseId: selectedExercise.id,
+        sets: details.sets,
+        reps: details.reps,
+        weight: details.weight,
+        duration: details.duration,
+        speed: details.speed,
+        slope: details.slope,
+        notes: details.notes,
+        order: session.exercises.length + 1,
+      };
+
+      const existingExercises = session.exercises.map(
+        ({ id, exercise, ...rest }) => rest,
+      );
+
+      await updateSession(session.id, {
+        date: session.date,
+        notes: session.notes,
+        exercises: [...existingExercises, newExercise],
+      });
+    } catch (err) {
+      console.error("Erreur lors de l'ajout de l'exercice:", err);
+    } finally {
+      setAddingExercise(false);
+      setSelectedExercise(null);
+    }
+  };
+
+  const handleDetailsCancel = () => {
+    setShowDetailsModal(false);
+    setSelectedExercise(null);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -149,7 +196,6 @@ export default function WorkoutSessionDetailPage() {
                 Retour
               </button>
 
-              {/* Menu utilisateur */}
               <Menu as="div" className="relative inline-block text-left">
                 <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
                   <User size={20} />
@@ -182,7 +228,7 @@ export default function WorkoutSessionDetailPage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
         {/* En-tête de la séance */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2 capitalize">
@@ -195,303 +241,80 @@ export default function WorkoutSessionDetailPage() {
           </p>
         </div>
 
-        {/* Actions */}
-        <div className="flex flex-wrap gap-3 mb-8">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => router.push(`/tracker/edit/${session.id}`)}
-            className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
-          >
-            <Edit size={16} className="sm:mr-2" />
-            <div className="hidden sm:block">Modifier</div>
-          </motion.button>
+        <SessionActions
+          onEdit={() => router.push(`/tracker/edit/${session.id}`)}
+          onDuplicate={() => setShowDuplicateConfirm(true)}
+          onDelete={() => setShowDeleteConfirm(true)}
+        />
 
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowDuplicateConfirm(true)}
-            className="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
-          >
-            <Copy size={16} className="sm:mr-2" />
-            <div className="hidden sm:block">Dupliquer</div>
-          </motion.button>
+        <SessionInfoCard
+          session={session}
+          estimatedDuration={estimatedDuration}
+          formatDate={formatDate}
+        />
 
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setShowDeleteConfirm(true)}
-            className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
-          >
-            <Trash2 size={16} className="sm:mr-2" />
-            <div className="hidden sm:block">Supprimer</div>
-          </motion.button>
-        </div>
-
-        {/* Session Info */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-green-50 rounded-lg">
-                <Calendar size={24} className="text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Date</p>
-                <p className="font-semibold text-gray-900 capitalize">
-                  {formatDate(session.date)}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-blue-50 rounded-lg">
-                <Activity size={24} className="text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Exercices</p>
-                <p className="font-semibold text-gray-900">
-                  {session.totalExercises}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-purple-50 rounded-lg">
-                <Clock size={24} className="text-purple-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Durée estimée</p>
-                <p className="font-semibold text-gray-900">
-                  {estimatedDuration} min
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Notes */}
-          {session.notes && (
-            <div className="mt-6 pt-6 border-t border-gray-100">
-              <div className="flex items-center gap-2 mb-3">
-                <FileText size={20} className="text-gray-400" />
-                <h3 className="font-semibold text-gray-900">Notes</h3>
-              </div>
-              <p className="text-gray-700 leading-relaxed">{session.notes}</p>
-            </div>
-          )}
-        </div>
-
-        {/* Exercise Bubble Plot */}
         <ExerciseDistributionChart exercises={session.exercises} className="mb-8" />
 
-        {/* Exercise Filter */}
-        <div className="mb-6">
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setSelectedMuscleGroup("all")}
-              className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                selectedMuscleGroup === "all"
-                  ? "bg-green-100 text-green-700 border border-green-200"
-                  : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
-              }`}
-            >
-              Tous ({session.exercises.length})
-            </button>
-            {availableMuscleGroups.map((group) => {
-              const count = session.exercises.filter(
-                (ex) => ex.exercise?.muscleGroup === group,
-              ).length;
-              return (
-                <button
-                  key={group}
-                  onClick={() => setSelectedMuscleGroup(group as MuscleGroup)}
-                  className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    selectedMuscleGroup === group
-                      ? "bg-green-100 text-green-700 border border-green-200"
-                      : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
-                  }`}
-                >
-                  {MUSCLE_GROUP_LABELS[group as MuscleGroup]} ({count})
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        <MuscleGroupFilter
+          exercises={session.exercises}
+          selectedMuscleGroup={selectedMuscleGroup}
+          onSelect={setSelectedMuscleGroup}
+        />
 
         {/* Exercises List */}
         <div className="space-y-4">
           {filteredExercises.map((exercise, index) => (
-            <motion.div
+            <ExerciseCard
               key={exercise.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    {exercise.exercise?.name || "Exercice inconnu"}
-                  </h3>
-                  <span className="inline-block px-3 py-1 bg-gray-50 text-gray-700 text-sm rounded-full border">
-                    {MUSCLE_GROUP_LABELS[
-                      exercise.exercise?.muscleGroup as MuscleGroup
-                    ] || "Autre"}
-                  </span>
-                </div>
-                <div className="text-right text-sm text-gray-500">
-                  #{exercise.order}
-                </div>
-              </div>
-
-              {/* Exercise Details */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                {exercise.sets && (
-                  <div>
-                    <p className="text-sm text-gray-500">Séries</p>
-                    <p className="font-semibold text-gray-900">
-                      {exercise.sets}
-                    </p>
-                  </div>
-                )}
-                {exercise.reps && (
-                  <div>
-                    <p className="text-sm text-gray-500">Répétitions</p>
-                    <p className="font-semibold text-gray-900">
-                      {exercise.reps}
-                    </p>
-                  </div>
-                )}
-                {exercise.weight && (
-                  <div>
-                    <p className="text-sm text-gray-500">Poids</p>
-                    <p className="font-semibold text-gray-900">
-                      {exercise.weight} kg
-                    </p>
-                  </div>
-                )}
-                {exercise.duration && (
-                  <div>
-                    <p className="text-sm text-gray-500">Durée</p>
-                    <p className="font-semibold text-gray-900">
-                      {exercise.duration} min
-                    </p>
-                  </div>
-                )}
-                {exercise.speed && (
-                  <div>
-                    <p className="text-sm text-gray-500">Vitesse</p>
-                    <p className="font-semibold text-gray-900">
-                      {exercise.speed} km/h
-                    </p>
-                  </div>
-                )}
-                {exercise.slope && (
-                  <div>
-                    <p className="text-sm text-gray-500">Pente</p>
-                    <p className="font-semibold text-gray-900">
-                      {exercise.slope} %
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* Exercise Notes */}
-              {exercise.notes && (
-                <div className="pt-4 border-t border-gray-100">
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium">Notes:</span> {exercise.notes}
-                  </p>
-                </div>
-              )}
-            </motion.div>
+              exercise={exercise}
+              index={index}
+            />
           ))}
         </div>
       </main>
 
+      {/* Floating Add Exercise Button */}
+      <FloatingAddButton
+        onClick={() => setShowAddExerciseModal(true)}
+        loading={addingExercise}
+      />
+
+      {/* Step 1: Exercise Selection Modal */}
+      <ExerciseSelectionModal
+        isOpen={showAddExerciseModal}
+        onClose={() => setShowAddExerciseModal(false)}
+        onSelect={handleExerciseSelected}
+      />
+
+      {/* Step 2: Exercise Details Modal */}
+      <ExerciseDetailsModal
+        isOpen={showDetailsModal}
+        exercise={selectedExercise}
+        onClose={handleDetailsCancel}
+        onConfirm={handleDetailsConfirmed}
+      />
+
       {/* Delete Confirmation Modal */}
-      <AnimatePresence>
-        {showDeleteConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => setShowDeleteConfirm(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Supprimer la séance
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Êtes-vous sûr de vouloir supprimer cette séance ? Cette action
-                est irréversible.
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                >
-                  Annuler
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="flex-1 px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
-                >
-                  Supprimer
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ConfirmationModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDelete}
+        title="Supprimer la séance"
+        message="Êtes-vous sûr de vouloir supprimer cette séance ? Cette action est irréversible."
+        confirmLabel="Supprimer"
+        confirmColor="bg-red-600 hover:bg-red-700"
+      />
 
       {/* Duplicate Confirmation Modal */}
-      <AnimatePresence>
-        {showDuplicateConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => setShowDuplicateConfirm(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Dupliquer la séance
-              </h3>
-              <p className="text-gray-600 mb-6">
-                Voulez vous dupliquer cette séance ?
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowDuplicateConfirm(false)}
-                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                >
-                  Annuler
-                </button>
-                <button
-                  onClick={handleDuplicate}
-                  className="flex-1 px-4 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
-                >
-                  Dupliquer
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ConfirmationModal
+        isOpen={showDuplicateConfirm}
+        onClose={() => setShowDuplicateConfirm(false)}
+        onConfirm={handleDuplicate}
+        title="Dupliquer la séance"
+        message="Voulez vous dupliquer cette séance ?"
+        confirmLabel="Dupliquer"
+        confirmColor="bg-gray-600 hover:bg-gray-700"
+      />
 
       {/* Menu de navigation */}
       <NavigationMenu
