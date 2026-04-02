@@ -402,6 +402,61 @@ export interface Database {
           created_at?: string;
         };
       };
+      note_folders: {
+        Row: {
+          id: string;
+          name: string;
+          color: string | null;
+          user_id: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          color?: string | null;
+          user_id: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          color?: string | null;
+          user_id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      notes: {
+        Row: {
+          id: string;
+          folder_id: string;
+          title: string;
+          content: string;
+          user_id: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          folder_id: string;
+          title: string;
+          content?: string;
+          user_id: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          folder_id?: string;
+          title?: string;
+          content?: string;
+          user_id?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
     Views: {
       [_ in never]: never;

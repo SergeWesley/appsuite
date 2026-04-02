@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { BookOpen, Film, ChevronRight, Activity, HomeIcon } from "lucide-react";
+import { BookOpen, Film, ChevronRight, Activity, HomeIcon, StickyNote } from "lucide-react";
 
 interface NavigationMenuItem {
   name: string;
@@ -17,7 +17,7 @@ interface NavigationMenuItem {
 interface NavigationMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  currentModule: "booker" | "watcher" | "tracker";
+  currentModule: "booker" | "watcher" | "tracker" | "notes";
 }
 
 const modules: NavigationMenuItem[] = [
@@ -44,6 +44,14 @@ const modules: NavigationMenuItem[] = [
     color: "text-purple-600",
     bgColor: "bg-purple-50 hover:bg-purple-100",
     description: "Suivez vos films et séries",
+  },
+  {
+    name: "Notes",
+    path: "/notes",
+    icon: StickyNote,
+    color: "text-amber-600",
+    bgColor: "bg-amber-50 hover:bg-amber-100",
+    description: "Organisez vos notes et idées",
   },
 ];
 

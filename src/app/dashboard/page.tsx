@@ -66,10 +66,11 @@ const tools: Tool[] = [
     name: "Notes",
     description: "Prenez des notes et organisez vos idées",
     icon: Grid3X3,
-    href: "#",
+    href: "/notes",
     color: "text-yellow-600",
     bgColor: "bg-yellow-50 border-yellow-200",
-    available: false,
+    available: true,
+    beta: true,
   },
 ];
 
