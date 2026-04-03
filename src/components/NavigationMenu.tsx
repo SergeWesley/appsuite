@@ -3,7 +3,14 @@
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { BookOpen, Film, ChevronRight, Activity, HomeIcon, StickyNote } from "lucide-react";
+import {
+  BookOpen,
+  Film,
+  ChevronRight,
+  Activity,
+  HomeIcon,
+  StickyNote,
+} from "lucide-react";
 
 interface NavigationMenuItem {
   name: string;
@@ -198,13 +205,6 @@ export function NavigationMenu({
                   </motion.button>
                 );
               })}
-            </div>
-
-            {/* Footer */}
-            <div className="px-4 py-2 border-t border-gray-100 bg-gray-50">
-              <p className="text-xs text-gray-500 text-center">
-                Cliquez sur un module pour y accéder
-              </p>
             </div>
           </motion.div>
         </>
