@@ -23,7 +23,7 @@ export function useNoteFolders() {
 
       const { data, error } = await supabase
         .from("note_folders")
-        .select("*")
+        .select("*, notes(count)")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
@@ -34,6 +34,7 @@ export function useNoteFolders() {
         name: row.name,
         color: row.color || "#f59e0b",
         userId: row.user_id,
+        noteCount: row.notes?.[0]?.count ?? 0,
         dateCreated: new Date(row.created_at),
         dateUpdated: new Date(row.updated_at),
       }));
