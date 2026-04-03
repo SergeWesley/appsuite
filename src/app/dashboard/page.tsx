@@ -9,6 +9,7 @@ import {
   Grid3X3,
   Zap,
   Film,
+  Wallet,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuthContext } from "@/components/AuthProvider";
@@ -69,6 +70,17 @@ const tools: Tool[] = [
     href: "/notes",
     color: "text-yellow-600",
     bgColor: "bg-yellow-50 border-yellow-200",
+    available: true,
+    beta: true,
+  },
+  {
+    id: "spender",
+    name: "Spender",
+    description: "Gérez vos dépenses et suivez vos abonnements mensuels",
+    icon: Wallet,
+    href: "/spender",
+    color: "text-emerald-600",
+    bgColor: "bg-emerald-50 border-emerald-200",
     available: true,
     beta: true,
   },

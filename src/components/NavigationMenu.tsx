@@ -10,6 +10,7 @@ import {
   Activity,
   HomeIcon,
   StickyNote,
+  Wallet,
 } from "lucide-react";
 
 interface NavigationMenuItem {
@@ -24,7 +25,7 @@ interface NavigationMenuItem {
 interface NavigationMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  currentModule: "booker" | "watcher" | "tracker" | "notes";
+  currentModule: "booker" | "watcher" | "tracker" | "notes" | "spender";
 }
 
 const modules: NavigationMenuItem[] = [
@@ -59,6 +60,14 @@ const modules: NavigationMenuItem[] = [
     color: "text-amber-600",
     bgColor: "bg-amber-50 hover:bg-amber-100",
     description: "Organisez vos notes et idées",
+  },
+  {
+    name: "Spender",
+    path: "/spender",
+    icon: Wallet,
+    color: "text-emerald-600",
+    bgColor: "bg-emerald-50 hover:bg-emerald-100",
+    description: "Gérez vos dépenses et abonnements",
   },
 ];
 
