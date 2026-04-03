@@ -9,12 +9,14 @@ import { NoteFolder, Note } from "@/types/notes";
 import { NoteCard } from "@/components/notes/NoteCard";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { NavigationMenu } from "@/components/NavigationMenu";
+import { ConfirmationModal } from "@/components/tracker/ConfirmationModal";
 import {
   StickyNote,
   ArrowLeft,
   LogOut,
   User,
   FileText,
+  Trash2,
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
@@ -25,10 +27,11 @@ export default function FolderPage() {
   const folderId = params.folderId as string;
   const { user, signOut } = useAuthContext();
 
-  const { folders } = useNoteFolders();
+  const { folders, deleteFolder } = useNoteFolders();
   const { notes, loading, addNote } = useNotes(folderId);
   const [folder, setFolder] = useState<NoteFolder | null>(null);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Find the folder info
   useEffect(() => {
@@ -50,6 +53,15 @@ export default function FolderPage() {
 
   const handleOpenNote = (note: Note) => {
     router.push(`/notes/${folderId}/${note.id}`);
+  };
+
+  const handleDeleteFolder = async () => {
+    const success = await deleteFolder(folderId);
+    if (success) {
+      router.push("/notes");
+    } else {
+      alert("Une erreur s'est produite lors de la suppression du dossier.");
+    }
   };
 
   return (
@@ -82,6 +94,14 @@ export default function FolderPage() {
             </div>
 
             <div className="flex items-center gap-4">
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                aria-label="Supprimer le dossier"
+                title="Supprimer le dossier"
+              >
+                <Trash2 size={20} />
+              </button>
               <Menu as="div" className="relative inline-block text-left">
                 <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
                   <User size={20} />
@@ -184,6 +204,17 @@ export default function FolderPage() {
         isOpen={isNavMenuOpen}
         onClose={() => setIsNavMenuOpen(false)}
         currentModule="notes"
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDeleteFolder}
+        title="Supprimer le dossier"
+        message="Êtes-vous sûr de vouloir supprimer ce dossier et toutes ses notes ? Cette action est irréversible."
+        confirmLabel="Supprimer"
+        confirmColor="bg-red-600 hover:bg-red-700"
       />
     </div>
   );
