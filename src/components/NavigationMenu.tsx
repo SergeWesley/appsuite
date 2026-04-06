@@ -66,7 +66,7 @@ const modules: NavigationMenuItem[] = [
     path: "/spender",
     icon: Wallet,
     color: "text-emerald-600",
-    bgColor: "bg-emerald-50 hover:bg-emerald-100",
+    bgColor: "bg-red-50 hover:bg-red-100",
     description: "Gérez vos dépenses et abonnements",
   },
 ];
@@ -168,7 +168,7 @@ export function NavigationMenu({
 
                 <div className="ml-3 flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 group-hover:text-gray-700">
-                    Tableu de bord
+                    Tableau de bord
                   </p>
                   <p className="text-xs text-gray-500 truncate">
                     Retour à la page principale
