@@ -7,8 +7,9 @@ import { useNoteFolders } from "@/hooks/notes/useNoteFolders";
 import { useNotes } from "@/hooks/notes/useNotes";
 import { NoteFolder } from "@/types/notes";
 import { ConfirmationModal } from "@/components/tracker/ConfirmationModal";
-import { Trash2, Loader2, ArrowLeft, Check } from "lucide-react";
+import { Trash2, Loader2, ArrowLeft, Check, Download } from "lucide-react";
 import { DynamicPropertiesBanner } from "@/components/notes/DynamicPropertiesBanner";
+import { NoteExportData } from "@/types/notes";
 
 export default function NoteEditorPage() {
   const router = useRouter();
@@ -115,6 +116,36 @@ export default function NoteEditorPage() {
     debouncedSave(title, content, nextMeta);
   };
 
+  const handleExport = () => {
+    if (!folder) return;
+
+    const exportData: NoteExportData = {
+      version: 1,
+      type: "appsuite_note_export",
+      folder: {
+        name: folder.name,
+        color: folder.color,
+        customFields: folder.customFields,
+      },
+      note: {
+        title: title.trim() || "Sans titre",
+        content: content,
+        metadata: metadata,
+      },
+    };
+
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${(title.trim() || "note").toLowerCase().replace(/[^a-z0-9]/g, "_")}.appsuite`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const handleDelete = async () => {
     const success = await deleteNote(noteId);
     if (success) {
@@ -182,11 +213,22 @@ export default function NoteEditorPage() {
                 </motion.div>
               )}
 
+              {/* Export button */}
+              <button
+                onClick={handleExport}
+                className="p-2 text-gray-400 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50"
+                aria-label="Exporter la note"
+                title="Exporter"
+              >
+                <Download size={18} />
+              </button>
+
               {/* Delete button */}
               <button
                 onClick={() => setShowDeleteConfirm(true)}
                 className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50"
                 aria-label="Supprimer la note"
+                title="Supprimer"
               >
                 <Trash2 size={18} />
               </button>

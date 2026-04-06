@@ -64,3 +64,18 @@ export const FOLDER_COLORS = [
   { value: "#ec4899", label: "Rose", bg: "bg-pink-500" },
   { value: "#6b7280", label: "Gris", bg: "bg-gray-500" },
 ];
+
+export interface NoteExportData {
+  version: number;
+  type: "appsuite_note_export";
+  folder: {
+    name: string;
+    color: string;
+    customFields?: CustomFieldDefinition[];
+  };
+  note: {
+    title: string;
+    content: string;
+    metadata?: Record<string, any>;
+  };
+}

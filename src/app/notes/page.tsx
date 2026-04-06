@@ -4,10 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useNoteFolders } from "@/hooks/notes/useNoteFolders";
-import { NoteFolder, NoteFolderFormData } from "@/types/notes";
+import { NoteFolder, NoteFolderFormData, NoteExportData } from "@/types/notes";
 import { FolderCard } from "@/components/notes/FolderCard";
 import { CreateFolderModal } from "@/components/notes/CreateFolderModal";
 import { FolderConfigModal } from "@/components/notes/FolderConfigModal";
+import { ImportNoteButton } from "@/components/notes/ImportNoteButton";
+import { supabase } from "@/lib/supabase";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import { StickyNote, LogOut, User, FolderOpen } from "lucide-react";
@@ -26,6 +28,39 @@ export default function NotesPage() {
     const folder = await addFolder(data);
     if (folder) {
       setShowCreateFolderModal(false);
+    }
+  };
+
+  const handleImport = async (data: NoteExportData) => {
+    if (!user) return;
+    try {
+      // 1. Créer le dossier avec un nom différencié
+      const newFolder = await addFolder({
+        name: data.folder.name + " (Importé)",
+        color: data.folder.color || "#f59e0b",
+      });
+      if (!newFolder) throw new Error("Impossible de créer le dossier.");
+
+      // 2. Mettre à jour les champs personnalisés
+      if (data.folder.customFields && data.folder.customFields.length > 0) {
+        await updateFolderFields(newFolder.id, data.folder.customFields);
+      }
+
+      // 3. Insérer la note
+      const { error } = await supabase.from("notes").insert({
+        folder_id: newFolder.id,
+        user_id: user.id,
+        title: data.note.title,
+        content: data.note.content || "",
+        metadata: data.note.metadata || {},
+      });
+
+      if (error) throw error;
+      
+      alert("Note importée avec succès !");
+    } catch (err) {
+      console.error(err);
+      alert("Erreur lors de l'import.");
     }
   };
 
@@ -83,13 +118,18 @@ export default function NotesPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
         {/* Page Title */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Mes dossiers
-          </h1>
-          <p className="text-gray-600">
-            {folders.length} dossier{folders.length > 1 ? "s" : ""}
-          </p>
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Mes dossiers
+            </h1>
+            <p className="text-gray-600">
+              {folders.length} dossier{folders.length > 1 ? "s" : ""}
+            </p>
+          </div>
+          <div>
+            <ImportNoteButton onImport={handleImport} />
+          </div>
         </div>
 
         {/* Loading */}
