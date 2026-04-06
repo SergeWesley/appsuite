@@ -1,8 +1,32 @@
+export type CustomFieldType = 
+  | "text"      // Texte court (ex: Nom, Titre)
+  | "textarea"  // Texte long (ex: Description, Résumé)
+  | "number"    // Nombre (ex: Temps, Quantité)
+  | "currency"  // Monnaie (ex: Prix, Budget)
+  | "checkbox"  // Vrai/Faux (ex: Urgent, Végétarien)
+  | "date"      // Date (ex: Date limite, Date de création cible)
+  | "select"    // Liste déroulante (ex: Catégorie, Priorité)
+  | "color"     // Sélecteur de couleur
+  | "rating"    // Note sur 5 étoiles
+  | "url"       // Lien web (ex: Source, Référence)
+  | "table";    // Tableau de données (ex: Liste d'ingrédients)
+
+export interface CustomFieldDefinition {
+  id: string;          // UUID du champ (généré à la création)
+  name: string;        // Nom affiché à l'utilisateur
+  type: CustomFieldType;
+  options?: string[];  // Options, utilisé uniquement pour le type "select"
+  columns?: CustomFieldDefinition[]; // Colonnes, utilisé uniquement pour le type "table"
+  required?: boolean;  // Rendre la saisie obligatoire
+  icon?: string;       // (Optionnel) nom d'icône pour l'UI, ex: lucide-react
+}
+
 export interface NoteFolder {
   id: string;
   name: string;
   color: string;
   userId: string;
+  customFields?: CustomFieldDefinition[]; // Configuration des champs dynamiques
   noteCount?: number;
   dateCreated: Date;
   dateUpdated: Date;
@@ -19,6 +43,7 @@ export interface Note {
   title: string;
   content: string;
   userId: string;
+  metadata?: Record<string, any>; // Les valeurs stockées pour les champs dynamiques (clé: field_id, valeur: texte/nombre/etc)
   dateCreated: Date;
   dateUpdated: Date;
 }
@@ -26,6 +51,7 @@ export interface Note {
 export interface NoteFormData {
   title: string;
   content: string;
+  metadata?: Record<string, any>;
 }
 
 export const FOLDER_COLORS = [

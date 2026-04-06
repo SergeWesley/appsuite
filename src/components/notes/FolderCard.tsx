@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { NoteFolder } from "@/types/notes";
 
@@ -7,9 +8,25 @@ interface FolderCardProps {
   folder: NoteFolder;
   index: number;
   onClick?: (folder: NoteFolder) => void;
+  onConfig?: (folder: NoteFolder) => void;
 }
 
-export function FolderCard({ folder, index, onClick }: FolderCardProps) {
+export function FolderCard({ folder, index, onClick, onConfig }: FolderCardProps) {
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const startPress = () => {
+    timerRef.current = setTimeout(() => {
+      onConfig?.(folder);
+    }, 600); // 600ms pour un appui long
+  };
+
+  const cancelPress = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
   return (
     <motion.button
       initial={{ opacity: 0, y: 20 }}
@@ -18,7 +35,17 @@ export function FolderCard({ folder, index, onClick }: FolderCardProps) {
       whileHover={{ scale: 1.03, y: -2 }}
       whileTap={{ scale: 0.97 }}
       onClick={() => onClick?.(folder)}
-      className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition-colors group"
+      onContextMenu={(e) => {
+        e.preventDefault(); // Empêche le menu contextuel du navigateur
+        onConfig?.(folder);
+      }}
+      onTouchStart={startPress}
+      onTouchEnd={cancelPress}
+      onTouchMove={cancelPress}
+      onMouseDown={startPress}
+      onMouseUp={cancelPress}
+      onMouseLeave={cancelPress}
+      className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition-colors group select-none"
     >
       {/* Folder Icon SVG */}
       <div className="relative w-20 h-16">

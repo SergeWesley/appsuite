@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { NoteFolder, NoteFolderFormData } from "@/types/notes";
+import { NoteFolder, NoteFolderFormData, CustomFieldDefinition } from "@/types/notes";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -34,6 +34,7 @@ export function useNoteFolders() {
         name: row.name,
         color: row.color || "#f59e0b",
         userId: row.user_id,
+        customFields: row.custom_fields || [],
         noteCount: row.notes?.[0]?.count ?? 0,
         dateCreated: new Date(row.created_at),
         dateUpdated: new Date(row.updated_at),
@@ -84,6 +85,7 @@ export function useNoteFolders() {
         name: data.name,
         color: data.color || "#f59e0b",
         userId: data.user_id,
+        customFields: data.custom_fields || [],
         dateCreated: new Date(data.created_at),
         dateUpdated: new Date(data.updated_at),
       };
@@ -137,6 +139,42 @@ export function useNoteFolders() {
     }
   };
 
+  const updateFolderFields = async (
+    id: string,
+    customFields: CustomFieldDefinition[]
+  ): Promise<boolean> => {
+    if (!user) {
+      setError("Utilisateur non connecté");
+      return false;
+    }
+
+    try {
+      setError(null);
+
+      const { error } = await supabase
+        .from("note_folders")
+        .update({ custom_fields: customFields })
+        .eq("id", id)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
+      setFolders((prev) =>
+        prev.map((folder) =>
+          folder.id === id
+            ? { ...folder, customFields, dateUpdated: new Date() }
+            : folder,
+        ),
+      );
+
+      return true;
+    } catch (err) {
+      console.error("Erreur lors de la mise à jour des champs du dossier:", err);
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
+      return false;
+    }
+  };
+
   const deleteFolder = async (id: string): Promise<boolean> => {
     if (!user) {
       setError("Utilisateur non connecté");
@@ -169,6 +207,7 @@ export function useNoteFolders() {
     error,
     addFolder,
     updateFolder,
+    updateFolderFields,
     deleteFolder,
     refreshFolders: loadFolders,
   };

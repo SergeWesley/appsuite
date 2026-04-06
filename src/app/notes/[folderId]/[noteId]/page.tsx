@@ -7,12 +7,8 @@ import { useNoteFolders } from "@/hooks/notes/useNoteFolders";
 import { useNotes } from "@/hooks/notes/useNotes";
 import { NoteFolder } from "@/types/notes";
 import { ConfirmationModal } from "@/components/tracker/ConfirmationModal";
-import {
-  ArrowLeft,
-  Check,
-  Trash2,
-  Loader2,
-} from "lucide-react";
+import { Trash2, Loader2, ArrowLeft, Check } from "lucide-react";
+import { DynamicPropertiesBanner } from "@/components/notes/DynamicPropertiesBanner";
 
 export default function NoteEditorPage() {
   const router = useRouter();
@@ -26,6 +22,7 @@ export default function NoteEditorPage() {
   const [folder, setFolder] = useState<NoteFolder | null>(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [metadata, setMetadata] = useState<Record<string, any>>({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -49,6 +46,7 @@ export default function NoteEditorPage() {
       if (note) {
         setTitle(note.title === "Nouvelle note" ? "" : note.title);
         setContent(note.content);
+        setMetadata(note.metadata || {});
         setInitialized(true);
       }
     }
@@ -64,7 +62,7 @@ export default function NoteEditorPage() {
 
   // Auto-save with debounce
   const saveNote = useCallback(
-    async (newTitle: string, newContent: string) => {
+    async (newTitle: string, newContent: string, newMetadata: Record<string, any>) => {
       setSaving(true);
       setSaved(false);
 
@@ -73,6 +71,7 @@ export default function NoteEditorPage() {
       await updateNote(noteId, {
         title: finalTitle,
         content: newContent,
+        metadata: newMetadata,
       });
 
       setSaving(false);
@@ -85,13 +84,13 @@ export default function NoteEditorPage() {
   );
 
   const debouncedSave = useCallback(
-    (newTitle: string, newContent: string) => {
+    (newTitle: string, newContent: string, newMetadata: Record<string, any>) => {
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
       }
 
       saveTimeoutRef.current = setTimeout(() => {
-        saveNote(newTitle, newContent);
+        saveNote(newTitle, newContent, newMetadata);
       }, 1000);
     },
     [saveNote],
@@ -100,13 +99,20 @@ export default function NoteEditorPage() {
   const handleTitleChange = (value: string) => {
     setTitle(value);
     setSaved(false);
-    debouncedSave(value, content);
+    debouncedSave(value, content, metadata);
   };
 
   const handleContentChange = (value: string) => {
     setContent(value);
     setSaved(false);
-    debouncedSave(title, value);
+    debouncedSave(title, value, metadata);
+  };
+
+  const handleMetadataChange = (key: string, value: any) => {
+    const nextMeta = { ...metadata, [key]: value };
+    setMetadata(nextMeta);
+    setSaved(false);
+    debouncedSave(title, content, nextMeta);
   };
 
   const handleDelete = async () => {
@@ -121,7 +127,7 @@ export default function NoteEditorPage() {
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
     }
-    saveNote(title, content);
+    saveNote(title, content, metadata);
     router.push(`/notes/${folderId}`);
   };
 
@@ -199,6 +205,18 @@ export default function NoteEditorPage() {
           placeholder="Titre de la note"
           className="w-full text-2xl sm:text-3xl font-bold text-gray-900 placeholder-gray-300 border-none outline-none bg-transparent mb-4 leading-tight"
         />
+
+        {/* Dynamic Properties */}
+        {folder?.customFields && folder.customFields.length > 0 && (
+          <>
+            <DynamicPropertiesBanner 
+              fields={folder.customFields} 
+              metadata={metadata} 
+              onChange={handleMetadataChange} 
+            />
+            <hr className="my-6 border-gray-100" />
+          </>
+        )}
 
         {/* Content textarea */}
         <textarea

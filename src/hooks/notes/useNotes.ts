@@ -36,6 +36,7 @@ export function useNotes(folderId?: string) {
         title: row.title,
         content: row.content || "",
         userId: row.user_id,
+        metadata: row.metadata || {},
         dateCreated: new Date(row.created_at),
         dateUpdated: new Date(row.updated_at),
       }));
@@ -74,6 +75,7 @@ export function useNotes(folderId?: string) {
           folder_id: folderId,
           title: formData.title,
           content: formData.content,
+          metadata: formData.metadata || {},
           user_id: user.id,
         })
         .select()
@@ -87,6 +89,7 @@ export function useNotes(folderId?: string) {
         title: data.title,
         content: data.content || "",
         userId: data.user_id,
+        metadata: data.metadata || {},
         dateCreated: new Date(data.created_at),
         dateUpdated: new Date(data.updated_at),
       };
@@ -115,6 +118,7 @@ export function useNotes(folderId?: string) {
       const updateData: any = {};
       if (updates.title !== undefined) updateData.title = updates.title;
       if (updates.content !== undefined) updateData.content = updates.content;
+      if (updates.metadata !== undefined) updateData.metadata = updates.metadata;
 
       const { error } = await supabase
         .from("notes")

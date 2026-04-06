@@ -4,9 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useNoteFolders } from "@/hooks/notes/useNoteFolders";
-import { NoteFolderFormData } from "@/types/notes";
+import { NoteFolder, NoteFolderFormData } from "@/types/notes";
 import { FolderCard } from "@/components/notes/FolderCard";
 import { CreateFolderModal } from "@/components/notes/CreateFolderModal";
+import { FolderConfigModal } from "@/components/notes/FolderConfigModal";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import { StickyNote, LogOut, User, FolderOpen } from "lucide-react";
@@ -16,8 +17,9 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 export default function NotesPage() {
   const router = useRouter();
   const { user, signOut } = useAuthContext();
-  const { folders, loading, addFolder } = useNoteFolders();
+  const { folders, loading, addFolder, updateFolderFields } = useNoteFolders();
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
+  const [configFolder, setConfigFolder] = useState<NoteFolder | null>(null);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
   const handleCreateFolder = async (data: NoteFolderFormData) => {
@@ -162,6 +164,7 @@ export default function NotesPage() {
                 folder={folder}
                 index={index}
                 onClick={(f) => router.push(`/notes/${f.id}`)}
+                onConfig={(f) => setConfigFolder(f)}
               />
             ))}
           </div>
@@ -180,6 +183,19 @@ export default function NotesPage() {
         isOpen={showCreateFolderModal}
         onClose={() => setShowCreateFolderModal(false)}
         onSubmit={handleCreateFolder}
+      />
+
+      {/* Configuration Folder Modal */}
+      <FolderConfigModal
+        isOpen={!!configFolder}
+        onClose={() => setConfigFolder(null)}
+        folder={configFolder}
+        onSave={async (fields) => {
+          if (configFolder) {
+            await updateFolderFields(configFolder.id, fields);
+            setConfigFolder(null); // fermer après sauvegarde
+          }
+        }}
       />
 
       {/* Navigation Menu */}
