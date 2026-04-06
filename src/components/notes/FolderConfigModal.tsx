@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Settings, Plus, Trash2, Save, Type, List, Hash, Calendar, CheckSquare, Palette, Star, Link, Euro, Table, Edit2 } from "lucide-react";
-import { NoteFolder, CustomFieldDefinition, CustomFieldType } from "@/types/notes";
+import { NoteFolder, CustomFieldDefinition, CustomFieldType, FOLDER_COLORS } from "@/types/notes";
 
 interface FolderConfigModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (fields: CustomFieldDefinition[]) => Promise<void>;
+  onSave: (name: string, color: string, fields: CustomFieldDefinition[]) => Promise<void>;
   folder: NoteFolder | null;
 }
 
@@ -34,6 +34,8 @@ export function FolderConfigModal({
 }: FolderConfigModalProps) {
   const [fields, setFields] = useState<CustomFieldDefinition[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [folderName, setFolderName] = useState("");
+  const [folderColor, setFolderColor] = useState("#f59e0b");
   
   // States pour ajouter/modifier un champ
   const [isAdding, setIsAdding] = useState(false);
@@ -51,6 +53,8 @@ export function FolderConfigModal({
   // Sync state when folder changes
   useEffect(() => {
     if (folder) {
+      setFolderName(folder.name);
+      setFolderColor(folder.color || "#f59e0b");
       setFields(folder.customFields || []);
       setIsAdding(false);
       resetNewForm();
@@ -127,7 +131,7 @@ export function FolderConfigModal({
 
   const handleSave = async () => {
     setIsSaving(true);
-    await onSave(fields);
+    await onSave(folderName, folderColor, fields);
     setIsSaving(false);
   };
 
@@ -156,7 +160,7 @@ export function FolderConfigModal({
                     <Settings size={20} className="text-amber-600" />
                   </div>
                   <h2 className="text-lg font-semibold text-gray-900">
-                    Configuration : {folder.name}
+                    Paramètres du dossier
                   </h2>
                 </div>
                 <button
@@ -170,9 +174,44 @@ export function FolderConfigModal({
 
             {/* Body (Scrollable) */}
             <div className="p-6 overflow-y-auto flex-1">
-              <p className="text-sm text-gray-500 mb-6">
-                Créez des champs sur-mesure pour vos notes. Chaque note dans "{folder.name}" vous demandera de remplir ces informations.
-              </p>
+              
+              {/* Infos basiques */}
+              <div className="mb-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-1">Nom du dossier</label>
+                  <input
+                    type="text"
+                    value={folderName}
+                    onChange={(e) => setFolderName(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-900 mb-2">Couleur du dossier</label>
+                  <div className="flex flex-wrap gap-2">
+                    {FOLDER_COLORS.map((c) => (
+                      <button
+                        key={c.value}
+                        onClick={() => setFolderColor(c.value)}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                          folderColor === c.value ? "ring-2 ring-offset-2 ring-gray-400 scale-110" : "hover:scale-110"
+                        }`}
+                        title={c.label}
+                        style={{ backgroundColor: c.value }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <hr className="my-6 border-gray-100" />
+
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold text-gray-900 mb-1">Modèle de données</h3>
+                <p className="text-xs text-gray-500">
+                  Créez des champs sur-mesure pour vos notes dans ce dossier.
+                </p>
+              </div>
 
               {/* Liste des champs existants */}
               <div className="space-y-3 mb-6">

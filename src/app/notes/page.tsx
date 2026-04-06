@@ -19,7 +19,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 export default function NotesPage() {
   const router = useRouter();
   const { user, signOut } = useAuthContext();
-  const { folders, loading, addFolder, updateFolderFields } = useNoteFolders();
+  const { folders, loading, addFolder, updateFolderFields, updateFolder } = useNoteFolders();
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const [configFolder, setConfigFolder] = useState<NoteFolder | null>(null);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
@@ -230,8 +230,11 @@ export default function NotesPage() {
         isOpen={!!configFolder}
         onClose={() => setConfigFolder(null)}
         folder={configFolder}
-        onSave={async (fields) => {
+        onSave={async (name, color, fields) => {
           if (configFolder) {
+            if (name !== configFolder.name || color !== configFolder.color) {
+               await updateFolder(configFolder.id, { name, color });
+            }
             await updateFolderFields(configFolder.id, fields);
             setConfigFolder(null); // fermer après sauvegarde
           }
