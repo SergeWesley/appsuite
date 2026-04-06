@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Settings, Plus, Trash2, Save, Type, List, Hash, Calendar, CheckSquare, Palette, Star, Link, Euro, Table } from "lucide-react";
+import { X, Settings, Plus, Trash2, Save, Type, List, Hash, Calendar, CheckSquare, Palette, Star, Link, Euro, Table, Edit2 } from "lucide-react";
 import { NoteFolder, CustomFieldDefinition, CustomFieldType } from "@/types/notes";
 
 interface FolderConfigModalProps {
@@ -35,8 +35,9 @@ export function FolderConfigModal({
   const [fields, setFields] = useState<CustomFieldDefinition[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   
-  // States pour ajouter un nouveau champ
+  // States pour ajouter/modifier un champ
   const [isAdding, setIsAdding] = useState(false);
+  const [editingFieldId, setEditingFieldId] = useState<string | null>(null);
   const [newName, setNewName] = useState("");
   const [newType, setNewType] = useState<CustomFieldType>("text");
   const [newOptionsStr, setNewOptionsStr] = useState("");
@@ -67,6 +68,16 @@ export function FolderConfigModal({
     setNewColType("text");
     setNewColOptionsStr("");
     setIsAdding(false);
+    setEditingFieldId(null);
+  };
+
+  const handleEditField = (field: CustomFieldDefinition) => {
+    setEditingFieldId(field.id);
+    setNewName(field.name);
+    setNewType(field.type);
+    setNewOptionsStr(field.options?.join(", ") || "");
+    setNewColumns(field.columns || []);
+    setIsAdding(true);
   };
 
   const handleAddColumn = () => {
@@ -85,23 +96,28 @@ export function FolderConfigModal({
     setNewColOptionsStr("");
   };
 
-  const handleAddField = () => {
+  const handleSaveField = () => {
     if (!newName.trim()) return;
 
-    const newField: CustomFieldDefinition = {
-      id: `field_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+    const modifiedField: CustomFieldDefinition = {
+      id: editingFieldId || `field_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
       name: newName.trim(),
       type: newType,
     };
 
     if (newType === "select" && newOptionsStr.trim()) {
-      newField.options = newOptionsStr.split(",").map(o => o.trim()).filter(o => o.length > 0);
+      modifiedField.options = newOptionsStr.split(",").map(o => o.trim()).filter(o => o.length > 0);
     }
     if (newType === "table") {
-      newField.columns = newColumns;
+      modifiedField.columns = newColumns;
     }
 
-    setFields([...fields, newField]);
+    if (editingFieldId) {
+      setFields(fields.map(f => f.id === editingFieldId ? modifiedField : f));
+    } else {
+      setFields([...fields, modifiedField]);
+    }
+    
     resetNewForm();
   };
 
@@ -169,14 +185,15 @@ export function FolderConfigModal({
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-xl"
+                        className="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-xl hover:border-amber-300 transition-colors group cursor-pointer"
+                        onClick={() => handleEditField(field)}
                       >
                         <div className="flex items-center gap-3">
-                          <div className="p-1.5 bg-white border border-gray-200 rounded-md shadow-sm">
-                            <TypeIcon size={16} className="text-gray-500" />
+                          <div className="p-1.5 bg-white border border-gray-200 rounded-md shadow-sm group-hover:border-amber-200 transition-colors">
+                            <TypeIcon size={16} className="text-gray-500 group-hover:text-amber-500 transition-colors" />
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-gray-900">{field.name}</p>
+                            <p className="text-sm font-medium text-gray-900 line-clamp-1">{field.name}</p>
                             <p className="text-xs text-gray-500">
                               {TYPE_CONFIGS[field.type].label} 
                               {field.type === "select" && field.options && ` (${field.options.length} options)`}
@@ -184,13 +201,21 @@ export function FolderConfigModal({
                             </p>
                           </div>
                         </div>
-                        <button
-                          onClick={() => handleRemoveField(field.id)}
-                          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Supprimer ce champ"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <span className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Modifier">
+                            <Edit2 size={16} />
+                          </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveField(field.id);
+                            }}
+                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors z-10 relative"
+                            title="Supprimer ce champ"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
                       </motion.div>
                     );
                   })}
@@ -203,10 +228,12 @@ export function FolderConfigModal({
                 )}
               </div>
 
-              {/* Formulaire d'ajout */}
+              {/* Formulaire d'ajout / Édition */}
               {isAdding ? (
                 <div className="p-4 bg-gray-50 border border-amber-100 rounded-xl space-y-4">
-                  <h3 className="text-sm font-medium text-gray-900">Nouveau champ</h3>
+                  <h3 className="text-sm font-medium text-gray-900">
+                    {editingFieldId ? "Modifier le champ" : "Nouveau champ"}
+                  </h3>
                   
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1">Nom du champ</label>
@@ -316,11 +343,11 @@ export function FolderConfigModal({
                       Annuler
                     </button>
                     <button
-                      onClick={handleAddField}
+                      onClick={handleSaveField}
                       disabled={!newName.trim()}
                       className="px-3 py-1.5 text-xs font-medium text-white bg-amber-500 hover:bg-amber-600 rounded-lg transition-colors disabled:opacity-50"
                     >
-                      Ajouter ce champ
+                      {editingFieldId ? "Mettre à jour" : "Ajouter ce champ"}
                     </button>
                   </div>
                 </div>
