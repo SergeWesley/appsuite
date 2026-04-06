@@ -21,7 +21,7 @@ export function CreateSubscriptionModal({
   const [billingDate, setBillingDate] = useState<number>(1);
   const [category, setCategory] = useState(SUBSCRIPTION_CATEGORIES[0]);
   const [appLink, setAppLink] = useState("");
-  const [color, setColor] = useState("#10B981"); // Default Emerald 500
+  const [color, setColor] = useState("#ef4444"); // Default Red 500
 
   const handleSelectTemplate = (template: SubscriptionTemplate) => {
     setName(template.name);
@@ -46,7 +46,7 @@ export function CreateSubscriptionModal({
     setBillingDate(1);
     setCategory(SUBSCRIPTION_CATEGORIES[0]);
     setAppLink("");
-    setColor("#10B981");
+    setColor("#ef4444");
   };
 
   const handleClose = () => {
@@ -55,7 +55,7 @@ export function CreateSubscriptionModal({
     setBillingDate(1);
     setCategory(SUBSCRIPTION_CATEGORIES[0]);
     setAppLink("");
-    setColor("#10B981");
+    setColor("#ef4444");
     onClose();
   };
 
@@ -80,8 +80,8 @@ export function CreateSubscriptionModal({
             <div className="p-6 border-b border-gray-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-emerald-50">
-                    <WalletCards size={20} className="text-emerald-600" />
+                  <div className="p-2 rounded-lg bg-red-50">
+                    <WalletCards size={20} className="text-red-600" />
                   </div>
                   <h2 className="text-lg font-semibold text-gray-900">
                     Nouvel abonnement
@@ -127,7 +127,7 @@ export function CreateSubscriptionModal({
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ex: Netflix, Spotify, Salle de sport..."
                   autoFocus
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
                 />
               </div>
 
@@ -144,7 +144,7 @@ export function CreateSubscriptionModal({
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                     placeholder="9.99"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
                   />
                 </div>
                 <div>
@@ -157,7 +157,7 @@ export function CreateSubscriptionModal({
                     max="31"
                     value={billingDate}
                     onChange={(e) => setBillingDate(Number(e.target.value))}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
                   />
                 </div>
               </div>
@@ -170,7 +170,7 @@ export function CreateSubscriptionModal({
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-white"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm bg-white"
                 >
                   {SUBSCRIPTION_CATEGORIES.map((cat) => (
                     <option key={cat} value={cat}>
@@ -190,7 +190,7 @@ export function CreateSubscriptionModal({
                   value={appLink}
                   onChange={(e) => setAppLink(e.target.value)}
                   placeholder="Ex: netflix:// ou https://..."
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
                 />
               </div>
             </div>
@@ -206,7 +206,7 @@ export function CreateSubscriptionModal({
               <button
                 onClick={handleSubmit}
                 disabled={!name.trim() || !amount}
-                className="flex-1 px-4 py-3 text-white bg-emerald-500 rounded-xl hover:bg-emerald-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-3 text-white bg-red-500 rounded-xl hover:bg-red-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Ajouter
               </button>

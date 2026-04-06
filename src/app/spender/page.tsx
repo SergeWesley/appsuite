@@ -51,8 +51,8 @@ export default function SpenderPage() {
                 className="flex items-center p-2 -ml-2 rounded-lg hover:bg-gray-100 transition-colors"
                 aria-label="Menu de navigation"
               >
-                <div className="p-1.5 bg-emerald-50 rounded-lg">
-                  <Wallet className="h-6 w-6 text-emerald-500" />
+                <div className="p-1.5 bg-red-50 rounded-lg">
+                  <Wallet className="h-6 w-6 text-red-500" />
                 </div>
                 <h1 className="ml-3 text-xl font-semibold text-gray-900">
                   Spender
@@ -103,9 +103,9 @@ export default function SpenderPage() {
             Gérez vos dépenses et abonnements récurrents
           </p>
 
-          <div className="bg-white p-6 rounded-2xl border border-emerald-100 shadow-sm flex items-center gap-6">
-            <div className="p-4 bg-emerald-50 rounded-xl">
-              <Receipt size={32} className="text-emerald-500" />
+          <div className="bg-white p-6 rounded-2xl border border-red-100 shadow-sm flex items-center gap-6">
+            <div className="p-4 bg-red-50 rounded-xl">
+              <Receipt size={32} className="text-red-500" />
             </div>
             <div>
               <p className="text-sm text-gray-500 font-medium mb-1">Total mensuel</p>
@@ -118,7 +118,7 @@ export default function SpenderPage() {
         {loading && (
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
-              <div className="animate-spin h-12 w-12 border-4 border-emerald-500 rounded-full border-t-transparent mx-auto mb-4"></div>
+              <div className="animate-spin h-12 w-12 border-4 border-red-500 rounded-full border-t-transparent mx-auto mb-4"></div>
               <p className="text-gray-600">Chargement des abonnements...</p>
             </div>
           </div>
@@ -131,8 +131,8 @@ export default function SpenderPage() {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm"
           >
-            <div className="p-4 bg-emerald-50 rounded-full mb-6">
-              <Wallet size={48} className="text-emerald-400" />
+            <div className="p-4 bg-red-50 rounded-full mb-6">
+              <Wallet size={48} className="text-red-400" />
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               Votre portefeuille est vide
@@ -142,7 +142,7 @@ export default function SpenderPage() {
             </p>
             <button
               onClick={() => setShowAddModal(true)}
-              className="px-6 py-3 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-colors font-medium flex items-center gap-2"
+              className="px-6 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-medium flex items-center gap-2"
             >
               <Plus size={20} />
               Ajouter un abonnement
@@ -169,7 +169,7 @@ export default function SpenderPage() {
       <FloatingAddButton
         onClick={() => setShowAddModal(true)}
         label="Ajouter"
-        color="bg-emerald-500 hover:bg-emerald-600"
+        color="bg-red-500 hover:bg-red-600"
       />
 
       {/* Create Modal */}

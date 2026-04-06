@@ -40,7 +40,7 @@ export function SubscriptionCard({ subscription, index, onDelete }: Subscription
   };
 
   const hasColor = !!subscription.color;
-  const iconColor = subscription.color || "#10B981"; // Emerald-500 fallback
+  const iconColor = subscription.color || "#ef4444"; // Red-500 fallback
 
   // Convert hex to rgb for background with opacity
   const hexToRgb = (hex: string) => {
@@ -120,7 +120,7 @@ export function SubscriptionCard({ subscription, index, onDelete }: Subscription
                   e.stopPropagation();
                   window.open(subscription.app_link, "_blank", "noopener,noreferrer");
                 }}
-                className="p-2 text-gray-400 hover:text-emerald-500 transition-colors rounded-lg active:bg-emerald-50 sm:hover:bg-emerald-50"
+                className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-lg active:bg-red-50 sm:hover:bg-red-50"
                 aria-label="Ouvrir l'application"
                 title="Ouvrir l'application"
               >
