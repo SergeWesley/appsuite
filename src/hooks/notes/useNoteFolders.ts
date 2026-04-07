@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { NoteFolder, NoteFolderFormData, CustomFieldDefinition } from "@/types/notes";
+import { NoteFolder, NoteFolderFormData, CustomFieldDefinition, NoteExportData } from "@/types/notes";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -34,6 +34,7 @@ export function useNoteFolders() {
         name: row.name,
         color: row.color || "#f59e0b",
         userId: row.user_id,
+        parentId: row.parent_id,
         customFields: row.custom_fields || [],
         noteCount: row.notes?.[0]?.count ?? 0,
         dateCreated: new Date(row.created_at),
@@ -74,6 +75,7 @@ export function useNoteFolders() {
           name: formData.name,
           color: formData.color,
           user_id: user.id,
+          parent_id: formData.parentId || null,
         })
         .select()
         .single();
@@ -85,6 +87,7 @@ export function useNoteFolders() {
         name: data.name,
         color: data.color || "#f59e0b",
         userId: data.user_id,
+        parentId: data.parent_id,
         customFields: data.custom_fields || [],
         dateCreated: new Date(data.created_at),
         dateUpdated: new Date(data.updated_at),
@@ -201,6 +204,44 @@ export function useNoteFolders() {
     }
   };
 
+  const importNoteData = async (data: NoteExportData, parentId?: string | null): Promise<boolean> => {
+    if (!user) {
+      setError("Utilisateur non connecté");
+      return false;
+    }
+
+    try {
+      setError(null);
+      
+      const newFolder = await addFolder({
+        name: data.folder.name + " (Importé)",
+        color: data.folder.color || "#f59e0b",
+        parentId: parentId || null,
+      });
+      if (!newFolder) throw new Error("Impossible de créer le dossier.");
+
+      if (data.folder.customFields && data.folder.customFields.length > 0) {
+        await updateFolderFields(newFolder.id, data.folder.customFields);
+      }
+
+      const { error: noteError } = await supabase.from("notes").insert({
+        folder_id: newFolder.id,
+        user_id: user.id,
+        title: data.note.title,
+        content: data.note.content || "",
+        metadata: data.note.metadata || {},
+      });
+
+      if (noteError) throw noteError;
+      
+      return true;
+    } catch (err) {
+      console.error("Erreur lors de l'import:", err);
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
+      return false;
+    }
+  };
+
   return {
     folders,
     loading,
@@ -209,6 +250,7 @@ export function useNoteFolders() {
     updateFolder,
     updateFolderFields,
     deleteFolder,
+    importNoteData,
     refreshFolders: loadFolders,
   };
 }

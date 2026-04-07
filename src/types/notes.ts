@@ -26,6 +26,7 @@ export interface NoteFolder {
   name: string;
   color: string;
   userId: string;
+  parentId?: string | null; // Null si dossier racine
   customFields?: CustomFieldDefinition[]; // Configuration des champs dynamiques
   noteCount?: number;
   dateCreated: Date;
@@ -35,6 +36,7 @@ export interface NoteFolder {
 export interface NoteFolderFormData {
   name: string;
   color: string;
+  parentId?: string | null;
 }
 
 export interface Note {

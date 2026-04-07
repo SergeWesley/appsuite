@@ -9,7 +9,6 @@ import { FolderCard } from "@/components/notes/FolderCard";
 import { CreateFolderModal } from "@/components/notes/CreateFolderModal";
 import { FolderConfigModal } from "@/components/notes/FolderConfigModal";
 import { ImportNoteButton } from "@/components/notes/ImportNoteButton";
-import { supabase } from "@/lib/supabase";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import { StickyNote, LogOut, User, FolderOpen } from "lucide-react";
@@ -19,10 +18,12 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 export default function NotesPage() {
   const router = useRouter();
   const { user, signOut } = useAuthContext();
-  const { folders, loading, addFolder, updateFolderFields, updateFolder } = useNoteFolders();
+  const { folders, loading, addFolder, updateFolderFields, updateFolder, importNoteData } = useNoteFolders();
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const [configFolder, setConfigFolder] = useState<NoteFolder | null>(null);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+
+  const rootFolders = folders.filter((f) => !f.parentId);
 
   const handleCreateFolder = async (data: NoteFolderFormData) => {
     const folder = await addFolder(data);
@@ -32,35 +33,9 @@ export default function NotesPage() {
   };
 
   const handleImport = async (data: NoteExportData) => {
-    if (!user) return;
-    try {
-      // 1. Créer le dossier avec un nom différencié
-      const newFolder = await addFolder({
-        name: data.folder.name + " (Importé)",
-        color: data.folder.color || "#f59e0b",
-      });
-      if (!newFolder) throw new Error("Impossible de créer le dossier.");
-
-      // 2. Mettre à jour les champs personnalisés
-      if (data.folder.customFields && data.folder.customFields.length > 0) {
-        await updateFolderFields(newFolder.id, data.folder.customFields);
-      }
-
-      // 3. Insérer la note
-      const { error } = await supabase.from("notes").insert({
-        folder_id: newFolder.id,
-        user_id: user.id,
-        title: data.note.title,
-        content: data.note.content || "",
-        metadata: data.note.metadata || {},
-      });
-
-      if (error) throw error;
-      
+    const success = await importNoteData(data, null);
+    if (success) {
       alert("Note importée avec succès !");
-    } catch (err) {
-      console.error(err);
-      alert("Erreur lors de l'import.");
     }
   };
 
@@ -196,9 +171,9 @@ export default function NotesPage() {
         )}
 
         {/* Folders Grid */}
-        {!loading && folders.length > 0 && (
+        {!loading && rootFolders.length > 0 && (
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
-            {folders.map((folder, index) => (
+            {rootFolders.map((folder, index) => (
               <FolderCard
                 key={folder.id}
                 folder={folder}

@@ -7,6 +7,11 @@ import { useNoteFolders } from "@/hooks/notes/useNoteFolders";
 import { useNotes } from "@/hooks/notes/useNotes";
 import { NoteFolder, Note } from "@/types/notes";
 import { NoteCard } from "@/components/notes/NoteCard";
+import { FolderCard } from "@/components/notes/FolderCard";
+import { CreateFolderModal } from "@/components/notes/CreateFolderModal";
+import { FolderConfigModal } from "@/components/notes/FolderConfigModal";
+import { ImportNoteButton } from "@/components/notes/ImportNoteButton";
+import { NoteFolderFormData, NoteExportData } from "@/types/notes";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import { ConfirmationModal } from "@/components/tracker/ConfirmationModal";
@@ -17,6 +22,7 @@ import {
   User,
   FileText,
   Trash2,
+  FolderPlus,
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
@@ -27,11 +33,16 @@ export default function FolderPage() {
   const folderId = params.folderId as string;
   const { user, signOut } = useAuthContext();
 
-  const { folders, deleteFolder } = useNoteFolders();
+  const { folders, deleteFolder, addFolder, updateFolderFields, updateFolder, importNoteData } =
+    useNoteFolders();
   const { notes, loading, addNote } = useNotes(folderId);
   const [folder, setFolder] = useState<NoteFolder | null>(null);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
+  const [configFolder, setConfigFolder] = useState<NoteFolder | null>(null);
+
+  const subFolders = folders.filter((f) => f.parentId === folderId);
 
   // Find the folder info
   useEffect(() => {
@@ -40,6 +51,20 @@ export default function FolderPage() {
       setFolder(found || null);
     }
   }, [folders, folderId]);
+
+  const handleCreateSubFolder = async (data: NoteFolderFormData) => {
+    const newFolder = await addFolder({ ...data, parentId: folderId });
+    if (newFolder) {
+      setShowCreateFolderModal(false);
+    }
+  };
+
+  const handleImport = async (data: NoteExportData) => {
+    const success = await importNoteData(data, folderId);
+    if (success) {
+      alert("Note importée avec succès dans ce dossier !");
+    }
+  };
 
   const handleCreateNote = async () => {
     const note = await addNote({
@@ -56,9 +81,14 @@ export default function FolderPage() {
   };
 
   const handleDeleteFolder = async () => {
+    const parentId = folder?.parentId;
     const success = await deleteFolder(folderId);
     if (success) {
-      router.push("/notes");
+      if (parentId) {
+        router.push(`/notes/${parentId}`);
+      } else {
+        router.push("/notes");
+      }
     } else {
       alert("Une erreur s'est produite lors de la suppression du dossier.");
     }
@@ -72,9 +102,15 @@ export default function FolderPage() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
               <button
-                onClick={() => router.push("/notes")}
+                onClick={() => {
+                  if (folder?.parentId) {
+                    router.push(`/notes/${folder.parentId}`);
+                  } else {
+                    router.push("/notes");
+                  }
+                }}
                 className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                aria-label="Retour aux dossiers"
+                aria-label="Retour"
               >
                 <ArrowLeft size={20} className="text-gray-600" />
               </button>
@@ -135,11 +171,43 @@ export default function FolderPage() {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
-        {/* Folder info */}
+        {/* Sub-folders Section */}
         <div className="mb-8">
-          <p className="text-gray-500">
-            {notes.length} note{notes.length > 1 ? "s" : ""}
-          </p>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+              Sous-dossiers ({subFolders.length})
+            </h2>
+            <div className="flex items-center gap-2">
+              <ImportNoteButton onImport={handleImport} />
+              <button
+                onClick={() => setShowCreateFolderModal(true)}
+                className="flex items-center gap-1.5 text-sm font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 px-2 py-1 rounded transition-colors"
+              >
+                <FolderPlus size={16} />
+                Nouveau
+              </button>
+            </div>
+          </div>
+          {subFolders.length > 0 && (
+            <div className="grid grid-cols-3 sm:grid-cols-3 gap-2 mb-6">
+              {subFolders.map((sf, index) => (
+                <FolderCard
+                  key={sf.id}
+                  folder={sf}
+                  index={index}
+                  onClick={(f) => router.push(`/notes/${f.id}`)}
+                  onConfig={(f) => setConfigFolder(f)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Notes Section Info */}
+        <div className="mb-4">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
+            Notes ({notes.length})
+          </h2>
         </div>
 
         {/* Loading */}
@@ -204,6 +272,29 @@ export default function FolderPage() {
         isOpen={isNavMenuOpen}
         onClose={() => setIsNavMenuOpen(false)}
         currentModule="notes"
+      />
+
+      {/* Create SubFolder Modal */}
+      <CreateFolderModal
+        isOpen={showCreateFolderModal}
+        onClose={() => setShowCreateFolderModal(false)}
+        onSubmit={handleCreateSubFolder}
+      />
+
+      {/* Configuration Folder Modal */}
+      <FolderConfigModal
+        isOpen={!!configFolder}
+        onClose={() => setConfigFolder(null)}
+        folder={configFolder}
+        onSave={async (name, color, fields) => {
+          if (configFolder) {
+            if (name !== configFolder.name || color !== configFolder.color) {
+              await updateFolder(configFolder.id, { name, color });
+            }
+            await updateFolderFields(configFolder.id, fields);
+            setConfigFolder(null);
+          }
+        }}
       />
 
       {/* Delete Confirmation Modal */}
