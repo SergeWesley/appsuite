@@ -33,8 +33,14 @@ export default function FolderPage() {
   const folderId = params.folderId as string;
   const { user, signOut } = useAuthContext();
 
-  const { folders, deleteFolder, addFolder, updateFolderFields, updateFolder, importNoteData } =
-    useNoteFolders();
+  const {
+    folders,
+    deleteFolder,
+    addFolder,
+    updateFolderFields,
+    updateFolder,
+    importNoteData,
+  } = useNoteFolders();
   const { notes, loading, addNote } = useNotes(folderId);
   const [folder, setFolder] = useState<NoteFolder | null>(null);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
@@ -218,31 +224,6 @@ export default function FolderPage() {
               <p className="text-gray-600">Chargement des notes...</p>
             </div>
           </div>
-        )}
-
-        {/* Empty state */}
-        {!loading && notes.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center justify-center py-20"
-          >
-            <div className="p-4 bg-amber-50 rounded-2xl mb-6">
-              <FileText size={40} className="text-amber-400" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Aucune note
-            </h3>
-            <p className="text-gray-500 text-center mb-6 max-w-sm">
-              Ce dossier est vide. Créez votre première note !
-            </p>
-            <button
-              onClick={handleCreateNote}
-              className="px-6 py-3 bg-amber-500 text-white rounded-xl hover:bg-amber-600 transition-colors font-medium"
-            >
-              Créer une note
-            </button>
-          </motion.div>
         )}
 
         {/* Notes list */}
