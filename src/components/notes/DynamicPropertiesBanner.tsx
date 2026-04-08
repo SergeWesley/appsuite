@@ -16,8 +16,10 @@ import {
   X,
   ChevronUp,
   ChevronDown,
+  Maximize2
 } from "lucide-react";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface DynamicPropertiesBannerProps {
   fields: CustomFieldDefinition[];
@@ -105,6 +107,7 @@ function PropertyValueEditor({
     colId: string;
     dir: "asc" | "desc";
   } | null>(null); // pour "table"
+  const [editingRowIndex, setEditingRowIndex] = useState<number | null>(null);
 
   switch (field.type) {
     case "text":
@@ -273,72 +276,141 @@ function PropertyValueEditor({
         );
       }
 
+      const displayColumns = field.columns.slice(0, 3);
+      const hasHiddenColumns = field.columns.length > 3;
+
       return (
-        <div className="mt-2 w-full rounded-lg border border-gray-200 bg-white overflow-hidden flex flex-col">
-          <div className="w-full overflow-x-auto pb-2">
-            <table className="w-full text-left text-sm text-gray-600 min-w-full">
-              <thead className="bg-gray-50 uppercase text-xs font-semibold text-gray-500 border-b border-gray-200">
-                <tr>
-                  {field.columns.map((col) => (
-                    <th key={col.id} className="px-3 py-2 whitespace-nowrap">
-                      <div
-                        className="group flex items-center gap-1 cursor-pointer hover:text-amber-600 transition-colors select-none"
-                        onClick={() => handleSort(col.id)}
-                      >
-                        {col.name}
-                        {sortConfig?.colId === col.id ? (
-                          sortConfig.dir === "asc" ? (
-                            <ChevronUp size={14} />
+        <>
+          <div className="mt-2 w-full rounded-lg border border-gray-200 bg-white overflow-hidden flex flex-col">
+            <div className="w-full overflow-x-auto pb-2">
+              <table className="w-full text-left text-sm text-gray-600 min-w-full">
+                <thead className="bg-gray-50 uppercase text-xs font-semibold text-gray-500 border-b border-gray-200">
+                  <tr>
+                    {displayColumns.map((col) => (
+                      <th key={col.id} className="px-3 py-2 whitespace-nowrap">
+                        <div
+                          className="group flex items-center gap-1 cursor-pointer hover:text-amber-600 transition-colors select-none"
+                          onClick={() => handleSort(col.id)}
+                        >
+                          {col.name}
+                          {sortConfig?.colId === col.id ? (
+                            sortConfig.dir === "asc" ? (
+                              <ChevronUp size={14} />
+                            ) : (
+                              <ChevronDown size={14} />
+                            )
                           ) : (
-                            <ChevronDown size={14} />
-                          )
-                        ) : (
-                          <ChevronUp
-                            size={14}
-                            className="opacity-0 group-hover:opacity-100 text-gray-300"
-                          />
-                        )}
-                      </div>
-                    </th>
-                  ))}
-                  <th className="px-2 py-2 w-10"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {rows.map((rowValue, rIndex) => (
-                  <tr key={rIndex} className="hover:bg-gray-50/50">
-                    {field.columns!.map((col) => (
-                      <td key={col.id} className="p-1 min-w-[120px] align-top">
-                        <PropertyValueEditor
-                          field={col}
-                          value={rowValue[col.id] ?? ""}
-                          onChange={(val) => updateRow(rIndex, col.id, val)}
-                        />
-                      </td>
+                            <ChevronUp
+                              size={14}
+                              className="opacity-0 group-hover:opacity-100 text-gray-300"
+                            />
+                          )}
+                        </div>
+                      </th>
                     ))}
-                    <td className="p-1 align-middle text-center">
-                      <button
-                        onClick={() => removeRow(rIndex)}
-                        className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
-                      >
-                        <X size={14} />
-                      </button>
-                    </td>
+                    {hasHiddenColumns && (
+                       <th className="px-3 py-2 whitespace-nowrap text-gray-400 italic font-normal">
+                         + {field.columns.length - 3} autres
+                       </th>
+                    )}
+                    <th className="px-2 py-2 w-16"></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {rows.map((rowValue, rIndex) => (
+                    <tr key={rIndex} className="hover:bg-gray-50/50">
+                      {displayColumns.map((col) => (
+                        <td key={col.id} className="p-1 min-w-[120px] align-top">
+                          <PropertyValueEditor
+                            field={col}
+                            value={rowValue[col.id] ?? ""}
+                            onChange={(val) => updateRow(rIndex, col.id, val)}
+                          />
+                        </td>
+                      ))}
+                      {hasHiddenColumns && (
+                        <td className="p-1 align-middle text-center text-gray-300 italic">
+                          ...
+                        </td>
+                      )}
+                      <td className="p-1 align-middle text-right">
+                        <button
+                          onClick={() => setEditingRowIndex(rIndex)}
+                          className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors mr-1"
+                          title="Éditer la ligne complète"
+                        >
+                          <Maximize2 size={14} />
+                        </button>
+                        <button
+                          onClick={() => removeRow(rIndex)}
+                          className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                          title="Supprimer la ligne"
+                        >
+                          <X size={14} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="p-1 bg-gray-50 border-t border-gray-200 shrink-0">
+              <button
+                onClick={addRow}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors w-max"
+              >
+                <Plus size={14} />
+                Ajouter une ligne
+              </button>
+            </div>
           </div>
-          <div className="p-1 bg-gray-50 border-t border-gray-200 shrink-0">
-            <button
-              onClick={addRow}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors w-max"
-            >
-              <Plus size={14} />
-              Ajouter une ligne
-            </button>
-          </div>
-        </div>
+
+          <AnimatePresence>
+            {editingRowIndex !== null && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                onClick={() => setEditingRowIndex(null)}
+              >
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                  className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="p-4 border-b border-gray-200 flex items-center justify-between bg-amber-50">
+                    <h3 className="font-semibold text-gray-900">Édition de la ligne {editingRowIndex + 1}</h3>
+                    <button
+                      onClick={() => setEditingRowIndex(null)}
+                      className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+                  <div className="p-4 overflow-y-auto flex-1 space-y-4">
+                    {field.columns.map((col) => (
+                      <div key={col.id} className="space-y-1">
+                        <label className="block text-sm font-medium text-gray-700 flex items-center gap-1.5">
+                          {col.name}
+                        </label>
+                        <div className="p-1 border border-gray-200 rounded-lg bg-gray-50/50">
+                          <PropertyValueEditor
+                            field={col}
+                            value={rows[editingRowIndex][col.id] ?? ""}
+                            onChange={(val) => updateRow(editingRowIndex, col.id, val)}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
       );
 
     default:
