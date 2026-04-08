@@ -99,7 +99,7 @@ export default function NotesPage() {
               Mes dossiers
             </h1>
             <p className="text-gray-600">
-              {folders.length} dossier{folders.length > 1 ? "s" : ""}
+              {rootFolders.length} dossier{rootFolders.length > 1 ? "s" : ""}
             </p>
           </div>
           <div>
