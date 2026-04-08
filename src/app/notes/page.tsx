@@ -7,7 +7,6 @@ import { useNoteFolders } from "@/hooks/notes/useNoteFolders";
 import { NoteFolder, NoteFolderFormData, NoteExportData } from "@/types/notes";
 import { FolderCard } from "@/components/notes/FolderCard";
 import { CreateFolderModal } from "@/components/notes/CreateFolderModal";
-import { FolderConfigModal } from "@/components/notes/FolderConfigModal";
 import { ImportNoteButton } from "@/components/notes/ImportNoteButton";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { NavigationMenu } from "@/components/NavigationMenu";
@@ -18,9 +17,8 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 export default function NotesPage() {
   const router = useRouter();
   const { user, signOut } = useAuthContext();
-  const { folders, loading, addFolder, updateFolderFields, updateFolder, importNoteData } = useNoteFolders();
+  const { folders, loading, addFolder, importNoteData } = useNoteFolders();
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
-  const [configFolder, setConfigFolder] = useState<NoteFolder | null>(null);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
   const rootFolders = folders.filter((f) => !f.parentId);
@@ -179,7 +177,7 @@ export default function NotesPage() {
                 folder={folder}
                 index={index}
                 onClick={(f) => router.push(`/notes/${f.id}`)}
-                onConfig={(f) => setConfigFolder(f)}
+                onConfig={(f) => router.push(`/notes/${f.id}/settings`)}
               />
             ))}
           </div>
@@ -200,21 +198,6 @@ export default function NotesPage() {
         onSubmit={handleCreateFolder}
       />
 
-      {/* Configuration Folder Modal */}
-      <FolderConfigModal
-        isOpen={!!configFolder}
-        onClose={() => setConfigFolder(null)}
-        folder={configFolder}
-        onSave={async (name, color, fields) => {
-          if (configFolder) {
-            if (name !== configFolder.name || color !== configFolder.color) {
-               await updateFolder(configFolder.id, { name, color });
-            }
-            await updateFolderFields(configFolder.id, fields);
-            setConfigFolder(null); // fermer après sauvegarde
-          }
-        }}
-      />
 
       {/* Navigation Menu */}
       <NavigationMenu

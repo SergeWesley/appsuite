@@ -9,7 +9,6 @@ import { NoteFolder, Note } from "@/types/notes";
 import { NoteCard } from "@/components/notes/NoteCard";
 import { FolderCard } from "@/components/notes/FolderCard";
 import { CreateFolderModal } from "@/components/notes/CreateFolderModal";
-import { FolderConfigModal } from "@/components/notes/FolderConfigModal";
 import { ImportNoteButton } from "@/components/notes/ImportNoteButton";
 import { NoteFolderFormData, NoteExportData } from "@/types/notes";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
@@ -46,7 +45,6 @@ export default function FolderPage() {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
-  const [configFolder, setConfigFolder] = useState<NoteFolder | null>(null);
 
   const subFolders = folders.filter((f) => f.parentId === folderId);
 
@@ -202,7 +200,7 @@ export default function FolderPage() {
                   folder={sf}
                   index={index}
                   onClick={(f) => router.push(`/notes/${f.id}`)}
-                  onConfig={(f) => setConfigFolder(f)}
+                  onConfig={(f) => router.push(`/notes/${f.id}/settings`)}
                 />
               ))}
             </div>
@@ -260,22 +258,6 @@ export default function FolderPage() {
         isOpen={showCreateFolderModal}
         onClose={() => setShowCreateFolderModal(false)}
         onSubmit={handleCreateSubFolder}
-      />
-
-      {/* Configuration Folder Modal */}
-      <FolderConfigModal
-        isOpen={!!configFolder}
-        onClose={() => setConfigFolder(null)}
-        folder={configFolder}
-        onSave={async (name, color, fields) => {
-          if (configFolder) {
-            if (name !== configFolder.name || color !== configFolder.color) {
-              await updateFolder(configFolder.id, { name, color });
-            }
-            await updateFolderFields(configFolder.id, fields);
-            setConfigFolder(null);
-          }
-        }}
       />
 
       {/* Delete Confirmation Modal */}
