@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MuscleGroup, MUSCLE_GROUP_LABELS } from "@/types/workout-session";
 import { useExercises } from "@/hooks/tracker/useExercices";
+import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import { X, Search, Filter } from "lucide-react";
 
 export interface ExerciseSelectionModalProps {
@@ -22,7 +23,21 @@ export function ExerciseSelectionModal({
   const [selectedMuscleGroup, setSelectedMuscleGroup] =
     useState<MuscleGroup>("all");
 
-  const filteredExercises = searchExercises(searchQuery, selectedMuscleGroup);
+  // Persist last selected exercise via useFilterPersistence
+  const { selectedExerciseId: lastExerciseId, updateFilter } =
+    useFilterPersistence("tracker-last-exercise", {
+      selectedExerciseId: "",
+    });
+
+  const baseFilteredExercises = searchExercises(searchQuery, selectedMuscleGroup);
+
+  // Sort: last selected exercise comes first
+  const filteredExercises = lastExerciseId
+    ? [
+        ...baseFilteredExercises.filter((ex) => ex.id === lastExerciseId),
+        ...baseFilteredExercises.filter((ex) => ex.id !== lastExerciseId),
+      ]
+    : baseFilteredExercises;
 
   const muscleGroups: MuscleGroup[] = [
     "all",
@@ -107,16 +122,28 @@ export function ExerciseSelectionModal({
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => {
+                      updateFilter("selectedExerciseId", exercise.id);
                       onSelect(exercise.id);
                       onClose();
                     }}
-                    className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left"
+                    className={`p-4 border rounded-lg hover:bg-gray-50 transition-colors text-left ${
+                      exercise.id === lastExerciseId
+                        ? "border-green-300 bg-green-50/50"
+                        : "border-gray-200"
+                    }`}
                   >
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-medium text-gray-900">
-                          {exercise.name}
-                        </h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-medium text-gray-900">
+                            {exercise.name}
+                          </h3>
+                          {exercise.id === lastExerciseId && (
+                            <span className="text-[10px] font-semibold uppercase tracking-wider bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                              Dernier utilisé
+                            </span>
+                          )}
+                        </div>
                         <p className="text-sm text-gray-500 mt-1">
                           {MUSCLE_GROUP_LABELS[exercise.muscleGroup]}
                           {exercise.isCustom && " • Personnalisé"}

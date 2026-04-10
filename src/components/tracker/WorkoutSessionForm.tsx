@@ -11,12 +11,7 @@ import {
 } from "@/types/workout-session";
 import { useExercises } from "@/hooks/tracker/useExercices";
 import { ExerciseSelectionModal } from "@/components/tracker/ExerciseSelectionModal";
-import {
-  Calendar,
-  Plus,
-  Trash2,
-  GripVertical,
-} from "lucide-react";
+import { Calendar, Plus, Trash2, GripVertical } from "lucide-react";
 
 interface WorkoutSessionFormProps {
   session?: WorkoutSession;
@@ -67,7 +62,8 @@ export function WorkoutSessionForm({
 
     setFormData((prev) => ({
       ...prev,
-      exercises: [newExercise,
+      exercises: [
+        newExercise,
         ...prev.exercises.map((ex) => ({ ...ex, order: ex.order + 1 })), // décale les autres
       ],
     }));

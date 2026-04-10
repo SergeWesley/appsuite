@@ -4,11 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useWorkoutSessions } from "@/hooks/tracker/useWorkoutSessions";
 import { useExercises } from "@/hooks/tracker/useExercices";
-import {
-  WorkoutSession,
-  Exercise,
-  MuscleGroup,
-} from "@/types/workout-session";
+import { WorkoutSession, Exercise, MuscleGroup } from "@/types/workout-session";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import { ExerciseDistributionChart } from "@/components/tracker/ExerciseDistributionChart";
 import { ExerciseSelectionModal } from "@/components/tracker/ExerciseSelectionModal";
@@ -30,8 +26,13 @@ export default function WorkoutSessionDetailPage() {
   const sessionId = params.id as string;
   const { user, signOut } = useAuthContext();
 
-  const { sessions, getSessionById, deleteSession, duplicateSession, updateSession } =
-    useWorkoutSessions();
+  const {
+    sessions,
+    getSessionById,
+    deleteSession,
+    duplicateSession,
+    updateSession,
+  } = useWorkoutSessions();
   const { getExerciseById } = useExercises();
   const [session, setSession] = useState<WorkoutSession | null>(null);
   const [selectedMuscleGroup, setSelectedMuscleGroup] =
@@ -41,12 +42,18 @@ export default function WorkoutSessionDetailPage() {
   const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
   const [showAddExerciseModal, setShowAddExerciseModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
+    null,
+  );
   const [exerciseToDelete, setExerciseToDelete] = useState<string | null>(null);
   const [addingExercise, setAddingExercise] = useState(false);
   const [isEditingExisting, setIsEditingExisting] = useState(false);
-  const [editingWorkoutExerciseId, setEditingWorkoutExerciseId] = useState<string | null>(null);
-  const [editingInitialDetails, setEditingInitialDetails] = useState<ExerciseDetails | undefined>(undefined);
+  const [editingWorkoutExerciseId, setEditingWorkoutExerciseId] = useState<
+    string | null
+  >(null);
+  const [editingInitialDetails, setEditingInitialDetails] = useState<
+    ExerciseDetails | undefined
+  >(undefined);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -137,7 +144,9 @@ export default function WorkoutSessionDetailPage() {
   // Step 1 bis: User wants to EDIT an existing exercise
   const handleEditExercise = (workoutExerciseId: string) => {
     if (!session) return;
-    const workoutEx = session.exercises.find(ex => ex.id === workoutExerciseId);
+    const workoutEx = session.exercises.find(
+      (ex) => ex.id === workoutExerciseId,
+    );
     if (!workoutEx) return;
 
     const exerciseInfo = getExerciseById(workoutEx.exerciseId);
@@ -146,7 +155,7 @@ export default function WorkoutSessionDetailPage() {
     setSelectedExercise(exerciseInfo);
     setIsEditingExisting(true);
     setEditingWorkoutExerciseId(workoutExerciseId);
-    
+
     setEditingInitialDetails({
       sets: workoutEx.sets,
       reps: workoutEx.reps,
@@ -170,28 +179,29 @@ export default function WorkoutSessionDetailPage() {
     try {
       if (isEditingExisting && editingWorkoutExerciseId) {
         // Mode ÉDITION
-        const updatedExercises = session.exercises.map(ex => {
-          if (ex.id === editingWorkoutExerciseId) {
-            return {
-              ...ex,
-              sets: details.sets,
-              reps: details.reps,
-              weight: details.weight,
-              duration: details.duration,
-              speed: details.speed,
-              slope: details.slope,
-              notes: details.notes,
-            };
-          }
-          return ex;
-        }).map(({ id, exercise, ...rest }) => rest);
+        const updatedExercises = session.exercises
+          .map((ex) => {
+            if (ex.id === editingWorkoutExerciseId) {
+              return {
+                ...ex,
+                sets: details.sets,
+                reps: details.reps,
+                weight: details.weight,
+                duration: details.duration,
+                speed: details.speed,
+                slope: details.slope,
+                notes: details.notes,
+              };
+            }
+            return ex;
+          })
+          .map(({ id, exercise, ...rest }) => rest);
 
         await updateSession(session.id, {
           date: session.date,
           notes: session.notes,
           exercises: updatedExercises,
         });
-
       } else {
         // Mode AJOUT
         const newExercise = {
@@ -341,7 +351,10 @@ export default function WorkoutSessionDetailPage() {
           formatDate={formatDate}
         />
 
-        <ExerciseDistributionChart exercises={session.exercises} className="mb-8" />
+        <ExerciseDistributionChart
+          exercises={session.exercises}
+          className="mb-8"
+        />
 
         <MuscleGroupFilter
           exercises={session.exercises}
