@@ -20,6 +20,8 @@ interface ExerciseDetailsModalProps {
   exercise: Exercise | null;
   onClose: () => void;
   onConfirm: (details: ExerciseDetails) => void;
+  initialDetails?: ExerciseDetails;
+  isEditing?: boolean;
 }
 
 const DEFAULT_STRENGTH: ExerciseDetails = {
@@ -41,17 +43,26 @@ export function ExerciseDetailsModal({
   exercise,
   onClose,
   onConfirm,
+  initialDetails,
+  isEditing = false,
 }: ExerciseDetailsModalProps) {
   const isCardio = exercise?.muscleGroup === "cardio";
   const [details, setDetails] = useState<ExerciseDetails>(
-    isCardio ? DEFAULT_CARDIO : DEFAULT_STRENGTH,
+    initialDetails || (isCardio ? DEFAULT_CARDIO : DEFAULT_STRENGTH),
   );
 
-  // Reset defaults when exercise changes
+  // Reset defaults when exercise changes or when opened
   const [prevExerciseId, setPrevExerciseId] = useState<string | null>(null);
   if (exercise && exercise.id !== prevExerciseId) {
     setPrevExerciseId(exercise.id);
-    setDetails(isCardio ? DEFAULT_CARDIO : DEFAULT_STRENGTH);
+    setDetails(initialDetails || (isCardio ? DEFAULT_CARDIO : DEFAULT_STRENGTH));
+  }
+
+  // Also update when initialDetails change (e.g., clicking edit on another exercise of the same type)
+  const [prevInitial, setPrevInitial] = useState<ExerciseDetails | undefined>(undefined);
+  if (initialDetails !== prevInitial) {
+    setPrevInitial(initialDetails);
+    setDetails(initialDetails || (isCardio ? DEFAULT_CARDIO : DEFAULT_STRENGTH));
   }
 
   const handleConfirm = () => {
@@ -246,7 +257,7 @@ export function ExerciseDetailsModal({
                 onClick={handleConfirm}
                 className="flex-1 px-4 py-3 text-white bg-green-600 rounded-xl hover:bg-green-700 transition-colors font-medium"
               >
-                Ajouter
+                {isEditing ? "Modifier" : "Ajouter"}
               </button>
             </div>
           </motion.div>

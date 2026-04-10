@@ -44,6 +44,9 @@ export default function WorkoutSessionDetailPage() {
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [exerciseToDelete, setExerciseToDelete] = useState<string | null>(null);
   const [addingExercise, setAddingExercise] = useState(false);
+  const [isEditingExisting, setIsEditingExisting] = useState(false);
+  const [editingWorkoutExerciseId, setEditingWorkoutExerciseId] = useState<string | null>(null);
+  const [editingInitialDetails, setEditingInitialDetails] = useState<ExerciseDetails | undefined>(undefined);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -119,12 +122,41 @@ export default function WorkoutSessionDetailPage() {
     }
   };
 
-  // Step 1: User selects an exercise from the list
+  // Step 1: User selects an exercise from the list to ADD
   const handleExerciseSelected = (exerciseId: string) => {
     const exerciseInfo = getExerciseById(exerciseId);
     if (!exerciseInfo) return;
 
     setSelectedExercise(exerciseInfo);
+    setIsEditingExisting(false);
+    setEditingInitialDetails(undefined);
+    setEditingWorkoutExerciseId(null);
+    setShowDetailsModal(true);
+  };
+
+  // Step 1 bis: User wants to EDIT an existing exercise
+  const handleEditExercise = (workoutExerciseId: string) => {
+    if (!session) return;
+    const workoutEx = session.exercises.find(ex => ex.id === workoutExerciseId);
+    if (!workoutEx) return;
+
+    const exerciseInfo = getExerciseById(workoutEx.exerciseId);
+    if (!exerciseInfo) return;
+
+    setSelectedExercise(exerciseInfo);
+    setIsEditingExisting(true);
+    setEditingWorkoutExerciseId(workoutExerciseId);
+    
+    setEditingInitialDetails({
+      sets: workoutEx.sets,
+      reps: workoutEx.reps,
+      weight: workoutEx.weight,
+      duration: workoutEx.duration,
+      speed: workoutEx.speed,
+      slope: workoutEx.slope,
+      notes: workoutEx.notes || "",
+    });
+
     setShowDetailsModal(true);
   };
 
@@ -136,38 +168,69 @@ export default function WorkoutSessionDetailPage() {
     setShowDetailsModal(false);
 
     try {
-      const newExercise = {
-        exerciseId: selectedExercise.id,
-        sets: details.sets,
-        reps: details.reps,
-        weight: details.weight,
-        duration: details.duration,
-        speed: details.speed,
-        slope: details.slope,
-        notes: details.notes,
-        order: session.exercises.length + 1,
-      };
+      if (isEditingExisting && editingWorkoutExerciseId) {
+        // Mode ÉDITION
+        const updatedExercises = session.exercises.map(ex => {
+          if (ex.id === editingWorkoutExerciseId) {
+            return {
+              ...ex,
+              sets: details.sets,
+              reps: details.reps,
+              weight: details.weight,
+              duration: details.duration,
+              speed: details.speed,
+              slope: details.slope,
+              notes: details.notes,
+            };
+          }
+          return ex;
+        }).map(({ id, exercise, ...rest }) => rest);
 
-      const existingExercises = session.exercises.map(
-        ({ id, exercise, ...rest }) => rest,
-      );
+        await updateSession(session.id, {
+          date: session.date,
+          notes: session.notes,
+          exercises: updatedExercises,
+        });
 
-      await updateSession(session.id, {
-        date: session.date,
-        notes: session.notes,
-        exercises: [...existingExercises, newExercise],
-      });
+      } else {
+        // Mode AJOUT
+        const newExercise = {
+          exerciseId: selectedExercise.id,
+          sets: details.sets,
+          reps: details.reps,
+          weight: details.weight,
+          duration: details.duration,
+          speed: details.speed,
+          slope: details.slope,
+          notes: details.notes,
+          order: session.exercises.length + 1,
+        };
+
+        const existingExercises = session.exercises.map(
+          ({ id, exercise, ...rest }) => rest,
+        );
+
+        await updateSession(session.id, {
+          date: session.date,
+          notes: session.notes,
+          exercises: [...existingExercises, newExercise],
+        });
+      }
     } catch (err) {
-      console.error("Erreur lors de l'ajout de l'exercice:", err);
+      console.error("Erreur lors de la sauvegarde de l'exercice:", err);
     } finally {
       setAddingExercise(false);
       setSelectedExercise(null);
+      setIsEditingExisting(false);
+      setEditingWorkoutExerciseId(null);
     }
   };
 
   const handleDetailsCancel = () => {
     setShowDetailsModal(false);
     setSelectedExercise(null);
+    setIsEditingExisting(false);
+    setEditingWorkoutExerciseId(null);
   };
 
   // Delete a single exercise from the session
@@ -294,6 +357,7 @@ export default function WorkoutSessionDetailPage() {
               exercise={exercise}
               index={index}
               onDelete={(id) => setExerciseToDelete(id)}
+              onEdit={(id) => handleEditExercise(id)}
             />
           ))}
         </div>
@@ -318,6 +382,8 @@ export default function WorkoutSessionDetailPage() {
         exercise={selectedExercise}
         onClose={handleDetailsCancel}
         onConfirm={handleDetailsConfirmed}
+        isEditing={isEditingExisting}
+        initialDetails={editingInitialDetails}
       />
 
       {/* Delete Exercise Confirmation Modal */}

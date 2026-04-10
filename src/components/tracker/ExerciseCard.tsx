@@ -1,24 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import {
   WorkoutExercise,
   MuscleGroup,
   MUSCLE_GROUP_LABELS,
 } from "@/types/workout-session";
-import { Trash2 } from "lucide-react";
+import { Trash2, Edit2 } from "lucide-react";
 
 interface ExerciseCardProps {
   exercise: WorkoutExercise;
   index: number;
   onDelete?: (exerciseId: string) => void;
+  onEdit?: (exerciseId: string) => void;
 }
 
 const SWIPE_THRESHOLD = -80;
 
-export function ExerciseCard({ exercise, index, onDelete }: ExerciseCardProps) {
+export function ExerciseCard({ exercise, index, onDelete, onEdit }: ExerciseCardProps) {
   const [isRevealed, setIsRevealed] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const x = useMotionValue(0);
   const deleteOpacity = useTransform(x, [-100, -50, 0], [1, 0.6, 0]);
   const deleteScale = useTransform(x, [-100, -50, 0], [1, 0.8, 0.5]);
@@ -41,6 +43,21 @@ export function ExerciseCard({ exercise, index, onDelete }: ExerciseCardProps) {
 
   const handleSnapBack = () => {
     setIsRevealed(false);
+  };
+
+  const startPress = () => {
+    timerRef.current = setTimeout(() => {
+      if (onEdit) {
+        onEdit(exercise.id);
+      }
+    }, 600); // 600ms pour un appui long
+  };
+
+  const cancelPress = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
   };
 
   return (
@@ -77,6 +94,18 @@ export function ExerciseCard({ exercise, index, onDelete }: ExerciseCardProps) {
         style={{ x: isRevealed ? undefined : x }}
         className="relative bg-white rounded-xl shadow-sm border border-gray-100 p-6 cursor-grab active:cursor-grabbing touch-pan-y"
         onClick={isRevealed ? handleSnapBack : undefined}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          if (onEdit) {
+            onEdit(exercise.id);
+          }
+        }}
+        onTouchStart={startPress}
+        onTouchEnd={cancelPress}
+        onTouchMove={cancelPress}
+        onMouseDown={startPress}
+        onMouseUp={cancelPress}
+        onMouseLeave={cancelPress}
       >
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
@@ -90,6 +119,19 @@ export function ExerciseCard({ exercise, index, onDelete }: ExerciseCardProps) {
             </span>
           </div>
           <div className="flex items-center gap-3">
+            {/* Edit button on hover (desktop only) */}
+            {onEdit && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(exercise.id);
+                }}
+                className="hidden sm:flex p-2 text-gray-300 hover:text-amber-500 transition-colors rounded-lg hover:bg-amber-50"
+                aria-label="Modifier l'exercice"
+              >
+                <Edit2 size={18} />
+              </button>
+            )}
             {/* Delete button on hover (desktop only) */}
             {onDelete && (
               <button
