@@ -8,6 +8,7 @@ export interface FilterState {
   searchQuery?: string;
   selectedApp?: string;
   isStatsOpen?: boolean;
+  selectedExerciseId?: string;
 }
 
 /**
@@ -140,6 +141,8 @@ export const useFilterPersistence = (
     selectedApp:
       filters.selectedApp || defaultValues.selectedApp || "dashboard",
     isStatsOpen:
-      filters.isStatsOpen ?? defaultValues.isStatsOpen ?? true
+      filters.isStatsOpen ?? defaultValues.isStatsOpen ?? true,
+    selectedExerciseId:
+      filters.selectedExerciseId || defaultValues.selectedExerciseId || ""
   };
 };
