@@ -139,7 +139,7 @@ export default function FolderSettingsPage() {
         
         {/* IDENTITÉ DU DOSSIER */}
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
+          <div className="p-4 sm:p-6 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
             <div className="p-2 bg-white rounded-lg shadow-sm border border-gray-100">
               <FolderOpen size={20} className="text-gray-600" />
             </div>
@@ -149,7 +149,7 @@ export default function FolderSettingsPage() {
             </div>
           </div>
           
-          <div className="p-6 space-y-6">
+          <div className="p-4 sm:p-6 space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Nom du dossier</label>
               <input
@@ -181,7 +181,7 @@ export default function FolderSettingsPage() {
 
         {/* MODÈLE DE DONNÉES */}
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
+          <div className="p-4 sm:p-6 border-b border-gray-100 bg-gray-50/50 flex items-center gap-3">
             <div className="p-2 bg-white rounded-lg shadow-sm border border-gray-100">
               <Settings size={20} className="text-gray-600" />
             </div>
@@ -193,7 +193,7 @@ export default function FolderSettingsPage() {
             </div>
           </div>
 
-          <div className="p-6 bg-gray-50/30">
+          <div className="p-4 sm:p-6 bg-gray-50/30">
             <CustomFieldsBuilder 
               fields={fields} 
               onChange={setFields} 

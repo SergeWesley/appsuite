@@ -231,32 +231,34 @@ export function CustomFieldsBuilder({ fields, onChange }: CustomFieldsBuilderPro
               )}
 
               {/* Ajouter une colonne */}
-              <div className="flex gap-2 items-center bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
+              <div className="flex flex-col sm:flex-row gap-2 bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
                 <input
                   type="text"
                   value={newColName}
                   onChange={(e) => setNewColName(e.target.value)}
                   placeholder="Nom de la colonne"
-                  className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  className="flex-1 min-w-0 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                 />
-                <select
-                  value={newColType}
-                  onChange={(e) => setNewColType(e.target.value as CustomFieldType)}
-                  className="w-[140px] px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                >
-                  {Object.entries(TYPE_CONFIGS)
-                    .filter(([key]) => key !== "table")
-                    .map(([key, config]) => (
-                    <option key={key} value={key}>{config.label}</option>
-                  ))}
-                </select>
-                <button
-                  onClick={handleAddColumn}
-                  disabled={!newColName.trim()}
-                  className="p-2.5 bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 rounded-lg disabled:opacity-50 disabled:bg-gray-50 disabled:text-gray-400 transition-colors"
-                >
-                  <Plus size={18} />
-                </button>
+                <div className="flex gap-2 items-center">
+                  <select
+                    value={newColType}
+                    onChange={(e) => setNewColType(e.target.value as CustomFieldType)}
+                    className="flex-1 sm:w-[140px] px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  >
+                    {Object.entries(TYPE_CONFIGS)
+                      .filter(([key]) => key !== "table")
+                      .map(([key, config]) => (
+                      <option key={key} value={key}>{config.label}</option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={handleAddColumn}
+                    disabled={!newColName.trim()}
+                    className="p-2.5 bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 rounded-lg disabled:opacity-50 disabled:bg-gray-50 disabled:text-gray-400 transition-colors flex-shrink-0"
+                  >
+                    <Plus size={18} />
+                  </button>
+                </div>
               </div>
               
               {newColType === "select" && (
