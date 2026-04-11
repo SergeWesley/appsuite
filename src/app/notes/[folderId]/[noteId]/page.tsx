@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 import { useRouter, useParams } from "next/navigation";
 import { useNoteFolders } from "@/hooks/notes/useNoteFolders";
 import { useNotes } from "@/hooks/notes/useNotes";
-import { NoteFolder } from "@/types/notes";
+import { useNoteTemplates } from "@/hooks/notes/useNoteTemplates";
+import { NoteFolder, CustomFieldDefinition } from "@/types/notes";
 import { ConfirmationModal } from "@/components/tracker/ConfirmationModal";
 import { Trash2, Loader2, ArrowLeft, Check, Download } from "lucide-react";
 import { DynamicPropertiesBanner } from "@/components/notes/DynamicPropertiesBanner";
@@ -19,6 +20,7 @@ export default function NoteEditorPage() {
 
   const { folders } = useNoteFolders();
   const { notes, loading, updateNote, deleteNote } = useNotes(folderId);
+  const { templates } = useNoteTemplates(folderId);
 
   const [folder, setFolder] = useState<NoteFolder | null>(null);
   const [title, setTitle] = useState("");
@@ -39,6 +41,14 @@ export default function NoteEditorPage() {
       setFolder(found || null);
     }
   }, [folders, folderId]);
+
+  // Resolve the active fields: template fields > legacy folder customFields
+  const currentNote = notes.find((n) => n.id === noteId);
+  const noteTemplate = currentNote?.templateId
+    ? templates.find((t) => t.id === currentNote.templateId)
+    : null;
+  const activeFields: CustomFieldDefinition[] =
+    noteTemplate?.fields || folder?.customFields || [];
 
   // Initialize note content
   useEffect(() => {
@@ -125,8 +135,11 @@ export default function NoteEditorPage() {
       folder: {
         name: folder.name,
         color: folder.color,
-        customFields: folder.customFields,
+        customFields: activeFields.length > 0 ? activeFields : undefined,
       },
+      template: noteTemplate
+        ? { name: noteTemplate.name, fields: noteTemplate.fields }
+        : undefined,
       note: {
         title: title.trim() || "Sans titre",
         content: content,
@@ -249,10 +262,10 @@ export default function NoteEditorPage() {
         />
 
         {/* Dynamic Properties */}
-        {folder?.customFields && folder.customFields.length > 0 && (
+        {activeFields.length > 0 && (
           <>
             <DynamicPropertiesBanner 
-              fields={folder.customFields} 
+              fields={activeFields} 
               metadata={metadata} 
               onChange={handleMetadataChange} 
             />

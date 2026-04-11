@@ -1,17 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Note, NoteFormData } from "@/types/notes";
+import { NoteTemplate, CustomFieldDefinition } from "@/types/notes";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/hooks/useAuth";
 
-export function useNotes(folderId?: string) {
-  const [notes, setNotes] = useState<Note[]>([]);
+export function useNoteTemplates(folderId?: string) {
+  const [templates, setTemplates] = useState<NoteTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
 
-  const loadNotes = async () => {
+  const loadTemplates = async () => {
     if (!user || !folderId) {
       setLoading(false);
       return;
@@ -22,29 +22,27 @@ export function useNotes(folderId?: string) {
       setLoading(true);
 
       const { data, error } = await supabase
-        .from("notes")
+        .from("note_templates")
         .select("*")
         .eq("folder_id", folderId)
         .eq("user_id", user.id)
-        .order("updated_at", { ascending: false });
+        .order("created_at", { ascending: true });
 
       if (error) throw error;
 
-      const mapped: Note[] = (data || []).map((row: any) => ({
+      const mapped: NoteTemplate[] = (data || []).map((row: any) => ({
         id: row.id,
         folderId: row.folder_id,
-        templateId: row.template_id || null,
-        title: row.title,
-        content: row.content || "",
+        name: row.name,
+        fields: row.fields || [],
         userId: row.user_id,
-        metadata: row.metadata || {},
         dateCreated: new Date(row.created_at),
         dateUpdated: new Date(row.updated_at),
       }));
 
-      setNotes(mapped);
+      setTemplates(mapped);
     } catch (err) {
-      console.error("Erreur lors du chargement des notes:", err);
+      console.error("Erreur lors du chargement des templates:", err);
       setError(err instanceof Error ? err.message : "Erreur inconnue");
     } finally {
       setLoading(false);
@@ -53,15 +51,16 @@ export function useNotes(folderId?: string) {
 
   useEffect(() => {
     if (user && folderId) {
-      loadNotes();
+      loadTemplates();
     } else {
       setLoading(false);
     }
   }, [user, folderId]);
 
-  const addNote = async (
-    formData: NoteFormData,
-  ): Promise<Note | null> => {
+  const addTemplate = async (
+    name: string,
+    fields: CustomFieldDefinition[],
+  ): Promise<NoteTemplate | null> => {
     if (!user || !folderId) {
       setError("Utilisateur non connecté");
       return null;
@@ -71,13 +70,11 @@ export function useNotes(folderId?: string) {
       setError(null);
 
       const { data, error } = await supabase
-        .from("notes")
+        .from("note_templates")
         .insert({
           folder_id: folderId,
-          title: formData.title,
-          content: formData.content,
-          template_id: formData.templateId || null,
-          metadata: formData.metadata || {},
+          name,
+          fields,
           user_id: user.id,
         })
         .select()
@@ -85,30 +82,28 @@ export function useNotes(folderId?: string) {
 
       if (error) throw error;
 
-      const newNote: Note = {
+      const newTemplate: NoteTemplate = {
         id: data.id,
         folderId: data.folder_id,
-        templateId: data.template_id || null,
-        title: data.title,
-        content: data.content || "",
+        name: data.name,
+        fields: data.fields || [],
         userId: data.user_id,
-        metadata: data.metadata || {},
         dateCreated: new Date(data.created_at),
         dateUpdated: new Date(data.updated_at),
       };
 
-      setNotes((prev) => [newNote, ...prev]);
-      return newNote;
+      setTemplates((prev) => [...prev, newTemplate]);
+      return newTemplate;
     } catch (err) {
-      console.error("Erreur lors de la création de la note:", err);
+      console.error("Erreur lors de la création du template:", err);
       setError(err instanceof Error ? err.message : "Erreur inconnue");
       return null;
     }
   };
 
-  const updateNote = async (
+  const updateTemplate = async (
     id: string,
-    updates: Partial<NoteFormData>,
+    updates: { name?: string; fields?: CustomFieldDefinition[] },
   ): Promise<boolean> => {
     if (!user) {
       setError("Utilisateur non connecté");
@@ -119,35 +114,32 @@ export function useNotes(folderId?: string) {
       setError(null);
 
       const updateData: any = {};
-      if (updates.title !== undefined) updateData.title = updates.title;
-      if (updates.content !== undefined) updateData.content = updates.content;
-      if (updates.metadata !== undefined) updateData.metadata = updates.metadata;
+      if (updates.name !== undefined) updateData.name = updates.name;
+      if (updates.fields !== undefined) updateData.fields = updates.fields;
 
       const { error } = await supabase
-        .from("notes")
+        .from("note_templates")
         .update(updateData)
         .eq("id", id)
         .eq("user_id", user.id);
 
       if (error) throw error;
 
-      setNotes((prev) =>
-        prev.map((note) =>
-          note.id === id
-            ? { ...note, ...updates, dateUpdated: new Date() }
-            : note,
+      setTemplates((prev) =>
+        prev.map((t) =>
+          t.id === id ? { ...t, ...updates, dateUpdated: new Date() } : t,
         ),
       );
 
       return true;
     } catch (err) {
-      console.error("Erreur lors de la mise à jour de la note:", err);
+      console.error("Erreur lors de la mise à jour du template:", err);
       setError(err instanceof Error ? err.message : "Erreur inconnue");
       return false;
     }
   };
 
-  const deleteNote = async (id: string): Promise<boolean> => {
+  const deleteTemplate = async (id: string): Promise<boolean> => {
     if (!user) {
       setError("Utilisateur non connecté");
       return false;
@@ -157,34 +149,34 @@ export function useNotes(folderId?: string) {
       setError(null);
 
       const { error } = await supabase
-        .from("notes")
+        .from("note_templates")
         .delete()
         .eq("id", id)
         .eq("user_id", user.id);
 
       if (error) throw error;
 
-      setNotes((prev) => prev.filter((note) => note.id !== id));
+      setTemplates((prev) => prev.filter((t) => t.id !== id));
       return true;
     } catch (err) {
-      console.error("Erreur lors de la suppression de la note:", err);
+      console.error("Erreur lors de la suppression du template:", err);
       setError(err instanceof Error ? err.message : "Erreur inconnue");
       return false;
     }
   };
 
-  const getNoteById = (id: string): Note | undefined => {
-    return notes.find((note) => note.id === id);
+  const getTemplateById = (id: string): NoteTemplate | undefined => {
+    return templates.find((t) => t.id === id);
   };
 
   return {
-    notes,
+    templates,
     loading,
     error,
-    addNote,
-    updateNote,
-    deleteNote,
-    getNoteById,
-    refreshNotes: loadNotes,
+    addTemplate,
+    updateTemplate,
+    deleteTemplate,
+    getTemplateById,
+    refreshTemplates: loadTemplates,
   };
 }

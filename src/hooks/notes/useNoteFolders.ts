@@ -220,13 +220,34 @@ export function useNoteFolders() {
       });
       if (!newFolder) throw new Error("Impossible de créer le dossier.");
 
-      if (data.folder.customFields && data.folder.customFields.length > 0) {
+      let importedTemplateId: string | null = null;
+
+      // 1. Gérer le template si présent (nouveau système)
+      if (data.template) {
+        const { data: templateData, error: templateError } = await supabase
+          .from("note_templates")
+          .insert({
+            folder_id: newFolder.id,
+            user_id: user.id,
+            name: data.template.name,
+            fields: data.template.fields,
+          })
+          .select()
+          .single();
+        
+        if (templateError) throw templateError;
+        importedTemplateId = templateData.id;
+      } 
+      // 2. Fallback sur customFields (legacy)
+      else if (data.folder.customFields && data.folder.customFields.length > 0) {
         await updateFolderFields(newFolder.id, data.folder.customFields);
       }
 
+      // 3. Créer la note
       const { error: noteError } = await supabase.from("notes").insert({
         folder_id: newFolder.id,
         user_id: user.id,
+        template_id: importedTemplateId,
         title: data.note.title,
         content: data.note.content || "",
         metadata: data.note.metadata || {},

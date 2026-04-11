@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useRouter, useParams } from "next/navigation";
 import { useNoteFolders } from "@/hooks/notes/useNoteFolders";
 import { useNotes } from "@/hooks/notes/useNotes";
+import { useNoteTemplates } from "@/hooks/notes/useNoteTemplates";
 import { NoteFolder, Note } from "@/types/notes";
 import { NoteCard } from "@/components/notes/NoteCard";
 import { FolderCard } from "@/components/notes/FolderCard";
@@ -14,6 +15,7 @@ import { NoteFolderFormData, NoteExportData } from "@/types/notes";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import { ConfirmationModal } from "@/components/tracker/ConfirmationModal";
+import { TemplatePickerModal } from "@/components/notes/TemplatePickerModal";
 import {
   StickyNote,
   ArrowLeft,
@@ -41,10 +43,12 @@ export default function FolderPage() {
     importNoteData,
   } = useNoteFolders();
   const { notes, loading, addNote } = useNotes(folderId);
+  const { templates } = useNoteTemplates(folderId);
   const [folder, setFolder] = useState<NoteFolder | null>(null);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
+  const [showTemplatePicker, setShowTemplatePicker] = useState(false);
 
   const subFolders = folders.filter((f) => f.parentId === folderId);
 
@@ -70,13 +74,24 @@ export default function FolderPage() {
     }
   };
 
-  const handleCreateNote = async () => {
+  const handleCreateNote = async (templateId?: string | null) => {
     const note = await addNote({
       title: "Nouvelle note",
       content: "",
+      templateId: templateId || null,
     });
     if (note) {
       router.push(`/notes/${folderId}/${note.id}`);
+    }
+  };
+
+  const handleFloatingAdd = () => {
+    // S'il y a des templates, on montre le picker
+    if (templates.length > 0) {
+      setShowTemplatePicker(true);
+    } else {
+      // Sinon, note libre directement
+      handleCreateNote(null);
     }
   };
 
@@ -241,7 +256,7 @@ export default function FolderPage() {
 
       {/* Floating Add Button */}
       <FloatingAddButton
-        onClick={handleCreateNote}
+        onClick={handleFloatingAdd}
         label="Créer une note"
         color="bg-amber-500 hover:bg-amber-600"
       />
@@ -269,6 +284,17 @@ export default function FolderPage() {
         message="Êtes-vous sûr de vouloir supprimer ce dossier et toutes ses notes ? Cette action est irréversible."
         confirmLabel="Supprimer"
         confirmColor="bg-red-600 hover:bg-red-700"
+      />
+
+      {/* Template Picker Modal */}
+      <TemplatePickerModal
+        isOpen={showTemplatePicker}
+        onClose={() => setShowTemplatePicker(false)}
+        templates={templates}
+        onSelect={(templateId) => {
+          setShowTemplatePicker(false);
+          handleCreateNote(templateId);
+        }}
       />
     </div>
   );

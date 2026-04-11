@@ -26,9 +26,19 @@ export interface NoteFolder {
   name: string;
   color: string;
   userId: string;
-  parentId?: string | null; // Null si dossier racine
-  customFields?: CustomFieldDefinition[]; // Configuration des champs dynamiques
+  parentId?: string | null;
+  customFields?: CustomFieldDefinition[]; // LEGACY — sera remplacé par les templates
   noteCount?: number;
+  dateCreated: Date;
+  dateUpdated: Date;
+}
+
+export interface NoteTemplate {
+  id: string;
+  folderId: string;
+  name: string;           // Ex: "Lieux à visiter", "Repas"
+  fields: CustomFieldDefinition[];
+  userId: string;
   dateCreated: Date;
   dateUpdated: Date;
 }
@@ -42,10 +52,11 @@ export interface NoteFolderFormData {
 export interface Note {
   id: string;
   folderId: string;
+  templateId?: string | null; // null = note libre
   title: string;
   content: string;
   userId: string;
-  metadata?: Record<string, any>; // Les valeurs stockées pour les champs dynamiques (clé: field_id, valeur: texte/nombre/etc)
+  metadata?: Record<string, any>;
   dateCreated: Date;
   dateUpdated: Date;
 }
@@ -53,6 +64,7 @@ export interface Note {
 export interface NoteFormData {
   title: string;
   content: string;
+  templateId?: string | null;
   metadata?: Record<string, any>;
 }
 
@@ -74,6 +86,10 @@ export interface NoteExportData {
     name: string;
     color: string;
     customFields?: CustomFieldDefinition[];
+  };
+  template?: {
+    name: string;
+    fields: CustomFieldDefinition[];
   };
   note: {
     title: string;
