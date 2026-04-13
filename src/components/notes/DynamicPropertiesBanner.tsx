@@ -75,17 +75,18 @@ function PropertyRow({
 }) {
   const Icon = TYPE_ICONS[field.type] || Type;
   const isCheckbox = field.type === "checkbox";
+  const isTable = field.type === "table";
 
   return (
-    <div className="group flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 w-full">
+    <div className={`group flex ${isTable ? 'flex-col items-start' : 'flex-col sm:flex-row sm:items-center'} gap-1 sm:gap-4 w-full`}>
       {/* Label / Key */}
-      <div className="flex items-center gap-2 sm:w-40 shrink-0 text-gray-500 group-hover:text-amber-600 transition-colors cursor-default">
+      <div className={`flex items-center gap-2 shrink-0 text-gray-500 group-hover:text-amber-600 transition-colors cursor-default ${isTable ? 'mb-1' : 'sm:w-40'}`}>
         <Icon size={16} />
         <span className="text-sm font-medium">{field.name}</span>
       </div>
 
       {/* Value Editor */}
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 w-full">
         <PropertyValueEditor field={field} value={value} onChange={onChange} />
       </div>
     </div>
@@ -108,6 +109,7 @@ function PropertyValueEditor({
     dir: "asc" | "desc";
   } | null>(null); // pour "table"
   const [editingRowIndex, setEditingRowIndex] = useState<number | null>(null);
+  const [isTableExpanded, setIsTableExpanded] = useState(false);
 
   switch (field.type) {
     case "text":
@@ -229,7 +231,7 @@ function PropertyValueEditor({
         </div>
       );
 
-    case "table":
+    case "table": {
       const rows = Array.isArray(value) ? value : [];
 
       const updateRow = (rowIndex: number, colId: string, colValue: any) => {
@@ -276,13 +278,15 @@ function PropertyValueEditor({
         );
       }
 
-      const displayColumns = field.columns.slice(0, 3);
-      const hasHiddenColumns = field.columns.length > 3;
+      const columns = field.columns;
 
-      return (
-        <>
-          <div className="mt-2 w-full rounded-lg border border-gray-200 bg-white overflow-hidden flex flex-col">
-            <div className="w-full overflow-x-auto pb-2">
+      const renderTableUI = (expanded: boolean) => {
+        const displayColumns = expanded ? columns : columns.slice(0, 3);
+        const hasHiddenColumns = !expanded && columns.length > 3;
+
+        return (
+          <div className="mt-2 w-full rounded-lg border border-gray-200 bg-white overflow-hidden flex flex-col h-full">
+            <div className="w-full overflow-x-auto pb-2 flex-1">
               <table className="w-full text-left text-sm text-gray-600 min-w-full">
                 <thead className="bg-gray-50 uppercase text-xs font-semibold text-gray-500 border-b border-gray-200">
                   <tr>
@@ -310,7 +314,7 @@ function PropertyValueEditor({
                     ))}
                     {hasHiddenColumns && (
                        <th className="px-3 py-2 whitespace-nowrap text-gray-400 italic font-normal">
-                         + {field.columns.length - 3} autres
+                         + {columns.length - 3} autres
                        </th>
                     )}
                     <th className="px-2 py-2 w-16"></th>
@@ -318,7 +322,7 @@ function PropertyValueEditor({
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {rows.map((rowValue, rIndex) => (
-                    <tr key={rIndex} className="hover:bg-gray-50/50">
+                    <tr key={rIndex} className={`hover:bg-gray-50/50 ${editingRowIndex === rIndex ? 'bg-amber-50/30' : ''}`}>
                       {displayColumns.map((col) => (
                         <td key={col.id} className="p-1 min-w-[120px] align-top">
                           <PropertyValueEditor
@@ -333,10 +337,10 @@ function PropertyValueEditor({
                           ...
                         </td>
                       )}
-                      <td className="p-1 align-middle text-right">
+                      <td className="p-1 align-middle text-right flex justify-end gap-1 mt-1">
                         <button
                           onClick={() => setEditingRowIndex(rIndex)}
-                          className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors mr-1"
+                          className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors"
                           title="Éditer la ligne complète"
                         >
                           <Maximize2 size={14} />
@@ -354,7 +358,7 @@ function PropertyValueEditor({
                 </tbody>
               </table>
             </div>
-            <div className="p-1 bg-gray-50 border-t border-gray-200 shrink-0">
+            <div className="p-1 bg-gray-50 border-t border-gray-200 shrink-0 flex justify-between items-center">
               <button
                 onClick={addRow}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors w-max"
@@ -362,8 +366,60 @@ function PropertyValueEditor({
                 <Plus size={14} />
                 Ajouter une ligne
               </button>
+              {!expanded && (
+                <button
+                  onClick={() => setIsTableExpanded(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-amber-600 hover:bg-amber-50 rounded transition-colors"
+                  title="Ouvrir en plein écran"
+                >
+                  <Maximize2 size={14} />
+                  Plein écran
+                </button>
+              )}
             </div>
           </div>
+        );
+      };
+
+      return (
+        <>
+          {renderTableUI(false)}
+
+          <AnimatePresence>
+            {isTableExpanded && (
+              <motion.div
+                 initial={{ opacity: 0 }}
+                 animate={{ opacity: 1 }}
+                 exit={{ opacity: 0 }}
+                 className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4 sm:p-8"
+                 onClick={() => setIsTableExpanded(false)}
+              >
+                 <motion.div
+                   initial={{ scale: 0.95, opacity: 0, y: 10 }}
+                   animate={{ scale: 1, opacity: 1, y: 0 }}
+                   exit={{ scale: 0.95, opacity: 0, y: 10 }}
+                   className="bg-white rounded-2xl shadow-2xl w-full max-w-7xl max-h-[90vh] overflow-hidden flex flex-col"
+                   onClick={(e) => e.stopPropagation()}
+                 >
+                   <div className="p-4 border-b border-gray-200 flex items-center justify-between bg-amber-50 shrink-0">
+                     <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                       <Table size={20} className="text-amber-600" />
+                       {field.name}
+                     </h3>
+                     <button
+                       onClick={() => setIsTableExpanded(false)}
+                       className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+                     >
+                       <X size={20} />
+                     </button>
+                   </div>
+                   <div className="p-4 flex-1 overflow-auto flex flex-col relative w-full bg-gray-50/30 min-h-[50vh]">
+                     {renderTableUI(true)}
+                   </div>
+                 </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <AnimatePresence>
             {editingRowIndex !== null && (
@@ -371,7 +427,7 @@ function PropertyValueEditor({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[70] flex items-center justify-center p-4"
                 onClick={() => setEditingRowIndex(null)}
               >
                 <motion.div
@@ -381,7 +437,7 @@ function PropertyValueEditor({
                   className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <div className="p-4 border-b border-gray-200 flex items-center justify-between bg-amber-50">
+                  <div className="p-4 border-b border-gray-200 flex items-center justify-between bg-amber-50 shrink-0">
                     <h3 className="font-semibold text-gray-900">Édition de la ligne {editingRowIndex + 1}</h3>
                     <button
                       onClick={() => setEditingRowIndex(null)}
@@ -391,7 +447,7 @@ function PropertyValueEditor({
                     </button>
                   </div>
                   <div className="p-4 overflow-y-auto flex-1 space-y-4">
-                    {field.columns.map((col) => (
+                    {columns.map((col) => (
                       <div key={col.id} className="space-y-1">
                         <label className="block text-sm font-medium text-gray-700 flex items-center gap-1.5">
                           {col.name}
@@ -399,7 +455,7 @@ function PropertyValueEditor({
                         <div className="p-1 border border-gray-200 rounded-lg bg-gray-50/50">
                           <PropertyValueEditor
                             field={col}
-                            value={rows[editingRowIndex][col.id] ?? ""}
+                            value={rows[editingRowIndex] ? rows[editingRowIndex][col.id] ?? "" : ""}
                             onChange={(val) => updateRow(editingRowIndex, col.id, val)}
                           />
                         </div>
@@ -412,7 +468,7 @@ function PropertyValueEditor({
           </AnimatePresence>
         </>
       );
-
+    }
     default:
       return <div className="text-sm text-red-500">Non supporté</div>;
   }
