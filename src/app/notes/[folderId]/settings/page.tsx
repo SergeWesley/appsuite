@@ -19,8 +19,8 @@ import {
 import { useNoteFolders } from "@/hooks/notes/useNoteFolders";
 import { useNoteTemplates } from "@/hooks/notes/useNoteTemplates";
 import { FOLDER_COLORS, CustomFieldDefinition, NoteFolder, NoteTemplate } from "@/types/notes";
-import { CustomFieldsBuilder } from "@/components/notes/CustomFieldsBuilder";
 import { ConfirmationModal } from "@/components/tracker/ConfirmationModal";
+import { TemplateEditorModal } from "@/components/notes/TemplateEditorModal";
 
 export default function FolderSettingsPage() {
   const router = useRouter();
@@ -39,9 +39,7 @@ export default function FolderSettingsPage() {
 
   // Template editing
   const [editingTemplate, setEditingTemplate] = useState<NoteTemplate | null>(null);
-  const [isCreatingTemplate, setIsCreatingTemplate] = useState(false);
-  const [templateName, setTemplateName] = useState("");
-  const [templateFields, setTemplateFields] = useState<CustomFieldDefinition[]>([]);
+  const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false);
   const [expandedTemplateId, setExpandedTemplateId] = useState<string | null>(null);
   const [templateToDelete, setTemplateToDelete] = useState<string | null>(null);
 
@@ -94,37 +92,21 @@ export default function FolderSettingsPage() {
   // ---------- Template CRUD ----------
   const openNewTemplate = () => {
     setEditingTemplate(null);
-    setIsCreatingTemplate(true);
-    setTemplateName("");
-    setTemplateFields([]);
+    setIsTemplateModalOpen(true);
   };
 
   const openEditTemplate = (template: NoteTemplate) => {
     setEditingTemplate(template);
-    setIsCreatingTemplate(true);
-    setTemplateName(template.name);
-    setTemplateFields([...template.fields]);
+    setIsTemplateModalOpen(true);
   };
 
-  const cancelTemplateEdit = () => {
-    setIsCreatingTemplate(false);
-    setEditingTemplate(null);
-    setTemplateName("");
-    setTemplateFields([]);
-  };
-
-  const handleSaveTemplate = async () => {
-    if (!templateName.trim()) return;
-
+  const handleSaveTemplate = async (name: string, fields: CustomFieldDefinition[]) => {
     if (editingTemplate) {
-      await updateTemplate(editingTemplate.id, {
-        name: templateName.trim(),
-        fields: templateFields,
-      });
+      await updateTemplate(editingTemplate.id, { name, fields });
     } else {
-      await addTemplate(templateName.trim(), templateFields);
+      await addTemplate(name, fields);
     }
-    cancelTemplateEdit();
+    setIsTemplateModalOpen(false);
   };
 
   const handleDeleteTemplate = async () => {
@@ -241,20 +223,18 @@ export default function FolderSettingsPage() {
                 </p>
               </div>
             </div>
-            {!isCreatingTemplate && (
-              <button
-                onClick={openNewTemplate}
-                className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 transition-colors text-sm font-medium"
-              >
-                <Plus size={16} />
-                <span className="hidden sm:inline">Nouveau</span>
-              </button>
-            )}
+            <button
+              onClick={openNewTemplate}
+              className="flex items-center gap-1.5 px-3 py-2 bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 transition-colors text-sm font-medium"
+            >
+              <Plus size={16} />
+              <span className="hidden sm:inline">Nouveau</span>
+            </button>
           </div>
 
           <div className="p-4 sm:p-6 space-y-4">
             {/* Liste des templates existants */}
-            {templates.length === 0 && !isCreatingTemplate && (
+            {templates.length === 0 && (
               <div className="text-center py-10 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50/50">
                 <LayoutTemplate size={32} className="mx-auto text-gray-300 mb-3" />
                 <h3 className="text-sm font-medium text-gray-900 mb-1">Aucun template</h3>
@@ -360,69 +340,7 @@ export default function FolderSettingsPage() {
               ))}
             </AnimatePresence>
 
-            {/* Template Editor (Create / Edit) */}
-            <AnimatePresence>
-              {isCreatingTemplate && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  className="border-2 border-amber-200 rounded-xl p-4 sm:p-5 space-y-5 bg-amber-50/30"
-                >
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-base font-semibold text-gray-900">
-                      {editingTemplate ? "Modifier le template" : "Nouveau template"}
-                    </h3>
-                    <button
-                      onClick={cancelTemplateEdit}
-                      className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
-                    >
-                      <X size={18} />
-                    </button>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                      Nom du template
-                    </label>
-                    <input
-                      type="text"
-                      autoFocus
-                      value={templateName}
-                      onChange={(e) => setTemplateName(e.target.value)}
-                      placeholder="Ex: Lieux à visiter, Repas..."
-                      className="w-full max-w-md px-4 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">
-                      Champs du template
-                    </label>
-                    <CustomFieldsBuilder
-                      fields={templateFields}
-                      onChange={setTemplateFields}
-                    />
-                  </div>
-
-                  <div className="flex justify-end gap-3 pt-2">
-                    <button
-                      onClick={cancelTemplateEdit}
-                      className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 bg-white border border-gray-200 rounded-xl transition-colors font-medium"
-                    >
-                      Annuler
-                    </button>
-                    <button
-                      onClick={handleSaveTemplate}
-                      disabled={!templateName.trim()}
-                      className="px-6 py-2 text-sm text-white bg-amber-500 hover:bg-amber-600 rounded-xl transition-colors disabled:opacity-50 shadow-sm font-medium"
-                    >
-                      {editingTemplate ? "Mettre à jour" : "Créer le template"}
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* Inline Editor removed in favor of TemplateEditorModal */}
           </div>
         </section>
 
@@ -468,6 +386,14 @@ export default function FolderSettingsPage() {
         message="Supprimer ce template ? Les notes existantes utilisant ce template conserveront leurs données, mais ne seront plus liées à un modèle."
         confirmLabel="Supprimer"
         confirmColor="bg-red-600 hover:bg-red-700"
+      />
+
+      {/* MODALS */}
+      <TemplateEditorModal
+        isOpen={isTemplateModalOpen}
+        onClose={() => setIsTemplateModalOpen(false)}
+        onSave={handleSaveTemplate}
+        initialTemplate={editingTemplate}
       />
     </div>
   );
