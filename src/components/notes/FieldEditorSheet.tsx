@@ -187,8 +187,9 @@ export function FieldEditorSheet({ isOpen, onClose, onSave, initialField }: Fiel
                   {columns.length > 0 && (
                     <div className="space-y-2">
                       {columns.map((col, index) => (
-                        <div key={col.id} className="flex justify-between items-center bg-white border border-amber-100 p-2 sm:p-3 rounded-lg text-sm shadow-sm group">
-                          <div className="flex items-center gap-2 flex-1 min-w-0 pr-2">
+                        <div key={col.id} className="flex flex-col bg-white border border-amber-100 p-2 sm:p-3 rounded-lg text-sm shadow-sm group gap-2">
+                          <div className="flex justify-between items-center w-full">
+                            <div className="flex items-center gap-2 flex-1 min-w-0 pr-2">
                             {(() => {
                                 const ColIcon = TYPE_CONFIGS[col.type]?.icon || Type;
                                 return <ColIcon size={16} className="text-amber-500 shrink-0" />;
@@ -243,6 +244,31 @@ export function FieldEditorSheet({ isOpen, onClose, onSave, initialField }: Fiel
                             </button>
                           </div>
                         </div>
+                        {col.type === "select" && (
+                          <div className="flex items-center pl-7 pr-1">
+                            <input
+                              type="text"
+                              value={col.options?.join(",") || ""}
+                              onChange={(e) => {
+                                const newOptions = e.target.value.split(","); // Keep exact characters while typing
+                                const updatedCols = columns.map(c => 
+                                  c.id === col.id ? { ...c, options: newOptions } : c
+                                );
+                                setColumns(updatedCols);
+                              }}
+                              onBlur={(e) => {
+                                const newOptions = e.target.value.split(",").map(o => o.trim()).filter(Boolean);
+                                const updatedCols = columns.map(c => 
+                                  c.id === col.id ? { ...c, options: newOptions } : c
+                                );
+                                setColumns(updatedCols);
+                              }}
+                              placeholder="Options séparées par une virgule (ex: A, B, C)"
+                              className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded shrink-0 bg-gray-50 focus:ring-1 focus:ring-amber-200 outline-none transition-colors"
+                            />
+                          </div>
+                        )}
+                      </div>
                       ))}
                     </div>
                   )}
