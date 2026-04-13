@@ -64,8 +64,7 @@ export default function FolderSettingsPage() {
       if (folderName !== folder.name || folderColor !== folder.color) {
         await updateFolder(folder.id, { name: folderName, color: folderColor });
       }
-      const parentUrl = folder.parentId ? `/notes/${folder.parentId}` : "/notes";
-      router.push(parentUrl);
+      router.back();
     } catch (e) {
       console.error(e);
       alert("Erreur lors de la sauvegarde.");
@@ -75,8 +74,7 @@ export default function FolderSettingsPage() {
 
   const handleBack = () => {
     if (!folder) return;
-    const parentUrl = folder.parentId ? `/notes/${folder.parentId}` : "/notes";
-    router.push(parentUrl);
+    router.back();
   };
 
   const handleDeleteFolder = async () => {

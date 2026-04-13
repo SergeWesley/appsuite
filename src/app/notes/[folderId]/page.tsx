@@ -24,6 +24,7 @@ import {
   FileText,
   Trash2,
   FolderPlus,
+  Settings,
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
@@ -148,7 +149,15 @@ export default function FolderPage() {
               </button>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <button
+                onClick={() => router.push(`/notes/${folderId}/settings`)}
+                className="p-2 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                aria-label="Paramètres du dossier"
+                title="Paramètres du dossier"
+              >
+                <Settings size={20} />
+              </button>
               <button
                 onClick={() => setShowDeleteConfirm(true)}
                 className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
@@ -157,6 +166,7 @@ export default function FolderPage() {
               >
                 <Trash2 size={20} />
               </button>
+              <div className="hidden sm:block w-px h-6 bg-gray-200 mx-1"></div>
               <Menu as="div" className="relative inline-block text-left">
                 <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
                   <User size={20} />

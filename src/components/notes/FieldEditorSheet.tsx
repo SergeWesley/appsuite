@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Type, List, Hash, Calendar, CheckSquare, Palette, Star, Link, Euro, Table } from "lucide-react";
+import { X, Plus, Type, List, Hash, Calendar, CheckSquare, Palette, Star, Link, Euro, Table, ChevronUp, ChevronDown } from "lucide-react";
 import { CustomFieldDefinition, CustomFieldType } from "@/types/notes";
 
 export const TYPE_CONFIGS: Record<CustomFieldType, { label: string; icon: React.ElementType }> = {
@@ -186,21 +186,62 @@ export function FieldEditorSheet({ isOpen, onClose, onSave, initialField }: Fiel
                   
                   {columns.length > 0 && (
                     <div className="space-y-2">
-                      {columns.map(col => (
-                        <div key={col.id} className="flex justify-between items-center bg-white border border-amber-100 p-2 sm:p-3 rounded-lg text-sm shadow-sm">
-                          <div className="flex items-center gap-2">
+                      {columns.map((col, index) => (
+                        <div key={col.id} className="flex justify-between items-center bg-white border border-amber-100 p-2 sm:p-3 rounded-lg text-sm shadow-sm group">
+                          <div className="flex items-center gap-2 flex-1 min-w-0 pr-2">
                             {(() => {
                                 const ColIcon = TYPE_CONFIGS[col.type]?.icon || Type;
-                                return <ColIcon size={16} className="text-amber-500" />;
+                                return <ColIcon size={16} className="text-amber-500 shrink-0" />;
                             })()}
-                            <span><strong className="font-semibold text-gray-900">{col.name}</strong></span>
+                            <input
+                              type="text"
+                              value={col.name}
+                              onChange={(e) => {
+                                const updatedCols = columns.map(c => 
+                                  c.id === col.id ? { ...c, name: e.target.value } : c
+                                );
+                                setColumns(updatedCols);
+                              }}
+                              className="font-semibold text-gray-900 bg-transparent outline-none w-full min-w-0 hover:bg-gray-50 focus:bg-white focus:ring-1 focus:ring-amber-200 rounded px-1 -ml-1 transition-colors"
+                            />
                           </div>
-                          <button 
-                            onClick={() => setColumns(columns.filter(c => c.id !== col.id))}
-                            className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
-                          >
-                            <X size={16} />
-                          </button>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              onClick={() => {
+                                const index = columns.findIndex(c => c.id === col.id);
+                                if (index > 0) {
+                                  const newCols = [...columns];
+                                  [newCols[index - 1], newCols[index]] = [newCols[index], newCols[index - 1]];
+                                  setColumns(newCols);
+                                }
+                              }}
+                              disabled={index === 0}
+                              className="p-1 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400"
+                            >
+                              <ChevronUp size={16} />
+                            </button>
+                            <button
+                              onClick={() => {
+                                const index = columns.findIndex(c => c.id === col.id);
+                                if (index < columns.length - 1) {
+                                  const newCols = [...columns];
+                                  [newCols[index], newCols[index + 1]] = [newCols[index + 1], newCols[index]];
+                                  setColumns(newCols);
+                                }
+                              }}
+                              disabled={index === columns.length - 1}
+                              className="p-1 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400"
+                            >
+                              <ChevronDown size={16} />
+                            </button>
+                            <div className="w-px h-4 bg-gray-200 mx-1"></div>
+                            <button 
+                              onClick={() => setColumns(columns.filter(c => c.id !== col.id))}
+                              className="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
