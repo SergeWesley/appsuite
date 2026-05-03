@@ -58,14 +58,15 @@ export function PropertyTableEditor({
     setSortConfig({ colId, dir });
 
     const newRows = [...rows].sort((a, b) => {
-      const valA = a[colId] ?? "";
-      const valB = b[colId] ?? "";
-      const strA = typeof valA === "string" ? valA.toLowerCase() : valA;
-      const strB = typeof valB === "string" ? valB.toLowerCase() : valB;
-
-      if (strA < strB) return dir === "asc" ? -1 : 1;
-      if (strA > strB) return dir === "asc" ? 1 : -1;
-      return 0;
+      const valA = String(a[colId] ?? "");
+      const valB = String(b[colId] ?? "");
+      
+      const compareResult = valA.localeCompare(valB, undefined, { 
+        numeric: true, 
+        sensitivity: 'base' 
+      });
+      
+      return dir === "asc" ? compareResult : -compareResult;
     });
     onChange(newRows);
   };
