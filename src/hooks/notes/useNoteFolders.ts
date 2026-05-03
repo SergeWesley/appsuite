@@ -238,9 +238,21 @@ export function useNoteFolders() {
         if (templateError) throw templateError;
         importedTemplateId = templateData.id;
       } 
-      // 2. Fallback sur customFields (legacy)
+      // 2. Fallback sur customFields (legacy) -> Convert to Template
       else if (data.folder.customFields && data.folder.customFields.length > 0) {
-        await updateFolderFields(newFolder.id, data.folder.customFields);
+        const { data: templateData, error: templateError } = await supabase
+          .from("note_templates")
+          .insert({
+            folder_id: newFolder.id,
+            user_id: user.id,
+            name: "Modèle importé",
+            fields: data.folder.customFields,
+          })
+          .select()
+          .single();
+        
+        if (templateError) throw templateError;
+        importedTemplateId = templateData.id;
       }
 
       // 3. Créer la note
