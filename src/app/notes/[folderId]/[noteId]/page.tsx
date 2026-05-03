@@ -190,7 +190,7 @@ export default function NoteEditorPage() {
     <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-14">
             <button
               onClick={handleBack}
@@ -251,7 +251,7 @@ export default function NoteEditorPage() {
       </header>
 
       {/* Editor */}
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-6">
+      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 py-6">
         {/* Title input */}
         <input
           type="text"
