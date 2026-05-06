@@ -122,6 +122,7 @@ export async function POST(req: Request) {
                 
                 Si l'utilisateur demande de créer un dossier ou une note mais que tu ne connais pas les paramètres, pose la question.
                 Si on te demande de faire une action pour laquelle tu n'as pas d'outil, dis gentiment que ça sera ajouté bientôt.
+                Si le contexte mentionne une note ouverte avec un ID, utilise l'outil getNoteContentTool pour récupérer son contenu avant de répondre.
                 ${contextStr}`,
       messages,
       tools: getAgentTools(supabase, userId as string),

@@ -8,9 +8,11 @@ import { useNotes } from "@/hooks/notes/useNotes";
 import { useNoteTemplates } from "@/hooks/notes/useNoteTemplates";
 import { NoteFolder, CustomFieldDefinition } from "@/types/notes";
 import { ConfirmationModal } from "@/components/tracker/ConfirmationModal";
-import { Trash2, Loader2, ArrowLeft, Check, Download } from "lucide-react";
+import { Trash2, Loader2, ArrowLeft, Check, Download, Sparkles } from "lucide-react";
 import { DynamicPropertiesBanner } from "@/components/notes/DynamicPropertiesBanner";
 import { NoteExportData } from "@/types/notes";
+import { useAgent } from "@/components/chat/AgentProvider";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 export default function NoteEditorPage() {
   const router = useRouter();
@@ -21,6 +23,8 @@ export default function NoteEditorPage() {
   const { folders } = useNoteFolders();
   const { notes, loading, updateNote, deleteNote } = useNotes(folderId);
   const { templates } = useNoteTemplates(folderId);
+  const { openAgent } = useAgent();
+  const isAdmin = useIsAdmin();
 
   const [folder, setFolder] = useState<NoteFolder | null>(null);
   const [title, setTitle] = useState("");
@@ -224,6 +228,22 @@ export default function NoteEditorPage() {
                   <Check size={14} />
                   <span>Enregistré</span>
                 </motion.div>
+              )}
+
+              {/* AI Assistant button (admin only) */}
+              {isAdmin && (
+                <button
+                  onClick={() => {
+                    openAgent({
+                      systemContext: `L'utilisateur est dans le module Notes, en train d'éditer une note.`,
+                    });
+                  }}
+                  className="p-2 text-gray-400 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50"
+                  aria-label="Assistant IA"
+                  title="Analyser avec l'IA"
+                >
+                  <Sparkles size={18} />
+                </button>
               )}
 
               {/* Export button */}

@@ -30,12 +30,25 @@ export function AgentChatModal() {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Détecter automatiquement si on est dans le contexte d'une note (URL: /notes/[folderId]/[noteId])
+  const noteMatch = pathname.match(/^\/notes\/([^/]+)\/([^/]+)$/);
+  const detectedNoteId = noteMatch?.[2] || null;
+
+  // Construire le contexte système enrichi avec l'ID de note si disponible
+  const buildSystemContext = () => {
+    const base = options?.systemContext || `L'utilisateur se trouve dans le module: ${currentModule?.name || 'Général'}`;
+    if (detectedNoteId) {
+      return `${base}\nL'utilisateur consulte actuellement une note (ID: ${detectedNoteId}). Utilise l'outil getNoteContentTool avec cet ID pour récupérer son contenu avant de répondre à toute question sur cette note.`;
+    }
+    return base;
+  };
+
   const { messages, input, setInput, handleInputChange, handleSubmit, isLoading, error } = useChat({
     api: "/api/chat",
     body: {
       accessToken,
       data: {
-        systemContext: options?.systemContext || `L'utilisateur se trouve dans le module: ${currentModule?.name || 'Général'}`
+        systemContext: buildSystemContext(),
       }
     }
   });
