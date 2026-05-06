@@ -158,21 +158,36 @@ export function AgentChatModal() {
                         }`}
                       >
                         {m.content}
-                        {/* Affichage visuel si l'outil a été appelé */}
+                        {/* Indicateur discret si l'outil a été appelé */}
                         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                         {(m as any).toolInvocations?.map((toolInvocation: any) => {
-                          const { toolCallId, toolName, result } = toolInvocation;
+                          const { toolCallId, state, result } = toolInvocation;
+                          const isSuccess = result?.success !== false;
+                          const isRunning = state === "call" || state === "partial-call";
+
                           return (
-                            <div key={toolCallId} className="mt-2 p-2 bg-white/50 rounded-lg text-xs border border-gray-200">
-                              <span className="font-medium flex items-center gap-1">
-                                <Sparkles size={12} className={theme.text} />
-                                Action exécutée : {toolName}
-                              </span>
-                              {result && (
-                                <pre className="mt-1 text-gray-600 overflow-x-auto whitespace-pre-wrap">
-                                  {JSON.stringify(result, null, 2)}
-                                </pre>
+                            <div
+                              key={toolCallId}
+                              className={`mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                                isRunning
+                                  ? "bg-amber-50 text-amber-700 border border-amber-200"
+                                  : isSuccess
+                                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                    : "bg-red-50 text-red-600 border border-red-200"
+                              }`}
+                            >
+                              {isRunning ? (
+                                <Loader2 size={11} className="animate-spin" />
+                              ) : isSuccess ? (
+                                <span>✓</span>
+                              ) : (
+                                <span>✕</span>
                               )}
+                              {isRunning
+                                ? "Action en cours…"
+                                : isSuccess
+                                  ? "Action effectuée"
+                                  : result?.error || "Échec de l'action"}
                             </div>
                           );
                         })}
