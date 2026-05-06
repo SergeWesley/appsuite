@@ -18,12 +18,12 @@ function mapRowToBook(row: BookRow): Book {
     author: row.author,
     cover: row.cover || undefined,
     status: row.status as BookStatus,
-    progress: row.progress,
+    progress: row.progress || 0,
     totalPages: row.total_pages || undefined,
     currentPage: row.current_page || undefined,
     rating: row.rating || undefined,
     notes: row.notes || undefined,
-    dateAdded: new Date(row.date_added),
+    dateAdded: row.date_added ? new Date(row.date_added) : new Date(),
     dateStarted: row.date_started ? new Date(row.date_started) : undefined,
     dateCompleted: row.date_completed
       ? new Date(row.date_completed)

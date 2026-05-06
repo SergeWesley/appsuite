@@ -19,12 +19,12 @@ function mapRowToSession(row: SessionRow): ReadingSession {
   return {
     id: row.id,
     bookId: row.book_id,
-    startTime: new Date(row.start_time),
+    startTime: row.start_time ? new Date(row.start_time) : new Date(),
     endTime: row.end_time ? new Date(row.end_time) : undefined,
-    duration: row.duration,
+    duration: row.duration || 0,
     notes: row.notes || undefined,
     pagesRead: row.pages_read || undefined,
-    isActive: row.is_active,
+    isActive: row.is_active || false,
   };
 }
 
@@ -211,8 +211,8 @@ export function useReadingSessions(onBookDataChanged?: () => void) {
           {
             p_session_id: activeSession.id,
             p_user_id: user.id,
-            p_notes: sessionData?.notes || null,
-            p_pages_read: sessionData?.pagesRead || null,
+            p_notes: sessionData?.notes || undefined,
+            p_pages_read: sessionData?.pagesRead || undefined,
           },
         );
 

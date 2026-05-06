@@ -31,7 +31,7 @@ type WorkoutSessionWithExercises = WorkoutSessionRow & {
       name: string;
       muscle_group: string;
       description: string | null;
-      is_custom: boolean;
+      is_custom: boolean | null;
     } | null;
   })[];
 };
@@ -53,7 +53,7 @@ function mapRowToWorkoutSession(
             name: we.exercises.name,
             muscleGroup: we.exercises.muscle_group as any,
             description: we.exercises.description || undefined,
-            isCustom: we.exercises.is_custom,
+            isCustom: we.exercises.is_custom || false,
             userId: undefined,
             dateCreated: new Date(),
           }
@@ -67,11 +67,11 @@ function mapRowToWorkoutSession(
       notes: we.notes || undefined,
       order: we.exercise_order,
     })),
-    totalExercises: row.total_exercises,
+    totalExercises: row.total_exercises || 0,
     duration: row.duration || undefined,
     userId: row.user_id,
-    dateCreated: new Date(row.created_at),
-    dateUpdated: new Date(row.updated_at),
+    dateCreated: row.created_at ? new Date(row.created_at) : new Date(),
+    dateUpdated: row.updated_at ? new Date(row.updated_at) : new Date(),
   };
 }
 

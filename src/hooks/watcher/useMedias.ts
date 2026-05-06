@@ -21,7 +21,7 @@ function mapRowToMedia(row: MediaRow): Media {
     studio: row.studio || undefined,
     poster: row.poster || undefined,
     status: row.status as MediaStatus,
-    progress: row.progress,
+    progress: row.progress || 0,
     type: row.type as MediaType,
     duration: row.duration || undefined,
     totalEpisodes: row.total_episodes || undefined,

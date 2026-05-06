@@ -200,8 +200,8 @@ export function useTimer(): TimerHookReturn {
         const { data, error } = await supabase.rpc("stop_reading_session", {
           p_session_id: timer.sessionId,
           p_user_id: user.id,
-          p_notes: notes || null,
-          p_pages_read: pagesRead || null,
+          p_notes: notes || undefined,
+          p_pages_read: pagesRead || undefined,
         });
 
         if (error) throw error;

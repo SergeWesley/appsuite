@@ -34,7 +34,7 @@ export function useNoteTemplates(folderId?: string) {
         id: row.id,
         folderId: row.folder_id,
         name: row.name,
-        fields: row.fields || [],
+        fields: (row.fields as unknown as CustomFieldDefinition[]) || [],
         userId: row.user_id,
         dateCreated: new Date(row.created_at),
         dateUpdated: new Date(row.updated_at),
@@ -74,7 +74,7 @@ export function useNoteTemplates(folderId?: string) {
         .insert({
           folder_id: folderId,
           name,
-          fields,
+          fields: fields as any,
           user_id: user.id,
         })
         .select()
@@ -86,7 +86,7 @@ export function useNoteTemplates(folderId?: string) {
         id: data.id,
         folderId: data.folder_id,
         name: data.name,
-        fields: data.fields || [],
+        fields: (data.fields as unknown as CustomFieldDefinition[]) || [],
         userId: data.user_id,
         dateCreated: new Date(data.created_at),
         dateUpdated: new Date(data.updated_at),

@@ -21,9 +21,9 @@ function mapRowToExercise(row: ExerciseRow): Exercise {
     name: row.name,
     muscleGroup: row.muscle_group as MuscleGroup,
     description: row.description || undefined,
-    isCustom: row.is_custom,
+    isCustom: row.is_custom || false,
     userId: row.user_id || undefined,
-    dateCreated: new Date(row.created_at),
+    dateCreated: row.created_at ? new Date(row.created_at) : new Date(),
     source: row.source || undefined,
   };
 }

@@ -1,5 +1,5 @@
 {
-  "name": "booker",
+  "name": "appsuite",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "update-types": "npx --yes supabase gen types typescript --project-id acropjixbwmkcioxvmpx > src/types/supabase.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "0.0.52",

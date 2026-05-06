@@ -128,6 +128,7 @@ export function useReadingAnalytics() {
       const dailyMap = new Map<string, DailyStat>();
 
       sessions?.forEach((session) => {
+        if (!session.start_time) return;
         const date = formatDate(new Date(session.start_time));
         
         if (!dailyMap.has(date)) {
@@ -140,7 +141,7 @@ export function useReadingAnalytics() {
         }
 
         const stat = dailyMap.get(date)!;
-        stat.readingTime += session.duration;
+        stat.readingTime += session.duration || 0;
         stat.sessions += 1;
         stat.pagesRead += session.pages_read || 0;
       });
@@ -208,6 +209,7 @@ export function useReadingAnalytics() {
       const monthlyMap = new Map<string, MonthlyStat>();
 
       sessions?.forEach((session) => {
+        if (!session.start_time) return;
         const date = new Date(session.start_time);
         const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
         
@@ -222,7 +224,7 @@ export function useReadingAnalytics() {
         }
 
         const stat = monthlyMap.get(month)!;
-        stat.readingTime += session.duration;
+        stat.readingTime += session.duration || 0;
         stat.sessions += 1;
         stat.pagesRead += session.pages_read || 0;
       });
@@ -292,7 +294,7 @@ export function useReadingAnalytics() {
         }
 
         const stats = bookStatsMap.get(bookId)!;
-        stats.totalReadingTime += session.duration;
+        stats.totalReadingTime += session.duration || 0;
         stats.totalSessions += 1;
       });
 
@@ -342,10 +344,10 @@ export function useReadingAnalytics() {
         const book = session.books as unknown as { title: string };
         return {
           id: session.id,
-          bookId: session.book_id,
+          bookId: session.book_id || "",
           bookTitle: book?.title || "Livre inconnu",
-          startTime: new Date(session.start_time),
-          duration: session.duration,
+          startTime: session.start_time ? new Date(session.start_time) : new Date(),
+          duration: session.duration || 0,
           pagesRead: session.pages_read || undefined,
         };
       }) || [];

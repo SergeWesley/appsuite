@@ -37,7 +37,7 @@ export function useNotes(folderId?: string) {
         title: row.title,
         content: row.content || "",
         userId: row.user_id,
-        metadata: row.metadata || {},
+        metadata: (row.metadata as unknown as Record<string, any>) || {},
         dateCreated: new Date(row.created_at),
         dateUpdated: new Date(row.updated_at),
       }));
@@ -92,7 +92,7 @@ export function useNotes(folderId?: string) {
         title: data.title,
         content: data.content || "",
         userId: data.user_id,
-        metadata: data.metadata || {},
+        metadata: (data.metadata as unknown as Record<string, any>) || {},
         dateCreated: new Date(data.created_at),
         dateUpdated: new Date(data.updated_at),
       };

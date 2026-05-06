@@ -35,7 +35,7 @@ export function useNoteFolders() {
         color: row.color || "#f59e0b",
         userId: row.user_id,
         parentId: row.parent_id,
-        customFields: row.custom_fields || [],
+        customFields: (row.custom_fields as unknown as CustomFieldDefinition[]) || [],
         noteCount: row.notes?.[0]?.count ?? 0,
         dateCreated: new Date(row.created_at),
         dateUpdated: new Date(row.updated_at),
@@ -88,7 +88,7 @@ export function useNoteFolders() {
         color: data.color || "#f59e0b",
         userId: data.user_id,
         parentId: data.parent_id,
-        customFields: data.custom_fields || [],
+        customFields: (data.custom_fields as unknown as CustomFieldDefinition[]) || [],
         dateCreated: new Date(data.created_at),
         dateUpdated: new Date(data.updated_at),
       };
@@ -156,7 +156,7 @@ export function useNoteFolders() {
 
       const { error } = await supabase
         .from("note_folders")
-        .update({ custom_fields: customFields })
+        .update({ custom_fields: customFields as any })
         .eq("id", id)
         .eq("user_id", user.id);
 
@@ -230,7 +230,7 @@ export function useNoteFolders() {
             folder_id: newFolder.id,
             user_id: user.id,
             name: data.template.name,
-            fields: data.template.fields,
+            fields: data.template.fields as any,
           })
           .select()
           .single();
@@ -246,7 +246,7 @@ export function useNoteFolders() {
             folder_id: newFolder.id,
             user_id: user.id,
             name: "Modèle importé",
-            fields: data.folder.customFields,
+            fields: data.folder.customFields as any,
           })
           .select()
           .single();

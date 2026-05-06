@@ -21,7 +21,12 @@ export function useSubscriptions() {
         .order("billing_date", { ascending: true });
 
       if (err) throw err;
-      setSubscriptions(data || []);
+      const mapped = (data || []).map((sub: any) => ({
+        ...sub,
+        app_link: sub.app_link || undefined,
+        color: sub.color || undefined,
+      }));
+      setSubscriptions(mapped);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -56,10 +61,16 @@ export function useSubscriptions() {
         .single();
 
       if (err) throw err;
+      const mappedNewSub = {
+        ...newSubscription,
+        app_link: newSubscription.app_link || undefined,
+        color: newSubscription.color || undefined,
+      };
+
       setSubscriptions((prev) =>
-        [...prev, newSubscription].sort((a, b) => a.billing_date - b.billing_date)
+        [...prev, mappedNewSub as any].sort((a, b) => a.billing_date - b.billing_date)
       );
-      return newSubscription;
+      return mappedNewSub as any;
     } catch (err: any) {
       console.error("Supabase Error:", err);
       alert(`Erreur d'ajout : ${err.message}`);
