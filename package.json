@@ -10,9 +10,12 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@ai-sdk/google": "0.0.52",
+    "@ai-sdk/groq": "0.0.3",
     "@headlessui/react": "^2.2.7",
-    "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.55.0",
+    "ai": "3.4.33",
     "autoprefixer": "^10.4.21",
     "framer-motion": "^12.23.12",
     "kafkajs": "^2.2.4",
@@ -23,7 +26,9 @@
     "react-zxing": "^2.1.0",
     "recharts": "^3.8.1",
     "sharp": "^0.34.3",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "zod": "^3.23.8",
+    "zod-to-json-schema": "3.23.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.11",

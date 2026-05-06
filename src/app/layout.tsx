@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 import AppTracker from "@/components/tracker/AppTracker";
+import { AgentChatModal } from "@/components/chat/AgentChatModal";
+import { AgentProvider } from "@/components/chat/AgentProvider";
 
 export const metadata: Metadata = {
   title: "AppSuite - Votre suite d'applications",
@@ -45,7 +47,10 @@ export default function RootLayout({
       <body className="antialiased">
         <AuthProvider>
           <AppTracker />
-          {children}
+          <AgentProvider>
+            {children}
+            <AgentChatModal />
+          </AgentProvider>
         </AuthProvider>
       </body>
     </html>
