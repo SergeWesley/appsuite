@@ -10,6 +10,8 @@ export interface FilterState {
   isStatsOpen?: boolean;
   selectedExerciseId?: string;
   tableColumnSizing?: Record<string, number>;
+  selectedCategory?: string;
+  cookerSelectedItems?: string[];
 }
 
 /**
@@ -146,6 +148,10 @@ export const useFilterPersistence = (
     selectedExerciseId:
       filters.selectedExerciseId || defaultValues.selectedExerciseId || "",
     tableColumnSizing:
-      filters.tableColumnSizing || defaultValues.tableColumnSizing || {}
+      filters.tableColumnSizing || defaultValues.tableColumnSizing || {},
+    selectedCategory:
+      filters.selectedCategory || defaultValues.selectedCategory || "Toutes les catégories",
+    cookerSelectedItems:
+      filters.cookerSelectedItems || defaultValues.cookerSelectedItems || []
   };
 };

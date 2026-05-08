@@ -20,6 +20,7 @@ import {
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 
 interface FoodItem {
   id: string;
@@ -40,12 +41,27 @@ export default function CookerPage() {
   const { user, signOut } = useAuthContext();
   const [foodData, setFoodData] = useState<FoodCategory[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
-  const [search, setSearch] = useState("");
+  const {
+    filters,
+    updateFilter,
+    searchQuery: search,
+    selectedCategory,
+    cookerSelectedItems,
+  } = useFilterPersistence("cooker-filters", {
+    searchQuery: "",
+    selectedCategory: "Toutes les catégories",
+    cookerSelectedItems: [],
+  });
+
+  // Derived state for selected items Set (for performance)
+  const selectedItems = useMemo(
+    () => new Set(cookerSelectedItems),
+    [cookerSelectedItems],
+  );
+
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const [selectedItemDetails, setSelectedItemDetails] =
     useState<FoodItem | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState("Toutes les catégories");
 
   useEffect(() => {
     async function loadFoodData() {
@@ -123,19 +139,17 @@ export default function CookerPage() {
   }, [foodData]);
 
   const toggleItem = (id: string) => {
-    setSelectedItems((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
+    const newItems = new Set(selectedItems);
+    if (newItems.has(id)) {
+      newItems.delete(id);
+    } else {
+      newItems.add(id);
+    }
+    updateFilter("cookerSelectedItems", Array.from(newItems));
   };
 
   const clearSelection = () => {
-    setSelectedItems(new Set());
+    updateFilter("cookerSelectedItems", []);
   };
 
 
@@ -213,7 +227,7 @@ export default function CookerPage() {
             <div className="relative w-full sm:w-64">
               <select
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                onChange={(e) => updateFilter("selectedCategory", e.target.value)}
                 className="w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none appearance-none transition-all text-gray-700 font-medium"
               >
                 {allCategoryNames.map((cat) => (
@@ -222,24 +236,26 @@ export default function CookerPage() {
                   </option>
                 ))}
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-                <ChevronDown size={18} />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <ChevronDown size={20} />
               </div>
             </div>
 
-            {/* Search Bar */}
-            <div className="w-full sm:w-80 relative group">
-              <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-cyan-500 transition-colors" />
+            {/* Search Input */}
+            <div className="relative flex-1 min-w-[280px]">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                <Search size={20} />
+              </div>
               <input
                 type="text"
-                placeholder="Rechercher un aliment..."
+                placeholder="Rechercher un aliment (ex: riz, oeuf...)"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-12 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none transition-all"
+                onChange={(e) => updateFilter("searchQuery", e.target.value)}
+                className="w-full pl-11 pr-12 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none transition-all text-gray-700"
               />
               {search && (
                 <button
-                  onClick={() => setSearch("")}
+                  onClick={() => updateFilter("searchQuery", "")}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1.5 bg-gray-100 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-full transition-all"
                   title="Effacer la recherche"
                 >
