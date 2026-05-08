@@ -123,10 +123,16 @@ export async function POST(req: Request) {
                 Si l'utilisateur demande de créer un dossier ou une note mais que tu ne connais pas les paramètres, pose la question.
                 Si on te demande de faire une action pour laquelle tu n'as pas d'outil, dis gentiment que ça sera ajouté bientôt.
                 Si le contexte mentionne une note ouverte avec un ID, utilise l'outil getNoteContentTool pour récupérer son contenu avant de répondre.
+                
+                Pour les notes structurées avec des tableaux :
+                - Utilise TOUJOURS getNoteContentTool d'abord pour connaître le templateSchema (IDs des champs et colonnes)
+                - Pour ajouter des lignes à un tableau, utilise updateNoteMetadataTool avec appendRows et les IDs des colonnes du template
+                - Ne demande pas les IDs à l'utilisateur, déduis-les du templateSchema retourné par getNoteContentTool
+                - Après une modification, confirme à l'utilisateur ce qui a été ajouté/modifié
                 ${contextStr}`,
       messages,
       tools: getAgentTools(supabase, userId as string),
-      maxToolRoundtrips: 3, // Permet à l'IA de recevoir le résultat de l'outil et de répondre en langage naturel
+      maxToolRoundtrips: 5, // Permet à l'IA de lire une note, écrire dedans, puis confirmer en langage naturel
     });
 
     return result.toDataStreamResponse();

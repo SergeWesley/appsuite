@@ -57,6 +57,18 @@ export function useNotes(folderId?: string) {
     } else {
       setLoading(false);
     }
+
+    // Écouter l'événement global pour rafraîchir les données (ex: suite à une action de l'agent IA)
+    const handleRefresh = () => {
+      if (user && folderId) {
+        loadNotes();
+      }
+    };
+    
+    window.addEventListener("appsuite:refresh-data", handleRefresh);
+    return () => {
+      window.removeEventListener("appsuite:refresh-data", handleRefresh);
+    };
   }, [user, folderId]);
 
   const addNote = async (

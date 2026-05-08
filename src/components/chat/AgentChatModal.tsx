@@ -24,7 +24,9 @@ export function AgentChatModal() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setAccessToken(session?.access_token || "");
     });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_, session) => {
       setAccessToken(session?.access_token || "");
     });
     return () => subscription.unsubscribe();
@@ -36,21 +38,53 @@ export function AgentChatModal() {
 
   // Construire le contexte système enrichi avec l'ID de note si disponible
   const buildSystemContext = () => {
-    const base = options?.systemContext || `L'utilisateur se trouve dans le module: ${currentModule?.name || 'Général'}`;
+    const base =
+      options?.systemContext ||
+      `L'utilisateur se trouve dans le module: ${currentModule?.name || "Général"}`;
     if (detectedNoteId) {
       return `${base}\nL'utilisateur consulte actuellement une note (ID: ${detectedNoteId}). Utilise l'outil getNoteContentTool avec cet ID pour récupérer son contenu avant de répondre à toute question sur cette note.`;
     }
     return base;
   };
 
-  const { messages, input, setInput, handleInputChange, handleSubmit, isLoading, error } = useChat({
+  // État d'erreur enrichi (le error de useChat est souvent trop générique)
+  const [customError, setCustomError] = useState<string | null>(null);
+
+  const {
+    messages,
+    input,
+    setInput,
+    handleInputChange,
+    handleSubmit,
+    isLoading,
+    error,
+  } = useChat({
     api: "/api/chat",
     body: {
       accessToken,
       data: {
         systemContext: buildSystemContext(),
+      },
+    },
+    onResponse: async (response) => {
+      // Si la réponse HTTP est en erreur, parser le body pour le vrai message
+      if (!response.ok) {
+        try {
+          const body = await response.json();
+          setCustomError(
+            body?.error || `Erreur ${response.status} : ${response.statusText}`,
+          );
+        } catch {
+          setCustomError(`Erreur ${response.status} : ${response.statusText}`);
+        }
+      } else {
+        setCustomError(null);
       }
-    }
+    },
+    onError: (err) => {
+      console.error("[AgentChat] Erreur:", err);
+      setCustomError(err.message || "Erreur de connexion au serveur.");
+    },
   });
 
   const router = useRouter();
@@ -71,14 +105,18 @@ export function AgentChatModal() {
 
   // Refresh de l'UI à la fermeture si l'IA a effectué des actions
   const hasToolActions = messages.some(
-    (m) => m.role === "assistant" && (m as any).toolInvocations?.length > 0
+    (m) => m.role === "assistant" && (m as any).toolInvocations?.length > 0,
   );
+
+  useEffect(() => {
+    if (!isOpen && hasToolActions) {
+      router.refresh();
+      window.dispatchEvent(new Event("appsuite:refresh-data"));
+    }
+  }, [isOpen, hasToolActions, router]);
 
   const handleClose = () => {
     closeAgent();
-    if (hasToolActions) {
-      router.refresh();
-    }
   };
 
   return (
@@ -107,13 +145,20 @@ export function AgentChatModal() {
               {/* Header */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
                 <div className="flex items-center gap-3">
-                  <div className={`${theme.bgSoft} p-2 rounded-xl ${theme.textDark}`}>
+                  <div
+                    className={`${theme.bgSoft} p-2 rounded-xl ${theme.textDark}`}
+                  >
                     <Sparkles size={20} />
                   </div>
                   <div>
-                    <h2 className="text-sm font-semibold text-gray-900">Assistant IA</h2>
+                    <h2 className="text-sm font-semibold text-gray-900">
+                      Assistant IA
+                    </h2>
                     <p className="text-xs text-gray-500">
-                      {options?.systemContext || "Posez vos questions ou demandez une action"}
+                      {options?.systemContext ||
+                        (detectedNoteId
+                          ? "L'utilisateur est dans le module Notes, en train d'éditer une note."
+                          : "Posez vos questions ou demandez une action")}
                     </p>
                   </div>
                 </div>
@@ -133,17 +178,31 @@ export function AgentChatModal() {
               {/* Messages Area */}
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
                 {/* Bandeau d'erreur */}
-                {error && (
+                {(customError || error) && (
                   <div className="flex items-start gap-3 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
-                    <span className="mt-0.5 flex-shrink-0 text-red-500">⚠</span>
-                    <p>{error.message || "Une erreur s'est produite. Réessayez."}</p>
+                    <span className="mt-0.5 flex-shrink-0 text-red-500">
+                      ⚠
+                    </span>
+                    <div>
+                      <p className="font-medium">
+                        {customError ||
+                          error?.message ||
+                          "Une erreur inconnue s'est produite."}
+                      </p>
+                      {error && !customError && error.message && (
+                        <p className="mt-1 text-xs text-red-500 opacity-75">
+                          Détails : {error.toString()}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 )}
                 {messages.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center text-center opacity-50 space-y-4">
                     <Bot size={48} className={theme.text} />
                     <p className="text-sm text-gray-500 max-w-[250px]">
-                      Je suis là pour vous aider à gérer vos données et naviguer dans l'application.
+                      Je suis là pour vous aider à gérer vos données et naviguer
+                      dans l'application.
                     </p>
                   </div>
                 ) : (
@@ -161,7 +220,11 @@ export function AgentChatModal() {
                             : "bg-gray-100 text-gray-600 border border-gray-200"
                         }`}
                       >
-                        {m.role === "user" ? <User size={16} /> : <Bot size={16} />}
+                        {m.role === "user" ? (
+                          <User size={16} />
+                        ) : (
+                          <Bot size={16} />
+                        )}
                       </div>
                       <div
                         className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
@@ -173,37 +236,41 @@ export function AgentChatModal() {
                         {m.content}
                         {/* Indicateur discret si l'outil a été appelé */}
                         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                        {(m as any).toolInvocations?.map((toolInvocation: any) => {
-                          const { toolCallId, state, result } = toolInvocation;
-                          const isSuccess = result?.success !== false;
-                          const isRunning = state === "call" || state === "partial-call";
+                        {(m as any).toolInvocations?.map(
+                          (toolInvocation: any) => {
+                            const { toolCallId, state, result } =
+                              toolInvocation;
+                            const isSuccess = result?.success !== false;
+                            const isRunning =
+                              state === "call" || state === "partial-call";
 
-                          return (
-                            <div
-                              key={toolCallId}
-                              className={`mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                                isRunning
-                                  ? "bg-amber-50 text-amber-700 border border-amber-200"
+                            return (
+                              <div
+                                key={toolCallId}
+                                className={`mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                                  isRunning
+                                    ? "bg-amber-50 text-amber-700 border border-amber-200"
+                                    : isSuccess
+                                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                      : "bg-red-50 text-red-600 border border-red-200"
+                                }`}
+                              >
+                                {isRunning ? (
+                                  <Loader2 size={11} className="animate-spin" />
+                                ) : isSuccess ? (
+                                  <span>✓</span>
+                                ) : (
+                                  <span>✕</span>
+                                )}
+                                {isRunning
+                                  ? "Action en cours…"
                                   : isSuccess
-                                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                    : "bg-red-50 text-red-600 border border-red-200"
-                              }`}
-                            >
-                              {isRunning ? (
-                                <Loader2 size={11} className="animate-spin" />
-                              ) : isSuccess ? (
-                                <span>✓</span>
-                              ) : (
-                                <span>✕</span>
-                              )}
-                              {isRunning
-                                ? "Action en cours…"
-                                : isSuccess
-                                  ? "Action effectuée"
-                                  : result?.error || "Échec de l'action"}
-                            </div>
-                          );
-                        })}
+                                    ? "Action effectuée"
+                                    : result?.error || "Échec de l'action"}
+                              </div>
+                            );
+                          },
+                        )}
                       </div>
                     </div>
                   ))
@@ -214,7 +281,10 @@ export function AgentChatModal() {
                       <Bot size={16} />
                     </div>
                     <div className="bg-gray-100 rounded-2xl rounded-tl-sm px-4 py-3 flex items-center">
-                      <Loader2 size={16} className="animate-spin text-gray-500" />
+                      <Loader2
+                        size={16}
+                        className="animate-spin text-gray-500"
+                      />
                     </div>
                   </div>
                 )}

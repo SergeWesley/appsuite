@@ -67,6 +67,16 @@ export default function NoteEditorPage() {
     }
   }, [notes, noteId, loading, initialized]);
 
+  // Écouter les rafraîchissements globaux (ex: quand l'IA modifie la note et qu'on ferme la modale)
+  // On repasse initialized à false pour que le useEffect au-dessus reprenne les nouvelles données
+  useEffect(() => {
+    const handleRefresh = () => {
+      setInitialized(false);
+    };
+    window.addEventListener("appsuite:refresh-data", handleRefresh);
+    return () => window.removeEventListener("appsuite:refresh-data", handleRefresh);
+  }, []);
+
   // Auto-resize textarea
   useEffect(() => {
     if (contentRef.current) {

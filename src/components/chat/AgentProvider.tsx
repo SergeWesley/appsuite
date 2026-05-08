@@ -30,6 +30,8 @@ export function AgentProvider({ children }: { children: ReactNode }) {
 
   const closeAgent = () => {
     setIsOpen(false);
+    // On efface le contexte après un léger délai pour laisser l'animation de fermeture se faire
+    setTimeout(() => setOptions(null), 300);
   };
 
   // Écouteur global pour le raccourci Cmd+K / Ctrl+K (admins seulement)
@@ -38,7 +40,15 @@ export function AgentProvider({ children }: { children: ReactNode }) {
       if (!isAdmin) return;
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setIsOpen((open) => !open);
+        setIsOpen((open) => {
+          if (open) {
+            setTimeout(() => setOptions(null), 300);
+            return false;
+          } else {
+            setOptions(null); // On s'assure qu'on part d'un contexte propre
+            return true;
+          }
+        });
       }
     };
     document.addEventListener("keydown", down);
