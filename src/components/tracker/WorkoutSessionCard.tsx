@@ -89,9 +89,9 @@ export function WorkoutSessionCard({
           <Activity size={16} className="text-gray-400" />
           <span className="text-sm font-medium text-gray-600">Exercices</span>
         </div>
-        <div className="space-y-1">
-          {session.exercises.slice(0, 3).map((exercise, index) => (
-            <div key={exercise.id} className="text-sm text-gray-600">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+          {session.exercises.slice(0, 6).map((exercise, index) => (
+            <div key={exercise.id} className="text-sm text-gray-600 truncate" title={exercise.exercise?.name}>
               {exercise.exercise?.name}
               {exercise.sets && exercise.reps && (
                 <span className="text-gray-400 ml-2">
@@ -106,12 +106,12 @@ export function WorkoutSessionCard({
               )}
             </div>
           ))}
-          {session.exercises.length > 3 && (
-            <div className="text-sm text-gray-400">
-              +{session.exercises.length - 3} autres exercices
-            </div>
-          )}
         </div>
+        {session.exercises.length > 6 && (
+          <div className="text-sm text-gray-400 mt-1">
+            +{session.exercises.length - 6} autres exercices
+          </div>
+        )}
       </div>
 
       {/* Notes (aperçu) */}
