@@ -11,7 +11,7 @@ import { useIsAdmin } from "@/hooks/useIsAdmin";
 interface NavigationMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  currentModule: "booker" | "watcher" | "tracker" | "notes" | "spender";
+  currentModule: "booker" | "watcher" | "tracker" | "notes" | "spender" | "cooker";
 }
 
 export function NavigationMenu({

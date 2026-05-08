@@ -2,89 +2,15 @@
 
 import { motion } from "framer-motion";
 import {
-  BookOpen,
   User,
   LogOut,
   ArrowRight,
   Grid3X3,
-  Zap,
-  Film,
-  Wallet,
 } from "lucide-react";
 import Link from "next/link";
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-
-interface Tool {
-  id: string;
-  name: string;
-  description: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
-  href: string;
-  color: string;
-  bgColor: string;
-  available: boolean;
-  beta?: boolean;
-}
-
-const tools: Tool[] = [
-  {
-    id: "booker",
-    name: "Booker",
-    description:
-      "Gérez votre bibliothèque personnelle et suivez votre progression de lecture",
-    icon: BookOpen,
-    href: "/booker",
-    color: "text-blue-600",
-    bgColor: "bg-blue-50 border-blue-200",
-    available: true,
-  },
-  {
-    id: "tracker",
-    name: "Tracker",
-    description: "Suivez vos habitudes et objectifs quotidiens",
-    icon: Zap,
-    href: "/tracker",
-    color: "text-green-600",
-    bgColor: "bg-green-50 border-green-400",
-    available: true,
-  },
-  {
-    id: "watcher",
-    name: "Watcher",
-    description:
-      "Gérer votre collection de films et séries, suivez vos visionnages",
-    icon: Film,
-    href: "/watcher",
-    color: "text-purple-600",
-    bgColor: "bg-purple-50 border-purple-200",
-    available: true,
-    beta: true,
-  },
-  // Outils futurs (à implémenter)
-  {
-    id: "notes",
-    name: "Notes",
-    description: "Prenez des notes et organisez vos idées",
-    icon: Grid3X3,
-    href: "/notes",
-    color: "text-yellow-600",
-    bgColor: "bg-yellow-50 border-yellow-200",
-    available: true,
-    beta: false,
-  },
-  {
-    id: "spender",
-    name: "Spender",
-    description: "Gérez vos dépenses et suivez vos abonnements mensuels",
-    icon: Wallet,
-    href: "/spender",
-    color: "text-red-600",
-    bgColor: "bg-red-50 border-red-200",
-    available: true,
-    beta: true,
-  },
-];
+import { appModules } from "@/config/modules";
 
 export default function Dashboard() {
   const { user, signOut } = useAuthContext();
@@ -161,68 +87,35 @@ export default function Dashboard() {
 
         {/* Grille des outils */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {tools.map((tool, index) => (
+          {appModules.map((module, index) => (
             <motion.div
-              key={tool.id}
+              key={module.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 + index * 0.1 }}
-              className={`${
-                tool.available
-                  ? "cursor-pointer"
-                  : "cursor-not-allowed opacity-60"
-              }`}
+              className="cursor-pointer"
             >
-              {tool.available ? (
-                <Link href={tool.href}>
-                  <div
-                    className={`h-full p-6 rounded-xl border-2 ${tool.bgColor} hover:shadow-lg transition-all duration-200 hover:scale-105 group relative`}
-                  >
-                    {/* Badge Beta */}
-                    {tool.beta && (
-                      <span className="absolute top-4 right-4 px-2 py-1 text-xs font-medium bg-purple-500 text-white rounded-full">
-                        Beta
-                      </span>
-                    )}
-                    <div className="flex items-start justify-between mb-4">
-                      <div className={`p-3 rounded-lg bg-white ${tool.color}`}>
-                        <tool.icon size={24} />
-                      </div>
-                      <ArrowRight
-                        className={`${tool.color} opacity-0 group-hover:opacity-100 transition-opacity`}
-                        size={20}
-                      />
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      {tool.name}
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      {tool.description}
-                    </p>
-                  </div>
-                </Link>
-              ) : (
+              <Link href={module.path}>
                 <div
-                  className={`h-full p-6 rounded-xl border-2 ${tool.bgColor} relative`}
+                  className={`h-full p-6 rounded-xl border border-gray-100 ${module.theme.bgFaint} hover:shadow-lg transition-all duration-200 hover:scale-105 group relative`}
                 >
-                  <div className="absolute top-4 right-4">
-                    <span className="px-2 py-1 text-xs font-medium bg-gray-500 text-white rounded-full">
-                      Bientôt
-                    </span>
-                  </div>
-                  <div
-                    className={`p-3 rounded-lg bg-white ${tool.color} inline-block mb-4`}
-                  >
-                    <tool.icon size={24} />
+                  <div className="flex items-start justify-between mb-4">
+                    <div className={`p-3 rounded-lg bg-white ${module.theme.text}`}>
+                      <module.icon size={24} />
+                    </div>
+                    <ArrowRight
+                      className={`${module.theme.text} opacity-0 group-hover:opacity-100 transition-opacity`}
+                      size={20}
+                    />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    {tool.name}
+                    {module.name}
                   </h3>
                   <p className="text-gray-600 leading-relaxed">
-                    {tool.description}
+                    {module.description}
                   </p>
                 </div>
-              )}
+              </Link>
             </motion.div>
           ))}
         </div>

@@ -1,4 +1,4 @@
-import { BookOpen, Film, Activity, StickyNote, Wallet, LucideIcon } from "lucide-react";
+import { BookOpen, Film, Activity, StickyNote, Wallet, Utensils, LucideIcon } from "lucide-react";
 
 export interface AppTheme {
   text: string;
@@ -11,7 +11,7 @@ export interface AppTheme {
   ring: string;
 }
 
-export type ModuleId = "booker" | "tracker" | "watcher" | "notes" | "spender";
+export type ModuleId = "booker" | "tracker" | "watcher" | "notes" | "spender" | "cooker";
 
 export interface AppModule {
   id: ModuleId;
@@ -106,6 +106,23 @@ export const appModules: AppModule[] = [
       bgHoverLight: "hover:bg-red-100",
       bgSolidHover: "hover:bg-red-600",
       ring: "focus:ring-red-500/20 focus:border-red-500",
+    },
+  },
+  {
+    id: "cooker",
+    name: "Cooker",
+    path: "/cooker",
+    icon: Utensils,
+    description: "Gérez vos ingrédients et générez des recettes originiales",
+    theme: {
+      text: "text-cyan-500",
+      textDark: "text-cyan-600",
+      bg: "bg-cyan-500",
+      bgSoft: "bg-cyan-100",
+      bgFaint: "bg-cyan-50",
+      bgHoverLight: "hover:bg-cyan-100",
+      bgSolidHover: "hover:bg-cyan-600",
+      ring: "focus:ring-cyan-500/20 focus:border-cyan-500",
     },
   },
 ];
