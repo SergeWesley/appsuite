@@ -9,11 +9,12 @@ interface FolderCardProps {
   folder: NoteFolder;
   index: number;
   subfolderCount?: number;
-  onClick?: (folder: NoteFolder) => void;
+  isSelected?: boolean;
+  onClick?: (folder: NoteFolder, e: React.MouseEvent) => void;
   onConfig?: (folder: NoteFolder) => void;
 }
 
-export function FolderCard({ folder, index, subfolderCount = 0, onClick, onConfig }: FolderCardProps) {
+export function FolderCard({ folder, index, subfolderCount = 0, isSelected = false, onClick, onConfig }: FolderCardProps) {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const startPress = () => {
@@ -39,7 +40,7 @@ export function FolderCard({ folder, index, subfolderCount = 0, onClick, onConfi
       transition={{ delay: index * 0.05 }}
       whileHover={{ scale: 1.03, y: -2 }}
       whileTap={{ scale: 0.97 }}
-      onClick={() => onClick?.(folder)}
+      onClick={(e) => onClick?.(folder, e)}
       onContextMenu={(e) => {
         e.preventDefault(); // Empêche le menu contextuel du navigateur
         onConfig?.(folder);
@@ -50,7 +51,9 @@ export function FolderCard({ folder, index, subfolderCount = 0, onClick, onConfi
       onMouseDown={startPress}
       onMouseUp={cancelPress}
       onMouseLeave={cancelPress}
-      className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition-colors group select-none"
+      className={`flex flex-col items-center gap-2 p-3 rounded-xl transition-colors group select-none ${
+        isSelected ? "bg-amber-50 ring-2 ring-amber-500" : "hover:bg-gray-50"
+      }`}
     >
       {/* Folder Icon SVG */}
       <div className="relative w-20 h-16">

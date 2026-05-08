@@ -11,6 +11,7 @@ import { ImportNoteButton } from "@/components/notes/ImportNoteButton";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { StickyNote, LogOut, User, FolderOpen } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
@@ -18,9 +19,11 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 export default function NotesPage() {
   const router = useRouter();
   const { user, signOut } = useAuthContext();
-  const { folders, loading, addFolder, importNoteData } = useNoteFolders();
+  const { folders, loading, addFolder, importNoteData, deleteFolder } = useNoteFolders();
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+  const [selectedFolders, setSelectedFolders] = useState<string[]>([]);
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
 
   const rootFolders = folders.filter((f) => !f.parentId);
 
@@ -38,12 +41,50 @@ export default function NotesPage() {
     }
   };
 
+  const handleFolderClick = (f: NoteFolder, e: React.MouseEvent) => {
+    if (e.metaKey || e.ctrlKey) {
+      e.preventDefault();
+      setSelectedFolders((prev) =>
+        prev.includes(f.id) ? prev.filter((id) => id !== f.id) : [...prev, f.id]
+      );
+    } else {
+      router.push(`/notes/${f.id}`);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    let successCount = 0;
+    for (const id of selectedFolders) {
+      const success = await deleteFolder(id);
+      if (success) successCount++;
+    }
+    setSelectedFolders([]);
+    setShowBulkDeleteConfirm(false);
+    if (successCount < selectedFolders.length) {
+      alert(`Certains dossiers n'ont pas pu être supprimés (${successCount}/${selectedFolders.length}).`);
+    }
+  };
+
   useKeyboardShortcut([
     {
       key: "n",
       altKey: true,
       shiftKey: true,
       action: () => setShowCreateFolderModal(true),
+    },
+    {
+      key: "Backspace",
+      metaKey: true,
+      action: () => {
+        if (selectedFolders.length > 0) setShowBulkDeleteConfirm(true);
+      },
+    },
+    {
+      key: "Backspace",
+      ctrlKey: true,
+      action: () => {
+        if (selectedFolders.length > 0) setShowBulkDeleteConfirm(true);
+      },
     },
   ]);
 
@@ -186,8 +227,9 @@ export default function NotesPage() {
                 key={folder.id}
                 folder={folder}
                 index={index}
+                isSelected={selectedFolders.includes(folder.id)}
                 subfolderCount={folders.filter(f => f.parentId === folder.id).length}
-                onClick={(f) => router.push(`/notes/${f.id}`)}
+                onClick={handleFolderClick}
                 onConfig={(f) => router.push(`/notes/${f.id}/settings`)}
               />
             ))}
@@ -209,7 +251,16 @@ export default function NotesPage() {
         onSubmit={handleCreateFolder}
       />
 
-
+      {/* Bulk Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showBulkDeleteConfirm}
+        onClose={() => setShowBulkDeleteConfirm(false)}
+        onConfirm={handleBulkDelete}
+        title="Supprimer les dossiers sélectionnés"
+        message={`Êtes-vous sûr de vouloir supprimer ${selectedFolders.length} dossier(s) et toutes leurs notes ? Cette action est irréversible.`}
+        confirmLabel={`Supprimer ${selectedFolders.length} dossier(s)`}
+        confirmColor="bg-red-600 hover:bg-red-700"
+      />
       {/* Navigation Menu */}
       <NavigationMenu
         isOpen={isNavMenuOpen}

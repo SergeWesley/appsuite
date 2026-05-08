@@ -49,8 +49,10 @@ export default function FolderPage() {
   const [folder, setFolder] = useState<NoteFolder | null>(null);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const [showTemplatePicker, setShowTemplatePicker] = useState(false);
+  const [selectedFolders, setSelectedFolders] = useState<string[]>([]);
 
   const subFolders = folders.filter((f) => f.parentId === folderId);
 
@@ -97,6 +99,17 @@ export default function FolderPage() {
     }
   };
 
+  const handleFolderClick = (f: NoteFolder, e: React.MouseEvent) => {
+    if (e.metaKey || e.ctrlKey) {
+      e.preventDefault();
+      setSelectedFolders((prev) =>
+        prev.includes(f.id) ? prev.filter((id) => id !== f.id) : [...prev, f.id]
+      );
+    } else {
+      router.push(`/notes/${f.id}`);
+    }
+  };
+
   const handleOpenNote = (note: Note) => {
     router.push(`/notes/${folderId}/${note.id}`);
   };
@@ -112,6 +125,19 @@ export default function FolderPage() {
       }
     } else {
       alert("Une erreur s'est produite lors de la suppression du dossier.");
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    let successCount = 0;
+    for (const id of selectedFolders) {
+      const success = await deleteFolder(id);
+      if (success) successCount++;
+    }
+    setSelectedFolders([]);
+    setShowBulkDeleteConfirm(false);
+    if (successCount < selectedFolders.length) {
+      alert(`Certains dossiers n'ont pas pu être supprimés (${successCount}/${selectedFolders.length}).`);
     }
   };
 
@@ -131,12 +157,18 @@ export default function FolderPage() {
     {
       key: "Backspace",
       metaKey: true,
-      action: () => setShowDeleteConfirm(true),
+      action: () => {
+        if (selectedFolders.length > 0) setShowBulkDeleteConfirm(true);
+        else setShowDeleteConfirm(true);
+      },
     },
     {
       key: "Backspace",
       ctrlKey: true,
-      action: () => setShowDeleteConfirm(true),
+      action: () => {
+        if (selectedFolders.length > 0) setShowBulkDeleteConfirm(true);
+        else setShowDeleteConfirm(true);
+      },
     },
   ]);
 
@@ -250,8 +282,9 @@ export default function FolderPage() {
                   key={sf.id}
                   folder={sf}
                   index={index}
+                  isSelected={selectedFolders.includes(sf.id)}
                   subfolderCount={folders.filter((f) => f.parentId === sf.id).length}
-                  onClick={(f) => router.push(`/notes/${f.id}`)}
+                  onClick={handleFolderClick}
                   onConfig={(f) => router.push(`/notes/${f.id}/settings`)}
                 />
               ))}
@@ -320,6 +353,17 @@ export default function FolderPage() {
         title="Supprimer le dossier"
         message="Êtes-vous sûr de vouloir supprimer ce dossier et toutes ses notes ? Cette action est irréversible."
         confirmLabel="Supprimer"
+        confirmColor="bg-red-600 hover:bg-red-700"
+      />
+
+      {/* Bulk Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showBulkDeleteConfirm}
+        onClose={() => setShowBulkDeleteConfirm(false)}
+        onConfirm={handleBulkDelete}
+        title="Supprimer les dossiers sélectionnés"
+        message={`Êtes-vous sûr de vouloir supprimer ${selectedFolders.length} dossier(s) et toutes leurs notes ? Cette action est irréversible.`}
+        confirmLabel={`Supprimer ${selectedFolders.length} dossier(s)`}
         confirmColor="bg-red-600 hover:bg-red-700"
       />
 
