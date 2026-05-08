@@ -43,9 +43,9 @@ export default function CookerPage() {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState("");
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [selectedItemDetails, setSelectedItemDetails] =
     useState<FoodItem | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState("Toutes les catégories");
 
   useEffect(() => {
     async function loadFoodData() {
@@ -97,10 +97,16 @@ export default function CookerPage() {
   }, []);
 
   const filteredData = useMemo(() => {
-    if (!search.trim()) return foodData;
+    let data = foodData;
+
+    if (selectedCategory !== "Toutes les catégories") {
+      data = foodData.filter((cat) => cat.name === selectedCategory);
+    }
+
+    if (!search.trim()) return data;
 
     const query = search.toLowerCase();
-    return foodData
+    return data
       .map((cat) => ({
         ...cat,
         items: cat.items.filter(
@@ -110,14 +116,11 @@ export default function CookerPage() {
         ),
       }))
       .filter((cat) => cat.items.length > 0);
-  }, [foodData, search]);
+  }, [foodData, search, selectedCategory]);
 
-  // Auto-expand categories when searching
-  useEffect(() => {
-    if (search.trim() && filteredData.length > 0) {
-      setExpandedCategories(new Set(filteredData.map(c => c.name)));
-    }
-  }, [search, filteredData]);
+  const allCategoryNames = useMemo(() => {
+    return ["Toutes les catégories", ...foodData.map((c) => c.name)];
+  }, [foodData]);
 
   const toggleItem = (id: string) => {
     setSelectedItems((prev) => {
@@ -135,14 +138,7 @@ export default function CookerPage() {
     setSelectedItems(new Set());
   };
 
-  const toggleCategory = (name: string) => {
-    setExpandedCategories(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(name)) newSet.delete(name);
-      else newSet.add(name);
-      return newSet;
-    });
-  };
+
 
   // Helper to count selected items in a category
   const getSelectedCountInPool = (items: FoodItem[]) => {
@@ -212,24 +208,45 @@ export default function CookerPage() {
             </p>
           </div>
 
-          <div className="w-full md:w-96 relative group">
-            <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-cyan-500 transition-colors" />
-            <input
-              type="text"
-              placeholder="Rechercher un aliment..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-12 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none transition-all"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1.5 bg-gray-100 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-full transition-all"
-                title="Effacer la recherche"
+          <div className="w-full md:w-auto flex flex-col sm:flex-row gap-4">
+            {/* Category Select */}
+            <div className="relative w-full sm:w-64">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none appearance-none transition-all text-gray-700 font-medium"
               >
-                <X size={14} />
-              </button>
-            )}
+                {allCategoryNames.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                <ChevronDown size={18} />
+              </div>
+            </div>
+
+            {/* Search Bar */}
+            <div className="w-full sm:w-80 relative group">
+              <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-focus-within:text-cyan-500 transition-colors" />
+              <input
+                type="text"
+                placeholder="Rechercher un aliment..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-10 pr-12 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none transition-all"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1.5 bg-gray-100 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-full transition-all"
+                  title="Effacer la recherche"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -285,138 +302,105 @@ export default function CookerPage() {
               )}
             </AnimatePresence>
 
-            <div className="space-y-4">
+            <div className="space-y-12 pb-20">
               {filteredData.map((category) => {
-                const isExpanded = expandedCategories.has(category.name);
-                const categorySelectedCount = getSelectedCountInPool(category.items);
-                
+                const categorySelectedCount = getSelectedCountInPool(
+                  category.items,
+                );
+
                 return (
-                  <div
-                    key={category.name}
-                    className={`bg-white rounded-2xl shadow-sm border transition-all ${
-                      isExpanded ? 'border-cyan-200 ring-1 ring-cyan-50' : 'border-gray-100 hover:shadow-md'
-                    }`}
-                  >
-                    {/* Category Header (Collapsible Trigger) */}
-                    <button 
-                      onClick={() => toggleCategory(category.name)}
-                      className="w-full p-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors group"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className={`w-1.5 h-8 rounded-full transition-all ${
-                          categorySelectedCount > 0 
-                            ? 'bg-cyan-500' 
-                            : isExpanded ? 'bg-cyan-400 scale-y-100' : 'bg-gray-200 scale-y-75'
-                        }`}></div>
-                        <div className="text-left">
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-lg font-bold text-gray-800">
-                              {category.name}
-                            </h3>
-                            {categorySelectedCount > 0 && (
-                              <span className="bg-cyan-100 text-cyan-700 text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <Check size={10} strokeWidth={4} />
-                                {categorySelectedCount}
+                  <div key={category.name} className="space-y-6">
+                    <div className="flex items-center justify-between border-b border-gray-200 pb-3">
+                      <div className="flex items-center gap-3">
+                        <h2 className="text-xl font-bold text-gray-900">
+                          {category.name}
+                        </h2>
+                        {categorySelectedCount > 0 && (
+                          <span className="bg-cyan-600 text-white text-xs font-black px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                            <Check size={10} strokeWidth={4} />
+                            {categorySelectedCount}
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-sm text-gray-500 font-medium">
+                        {category.items.length} aliment
+                        {category.items.length > 1 ? "s" : ""}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      {category.items.map((item) => {
+                        const isSelected = selectedItems.has(item.id);
+                        return (
+                          <motion.div
+                            key={item.id}
+                            layout
+                            onClick={() => toggleItem(item.id)}
+                            className={`group relative p-4 rounded-2xl border-2 transition-all cursor-pointer ${
+                              isSelected
+                                ? "border-cyan-500 bg-cyan-50/40 shadow-sm"
+                                : "border-gray-100 bg-white hover:border-cyan-200 hover:shadow-md"
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <span
+                                className={`text-sm font-bold leading-snug transition-colors ${
+                                  isSelected
+                                    ? "text-cyan-900"
+                                    : "text-gray-700 group-hover:text-gray-900"
+                                }`}
+                              >
+                                {item.name}
                               </span>
-                            )}
-                          </div>
-                          <p className="text-xs text-gray-400 font-medium">
-                            {category.items.length} aliment{category.items.length > 1 ? 's' : ''} disponible{category.items.length > 1 ? 's' : ''}
-                          </p>
-                        </div>
-                      </div>
-                      <div className={`p-2 rounded-xl transition-all ${isExpanded ? 'bg-cyan-50 text-cyan-600 rotate-180' : 'bg-gray-50 text-gray-400'}`}>
-                        <ChevronDown size={20} />
-                      </div>
-                    </button>
-
-                    {/* Collapsible Content */}
-                    <AnimatePresence initial={false}>
-                      {isExpanded && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.3, ease: "easeInOut" }}
-                        >
-                          <div className="divide-y divide-gray-50 border-t border-gray-50 max-h-[500px] overflow-y-auto custom-scrollbar">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 divide-y md:divide-y-0 md:gap-x-4">
-                              {category.items.map((item) => {
-                                const isSelected = selectedItems.has(item.id);
-                                return (
-                                  <div
-                                    key={item.id}
-                                    className={`flex items-center gap-3 p-4 transition-all hover:bg-gray-50 cursor-pointer border-gray-50 md:border-b ${
-                                      isSelected ? "bg-cyan-50/30" : ""
-                                    }`}
-                                    onClick={() => toggleItem(item.id)}
-                                  >
-                                    <div
-                                      className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${
-                                        isSelected
-                                          ? "bg-cyan-500 border-cyan-500 shadow-sm"
-                                          : "border-gray-200 bg-white"
-                                      }`}
-                                    >
-                                      {isSelected && (
-                                        <Check className="w-4 h-4 text-white" />
-                                      )}
-                                    </div>
-
-                                    <div className="flex-1 min-w-0">
-                                      <p
-                                        className={`text-sm font-semibold truncate ${isSelected ? "text-cyan-900" : "text-gray-700"}`}
-                                      >
-                                        {item.name}
-                                      </p>
-                                      <div className="flex items-center gap-3 mt-1 text-[10px] font-medium text-gray-400 uppercase tracking-wider">
-                                        <span className="flex items-center gap-1">
-                                          <Flame size={10} className="text-orange-400" />
-                                          {item.kcal} kcal
-                                        </span>
-                                        <span className="flex items-center gap-1">
-                                          <Zap size={10} className="text-blue-400" />
-                                          {item.protein}g prot
-                                        </span>
-                                      </div>
-                                    </div>
-
-                                    <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setSelectedItemDetails(item);
-                                      }}
-                                      className="p-1.5 text-gray-300 hover:text-cyan-500 hover:bg-cyan-50 rounded-lg transition-all"
-                                    >
-                                      <Info size={16} />
-                                    </button>
-                                  </div>
-                                );
-                              })}
+                              <div
+                                className={`mt-0.5 h-5 w-5 shrink-0 rounded-full border-2 flex items-center justify-center transition-all ${
+                                  isSelected
+                                    ? "bg-cyan-500 border-cyan-500 scale-110 shadow-sm"
+                                    : "border-gray-200"
+                                }`}
+                              >
+                                {isSelected && (
+                                  <Check
+                                    size={10}
+                                    className="text-white"
+                                    strokeWidth={4}
+                                  />
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+
+                            <div className="mt-4 flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] text-gray-400 font-medium bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
+                                  {item.kcal} kcal
+                                </span>
+                              </div>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedItemDetails(item);
+                                }}
+                                className="text-[10px] font-bold text-cyan-600 hover:text-cyan-700 px-2 py-1 rounded-lg hover:bg-cyan-50 transition-colors"
+                              >
+                                Détails
+                              </button>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
                   </div>
                 );
               })}
-            </div>
 
-            {filteredData.length === 0 && (
-              <div className="text-center py-20">
-                <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Search className="h-8 w-8 text-gray-400" />
+              {filteredData.length === 0 && (
+                <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-100">
+                  <p className="text-gray-400 font-medium">
+                    Aucun ingrédient trouvé pour cette recherche.
+                  </p>
                 </div>
-                <h3 className="text-lg font-bold text-gray-800">
-                  Aucun aliment trouvé
-                </h3>
-                <p className="text-gray-500">
-                  Essayez de modifier votre recherche ou de parcourir les
-                  catégories.
-                </p>
-              </div>
-            )}
+              )}
+            </div>
           </>
         )}
       </main>
