@@ -19,6 +19,7 @@ interface DynamicPropertiesBannerProps {
   fields: CustomFieldDefinition[];
   metadata: Record<string, any>;
   onChange: (key: string, value: any) => void;
+  noteId?: string;
 }
 
 const TYPE_ICONS: Record<CustomFieldType, React.ElementType> = {
@@ -39,6 +40,7 @@ export function DynamicPropertiesBanner({
   fields,
   metadata,
   onChange,
+  noteId,
 }: DynamicPropertiesBannerProps) {
   if (!fields || fields.length === 0) return null;
 
@@ -51,6 +53,7 @@ export function DynamicPropertiesBanner({
             field={field}
             value={metadata[field.id] ?? ""}
             onChange={(val) => onChange(field.id, val)}
+            noteId={noteId}
           />
         ))}
       </div>
@@ -62,10 +65,12 @@ function PropertyRow({
   field,
   value,
   onChange,
+  noteId,
 }: {
   field: CustomFieldDefinition;
   value: any;
   onChange: (val: any) => void;
+  noteId?: string;
 }) {
   const Icon = TYPE_ICONS[field.type] || Type;
   const isCheckbox = field.type === "checkbox";
@@ -85,7 +90,7 @@ function PropertyRow({
 
       {/* Value Editor */}
       <div className="flex-1 min-w-0 w-full">
-        <PropertyValueEditor field={field} value={value} onChange={onChange} />
+        <PropertyValueEditor field={field} value={value} onChange={onChange} noteId={noteId} />
       </div>
     </div>
   );

@@ -311,7 +311,8 @@ export default function NoteEditorPage() {
             <DynamicPropertiesBanner 
               fields={activeFields} 
               metadata={metadata} 
-              onChange={handleMetadataChange} 
+              onChange={handleMetadataChange}
+              noteId={noteId}
             />
             <hr className="my-6 border-gray-100" />
           </>

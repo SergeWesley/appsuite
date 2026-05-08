@@ -9,6 +9,7 @@ export interface FilterState {
   selectedApp?: string;
   isStatsOpen?: boolean;
   selectedExerciseId?: string;
+  tableColumnSizing?: Record<string, number>;
 }
 
 /**
@@ -41,7 +42,7 @@ export const useFilterPersistence = (
 
   // Sauvegarder dans localStorage quand les filtres changent
   const updateFilter = useCallback(
-    (key: keyof FilterState, value: string| string[] | boolean) => {
+    (key: keyof FilterState, value: any) => {
       setFilters((prev) => {
         const newFilters = { ...prev, [key]: value };
         try {
@@ -143,6 +144,8 @@ export const useFilterPersistence = (
     isStatsOpen:
       filters.isStatsOpen ?? defaultValues.isStatsOpen ?? true,
     selectedExerciseId:
-      filters.selectedExerciseId || defaultValues.selectedExerciseId || ""
+      filters.selectedExerciseId || defaultValues.selectedExerciseId || "",
+    tableColumnSizing:
+      filters.tableColumnSizing || defaultValues.tableColumnSizing || {}
   };
 };

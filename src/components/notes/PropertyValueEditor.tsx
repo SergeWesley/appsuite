@@ -7,12 +7,14 @@ interface PropertyValueEditorProps {
   field: CustomFieldDefinition;
   value: any;
   onChange: (val: any) => void;
+  noteId?: string;
 }
 
 export function PropertyValueEditor({
   field,
   value,
   onChange,
+  noteId,
 }: PropertyValueEditorProps) {
   const [hover, setHover] = useState(0); // pour "rating"
 
@@ -146,8 +148,9 @@ export function PropertyValueEditor({
           field={field}
           value={value}
           onChange={onChange}
+          noteId={noteId}
           renderEditor={(f, v, o) => (
-            <PropertyValueEditor field={f} value={v} onChange={o} />
+            <PropertyValueEditor field={f} value={v} onChange={o} noteId={noteId} />
           )}
         />
       );

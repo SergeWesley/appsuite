@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CustomFieldDefinition } from "@/types/notes";
+import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import {
   Table,
   Plus,
@@ -8,7 +9,17 @@ import {
   ChevronUp,
   ChevronDown,
   Maximize2,
+  RotateCcw,
 } from "lucide-react";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  flexRender,
+  ColumnDef,
+  SortingState,
+  ColumnSizingState,
+} from "@tanstack/react-table";
 
 interface PropertyTableEditorProps {
   field: CustomFieldDefinition;
@@ -19,6 +30,7 @@ interface PropertyTableEditorProps {
     value: any,
     onChange: (val: any) => void
   ) => React.ReactNode;
+  noteId?: string;
 }
 
 export function PropertyTableEditor({
@@ -26,13 +38,36 @@ export function PropertyTableEditor({
   value,
   onChange,
   renderEditor,
+  noteId,
 }: PropertyTableEditorProps) {
-  const [sortConfig, setSortConfig] = useState<{
-    colId: string;
-    dir: "asc" | "desc";
-  } | null>(null);
+  // On combine l'ID de la note (s'il existe) avec l'ID du champ pour isoler la config par note
+  const safeStorageKey = `table-editor-${noteId ? `${noteId}-` : ""}${field.id}`;
+  const { tableColumnSizing, updateFilter } = useFilterPersistence(safeStorageKey);
+
   const [editingRowIndex, setEditingRowIndex] = useState<number | null>(null);
   const [isTableExpanded, setIsTableExpanded] = useState(false);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
+
+  // Synchronisation au chargement : useFilterPersistence lit le LS de manière asynchrone
+  // On met donc à jour notre sizing local seulement quand les données finissent d'arriver
+  useEffect(() => {
+    if (tableColumnSizing && Object.keys(tableColumnSizing).length > 0) {
+      setColumnSizing((current) => 
+        Object.keys(current).length === 0 ? tableColumnSizing : current
+      );
+    }
+  }, [tableColumnSizing]);
+
+  // Debounce the save to LocalStorage to avoid performance issues during drag
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (Object.keys(columnSizing).length > 0) {
+        updateFilter("tableColumnSizing", columnSizing);
+      }
+    }, 500); // Save half a second after the user stops dragging
+    return () => clearTimeout(timer);
+  }, [columnSizing, updateFilter]);
 
   const rows = Array.isArray(value) ? value : [];
 
@@ -52,24 +87,31 @@ export function PropertyTableEditor({
     onChange(newRows);
   };
 
-  const handleSort = (colId: string) => {
-    const dir =
-      sortConfig?.colId === colId && sortConfig.dir === "asc" ? "desc" : "asc";
-    setSortConfig({ colId, dir });
+  // Convert custom field columns to TanStack columns
+  const tableColumns = useMemo<ColumnDef<any>[]>(() => {
+    if (!field.columns) return [];
+    return field.columns.map((col) => ({
+      accessorKey: col.id, // access using column ID
+      id: col.id,
+      header: col.name,
+      size: 150, // Base default size
+      minSize: 60,
+    }));
+  }, [field.columns]);
 
-    const newRows = [...rows].sort((a, b) => {
-      const valA = String(a[colId] ?? "");
-      const valB = String(b[colId] ?? "");
-      
-      const compareResult = valA.localeCompare(valB, undefined, { 
-        numeric: true, 
-        sensitivity: 'base' 
-      });
-      
-      return dir === "asc" ? compareResult : -compareResult;
-    });
-    onChange(newRows);
-  };
+  const table = useReactTable({
+    data: rows,
+    columns: tableColumns,
+    columnResizeMode: "onChange",
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+      columnSizing,
+    },
+    onSortingChange: setSorting,
+    onColumnSizingChange: setColumnSizing,
+  });
 
   if (!field.columns || field.columns.length === 0) {
     return (
@@ -151,78 +193,146 @@ export function PropertyTableEditor({
           <table
             className={`${
               expanded ? "hidden md:table" : ""
-            } w-full text-left text-sm text-gray-600 min-w-full border-collapse relative`}
+            } text-left text-sm text-gray-600 border-collapse relative table-fixed`}
+            style={{
+              width: "100%",
+              minWidth: table.getTotalSize(),
+            }}
           >
             <thead className="bg-gray-50 uppercase text-xs font-semibold text-gray-500 sticky top-0 z-10 shadow-[0_1px_0_0_#e5e7eb]">
-              <tr>
-                {displayColumns.map((col) => (
-                  <th key={col.id} className="px-3 py-2 whitespace-nowrap">
-                    <div
-                      className="group flex items-center gap-1 cursor-pointer hover:text-amber-600 transition-colors select-none"
-                      onClick={() => handleSort(col.id)}
-                    >
-                      {col.name}
-                      {sortConfig?.colId === col.id ? (
-                        sortConfig.dir === "asc" ? (
-                          <ChevronUp size={14} />
-                        ) : (
-                          <ChevronDown size={14} />
-                        )
-                      ) : (
-                        <ChevronUp
-                          size={14}
-                          className="opacity-0 group-hover:opacity-100 text-gray-300"
-                        />
-                      )}
-                    </div>
-                  </th>
-                ))}
-                {hasHiddenColumns && (
-                  <th className="px-3 py-2 whitespace-nowrap text-gray-400 italic font-normal">
-                    + {columns.length - 3} autres
-                  </th>
-                )}
-                <th className="px-2 py-2 w-16"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {rows.map((rowValue, rIndex) => (
-                <tr
-                  key={rIndex}
-                  className={`hover:bg-gray-50/50 ${
-                    editingRowIndex === rIndex ? "bg-amber-50/30" : ""
-                  }`}
-                >
-                  {displayColumns.map((col) => (
-                    <td key={col.id} className="p-1 min-w-[120px] align-top">
-                      {renderEditor(col, rowValue[col.id] ?? "", (val) =>
-                        updateRow(rIndex, col.id, val)
-                      )}
-                    </td>
-                  ))}
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    const colIndex = columns.findIndex((c) => c.id === header.column.id);
+                    if (!expanded && colIndex >= 3) return null;
+
+                    const sortDir = header.column.getIsSorted();
+
+                    return (
+                      <th
+                        key={header.id}
+                        className="px-3 py-2 whitespace-nowrap relative border-r border-transparent hover:border-gray-200 group/th"
+                        style={{
+                          width: header.getSize(),
+                        }}
+                      >
+                        <div
+                          className="group flex items-center gap-1 cursor-pointer hover:text-amber-600 transition-colors select-none overflow-hidden"
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
+                          <span className="truncate">
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                          </span>
+                          {sortDir === "asc" ? (
+                            <ChevronUp size={14} className="shrink-0" />
+                          ) : sortDir === "desc" ? (
+                            <ChevronDown size={14} className="shrink-0" />
+                          ) : (
+                            <ChevronUp
+                              size={14}
+                              className="opacity-0 group-hover:opacity-100 text-gray-300 shrink-0"
+                            />
+                          )}
+                        </div>
+                        {/* Resizer Handle */}
+                        <div
+                          onMouseDown={header.getResizeHandler()}
+                          onTouchStart={header.getResizeHandler()}
+                          className={`absolute right-0 top-0 bottom-0 w-3 flex justify-center cursor-col-resize z-10 transition-colors touch-none select-none ${
+                            header.column.getIsResizing()
+                              ? "bg-amber-400"
+                              : "bg-transparent hover:bg-amber-400 group-hover/th:bg-gray-200"
+                          }`}
+                        >
+                          {/* Trait fin visible uniquement sur mobile pour indiquer la zone de redimensionnement */}
+                          <div className="w-[1px] h-full bg-gray-200 md:hidden" />
+                        </div>
+                      </th>
+                    );
+                  })}
                   {hasHiddenColumns && (
-                    <td className="p-1 align-middle text-center text-gray-300 italic">
-                      ...
-                    </td>
+                    <th className="px-3 py-2 whitespace-nowrap text-gray-400 italic font-normal" style={{ width: 120 }}>
+                      + {columns.length - 3} autres
+                    </th>
                   )}
-                  <td className="p-1 align-middle text-right flex justify-end gap-1 mt-1">
-                    <button
-                      onClick={() => setEditingRowIndex(rIndex)}
-                      className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors"
-                      title="Éditer la ligne complète"
-                    >
-                      <Maximize2 size={14} />
-                    </button>
-                    <button
-                      onClick={() => removeRow(rIndex)}
-                      className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
-                      title="Supprimer la ligne"
-                    >
-                      <X size={14} />
-                    </button>
-                  </td>
+                  <th className="px-2 py-2 w-16 text-center align-middle">
+                    {Object.keys(columnSizing).length > 0 && (
+                      <button
+                        onClick={() => {
+                          setColumnSizing({});
+                          updateFilter("tableColumnSizing", undefined);
+                        }}
+                        className="p-1 text-gray-300 hover:text-amber-600 transition-colors"
+                        title="Réinitialiser la largeur des colonnes"
+                      >
+                        <RotateCcw size={14} />
+                      </button>
+                    )}
+                  </th>
                 </tr>
               ))}
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {table.getRowModel().rows.map((row) => {
+                const rIndex = parseInt(row.id, 10);
+                return (
+                  <tr
+                    key={row.id}
+                    className={`hover:bg-gray-50/50 ${
+                      editingRowIndex === rIndex ? "bg-amber-50/30" : ""
+                    }`}
+                  >
+                    {row.getVisibleCells().map((cell) => {
+                      const colIndex = columns.findIndex((c) => c.id === cell.column.id);
+                      if (!expanded && colIndex >= 3) return null;
+
+                      const colDef = columns[colIndex];
+
+                      return (
+                        <td
+                          key={cell.id}
+                          className="p-1 align-top border-r border-transparent"
+                          style={{
+                            width: cell.column.getSize(),
+                          }}
+                        >
+                          <div className="w-full h-full overflow-hidden">
+                            {renderEditor(
+                              colDef,
+                              row.original[colDef.id] ?? "",
+                              (val) => updateRow(rIndex, colDef.id, val)
+                            )}
+                          </div>
+                        </td>
+                      );
+                    })}
+                    {hasHiddenColumns && (
+                      <td className="p-1 align-middle text-center text-gray-300 italic">
+                        ...
+                      </td>
+                    )}
+                    <td className="p-1 align-middle text-right flex justify-end gap-1 mt-1">
+                      <button
+                        onClick={() => setEditingRowIndex(rIndex)}
+                        className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors"
+                        title="Éditer la ligne complète"
+                      >
+                        <Maximize2 size={14} />
+                      </button>
+                      <button
+                        onClick={() => removeRow(rIndex)}
+                        className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                        title="Supprimer la ligne"
+                      >
+                        <X size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
