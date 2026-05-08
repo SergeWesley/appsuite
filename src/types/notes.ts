@@ -69,14 +69,24 @@ export interface NoteFormData {
 }
 
 export const FOLDER_COLORS = [
-  { value: "#f59e0b", label: "Jaune", bg: "bg-amber-400" },
-  { value: "#3b82f6", label: "Bleu", bg: "bg-blue-500" },
-  { value: "#10b981", label: "Vert", bg: "bg-emerald-500" },
+  { value: "#f59e0b", label: "Ambre", bg: "bg-amber-500" },
   { value: "#ef4444", label: "Rouge", bg: "bg-red-500" },
-  { value: "#8b5cf6", label: "Violet", bg: "bg-violet-500" },
   { value: "#f97316", label: "Orange", bg: "bg-orange-500" },
+  { value: "#84cc16", label: "Citron vert", bg: "bg-lime-500" },
+  { value: "#10b981", label: "Vert emeraude", bg: "bg-emerald-500" },
+  { value: "#22c55e", label: "Vert", bg: "bg-green-500" },
+  { value: "#14b8a6", label: "Sarcelle", bg: "bg-teal-500" },
+  { value: "#06b6d4", label: "Cyan", bg: "bg-cyan-500" },
+  { value: "#0ea5e9", label: "Ciel", bg: "bg-sky-500" },
+  { value: "#3b82f6", label: "Bleu", bg: "bg-blue-500" },
+  { value: "#6366f1", label: "Indigo", bg: "bg-indigo-500" },
+  { value: "#8b5cf6", label: "Violet", bg: "bg-violet-500" },
+  { value: "#a855f7", label: "Pourpre", bg: "bg-purple-500" },
+  { value: "#d946ef", label: "Fuchsia", bg: "bg-fuchsia-500" },
   { value: "#ec4899", label: "Rose", bg: "bg-pink-500" },
+  { value: "#f43f5e", label: "Rose vif", bg: "bg-rose-500" },
   { value: "#6b7280", label: "Gris", bg: "bg-gray-500" },
+  { value: "#57534e", label: "Pierre", bg: "bg-stone-500" },
 ];
 
 export interface NoteExportData {
