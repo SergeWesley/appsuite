@@ -50,7 +50,7 @@ export default function CookerPage() {
   useEffect(() => {
     async function loadFoodData() {
       try {
-        const response = await fetch("/data/food-comp-data-fr.csv");
+        const response = await fetch("/data/food-essentials-fr.csv");
         const text = await response.text();
         const lines = text.split("\n");
 
@@ -207,8 +207,8 @@ export default function CookerPage() {
           <div className="flex-1">
             <p className="text-gray-600">
               {loading
-                ? "Chargement de la base de données alimentaire..."
-                : `Parcourez plus de 2600 aliments et sélectionnez vos ingrédients.`}
+                ? "Chargement des essentiels..."
+                : "Sélectionnez vos ingrédients parmi les aliments de base les plus populaires."}
             </p>
           </div>
 
