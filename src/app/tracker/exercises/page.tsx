@@ -22,6 +22,7 @@ import {
   LogOut,
   User,
   ArrowLeft,
+  X,
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
@@ -254,8 +255,17 @@ export default function ExerciseCatalogPage() {
               placeholder="Rechercher un exercice..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+                aria-label="Effacer la recherche"
+              >
+                <X size={16} />
+              </button>
+            )}
           </div>
 
           {/* Filtres par groupe musculaire */}

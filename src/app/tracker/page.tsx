@@ -17,6 +17,7 @@ import {
   Target,
   List,
   TrendingUp,
+  X,
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
@@ -192,8 +193,17 @@ export default function TrackerPage() {
               placeholder="Rechercher dans les notes ou exercices..."
               value={searchQuery}
               onChange={(e) => updateFilter("searchQuery", e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
+            {searchQuery && (
+              <button
+                onClick={() => updateFilter("searchQuery", "")}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+                aria-label="Effacer la recherche"
+              >
+                <X size={16} />
+              </button>
+            )}
           </div>
 
           {/* Filtres par période */}
