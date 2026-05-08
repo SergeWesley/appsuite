@@ -40,13 +40,17 @@ export default function TrackerPage() {
   const filteredSessions = sessions.filter((session) => {
     // Filtre par période
     if (selectedPeriod === "week") {
-      const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-      if (session.date < oneWeekAgo) return false;
+      const now = new Date();
+      const dayOfWeek = now.getDay();
+      const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+      const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diffToMonday);
+      startOfWeek.setHours(0, 0, 0, 0);
+      if (session.date < startOfWeek) return false;
     } else if (selectedPeriod === "month") {
-      const oneMonthAgo = new Date();
-      oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
-      if (session.date < oneMonthAgo) return false;
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      startOfMonth.setHours(0, 0, 0, 0);
+      if (session.date < startOfMonth) return false;
     }
 
     // Filtre par recherche (notes ou nom d'exercices)
