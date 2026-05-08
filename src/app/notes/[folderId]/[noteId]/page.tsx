@@ -7,12 +7,13 @@ import { useNoteFolders } from "@/hooks/notes/useNoteFolders";
 import { useNotes } from "@/hooks/notes/useNotes";
 import { useNoteTemplates } from "@/hooks/notes/useNoteTemplates";
 import { NoteFolder, CustomFieldDefinition } from "@/types/notes";
-import { ConfirmationModal } from "@/components/tracker/ConfirmationModal";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { Trash2, Loader2, ArrowLeft, Check, Download, Sparkles } from "lucide-react";
 import { DynamicPropertiesBanner } from "@/components/notes/DynamicPropertiesBanner";
 import { NoteExportData } from "@/types/notes";
 import { useAgent } from "@/components/chat/AgentProvider";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 
 export default function NoteEditorPage() {
   const router = useRouter();
@@ -188,6 +189,19 @@ export default function NoteEditorPage() {
     saveNote(title, content, metadata);
     router.push(`/notes/${folderId}`);
   };
+
+  useKeyboardShortcut([
+    {
+      key: "Backspace",
+      metaKey: true,
+      action: () => setShowDeleteConfirm(true),
+    },
+    {
+      key: "Backspace",
+      ctrlKey: true,
+      action: () => setShowDeleteConfirm(true),
+    },
+  ]);
 
   if (loading && !initialized) {
     return (

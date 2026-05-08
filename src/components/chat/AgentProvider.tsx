@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 
 export interface OpenAgentOptions {
   initialMessage?: string;
@@ -34,26 +35,33 @@ export function AgentProvider({ children }: { children: ReactNode }) {
     setTimeout(() => setOptions(null), 300);
   };
 
-  // Écouteur global pour le raccourci Cmd+K / Ctrl+K (admins seulement)
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (!isAdmin) return;
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setIsOpen((open) => {
-          if (open) {
-            setTimeout(() => setOptions(null), 300);
-            return false;
-          } else {
-            setOptions(null); // On s'assure qu'on part d'un contexte propre
-            return true;
-          }
-        });
+  const toggleAgent = () => {
+    setIsOpen((open) => {
+      if (open) {
+        setTimeout(() => setOptions(null), 300);
+        return false;
+      } else {
+        setOptions(null); // On s'assure qu'on part d'un contexte propre
+        return true;
       }
-    };
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
-  }, [isAdmin]);
+    });
+  };
+
+  // Écouteur global pour le raccourci Cmd+K (Mac) / Ctrl+K (PC)
+  useKeyboardShortcut([
+    {
+      key: "k",
+      metaKey: true,
+      enabled: isAdmin,
+      action: toggleAgent,
+    },
+    {
+      key: "k",
+      ctrlKey: true,
+      enabled: isAdmin,
+      action: toggleAgent,
+    },
+  ]);
 
   return (
     <AgentContext.Provider value={{ isOpen, openAgent, closeAgent, options }}>

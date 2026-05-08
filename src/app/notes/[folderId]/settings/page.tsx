@@ -19,7 +19,7 @@ import {
 import { useNoteFolders } from "@/hooks/notes/useNoteFolders";
 import { useNoteTemplates } from "@/hooks/notes/useNoteTemplates";
 import { FOLDER_COLORS, CustomFieldDefinition, NoteFolder, NoteTemplate } from "@/types/notes";
-import { ConfirmationModal } from "@/components/tracker/ConfirmationModal";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { TemplateEditorModal } from "@/components/notes/TemplateEditorModal";
 
 export default function FolderSettingsPage() {

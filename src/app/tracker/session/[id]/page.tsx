@@ -14,7 +14,7 @@ import { SessionInfoCard } from "@/components/tracker/SessionInfoCard";
 import { SessionActions } from "@/components/tracker/SessionActions";
 import { ExerciseCard } from "@/components/tracker/ExerciseCard";
 import { MuscleGroupFilter } from "@/components/tracker/MuscleGroupFilter";
-import { ConfirmationModal } from "@/components/tracker/ConfirmationModal";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { Activity, LogOut, User } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";

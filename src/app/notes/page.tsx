@@ -10,6 +10,7 @@ import { CreateFolderModal } from "@/components/notes/CreateFolderModal";
 import { ImportNoteButton } from "@/components/notes/ImportNoteButton";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { NavigationMenu } from "@/components/NavigationMenu";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { StickyNote, LogOut, User, FolderOpen } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
@@ -36,6 +37,15 @@ export default function NotesPage() {
       alert("Note importée avec succès !");
     }
   };
+
+  useKeyboardShortcut([
+    {
+      key: "n",
+      altKey: true,
+      shiftKey: true,
+      action: () => setShowCreateFolderModal(true),
+    },
+  ]);
 
   return (
     <div className="min-h-screen bg-gray-50">

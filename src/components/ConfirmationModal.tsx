@@ -2,6 +2,8 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
+
 interface ConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -21,6 +23,18 @@ export function ConfirmationModal({
   confirmLabel = "Confirmer",
   confirmColor = "bg-red-600 hover:bg-red-700",
 }: ConfirmationModalProps) {
+  useKeyboardShortcut([
+    {
+      key: "Enter",
+      enabled: isOpen,
+      action: onConfirm,
+    },
+    {
+      key: "Escape",
+      enabled: isOpen,
+      action: onClose,
+    },
+  ]);
   return (
     <AnimatePresence>
       {isOpen && (

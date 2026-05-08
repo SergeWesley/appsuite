@@ -10,7 +10,7 @@ import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { useSubscriptions } from "@/hooks/spender/useSubscriptions";
 import { SubscriptionCard } from "@/components/spender/SubscriptionCard";
 import { CreateSubscriptionModal } from "@/components/spender/CreateSubscriptionModal";
-import { ConfirmationModal } from "@/components/tracker/ConfirmationModal";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { SubscriptionFormData } from "@/types/spender";
 
 export default function SpenderPage() {

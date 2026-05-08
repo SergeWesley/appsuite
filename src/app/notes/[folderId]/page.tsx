@@ -14,7 +14,8 @@ import { ImportNoteButton } from "@/components/notes/ImportNoteButton";
 import { NoteFolderFormData, NoteExportData } from "@/types/notes";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { NavigationMenu } from "@/components/NavigationMenu";
-import { ConfirmationModal } from "@/components/tracker/ConfirmationModal";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { TemplatePickerModal } from "@/components/notes/TemplatePickerModal";
 import {
   StickyNote,
@@ -113,6 +114,31 @@ export default function FolderPage() {
       alert("Une erreur s'est produite lors de la suppression du dossier.");
     }
   };
+
+  useKeyboardShortcut([
+    {
+      key: "n",
+      altKey: true,
+      shiftKey: false, // Explicitly false for note creation
+      action: handleFloatingAdd,
+    },
+    {
+      key: "n",
+      altKey: true,
+      shiftKey: true, // Shift for subfolder creation
+      action: () => setShowCreateFolderModal(true),
+    },
+    {
+      key: "Backspace",
+      metaKey: true,
+      action: () => setShowDeleteConfirm(true),
+    },
+    {
+      key: "Backspace",
+      ctrlKey: true,
+      action: () => setShowDeleteConfirm(true),
+    },
+  ]);
 
   return (
     <div className="min-h-screen bg-gray-50">
