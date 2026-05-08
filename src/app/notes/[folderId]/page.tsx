@@ -224,6 +224,7 @@ export default function FolderPage() {
                   key={sf.id}
                   folder={sf}
                   index={index}
+                  subfolderCount={folders.filter((f) => f.parentId === sf.id).length}
                   onClick={(f) => router.push(`/notes/${f.id}`)}
                   onConfig={(f) => router.push(`/notes/${f.id}/settings`)}
                 />

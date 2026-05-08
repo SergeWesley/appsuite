@@ -3,15 +3,17 @@
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { NoteFolder } from "@/types/notes";
+import { Folder, StickyNote } from "lucide-react";
 
 interface FolderCardProps {
   folder: NoteFolder;
   index: number;
+  subfolderCount?: number;
   onClick?: (folder: NoteFolder) => void;
   onConfig?: (folder: NoteFolder) => void;
 }
 
-export function FolderCard({ folder, index, onClick, onConfig }: FolderCardProps) {
+export function FolderCard({ folder, index, subfolderCount = 0, onClick, onConfig }: FolderCardProps) {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const startPress = () => {
@@ -26,6 +28,9 @@ export function FolderCard({ folder, index, onClick, onConfig }: FolderCardProps
       timerRef.current = null;
     }
   };
+
+  const hasNotes = folder.noteCount !== undefined && folder.noteCount > 0;
+  const hasSubfolders = subfolderCount > 0;
 
   return (
     <motion.button
@@ -93,10 +98,19 @@ export function FolderCard({ folder, index, onClick, onConfig }: FolderCardProps
           />
         </svg>
 
-        {/* Note count badge */}
-        {folder.noteCount !== undefined && folder.noteCount > 0 && (
-          <div className="absolute -top-1 -right-1 w-5 h-5 bg-gray-700 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-            {folder.noteCount}
+        {/* Counters badges */}
+        {(hasNotes || hasSubfolders) && (
+          <div className="absolute -top-2 -right-2 flex flex-col gap-1">
+            {hasSubfolders && (
+              <div className="flex items-center gap-1 bg-amber-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">
+                <Folder size={10} strokeWidth={2.5} /> {subfolderCount}
+              </div>
+            )}
+            {hasNotes && (
+              <div className="flex items-center gap-1 bg-gray-700 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">
+                <StickyNote size={10} strokeWidth={2.5} /> {folder.noteCount}
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -176,6 +176,7 @@ export default function NotesPage() {
                 key={folder.id}
                 folder={folder}
                 index={index}
+                subfolderCount={folders.filter(f => f.parentId === folder.id).length}
                 onClick={(f) => router.push(`/notes/${f.id}`)}
                 onConfig={(f) => router.push(`/notes/${f.id}/settings`)}
               />
