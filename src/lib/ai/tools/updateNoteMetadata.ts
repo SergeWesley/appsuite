@@ -56,29 +56,81 @@ export const updateNoteMetadataTool = (supabase: SupabaseClient, userId: string)
     if (!note)
       return { success: false, error: "Note introuvable." };
 
-    // 2. Fusionner les metadata existantes avec les nouvelles
-    const currentMetadata = (note.metadata as Record<string, any>) || {};
-    const newMetadata = { ...currentMetadata };
-
-    // Appliquer les mises à jour simples
-    if (metadataUpdates) {
-      for (const [key, value] of Object.entries(metadataUpdates)) {
-        newMetadata[key] = value;
+    // 2. Récupérer le schéma du template pour résoudre les IDs
+    let templateFields: any[] = [];
+    if (note.template_id) {
+      const { data: template } = await supabase
+        .from("note_templates")
+        .select("fields")
+        .eq("id", note.template_id)
+        .single();
+      if (template?.fields && Array.isArray(template.fields)) {
+        templateFields = template.fields;
       }
     }
 
-    // Appliquer l'ajout de lignes à un tableau
+    // Fonction pour trouver le vrai ID d'un champ (par ID exact ou par nom)
+    const resolveFieldId = (idOrName: string) => {
+      const field = templateFields.find(
+        (f) =>
+          f.id === idOrName ||
+          (f.name && f.name.toLowerCase() === idOrName.toLowerCase()),
+      );
+      return field ? field.id : idOrName;
+    };
+
+    // Fonction pour mapper les noms de colonnes vers leurs vrais IDs
+    const resolveColumnIds = (fieldId: string, rowObj: any) => {
+      const field = templateFields.find((f) => f.id === fieldId);
+      if (!field || !field.columns) return rowObj;
+
+      const newRow: any = {};
+      for (const [key, value] of Object.entries(rowObj)) {
+        const col = field.columns.find(
+          (c: any) =>
+            c.id === key ||
+            (c.name && c.name.toLowerCase() === key.toLowerCase()),
+        );
+        const finalKey = col ? col.id : key;
+        newRow[finalKey] = value;
+      }
+      return newRow;
+    };
+
+    // 3. Fusionner les metadata existantes avec les nouvelles
+    const currentMetadata = (note.metadata as Record<string, any>) || {};
+    const newMetadata = { ...currentMetadata };
+
+    // Appliquer les mises à jour simples (avec résolution intelligente)
+    if (metadataUpdates) {
+      for (const [key, value] of Object.entries(metadataUpdates)) {
+        const resolvedKey = resolveFieldId(key);
+        
+        // Si on essaie de mettre à jour un tableau entier, on mappe aussi les colonnes
+        if (Array.isArray(value) && value.length > 0 && typeof value[0] === "object") {
+          newMetadata[resolvedKey] = value.map(row => resolveColumnIds(resolvedKey, row));
+        } else {
+          newMetadata[resolvedKey] = value;
+        }
+      }
+    }
+
+    // Appliquer l'ajout de lignes à un tableau (avec résolution intelligente)
     if (appendRows) {
-      const existingRows = Array.isArray(newMetadata[appendRows.fieldId])
-        ? newMetadata[appendRows.fieldId]
+      const resolvedFieldId = resolveFieldId(appendRows.fieldId);
+      const existingRows = Array.isArray(newMetadata[resolvedFieldId])
+        ? newMetadata[resolvedFieldId]
         : [];
-      newMetadata[appendRows.fieldId] = [
+      
+      const mappedRows = appendRows.rows.map(row => resolveColumnIds(resolvedFieldId, row));
+      
+      newMetadata[resolvedFieldId] = [
         ...existingRows,
-        ...appendRows.rows,
+        ...mappedRows,
       ];
     }
 
-    // 3. Sauvegarder en base
+    // 4. Sauvegarder en base
     const { error: updateError } = await supabase
       .from("notes")
       .update({ metadata: newMetadata as any })
@@ -88,7 +140,7 @@ export const updateNoteMetadataTool = (supabase: SupabaseClient, userId: string)
     if (updateError)
       return { success: false, error: updateError.message };
 
-    // 4. Construire le résumé des changements
+    // 5. Construire le résumé des changements
     const changes: string[] = [];
     if (metadataUpdates) {
       changes.push(
