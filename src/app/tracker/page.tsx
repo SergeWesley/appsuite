@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useWorkoutSessions } from "@/hooks/tracker/useWorkoutSessions";
 import { WorkoutSessionCard } from "@/components/tracker/WorkoutSessionCard";
-import { WorkoutStats } from "@/components/tracker/WorkoutStats";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import {
   Plus,
@@ -27,7 +26,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 export default function TrackerPage() {
   const router = useRouter();
   const { user, signOut } = useAuthContext();
-  const { sessions, loading, error, getStats } = useWorkoutSessions();
+  const { sessions, loading, error } = useWorkoutSessions();
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
   // Gestion de la persistance des filtres
@@ -63,7 +62,6 @@ export default function TrackerPage() {
     return true;
   });
 
-  const stats = getStats();
 
   // Filtres de période
   const periodFilters = [
@@ -176,8 +174,6 @@ export default function TrackerPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Statistiques */}
-        <WorkoutStats stats={stats} />
 
         {/* Filtres et recherche */}
         <div className="mb-8 space-y-4">

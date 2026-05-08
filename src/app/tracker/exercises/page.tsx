@@ -21,6 +21,7 @@ import {
   Dumbbell,
   LogOut,
   User,
+  ArrowLeft,
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
@@ -39,9 +40,12 @@ export default function ExerciseCatalogPage() {
   } = useExercises();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<MuscleGroup>("all");
+  const [selectedMuscleGroup, setSelectedMuscleGroup] =
+    useState<MuscleGroup>("all");
   const [showExerciseForm, setShowExerciseForm] = useState(false);
-  const [editingExercise, setEditingExercise] = useState<Exercise | undefined>();
+  const [editingExercise, setEditingExercise] = useState<
+    Exercise | undefined
+  >();
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
   // Filtrer les exercices
@@ -118,7 +122,15 @@ export default function ExerciseCatalogPage() {
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => router.push("/tracker")}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label="Retour"
+              >
+                <ArrowLeft size={20} className="text-gray-600" />
+              </button>
+
               <button
                 onClick={() => setIsNavMenuOpen(true)}
                 className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
@@ -129,18 +141,9 @@ export default function ExerciseCatalogPage() {
                   Tracker
                 </h1>
               </button>
-              <span className="text-gray-400">•</span>
-              <span className="text-sm text-gray-600">Exercices</span>
             </div>
 
             <div className="flex items-center gap-4">
-              <button
-                onClick={() => router.push("/tracker")}
-                className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                Retour
-              </button>
-
               <button
                 onClick={() => setShowExerciseForm(true)}
                 className="hidden sm:inline-flex items-center text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"

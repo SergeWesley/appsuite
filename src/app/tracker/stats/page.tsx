@@ -10,11 +10,13 @@ import { useAuthContext } from "@/components/AuthProvider";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ExerciseProgressionChart, ProgressionDataPoint } from "@/components/tracker/ExerciseProgressionChart";
+import { WorkoutStats } from "@/components/tracker/WorkoutStats";
 
 export default function TrackerStatsPage() {
   const router = useRouter();
   const { user, signOut } = useAuthContext();
-  const { sessions, loading } = useWorkoutSessions();
+  const { sessions, loading, getStats } = useWorkoutSessions();
+  const stats = getStats();
   const { exercises } = useExercises();
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   
@@ -126,10 +128,19 @@ export default function TrackerStatsPage() {
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => router.push("/tracker")}
+                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label="Retour"
+              >
+                <ArrowLeft size={20} className="text-gray-600" />
+              </button>
+
               <button
                 onClick={() => setIsNavMenuOpen(true)}
                 className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                aria-label="Menu de navigation"
               >
                 <TrendingUp className="h-8 w-8 text-indigo-600" />
                 <h1 className="ml-3 text-xl font-semibold text-gray-900">Performances</h1>
@@ -137,14 +148,6 @@ export default function TrackerStatsPage() {
             </div>
 
             <div className="flex items-center gap-4">
-              <button
-                onClick={() => router.push("/tracker")}
-                className="flex items-center text-sm px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                <ArrowLeft size={16} className="mr-2" />
-                Retour
-              </button>
-
               <Menu as="div" className="relative inline-block text-left">
                 <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
                   <User size={20} />
@@ -177,6 +180,15 @@ export default function TrackerStatsPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
+        {/* Statistiques Globales */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <TrendingUp className="text-indigo-600" size={24} /> 
+            Aperçu global
+          </h2>
+          <WorkoutStats stats={stats} />
+        </div>
+
         {/* Top PRs Showcase */}
         {topRecords.length > 0 && (
           <div className="mb-8">
