@@ -16,6 +16,7 @@ import {
   Zap,
   X,
   Trash2,
+  ArrowUp,
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
@@ -62,6 +63,20 @@ export default function CookerPage() {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const [selectedItemDetails, setSelectedItemDetails] =
     useState<FoodItem | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   useEffect(() => {
     async function loadFoodData() {
@@ -152,11 +167,9 @@ export default function CookerPage() {
     updateFilter("cookerSelectedItems", []);
   };
 
-
-
   // Helper to count selected items in a category
   const getSelectedCountInPool = (items: FoodItem[]) => {
-    return items.filter(item => selectedItems.has(item.id)).length;
+    return items.filter((item) => selectedItems.has(item.id)).length;
   };
 
   return (
@@ -227,7 +240,9 @@ export default function CookerPage() {
             <div className="relative w-full sm:w-64">
               <select
                 value={selectedCategory}
-                onChange={(e) => updateFilter("selectedCategory", e.target.value)}
+                onChange={(e) =>
+                  updateFilter("selectedCategory", e.target.value)
+                }
                 className="w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none appearance-none transition-all text-gray-700 font-medium"
               >
                 {allCategoryNames.map((cat) => (
@@ -300,9 +315,9 @@ export default function CookerPage() {
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
-                      <button 
+                      <button
                         onClick={clearSelection}
                         className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all active:scale-95"
                       >
@@ -310,7 +325,7 @@ export default function CookerPage() {
                         <span className="hidden sm:inline">Tout effacer</span>
                       </button>
                       <button className="bg-white text-cyan-600 px-5 py-2 rounded-xl font-bold hover:bg-cyan-50 transition-colors shadow-sm active:scale-95">
-                        Générer des recettes
+                        Générer
                       </button>
                     </div>
                   </div>
@@ -421,6 +436,22 @@ export default function CookerPage() {
         )}
       </main>
 
+      {/* Back to Top Button */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, y: 20, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.8 }}
+            onClick={scrollToTop}
+            className="fixed bottom-8 right-8 p-4 bg-cyan-600 text-white rounded-full shadow-2xl hover:bg-cyan-700 transition-colors z-50 group active:scale-95"
+            aria-label="Retour en haut"
+          >
+            <ArrowUp className="w-6 h-6 group-hover:-translate-y-1 transition-transform" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
       {/* Detail Modal */}
       <AnimatePresence>
         {selectedItemDetails && (
@@ -439,7 +470,7 @@ export default function CookerPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="bg-cyan-600 p-6 text-white relative">
-                <button 
+                <button
                   onClick={() => setSelectedItemDetails(null)}
                   className="absolute top-4 right-4 p-1 rounded-full bg-black/10 hover:bg-black/20 transition-colors"
                 >
@@ -448,7 +479,9 @@ export default function CookerPage() {
                 <h4 className="text-xs uppercase font-bold tracking-widest text-cyan-200 mb-1">
                   {selectedItemDetails.category}
                 </h4>
-                <h3 className="text-xl font-bold">{selectedItemDetails.name}</h3>
+                <h3 className="text-xl font-bold">
+                  {selectedItemDetails.name}
+                </h3>
               </div>
 
               <div className="p-6">
@@ -463,7 +496,9 @@ export default function CookerPage() {
                     </p>
                     <p className="text-2xl font-black text-gray-800">
                       {selectedItemDetails.kcal}{" "}
-                      <span className="text-xs font-normal text-gray-400">kcal</span>
+                      <span className="text-xs font-normal text-gray-400">
+                        kcal
+                      </span>
                     </p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-2xl">
@@ -472,7 +507,9 @@ export default function CookerPage() {
                     </p>
                     <p className="text-2xl font-black text-gray-800">
                       {selectedItemDetails.protein}{" "}
-                      <span className="text-xs font-normal text-gray-400">g</span>
+                      <span className="text-xs font-normal text-gray-400">
+                        g
+                      </span>
                     </p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-2xl">
@@ -481,7 +518,9 @@ export default function CookerPage() {
                     </p>
                     <p className="text-2xl font-black text-gray-800">
                       {selectedItemDetails.carbs}{" "}
-                      <span className="text-xs font-normal text-gray-400">g</span>
+                      <span className="text-xs font-normal text-gray-400">
+                        g
+                      </span>
                     </p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-2xl">
@@ -490,7 +529,9 @@ export default function CookerPage() {
                     </p>
                     <p className="text-2xl font-black text-gray-800">
                       {selectedItemDetails.fat}{" "}
-                      <span className="text-xs font-normal text-gray-400">g</span>
+                      <span className="text-xs font-normal text-gray-400">
+                        g
+                      </span>
                     </p>
                   </div>
                 </div>
