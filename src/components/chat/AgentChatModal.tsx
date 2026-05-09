@@ -7,7 +7,7 @@ import { Bot, User, X, Sparkles, Send, Loader2 } from "lucide-react";
 import { useAgent } from "./AgentProvider";
 import { usePathname, useRouter } from "next/navigation";
 import { getModuleByPath, defaultTheme } from "@/config/modules";
-import { supabase } from "@/lib/supabase";
+import { useAuthContext } from "@/components/AuthProvider";
 
 export function AgentChatModal() {
   const { isOpen, closeAgent, openAgent, options } = useAgent();
@@ -18,19 +18,9 @@ export function AgentChatModal() {
   const currentModule = getModuleByPath(pathname);
   const theme = currentModule?.theme || defaultTheme;
 
-  // Récupérer le token d'accès Supabase pour l'authentification côté serveur
-  const [accessToken, setAccessToken] = useState<string>("");
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setAccessToken(session?.access_token || "");
-    });
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_, session) => {
-      setAccessToken(session?.access_token || "");
-    });
-    return () => subscription.unsubscribe();
-  }, []);
+  // Récupérer le token d'accès Supabase via le contexte centralisé
+  const { session } = useAuthContext();
+  const accessToken = session?.access_token || "";
 
   // Détecter automatiquement si on est dans le contexte d'une note (URL: /notes/[folderId]/[noteId])
   const noteMatch = pathname.match(/^\/notes\/([^/]+)\/([^/]+)$/);

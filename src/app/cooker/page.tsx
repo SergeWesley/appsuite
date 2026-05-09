@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { NavigationMenu } from "@/components/NavigationMenu";
+import RecipeResults from "./RecipeResults";
 import {
   Search,
   Check,
@@ -64,6 +65,7 @@ export default function CookerPage() {
   const [selectedItemDetails, setSelectedItemDetails] =
     useState<FoodItem | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [showRecipes, setShowRecipes] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -172,6 +174,13 @@ export default function CookerPage() {
     return items.filter((item) => selectedItems.has(item.id)).length;
   };
 
+  const selectedIngredientNames = useMemo(() => {
+    return foodData
+      .flatMap((cat) => cat.items)
+      .filter((item) => selectedItems.has(item.id))
+      .map((item) => item.name);
+  }, [foodData, selectedItems]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -225,61 +234,6 @@ export default function CookerPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page Title & Search */}
-        <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="flex-1">
-            <p className="text-gray-600">
-              {loading
-                ? "Chargement des essentiels..."
-                : "Sélectionnez vos ingrédients parmi les aliments de base les plus populaires."}
-            </p>
-          </div>
-
-          <div className="w-full md:w-auto flex flex-col sm:flex-row gap-4">
-            {/* Category Select */}
-            <div className="relative w-full sm:w-64">
-              <select
-                value={selectedCategory}
-                onChange={(e) =>
-                  updateFilter("selectedCategory", e.target.value)
-                }
-                className="w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none appearance-none transition-all text-gray-700 font-medium"
-              >
-                {allCategoryNames.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                <ChevronDown size={20} />
-              </div>
-            </div>
-
-            {/* Search Input */}
-            <div className="relative flex-1 min-w-[280px]">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                <Search size={20} />
-              </div>
-              <input
-                type="text"
-                placeholder="Rechercher un aliment (ex: riz, oeuf...)"
-                value={search}
-                onChange={(e) => updateFilter("searchQuery", e.target.value)}
-                className="w-full pl-11 pr-12 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none transition-all text-gray-700"
-              />
-              {search && (
-                <button
-                  onClick={() => updateFilter("searchQuery", "")}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1.5 bg-gray-100 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-full transition-all"
-                  title="Effacer la recherche"
-                >
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
@@ -289,150 +243,230 @@ export default function CookerPage() {
             </p>
           </div>
         ) : (
-          <>
-            {/* Selected Counter / Action Bar */}
-            <AnimatePresence>
-              {selectedItems.size > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: -20, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                  className="mb-6 sticky top-4 z-20"
-                >
-                  <div className="bg-cyan-600 text-white px-6 py-4 rounded-2xl shadow-xl flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="bg-white/20 p-2 rounded-lg">
-                        <Check className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <p className="font-bold">
-                          {selectedItems.size} ingrédient
-                          {selectedItems.size > 1 ? "s" : ""} sélectionné
-                          {selectedItems.size > 1 ? "s" : ""}
-                        </p>
-                        <p className="text-xs text-cyan-100">
-                          Prêt pour la génération de recettes
-                        </p>
-                      </div>
-                    </div>
+          <AnimatePresence mode="wait">
+            {!showRecipes ? (
+              <motion.div
+                key="ingredients"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                {/* Page Title & Search */}
+                <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                  <div className="flex-1">
+                    <p className="text-gray-600">
+                      Sélectionnez vos ingrédients parmi les aliments de base
+                      les plus populaires.
+                    </p>
+                  </div>
 
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={clearSelection}
-                        className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all active:scale-95"
+                  <div className="w-full md:w-auto flex flex-col sm:flex-row gap-4">
+                    {/* Category Select */}
+                    <div className="relative w-full sm:w-64">
+                      <select
+                        value={selectedCategory}
+                        onChange={(e) =>
+                          updateFilter("selectedCategory", e.target.value)
+                        }
+                        className="w-full pl-4 pr-10 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none appearance-none transition-all text-gray-700 font-medium"
                       >
-                        <Trash2 size={16} />
-                        <span className="hidden sm:inline">Tout effacer</span>
-                      </button>
-                      <button className="bg-white text-cyan-600 px-5 py-2 rounded-xl font-bold hover:bg-cyan-50 transition-colors shadow-sm active:scale-95">
-                        Générer
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <div className="space-y-12 pb-20">
-              {filteredData.map((category) => {
-                const categorySelectedCount = getSelectedCountInPool(
-                  category.items,
-                );
-
-                return (
-                  <div key={category.name} className="space-y-6">
-                    <div className="flex items-center justify-between border-b border-gray-200 pb-3">
-                      <div className="flex items-center gap-3">
-                        <h2 className="text-xl font-bold text-gray-900">
-                          {category.name}
-                        </h2>
-                        {categorySelectedCount > 0 && (
-                          <span className="bg-cyan-600 text-white text-xs font-black px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
-                            <Check size={10} strokeWidth={4} />
-                            {categorySelectedCount}
-                          </span>
-                        )}
+                        {allCategoryNames.map((cat) => (
+                          <option key={cat} value={cat}>
+                            {cat}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                        <ChevronDown size={20} />
                       </div>
-                      <span className="text-sm text-gray-500 font-medium">
-                        {category.items.length} aliment
-                        {category.items.length > 1 ? "s" : ""}
-                      </span>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                      {category.items.map((item) => {
-                        const isSelected = selectedItems.has(item.id);
-                        return (
-                          <motion.div
-                            key={item.id}
-                            layout
-                            onClick={() => toggleItem(item.id)}
-                            className={`group relative p-4 rounded-2xl border-2 transition-all cursor-pointer ${
-                              isSelected
-                                ? "border-cyan-500 bg-cyan-50/40 shadow-sm"
-                                : "border-gray-100 bg-white hover:border-cyan-200 hover:shadow-md"
-                            }`}
-                          >
-                            <div className="flex items-start justify-between gap-3">
-                              <span
-                                className={`text-sm font-bold leading-snug transition-colors ${
-                                  isSelected
-                                    ? "text-cyan-900"
-                                    : "text-gray-700 group-hover:text-gray-900"
-                                }`}
-                              >
-                                {item.name}
-                              </span>
-                              <div
-                                className={`mt-0.5 h-5 w-5 shrink-0 rounded-full border-2 flex items-center justify-center transition-all ${
-                                  isSelected
-                                    ? "bg-cyan-500 border-cyan-500 scale-110 shadow-sm"
-                                    : "border-gray-200"
-                                }`}
-                              >
-                                {isSelected && (
-                                  <Check
-                                    size={10}
-                                    className="text-white"
-                                    strokeWidth={4}
-                                  />
-                                )}
-                              </div>
-                            </div>
-
-                            <div className="mt-4 flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <span className="text-[10px] text-gray-400 font-medium bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
-                                  {item.kcal} kcal
-                                </span>
-                              </div>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedItemDetails(item);
-                                }}
-                                className="text-[10px] font-bold text-cyan-600 hover:text-cyan-700 px-2 py-1 rounded-lg hover:bg-cyan-50 transition-colors"
-                              >
-                                Détails
-                              </button>
-                            </div>
-                          </motion.div>
-                        );
-                      })}
+                    {/* Search Input */}
+                    <div className="relative flex-1 min-w-[280px]">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                        <Search size={20} />
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Rechercher un aliment (ex: riz, oeuf...)"
+                        value={search}
+                        onChange={(e) =>
+                          updateFilter("searchQuery", e.target.value)
+                        }
+                        className="w-full pl-11 pr-12 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-cyan-500 focus:border-transparent outline-none transition-all text-gray-700"
+                      />
+                      {search && (
+                        <button
+                          onClick={() => updateFilter("searchQuery", "")}
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1.5 bg-gray-100 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-full transition-all"
+                          title="Effacer la recherche"
+                        >
+                          <X size={14} />
+                        </button>
+                      )}
                     </div>
                   </div>
-                );
-              })}
-
-              {filteredData.length === 0 && (
-                <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-100">
-                  <p className="text-gray-400 font-medium">
-                    Aucun ingrédient trouvé pour cette recherche.
-                  </p>
                 </div>
-              )}
-            </div>
-          </>
+
+                {/* Selected Counter / Action Bar */}
+                <AnimatePresence>
+                  {selectedItems.size > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                      className="mb-6 sticky top-4 z-20"
+                    >
+                      <div className="bg-cyan-600 text-white px-6 py-4 rounded-2xl shadow-xl flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-white/20 p-2 rounded-lg">
+                            <Check className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <p className="font-bold">
+                              {selectedItems.size} ingrédient
+                              {selectedItems.size > 1 ? "s" : ""} sélectionné
+                              {selectedItems.size > 1 ? "s" : ""}
+                            </p>
+                            <p className="text-xs text-cyan-100">
+                              Prêt pour la génération de recettes
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={clearSelection}
+                            className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all active:scale-95"
+                          >
+                            <Trash2 size={16} />
+                            <span className="hidden sm:inline">
+                              Tout effacer
+                            </span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                              setShowRecipes(true);
+                            }}
+                            className="bg-white text-cyan-600 px-5 py-2 rounded-xl font-bold hover:bg-cyan-50 transition-colors shadow-sm active:scale-95"
+                          >
+                            Générer
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="space-y-12 pb-20">
+                  {filteredData.map((category) => {
+                    const categorySelectedCount = getSelectedCountInPool(
+                      category.items,
+                    );
+
+                    return (
+                      <div key={category.name} className="space-y-6">
+                        <div className="flex items-center justify-between border-b border-gray-200 pb-3">
+                          <div className="flex items-center gap-3">
+                            <h2 className="text-xl font-bold text-gray-900">
+                              {category.name}
+                            </h2>
+                            {categorySelectedCount > 0 && (
+                              <span className="bg-cyan-600 text-white text-xs font-black px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                                <Check size={10} strokeWidth={4} />
+                                {categorySelectedCount}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-sm text-gray-500 font-medium">
+                            {category.items.length} aliment
+                            {category.items.length > 1 ? "s" : ""}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                          {category.items.map((item) => {
+                            const isSelected = selectedItems.has(item.id);
+                            return (
+                              <motion.div
+                                key={item.id}
+                                layout
+                                onClick={() => toggleItem(item.id)}
+                                className={`group relative p-4 rounded-2xl border-2 transition-all cursor-pointer ${
+                                  isSelected
+                                    ? "border-cyan-500 bg-cyan-50/40 shadow-sm"
+                                    : "border-gray-100 bg-white hover:border-cyan-200 hover:shadow-md"
+                                }`}
+                              >
+                                <div className="flex items-start justify-between gap-3">
+                                  <span
+                                    className={`text-sm font-bold leading-snug transition-colors ${
+                                      isSelected
+                                        ? "text-cyan-900"
+                                        : "text-gray-700 group-hover:text-gray-900"
+                                    }`}
+                                  >
+                                    {item.name}
+                                  </span>
+                                  <div
+                                    className={`mt-0.5 h-5 w-5 shrink-0 rounded-full border-2 flex items-center justify-center transition-all ${
+                                      isSelected
+                                        ? "bg-cyan-500 border-cyan-500 scale-110 shadow-sm"
+                                        : "border-gray-200"
+                                    }`}
+                                  >
+                                    {isSelected && (
+                                      <Check
+                                        size={10}
+                                        className="text-white"
+                                        strokeWidth={4}
+                                      />
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="mt-4 flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[10px] text-gray-400 font-medium bg-gray-50 px-2 py-0.5 rounded-md border border-gray-100">
+                                      {item.kcal} kcal
+                                    </span>
+                                  </div>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedItemDetails(item);
+                                    }}
+                                    className="text-[10px] font-bold text-cyan-600 hover:text-cyan-700 px-2 py-1 rounded-lg hover:bg-cyan-50 transition-colors"
+                                  >
+                                    Détails
+                                  </button>
+                                </div>
+                              </motion.div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {filteredData.length === 0 && (
+                    <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-100">
+                      <p className="text-gray-400 font-medium">
+                        Aucun ingrédient trouvé pour cette recherche.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            ) : (
+              <RecipeResults
+                ingredients={selectedIngredientNames}
+                onBack={() => setShowRecipes(false)}
+              />
+            )}
+          </AnimatePresence>
         )}
       </main>
 

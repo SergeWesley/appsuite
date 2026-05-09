@@ -10,6 +10,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   loading: boolean;
   user: any;
+  session: any;
   signOut: () => Promise<void>;
 }
 
@@ -28,7 +29,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const { user, loading, signOut } = useAuth();
+  const { user, session, loading, signOut } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -52,6 +53,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isAuthenticated,
     loading,
     user,
+    session,
     signOut,
   };
 

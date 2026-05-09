@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { User, AuthError } from "@supabase/supabase-js";
+import { User, AuthError, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import { useKafka } from "./useKafka";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { sendConnectionEvent, sendDisconnectionEvent } = useKafka();
@@ -14,6 +15,7 @@ export function useAuth() {
   useEffect(() => {
     // Obtenir la session initiale
     supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
     });
@@ -22,9 +24,8 @@ export function useAuth() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      const newUser = session?.user ?? null;
-
-      setUser(newUser);
+      setSession(session);
+      setUser(session?.user ?? null);
       setLoading(false);
     });
 
@@ -160,6 +161,7 @@ export function useAuth() {
 
   return {
     user,
+    session,
     loading,
     error,
     signIn,
