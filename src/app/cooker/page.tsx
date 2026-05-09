@@ -234,7 +234,6 @@ export default function CookerPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="h-12 w-12 text-cyan-500 animate-spin mb-4" />
@@ -381,8 +380,7 @@ export default function CookerPage() {
                             )}
                           </div>
                           <span className="text-sm text-gray-500 font-medium">
-                            {category.items.length} aliment
-                            {category.items.length > 1 ? "s" : ""}
+                            {category.items.length}
                           </span>
                         </div>
 
