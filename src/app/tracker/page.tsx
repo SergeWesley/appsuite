@@ -1,17 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useWorkoutSessions } from "@/hooks/tracker/useWorkoutSessions";
 import { WorkoutSessionCard } from "@/components/tracker/WorkoutSessionCard";
-import { NavigationMenu } from "@/components/NavigationMenu";
 import {
   Plus,
   Search,
   Activity,
-  LogOut,
-  User,
   Dumbbell,
   Calendar,
   Target,
@@ -19,16 +15,13 @@ import {
   TrendingUp,
   X,
 } from "lucide-react";
-import { useAuthContext } from "@/components/AuthProvider";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import { WorkoutCalendar } from "@/components/tracker/WorkoutCalendar";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { AppHeader } from "@/components/AppHeader";
 
-
 export default function TrackerPage() {
   const router = useRouter();
-  const { user, signOut } = useAuthContext();
   const { sessions, loading, error } = useWorkoutSessions();
 
   // Gestion de la persistance des filtres
@@ -45,7 +38,11 @@ export default function TrackerPage() {
       const now = new Date();
       const dayOfWeek = now.getDay();
       const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-      const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diffToMonday);
+      const startOfWeek = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() - diffToMonday,
+      );
       startOfWeek.setHours(0, 0, 0, 0);
       if (session.date < startOfWeek) return false;
     } else if (selectedPeriod === "month") {
@@ -68,7 +65,6 @@ export default function TrackerPage() {
     return true;
   });
 
-
   // Filtres de période
   const periodFilters = [
     { value: "all", label: "Toutes les séances", icon: Activity },
@@ -77,7 +73,13 @@ export default function TrackerPage() {
   ];
 
   if (loading) {
-    return <LoadingOverlay isLoading={true} message="Chargement de vos séances..." fullPage />;
+    return (
+      <LoadingOverlay
+        isLoading={true}
+        message="Chargement de vos séances..."
+        fullPage
+      />
+    );
   }
 
   if (error) {
@@ -132,7 +134,6 @@ export default function TrackerPage() {
       />
 
       <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
         {/* Filtres et recherche */}
         <div className="mb-8 space-y-4">
           {/* Barre de recherche */}
@@ -237,7 +238,6 @@ export default function TrackerPage() {
                   router.push(`/tracker/session/${session.id}`)
                 }
               />
-
             </motion.div>
           ) : (
             /* Vue Liste */
@@ -275,7 +275,6 @@ export default function TrackerPage() {
                       <button
                         onClick={() => router.push("/tracker/new")}
                         className="mt-4 inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-
                       >
                         <Plus size={20} className="mr-2" />
                         Créer ma première séance
@@ -300,7 +299,6 @@ export default function TrackerPage() {
                             router.push(`/tracker/session/${session.id}`)
                           }
                         />
-
                       </motion.div>
                     ))}
                   </AnimatePresence>
@@ -377,12 +375,9 @@ export default function TrackerPage() {
         whileTap={{ scale: 0.9 }}
         onClick={() => router.push("/tracker/new")}
         className="floating-action md:hidden inline-flex items-center justify-center w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-colors"
-
       >
         <Plus size={24} />
       </motion.button>
-
-
     </div>
   );
 }

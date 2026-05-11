@@ -8,6 +8,7 @@ interface LoadingOverlayProps {
   message?: string;
   className?: string;
   fullPage?: boolean;
+  color?: "green" | "amber" | "indigo" | "gray";
 }
 
 /**
@@ -19,7 +20,14 @@ export function LoadingOverlay({
   message = "Chargement en cours...",
   className = "",
   fullPage = false,
+  color = "green",
 }: LoadingOverlayProps) {
+  const colorClasses = {
+    green: "text-green-600 bg-green-400",
+    amber: "text-amber-600 bg-amber-400",
+    indigo: "text-indigo-600 bg-indigo-400",
+    gray: "text-gray-600 bg-gray-400",
+  };
   return (
     <AnimatePresence>
       {isLoading && (
@@ -42,7 +50,7 @@ export function LoadingOverlay({
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-                className="text-green-600"
+                className={colorClasses[color].split(" ")[0]}
               >
                 <Loader2 size={40} strokeWidth={2.5} />
               </motion.div>
@@ -50,7 +58,7 @@ export function LoadingOverlay({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: [0, 1, 0] }}
                 transition={{ repeat: Infinity, duration: 2 }}
-                className="absolute inset-0 bg-green-400 blur-xl opacity-20"
+                className={`absolute inset-0 ${colorClasses[color].split(" ")[1]} blur-xl opacity-20`}
               />
             </div>
             <p className="text-gray-900 font-semibold text-center">{message}</p>

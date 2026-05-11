@@ -5,7 +5,6 @@ import { useRouter, useParams } from "next/navigation";
 import { useWorkoutSessions } from "@/hooks/tracker/useWorkoutSessions";
 import { useExercises } from "@/hooks/tracker/useExercices";
 import { WorkoutSession, Exercise, MuscleGroup } from "@/types/workout-session";
-import { NavigationMenu } from "@/components/NavigationMenu";
 import { ExerciseDistributionChart } from "@/components/tracker/ExerciseDistributionChart";
 import { ExerciseSelectionModal } from "@/components/tracker/ExerciseSelectionModal";
 import { ExerciseDetailsModal } from "@/components/tracker/ExerciseDetailsModal";
