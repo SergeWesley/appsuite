@@ -69,7 +69,7 @@ export function PropertyTableEditor({
     return () => clearTimeout(timer);
   }, [columnSizing, updateFilter]);
 
-  const rows = Array.isArray(value) ? value : [];
+  const rows = useMemo(() => (Array.isArray(value) ? value : []), [value]);
 
   const updateRow = (rowIndex: number, colId: string, colValue: any) => {
     const newRows = [...rows];
