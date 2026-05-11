@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Type, List, Hash, Calendar, CheckSquare, Palette, Star, Link, Euro, Table, ChevronUp, ChevronDown } from "lucide-react";
+import { X, Plus, Type, List, Hash, Calendar, Clock, CheckSquare, Palette, Star, Link, Euro, Table, ChevronUp, ChevronDown } from "lucide-react";
 import { CustomFieldDefinition, CustomFieldType } from "@/types/notes";
 
 export const TYPE_CONFIGS: Record<CustomFieldType, { label: string; icon: React.ElementType }> = {
@@ -12,6 +12,7 @@ export const TYPE_CONFIGS: Record<CustomFieldType, { label: string; icon: React.
   currency: { label: "Monnaie", icon: Euro },
   checkbox: { label: "Case à cocher", icon: CheckSquare },
   date: { label: "Date", icon: Calendar },
+  time: { label: "Heure", icon: Clock },
   select: { label: "Liste déroulante", icon: List },
   color: { label: "Couleur", icon: Palette },
   rating: { label: "Note (étoiles)", icon: Star },

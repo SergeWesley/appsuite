@@ -5,6 +5,7 @@ export type CustomFieldType =
   | "currency"  // Monnaie (ex: Prix, Budget)
   | "checkbox"  // Vrai/Faux (ex: Urgent, Végétarien)
   | "date"      // Date (ex: Date limite, Date de création cible)
+  | "time"      // Heure (ex: Heure de début)
   | "select"    // Liste déroulante (ex: Catégorie, Priorité)
   | "color"     // Sélecteur de couleur
   | "rating"    // Note sur 5 étoiles

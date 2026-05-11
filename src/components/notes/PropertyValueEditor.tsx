@@ -71,6 +71,16 @@ export function PropertyValueEditor({
         />
       );
 
+    case "time":
+      return (
+        <input
+          type="time"
+          value={value || ""}
+          onChange={(e) => onChange(e.target.value)}
+          className="px-2 py-1 -ml-2 text-sm text-gray-900 bg-transparent hover:bg-gray-50 focus:bg-white rounded-md border-transparent hover:border-gray-200 focus:border-amber-500 focus:ring-0 outline-none transition-all cursor-pointer"
+        />
+      );
+
     case "color":
       return (
         <div className="flex items-center gap-2">
