@@ -105,30 +105,33 @@ export default function TrackerPage() {
         currentModule="tracker"
         actions={
           <>
-            <button
+            <motion.button
+              whileTap={{ scale: 0.95 }}
               onClick={() => router.push("/tracker/stats")}
               className="flex items-center text-sm px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
               title="Tableau de bord des performances"
             >
               <TrendingUp size={20} className="sm:mr-2" />
               <span className="hidden sm:inline">Stats</span>
-            </button>
+            </motion.button>
 
-            <button
+            <motion.button
+              whileTap={{ scale: 0.95 }}
               onClick={() => router.push("/tracker/exercises")}
               className="flex items-center text-sm px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
             >
               <Dumbbell size={20} className="sm:mr-2" />
               <span className="hidden sm:inline">Exercices</span>
-            </button>
+            </motion.button>
 
-            <button
+            <motion.button
+              whileTap={{ scale: 0.95 }}
               onClick={() => router.push("/tracker/new")}
               className="hidden sm:inline-flex items-center text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
             >
               <Plus size={20} className="mr-2" />
               Nouvelle séance
-            </button>
+            </motion.button>
           </>
         }
       />

@@ -38,12 +38,14 @@ export function WorkoutSessionCard({
     session.duration || Math.max(30, session.totalExercises * 5);
 
   return (
-    <motion.div
+    <motion.button
+      type="button"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4, boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }}
+      whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className="h-full bg-white rounded-xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-200 hover:shadow-md"
+      className="w-full text-left h-full bg-white rounded-xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-200 hover:shadow-md"
     >
       {/* En-tête avec date */}
       <div className="flex items-center justify-between mb-4">
@@ -124,6 +126,6 @@ export function WorkoutSessionCard({
           <p className="text-sm text-gray-600 line-clamp-2">{session.notes}</p>
         </div>
       )}
-    </motion.div>
+    </motion.button>
   );
 }
