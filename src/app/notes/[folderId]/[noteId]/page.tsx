@@ -8,12 +8,13 @@ import { useNotes } from "@/hooks/notes/useNotes";
 import { useNoteTemplates } from "@/hooks/notes/useNoteTemplates";
 import { NoteFolder, CustomFieldDefinition } from "@/types/notes";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
-import { Trash2, Loader2, ArrowLeft, Check, Download, Sparkles } from "lucide-react";
+import { Trash2, Loader2, Check, Download, Sparkles } from "lucide-react";
 import { DynamicPropertiesBanner } from "@/components/notes/DynamicPropertiesBanner";
 import { NoteExportData } from "@/types/notes";
 import { useAgent } from "@/components/chat/AgentProvider";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
+import { AppHeader } from "@/components/AppHeader";
 
 export default function NoteEditorPage() {
   const router = useRouter();
@@ -217,82 +218,74 @@ export default function NoteEditorPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-14">
+      <AppHeader
+        title={folder?.name || "Retour"}
+        currentModule="notes"
+        height="h-14"
+        onBack={handleBack}
+        actions={
+          <>
+            {/* Save status indicator */}
+            {saving && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex items-center gap-1.5 text-gray-400 text-sm"
+              >
+                <Loader2 size={14} className="animate-spin" />
+                <span>Enregistrement...</span>
+              </motion.div>
+            )}
+            {saved && !saving && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex items-center gap-1.5 text-green-600 text-sm"
+              >
+                <Check size={14} />
+                <span>Enregistré</span>
+              </motion.div>
+            )}
+
+            {/* AI Assistant button (admin only) */}
+            {isAdmin && (
+              <button
+                onClick={() => {
+                  openAgent({
+                    systemContext: `L'utilisateur est dans le module Notes, en train d'éditer une note.`,
+                  });
+                }}
+                className="p-2 text-gray-400 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50"
+                aria-label="Assistant IA"
+                title="Analyser avec l'IA"
+              >
+                <Sparkles size={18} />
+              </button>
+            )}
+
+            {/* Export button */}
             <button
-              onClick={handleBack}
-              className="flex items-center gap-2 p-2 -ml-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
+              onClick={handleExport}
+              className="p-2 text-gray-400 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50"
+              aria-label="Exporter la note"
+              title="Exporter"
             >
-              <ArrowLeft size={20} />
-              <span className="text-sm hidden sm:block">
-                {folder?.name || "Retour"}
-              </span>
+              <Download size={18} />
             </button>
 
-            <div className="flex items-center gap-2">
-              {/* Save status indicator */}
-              {saving && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex items-center gap-1.5 text-gray-400 text-sm"
-                >
-                  <Loader2 size={14} className="animate-spin" />
-                  <span>Enregistrement...</span>
-                </motion.div>
-              )}
-              {saved && !saving && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex items-center gap-1.5 text-green-600 text-sm"
-                >
-                  <Check size={14} />
-                  <span>Enregistré</span>
-                </motion.div>
-              )}
-
-              {/* AI Assistant button (admin only) */}
-              {isAdmin && (
-                <button
-                  onClick={() => {
-                    openAgent({
-                      systemContext: `L'utilisateur est dans le module Notes, en train d'éditer une note.`,
-                    });
-                  }}
-                  className="p-2 text-gray-400 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50"
-                  aria-label="Assistant IA"
-                  title="Analyser avec l'IA"
-                >
-                  <Sparkles size={18} />
-                </button>
-              )}
-
-              {/* Export button */}
-              <button
-                onClick={handleExport}
-                className="p-2 text-gray-400 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50"
-                aria-label="Exporter la note"
-                title="Exporter"
-              >
-                <Download size={18} />
-              </button>
-
-              {/* Delete button */}
-              <button
-                onClick={() => setShowDeleteConfirm(true)}
-                className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50"
-                aria-label="Supprimer la note"
-                title="Supprimer"
-              >
-                <Trash2 size={18} />
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+            {/* Delete button */}
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50"
+              aria-label="Supprimer la note"
+              title="Supprimer"
+            >
+              <Trash2 size={18} />
+            </button>
+          </>
+        }
+      />
 
       {/* Editor */}
       <main className="max-w-[1600px] mx-auto px-4 sm:px-6 py-6">

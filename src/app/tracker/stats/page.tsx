@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { useWorkoutSessions } from "@/hooks/tracker/useWorkoutSessions";
 import { useExercises } from "@/hooks/tracker/useExercices";
 import { NavigationMenu } from "@/components/NavigationMenu";
-import { Activity, LogOut, User, Trophy, ArrowLeft, TrendingUp } from "lucide-react";
+import { Activity, Trophy, TrendingUp } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
+import { AppHeader } from "@/components/AppHeader";
 
 import { ExerciseProgressionChart, ProgressionDataPoint } from "@/components/tracker/ExerciseProgressionChart";
 import { WorkoutStats } from "@/components/tracker/WorkoutStats";
@@ -20,7 +20,6 @@ export default function TrackerStatsPage() {
   const { sessions, loading, getStats } = useWorkoutSessions();
   const stats = getStats();
   const { exercises } = useExercises();
-  const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
   
   const { selectedExerciseId, updateFilter } = useFilterPersistence("tracker-stats-filters", {
@@ -123,63 +122,15 @@ export default function TrackerStatsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      <AppHeader
+        title="Performances"
+        icon={TrendingUp}
+        iconColor="text-indigo-600"
+        currentModule="tracker"
+        onBack={() => router.push("/tracker")}
+      />
 
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => router.push("/tracker")}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                aria-label="Retour"
-              >
-                <ArrowLeft size={20} className="text-gray-600" />
-              </button>
-
-
-              <button
-                onClick={() => setIsNavMenuOpen(true)}
-                className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                aria-label="Menu de navigation"
-              >
-                <TrendingUp className="h-8 w-8 text-indigo-600" />
-                <h1 className="ml-3 text-xl font-semibold text-gray-900">Performances</h1>
-              </button>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <Menu as="div" className="relative inline-block text-left">
-                <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                  <User size={20} />
-                  <span className="hidden sm:block">
-                    {user?.user_metadata?.name || user?.email || "Utilisateur"}
-                  </span>
-                </MenuButton>
-
-                <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 focus:outline-none">
-                  <div className="py-2">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-900">{user?.user_metadata?.name || "Utilisateur"}</p>
-                      <p className="text-xs text-gray-500">{user?.email}</p>
-                    </div>
-                    <MenuItem
-                      as="button"
-                      onClick={signOut}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100"
-                    >
-                      <LogOut size={16} />
-                      Se déconnecter
-                    </MenuItem>
-                  </div>
-                </MenuItems>
-              </Menu>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Statistiques Globales */}
         <div className="mb-8">
@@ -259,11 +210,7 @@ export default function TrackerStatsPage() {
 
       </main>
 
-      <NavigationMenu
-        isOpen={isNavMenuOpen}
-        onClose={() => setIsNavMenuOpen(false)}
-        currentModule="tracker"
-      />
+
     </div>
   );
 }

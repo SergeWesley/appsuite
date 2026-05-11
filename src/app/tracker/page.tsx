@@ -22,15 +22,14 @@ import {
 import { useAuthContext } from "@/components/AuthProvider";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import { WorkoutCalendar } from "@/components/tracker/WorkoutCalendar";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
+import { AppHeader } from "@/components/AppHeader";
 
 
 export default function TrackerPage() {
   const router = useRouter();
   const { user, signOut } = useAuthContext();
   const { sessions, loading, error } = useWorkoutSessions();
-  const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
   // Gestion de la persistance des filtres
   const { selectedPeriod, selectedViewMode, searchQuery, updateFilter } =
@@ -97,87 +96,42 @@ export default function TrackerPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      <AppHeader
+        title="Tracker"
+        icon={Activity}
+        iconColor="text-green-600"
+        currentModule="tracker"
+        actions={
+          <>
+            <button
+              onClick={() => router.push("/tracker/stats")}
+              className="flex items-center text-sm px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              title="Tableau de bord des performances"
+            >
+              <TrendingUp size={20} className="sm:mr-2" />
+              <span className="hidden sm:inline">Stats</span>
+            </button>
 
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <button
-                onClick={() => setIsNavMenuOpen(true)}
-                className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                aria-label="Menu de navigation"
-              >
-                <Activity className="h-8 w-8 text-green-600" />
-                <h1 className="ml-3 text-xl font-semibold text-gray-900">
-                  Tracker
-                </h1>
-              </button>
-            </div>
+            <button
+              onClick={() => router.push("/tracker/exercises")}
+              className="flex items-center text-sm px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              <Dumbbell size={20} className="sm:mr-2" />
+              <span className="hidden sm:inline">Exercices</span>
+            </button>
 
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => router.push("/tracker/stats")}
-                className="flex items-center text-sm px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            <button
+              onClick={() => router.push("/tracker/new")}
+              className="hidden sm:inline-flex items-center text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              <Plus size={20} className="mr-2" />
+              Nouvelle séance
+            </button>
+          </>
+        }
+      />
 
-                title="Tableau de bord des performances"
-              >
-                <TrendingUp size={20} className="sm:mr-2" />
-                <span className="hidden sm:inline">Stats</span>
-              </button>
-
-              <button
-                onClick={() => router.push("/tracker/exercises")}
-                className="flex items-center text-sm px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-
-              >
-                <Dumbbell size={20} className="sm:mr-2" />
-                <span className="hidden sm:inline">Exercices</span>
-              </button>
-
-              <button
-                onClick={() => router.push("/tracker/new")}
-                className="hidden sm:inline-flex items-center text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-
-              >
-                <Plus size={20} className="mr-2" />
-                Nouvelle séance
-              </button>
-
-              {/* Menu utilisateur */}
-              <Menu as="div" className="relative inline-block text-left">
-                <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                  <User size={20} />
-                  <span className="hidden sm:block">
-                    {user?.user_metadata?.name || user?.email || "Utilisateur"}
-                  </span>
-                </MenuButton>
-
-                <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 focus:outline-none">
-                  <div className="py-2">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-900">
-                        {user?.user_metadata?.name || "Utilisateur"}
-                      </p>
-                      <p className="text-xs text-gray-500">{user?.email}</p>
-                    </div>
-                    <MenuItem
-                      as="button"
-                      onClick={signOut}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100"
-                    >
-                      <LogOut size={16} />
-                      Se déconnecter
-                    </MenuItem>
-                  </div>
-                </MenuItems>
-              </Menu>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* Filtres et recherche */}
         <div className="mb-8 space-y-4">
@@ -428,12 +382,7 @@ export default function TrackerPage() {
         <Plus size={24} />
       </motion.button>
 
-      {/* Menu de navigation */}
-      <NavigationMenu
-        isOpen={isNavMenuOpen}
-        onClose={() => setIsNavMenuOpen(false)}
-        currentModule="tracker"
-      />
+
     </div>
   );
 }

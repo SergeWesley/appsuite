@@ -12,16 +12,15 @@ import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
-import { StickyNote, LogOut, User, FolderOpen } from "lucide-react";
+import { StickyNote, FolderOpen } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { AppHeader } from "@/components/AppHeader";
 
 export default function NotesPage() {
   const router = useRouter();
   const { user, signOut } = useAuthContext();
   const { folders, loading, addFolder, importNoteData, deleteFolder } = useNoteFolders();
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
-  const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const [selectedFolders, setSelectedFolders] = useState<string[]>([]);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
 
@@ -90,70 +89,23 @@ export default function NotesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setIsNavMenuOpen(true)}
-                className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                aria-label="Menu de navigation"
-              >
-                <StickyNote className="h-8 w-8 text-amber-500" />
-                <h1 className="ml-3 text-xl font-semibold text-gray-900">
-                  Notes
-                </h1>
-              </button>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <Menu as="div" className="relative inline-block text-left">
-                <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                  <User size={20} />
-                  <span className="hidden sm:block">
-                    {user?.user_metadata?.name || user?.email || "Utilisateur"}
-                  </span>
-                </MenuButton>
-
-                <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 focus:outline-none">
-                  <div className="py-2">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-900">
-                        {user?.user_metadata?.name || "Utilisateur"}
-                      </p>
-                      <p className="text-xs text-gray-500">{user?.email}</p>
-                    </div>
-                    <MenuItem
-                      as="button"
-                      onClick={signOut}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100"
-                    >
-                      <LogOut size={16} />
-                      Se déconnecter
-                    </MenuItem>
-                  </div>
-                </MenuItems>
-              </Menu>
-            </div>
-          </div>
-        </div>
-      </header>
+      <AppHeader
+        title="Notes"
+        icon={StickyNote}
+        iconColor="text-amber-500"
+        currentModule="notes"
+        actions={<ImportNoteButton onImport={handleImport} />}
+      />
 
       <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
         {/* Page Title */}
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Mes dossiers
-            </h1>
-            <p className="text-gray-600">
-              {rootFolders.length} dossier{rootFolders.length > 1 ? "s" : ""}
-            </p>
-          </div>
-          <div>
-            <ImportNoteButton onImport={handleImport} />
-          </div>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Mes dossiers
+          </h1>
+          <p className="text-gray-600">
+            {rootFolders.length} dossier{rootFolders.length > 1 ? "s" : ""}
+          </p>
         </div>
 
         {/* Loading */}
@@ -260,12 +212,6 @@ export default function NotesPage() {
         message={`Êtes-vous sûr de vouloir supprimer ${selectedFolders.length} dossier(s) et toutes leurs notes ? Cette action est irréversible.`}
         confirmLabel={`Supprimer ${selectedFolders.length} dossier(s)`}
         confirmColor="bg-red-600 hover:bg-red-700"
-      />
-      {/* Navigation Menu */}
-      <NavigationMenu
-        isOpen={isNavMenuOpen}
-        onClose={() => setIsNavMenuOpen(false)}
-        currentModule="notes"
       />
     </div>
   );

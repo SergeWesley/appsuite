@@ -16,11 +16,10 @@ import { ExerciseCard } from "@/components/tracker/ExerciseCard";
 import { MuscleGroupFilter } from "@/components/tracker/MuscleGroupFilter";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
-import { Activity, LogOut, User } from "lucide-react";
+import { Activity, Dumbbell, TrendingUp } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
-
+import { AppHeader } from "@/components/AppHeader";
 
 export default function WorkoutSessionDetailPage() {
   const router = useRouter();
@@ -56,8 +55,6 @@ export default function WorkoutSessionDetailPage() {
   const [editingInitialDetails, setEditingInitialDetails] = useState<
     ExerciseDetails | undefined
   >(undefined);
-  const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
-
 
   useEffect(() => {
     if (sessions.length > 0) {
@@ -68,7 +65,13 @@ export default function WorkoutSessionDetailPage() {
   }, [sessions, sessionId, getSessionById]);
 
   if (loading) {
-    return <LoadingOverlay isLoading={true} message="Chargement de la séance..." fullPage />;
+    return (
+      <LoadingOverlay
+        isLoading={true}
+        message="Chargement de la séance..."
+        fullPage
+      />
+    );
   }
 
   if (!session) {
@@ -87,7 +90,6 @@ export default function WorkoutSessionDetailPage() {
           >
             Retour aux séances
           </button>
-
         </div>
       </div>
     );
@@ -117,7 +119,6 @@ export default function WorkoutSessionDetailPage() {
     if (success) {
       router.push("/tracker");
     }
-
   };
 
   const handleDuplicate = async () => {
@@ -125,7 +126,6 @@ export default function WorkoutSessionDetailPage() {
     if (duplicated) {
       router.push(`/tracker/session/${duplicated.id}`);
     }
-
   };
 
   // Step 1: User selects an exercise from the list to ADD
@@ -268,66 +268,15 @@ export default function WorkoutSessionDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      <AppHeader
+        title="Tracker"
+        icon={Activity}
+        iconColor="text-green-600"
+        currentModule="tracker"
+        onBack={() => router.push("/tracker")}
+      />
 
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setIsNavMenuOpen(true)}
-                className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                aria-label="Menu de navigation"
-              >
-                <Activity className="h-8 w-8 text-green-600" />
-                <h1 className="ml-3 text-xl font-semibold text-gray-900">
-                  Tracker
-                </h1>
-              </button>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => router.push("/tracker")}
-                className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                Retour
-              </button>
-
-
-              <Menu as="div" className="relative inline-block text-left">
-                <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                  <User size={20} />
-                  <span className="hidden sm:block">
-                    {user?.user_metadata?.name || user?.email || "Utilisateur"}
-                  </span>
-                </MenuButton>
-
-                <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 focus:outline-none">
-                  <div className="py-2">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-900">
-                        {user?.user_metadata?.name || "Utilisateur"}
-                      </p>
-                      <p className="text-xs text-gray-500">{user?.email}</p>
-                    </div>
-                    <MenuItem
-                      as="button"
-                      onClick={signOut}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100"
-                    >
-                      <LogOut size={16} />
-                      Se déconnecter
-                    </MenuItem>
-                  </div>
-                </MenuItems>
-              </Menu>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
+      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
         {/* En-tête de la séance */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2 capitalize">
@@ -343,7 +292,6 @@ export default function WorkoutSessionDetailPage() {
         <SessionActions
           onEdit={() => router.push(`/tracker/edit/${session.id}`)}
           onDuplicate={() => setShowDuplicateConfirm(true)}
-
           onDelete={() => setShowDeleteConfirm(true)}
         />
 
@@ -432,13 +380,6 @@ export default function WorkoutSessionDetailPage() {
         message="Voulez vous dupliquer cette séance ?"
         confirmLabel="Dupliquer"
         confirmColor="bg-gray-600 hover:bg-gray-700"
-      />
-
-      {/* Menu de navigation */}
-      <NavigationMenu
-        isOpen={isNavMenuOpen}
-        onClose={() => setIsNavMenuOpen(false)}
-        currentModule="tracker"
       />
     </div>
   );
