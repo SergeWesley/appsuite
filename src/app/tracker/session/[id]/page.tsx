@@ -19,6 +19,8 @@ import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { Activity, LogOut, User } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
+
 
 export default function WorkoutSessionDetailPage() {
   const router = useRouter();
@@ -56,6 +58,7 @@ export default function WorkoutSessionDetailPage() {
   >(undefined);
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
+
   useEffect(() => {
     if (sessions.length > 0) {
       const foundSession = getSessionById(sessionId);
@@ -65,14 +68,7 @@ export default function WorkoutSessionDetailPage() {
   }, [sessions, sessionId, getSessionById]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin h-12 w-12 border-4 border-green-600 rounded-full border-t-transparent mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement de la séance...</p>
-        </div>
-      </div>
-    );
+    return <LoadingOverlay isLoading={true} message="Chargement de la séance..." fullPage />;
   }
 
   if (!session) {
@@ -91,6 +87,7 @@ export default function WorkoutSessionDetailPage() {
           >
             Retour aux séances
           </button>
+
         </div>
       </div>
     );
@@ -120,6 +117,7 @@ export default function WorkoutSessionDetailPage() {
     if (success) {
       router.push("/tracker");
     }
+
   };
 
   const handleDuplicate = async () => {
@@ -127,6 +125,7 @@ export default function WorkoutSessionDetailPage() {
     if (duplicated) {
       router.push(`/tracker/session/${duplicated.id}`);
     }
+
   };
 
   // Step 1: User selects an exercise from the list to ADD
@@ -270,6 +269,7 @@ export default function WorkoutSessionDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
+
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -293,6 +293,7 @@ export default function WorkoutSessionDetailPage() {
               >
                 Retour
               </button>
+
 
               <Menu as="div" className="relative inline-block text-left">
                 <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
@@ -342,6 +343,7 @@ export default function WorkoutSessionDetailPage() {
         <SessionActions
           onEdit={() => router.push(`/tracker/edit/${session.id}`)}
           onDuplicate={() => setShowDuplicateConfirm(true)}
+
           onDelete={() => setShowDeleteConfirm(true)}
         />
 

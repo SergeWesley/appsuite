@@ -9,6 +9,8 @@ import { Activity, LogOut, User, Trophy, ArrowLeft, TrendingUp } from "lucide-re
 import { useAuthContext } from "@/components/AuthProvider";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
+
 import { ExerciseProgressionChart, ProgressionDataPoint } from "@/components/tracker/ExerciseProgressionChart";
 import { WorkoutStats } from "@/components/tracker/WorkoutStats";
 
@@ -19,6 +21,7 @@ export default function TrackerStatsPage() {
   const stats = getStats();
   const { exercises } = useExercises();
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+
   
   const { selectedExerciseId, updateFilter } = useFilterPersistence("tracker-stats-filters", {
     selectedExerciseId: "",
@@ -113,11 +116,7 @@ export default function TrackerStatsPage() {
   }, [sessions]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
-    );
+    return <LoadingOverlay isLoading={true} message="Chargement de vos statistiques..." fullPage />;
   }
 
   const selectedExerciseObj = exercises.find(e => e.id === selectedExerciseId);
@@ -125,6 +124,7 @@ export default function TrackerStatsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
+
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -136,6 +136,7 @@ export default function TrackerStatsPage() {
               >
                 <ArrowLeft size={20} className="text-gray-600" />
               </button>
+
 
               <button
                 onClick={() => setIsNavMenuOpen(true)}

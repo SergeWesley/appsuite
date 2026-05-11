@@ -23,6 +23,8 @@ import { useAuthContext } from "@/components/AuthProvider";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import { WorkoutCalendar } from "@/components/tracker/WorkoutCalendar";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
+
 
 export default function TrackerPage() {
   const router = useRouter();
@@ -76,14 +78,7 @@ export default function TrackerPage() {
   ];
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement de vos séances...</p>
-        </div>
-      </div>
-    );
+    return <LoadingOverlay isLoading={true} message="Chargement de vos séances..." fullPage />;
   }
 
   if (error) {
@@ -103,6 +98,7 @@ export default function TrackerPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
+
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -123,6 +119,7 @@ export default function TrackerPage() {
               <button
                 onClick={() => router.push("/tracker/stats")}
                 className="flex items-center text-sm px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+
                 title="Tableau de bord des performances"
               >
                 <TrendingUp size={20} className="sm:mr-2" />
@@ -132,6 +129,7 @@ export default function TrackerPage() {
               <button
                 onClick={() => router.push("/tracker/exercises")}
                 className="flex items-center text-sm px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+
               >
                 <Dumbbell size={20} className="sm:mr-2" />
                 <span className="hidden sm:inline">Exercices</span>
@@ -140,6 +138,7 @@ export default function TrackerPage() {
               <button
                 onClick={() => router.push("/tracker/new")}
                 className="hidden sm:inline-flex items-center text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+
               >
                 <Plus size={20} className="mr-2" />
                 Nouvelle séance
@@ -284,6 +283,7 @@ export default function TrackerPage() {
                   router.push(`/tracker/session/${session.id}`)
                 }
               />
+
             </motion.div>
           ) : (
             /* Vue Liste */
@@ -321,6 +321,7 @@ export default function TrackerPage() {
                       <button
                         onClick={() => router.push("/tracker/new")}
                         className="mt-4 inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+
                       >
                         <Plus size={20} className="mr-2" />
                         Créer ma première séance
@@ -345,6 +346,7 @@ export default function TrackerPage() {
                             router.push(`/tracker/session/${session.id}`)
                           }
                         />
+
                       </motion.div>
                     ))}
                   </AnimatePresence>
@@ -421,6 +423,7 @@ export default function TrackerPage() {
         whileTap={{ scale: 0.9 }}
         onClick={() => router.push("/tracker/new")}
         className="floating-action md:hidden inline-flex items-center justify-center w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-colors"
+
       >
         <Plus size={24} />
       </motion.button>

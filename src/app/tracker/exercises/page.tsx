@@ -26,6 +26,8 @@ import {
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
+
 
 export default function ExerciseCatalogPage() {
   const router = useRouter();
@@ -48,6 +50,7 @@ export default function ExerciseCatalogPage() {
     Exercise | undefined
   >();
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
+
 
   // Filtrer les exercices
   const filteredExercises = searchExercises(searchQuery, selectedMuscleGroup);
@@ -93,14 +96,7 @@ export default function ExerciseCatalogPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin h-12 w-12 border-4 border-green-600 rounded-full border-t-transparent mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement des exercices...</p>
-        </div>
-      </div>
-    );
+    return <LoadingOverlay isLoading={true} message="Chargement des exercices..." fullPage />;
   }
 
   if (error) {
@@ -120,6 +116,7 @@ export default function ExerciseCatalogPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
+
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -131,6 +128,7 @@ export default function ExerciseCatalogPage() {
               >
                 <ArrowLeft size={20} className="text-gray-600" />
               </button>
+
 
               <button
                 onClick={() => setIsNavMenuOpen(true)}
