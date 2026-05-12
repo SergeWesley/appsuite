@@ -8,7 +8,7 @@ interface LoadingOverlayProps {
   message?: string;
   className?: string;
   fullPage?: boolean;
-  color?: "green" | "amber" | "indigo" | "gray";
+  color?: "green" | "amber" | "indigo" | "gray" | "blue";
 }
 
 /**
@@ -27,6 +27,7 @@ export function LoadingOverlay({
     amber: "text-amber-600 bg-amber-400",
     indigo: "text-indigo-600 bg-indigo-400",
     gray: "text-gray-600 bg-gray-400",
+    blue: "text-blue-600 bg-blue-400",
   };
   return (
     <AnimatePresence>
