@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+// Framer motion retiré
 import { useRouter } from "next/navigation";
 import { useExercises } from "@/hooks/tracker/useExercices";
 import { ExerciseForm } from "@/components/tracker/ExerciseForm";
-import { NavigationMenu } from "@/components/NavigationMenu";
 import {
   Exercise,
   ExerciseFormData,
@@ -16,7 +15,6 @@ import { Activity, Plus, Search, Edit, Star, Dumbbell, X } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { AppHeader } from "@/components/AppHeader";
-
 
 export default function ExerciseCatalogPage() {
   const router = useRouter();
@@ -35,8 +33,9 @@ export default function ExerciseCatalogPage() {
   const [selectedMuscleGroup, setSelectedMuscleGroup] =
     useState<MuscleGroup>("all");
   const [showExerciseForm, setShowExerciseForm] = useState(false);
-  const [editingExercise, setEditingExercise] = useState<Exercise | undefined>();
-
+  const [editingExercise, setEditingExercise] = useState<
+    Exercise | undefined
+  >();
 
   // Filtrer les exercices
   const filteredExercises = searchExercises(searchQuery, selectedMuscleGroup);
@@ -82,7 +81,13 @@ export default function ExerciseCatalogPage() {
   };
 
   if (loading) {
-    return <LoadingOverlay isLoading={true} message="Chargement des exercices..." fullPage />;
+    return (
+      <LoadingOverlay
+        isLoading={true}
+        message="Chargement des exercices..."
+        fullPage
+      />
+    );
   }
 
   if (error) {
@@ -220,11 +225,7 @@ export default function ExerciseCatalogPage() {
 
         {/* Content */}
         {filteredExercises.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-12"
-          >
+          <div className="text-center py-12">
             <div className="p-4 bg-gray-100 rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center">
               <Dumbbell size={32} className="text-gray-400" />
             </div>
@@ -234,15 +235,13 @@ export default function ExerciseCatalogPage() {
             <p className="text-gray-600 mb-6">
               Aucun exercice ne correspond à vos critères de recherche.
             </p>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={() => setShowExerciseForm(true)}
-              className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors"
+              className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors active:scale-95"
             >
               Créer un exercice personnalisé
-            </motion.button>
-          </motion.div>
+            </button>
+          </div>
         ) : (
           <div className="space-y-8">
             {/* Custom Exercises */}
@@ -254,11 +253,8 @@ export default function ExerciseCatalogPage() {
                 </h2>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {customExercises.map((exercise, index) => (
-                    <motion.div
+                    <div
                       key={exercise.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.05 }}
                       className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow"
                     >
                       <div className="flex items-start justify-between mb-3">
@@ -282,7 +278,7 @@ export default function ExerciseCatalogPage() {
                           {exercise.description}
                         </p>
                       )}
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -296,13 +292,8 @@ export default function ExerciseCatalogPage() {
               </h2>
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {defaultExercises.map((exercise, index) => (
-                  <motion.div
+                  <div
                     key={exercise.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      delay: (customExercises.length + index) * 0.05,
-                    }}
                     className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow"
                   >
                     <div className="flex items-start justify-between gap-4">
@@ -331,7 +322,7 @@ export default function ExerciseCatalogPage() {
                         />
                       )}
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             </div>
@@ -340,16 +331,12 @@ export default function ExerciseCatalogPage() {
       </main>
 
       {/* Bouton flottant pour mobile */}
-      <motion.button
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+      <button
         onClick={() => setShowExerciseForm(true)}
-        className="floating-action md:hidden inline-flex items-center justify-center w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-colors"
+        className="floating-action md:hidden inline-flex items-center justify-center w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-colors active:scale-95"
       >
         <Plus size={24} />
-      </motion.button>
+      </button>
 
       {/* Exercise Form Modal */}
       <ExerciseForm
@@ -359,8 +346,6 @@ export default function ExerciseCatalogPage() {
         onSubmit={editingExercise ? handleEditExercise : handleAddExercise}
         onDelete={editingExercise?.isCustom ? handleDeleteExercise : undefined}
       />
-
-
     </div>
   );
 }

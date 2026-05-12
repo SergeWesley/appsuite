@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+// Framer motion retiré
 import {
   ArrowLeft,
   BarChart3,
@@ -135,10 +135,7 @@ export default function BookerStatsPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Statistiques globales */}
         <div className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+          <div
             className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
           >
             <div className="flex items-center justify-between">
@@ -153,12 +150,9 @@ export default function BookerStatsPage() {
                 <Clock size={24} className="text-blue-600" />
               </div>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+          <div
             className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
           >
             <div className="flex items-center justify-between">
@@ -172,12 +166,9 @@ export default function BookerStatsPage() {
                 <BookOpen size={24} className="text-green-600" />
               </div>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+          <div
             className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
           >
             <div className="flex items-center justify-between">
@@ -191,12 +182,9 @@ export default function BookerStatsPage() {
                 <Calendar size={24} className="text-purple-600" />
               </div>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+          <div
             className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
           >
             <div className="flex items-center justify-between">
@@ -210,58 +198,46 @@ export default function BookerStatsPage() {
                 <TrendingUp size={24} className="text-orange-600" />
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Graphiques principaux */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Graphique du temps de lecture quotidien */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+          <div
             className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Temps de lecture quotidien (30 derniers jours)
             </h3>
             <ReadingTimeChart data={dailyStats} />
-          </motion.div>
+          </div>
 
           {/* Graphique de progression de lecture */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+          <div
             className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Courbe de progression (12 derniers mois)
             </h3>
             <ReadingProgressChart data={monthlyStats} />
-          </motion.div>
+          </div>
         </div>
 
         {/* Heatmap et livres les plus lus */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           {/* Heatmap des jours de lecture */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
+          <div
             className="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm border border-gray-200"
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Calendrier de lecture (30 derniers jours)
             </h3>
             <ReadingHeatmap data={dailyStats} />
-          </motion.div>
+          </div>
 
           {/* Top livres */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
+          <div
             className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -272,14 +248,11 @@ export default function BookerStatsPage() {
                 <BookStatsCard key={book.id} book={book} rank={index + 1} />
               ))}
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Sessions récentes */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9 }}
+        <div
           className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
         >
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -324,7 +297,7 @@ export default function BookerStatsPage() {
               </tbody>
             </table>
           </div>
-        </motion.div>
+        </div>
       </main>
 
       {/* Menu de navigation */}

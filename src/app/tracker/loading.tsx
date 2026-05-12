@@ -1,6 +1,5 @@
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 
 export default function Loading() {
-  //   return <LoadingOverlay isLoading={true} fullPage />;
-  return <div className="">Salut</div>;
+  return <LoadingOverlay isLoading={true} fullPage />;
 }

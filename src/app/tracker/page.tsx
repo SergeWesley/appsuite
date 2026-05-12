@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+// Framer motion retiré pour la stabilité mobile
 import { useRouter } from "next/navigation";
 import { useWorkoutSessions } from "@/hooks/tracker/useWorkoutSessions";
 import { WorkoutSessionCard } from "@/components/tracker/WorkoutSessionCard";
@@ -105,33 +105,30 @@ export default function TrackerPage() {
         currentModule="tracker"
         actions={
           <>
-            <motion.button
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={() => router.push("/tracker/stats")}
               className="flex items-center text-sm px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
               title="Tableau de bord des performances"
             >
               <TrendingUp size={20} className="sm:mr-2" />
               <span className="hidden sm:inline">Stats</span>
-            </motion.button>
+            </button>
 
-            <motion.button
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={() => router.push("/tracker/exercises")}
               className="flex items-center text-sm px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
             >
               <Dumbbell size={20} className="sm:mr-2" />
               <span className="hidden sm:inline">Exercices</span>
-            </motion.button>
+            </button>
 
-            <motion.button
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={() => router.push("/tracker/new")}
               className="hidden sm:inline-flex items-center text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
             >
               <Plus size={20} className="mr-2" />
               Nouvelle séance
-            </motion.button>
+            </button>
           </>
         }
       />
@@ -228,35 +225,19 @@ export default function TrackerPage() {
         <div className="space-y-6">
           {selectedViewMode === "calendar" ? (
             /* Vue Calendrier */
-            <motion.div
-              key="calendar-view"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
+            <div key="calendar-view">
               <WorkoutCalendar
                 sessions={filteredSessions}
                 onSessionClick={(session) =>
                   router.push(`/tracker/session/${session.id}`)
                 }
               />
-            </motion.div>
+            </div>
           ) : (
             /* Vue Liste */
-            <motion.div
-              key="list-view"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.3 }}
-            >
+            <div key="list-view">
               {filteredSessions.length === 0 ? (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-12"
-                >
+                <div className="text-center py-12">
                   <Activity className="mx-auto h-12 w-12 text-gray-400" />
                   <h3 className="mt-4 text-lg font-medium text-gray-900">
                     {searchQuery || selectedPeriod !== "all"
@@ -283,104 +264,35 @@ export default function TrackerPage() {
                         Créer ma première séance
                       </button>
                     )}
-                </motion.div>
+                </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  <AnimatePresence>
-                    {filteredSessions.map((session, index) => (
-                      <motion.div
-                        key={session.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="h-full"
-                      >
-                        <WorkoutSessionCard
-                          session={session}
-                          onClick={() =>
-                            router.push(`/tracker/session/${session.id}`)
-                          }
-                        />
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
+                  {filteredSessions.map((session, index) => (
+                    <div
+                      key={session.id}
+                      className="h-full"
+                    >
+                      <WorkoutSessionCard
+                        session={session}
+                        href={`/tracker/session/${session.id}`}
+                      />
+                    </div>
+                  ))}
                 </div>
               )}
-            </motion.div>
+            </div>
           )}
         </div>
 
-        {/* Liste des séances */}
-        {/* <div className="space-y-6">
-          {filteredSessions.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-12"
-            >
-              <Activity className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-4 text-lg font-medium text-gray-900">
-                {searchQuery || selectedPeriod !== 'all' 
-                  ? 'Aucune séance trouvée' 
-                  : sessions.length === 0 
-                  ? 'Aucune séance enregistrée'
-                  : 'Aucune séance trouvée'
-                }
-              </h3>
-              <p className="mt-2 text-gray-600">
-                {searchQuery || selectedPeriod !== 'all'
-                  ? 'Essayez de modifier vos critères de recherche.'
-                  : sessions.length === 0
-                  ? 'Commencez par créer votre première séance d\'entraînement.'
-                  : 'Aucune séance ne correspond aux critères.'
-                }
-              </p>
-              {sessions.length === 0 && !searchQuery && selectedPeriod === 'all' && (
-                <button
-                  onClick={() => router.push('/tracker/new')}
-                  className="mt-4 inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  <Plus size={20} className="mr-2" />
-                  Créer ma première séance
-                </button>
-              )}
-            </motion.div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <AnimatePresence>
-                {filteredSessions.map((session, index) => (
-                  <motion.div
-                    key={session.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="h-full"
-                  >
-                    <WorkoutSessionCard
-                      session={session}
-                      onClick={() => router.push(`/tracker/session/${session.id}`)}
-                    />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          )}
-        </div> */}
       </main>
 
       {/* Bouton flottant pour mobile */}
-      <motion.button
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+      <button
         onClick={() => router.push("/tracker/new")}
-        className="floating-action md:hidden inline-flex items-center justify-center w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-colors"
+        className="floating-action md:hidden inline-flex items-center justify-center w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-colors active:scale-95"
       >
         <Plus size={24} />
-      </motion.button>
+      </button>
     </div>
   );
 }

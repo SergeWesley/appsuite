@@ -5,13 +5,17 @@ import { WorkoutSession } from "@/types/workout-session";
 import { MUSCLE_GROUP_LABELS } from "@/types/workout-session";
 import { Calendar, Activity, Clock, FileText } from "lucide-react";
 
+import Link from "next/link";
+
 interface WorkoutSessionCardProps {
   session: WorkoutSession;
-  onClick: () => void;
+  href?: string;
+  onClick?: () => void;
 }
 
 export function WorkoutSessionCard({
   session,
+  href,
   onClick,
 }: WorkoutSessionCardProps) {
   // Calculer les groupes musculaires travaillés
@@ -37,16 +41,10 @@ export function WorkoutSessionCard({
   const estimatedDuration =
     session.duration || Math.max(30, session.totalExercises * 5);
 
-  return (
-    <motion.button
-      type="button"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4, boxShadow: "0 10px 30px rgba(0,0,0,0.1)" }}
-      whileTap={{ scale: 0.98 }}
-      onClick={onClick}
-      className="w-full text-left h-full bg-white rounded-xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-200 hover:shadow-md"
-    >
+  const cardClasses = "block w-full text-left h-full bg-white rounded-xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-200 lg:hover:shadow-md lg:hover:-translate-y-1 active:scale-[0.98]";
+
+  const content = (
+    <>
       {/* En-tête avec date */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -126,6 +124,20 @@ export function WorkoutSessionCard({
           <p className="text-sm text-gray-600 line-clamp-2">{session.notes}</p>
         </div>
       )}
-    </motion.button>
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link href={href} className={cardClasses}>
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <button type="button" onClick={onClick} className={cardClasses}>
+      {content}
+    </button>
   );
 }
