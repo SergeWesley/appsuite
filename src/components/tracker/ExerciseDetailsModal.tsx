@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Exercise } from "@/types/workout-session";
-import { X, Dumbbell, Timer } from "lucide-react";
+import { X, Dumbbell, Timer, History } from "lucide-react";
 
 interface ExerciseDetails {
   sets?: number;
@@ -22,6 +22,7 @@ interface ExerciseDetailsModalProps {
   onConfirm: (details: ExerciseDetails) => void;
   initialDetails?: ExerciseDetails;
   isEditing?: boolean;
+  lastPerformances?: ExerciseDetails[];
 }
 
 const DEFAULT_STRENGTH: ExerciseDetails = {
@@ -45,6 +46,7 @@ export function ExerciseDetailsModal({
   onConfirm,
   initialDetails,
   isEditing = false,
+  lastPerformances = [],
 }: ExerciseDetailsModalProps) {
   const isCardio = exercise?.muscleGroup === "cardio";
   const [details, setDetails] = useState<ExerciseDetails>(
@@ -78,6 +80,14 @@ export function ExerciseDetailsModal({
         [field]: value ? parseFloat(value) : undefined,
       }));
     }
+  };
+
+  const handleUseLastPerformance = (perf: ExerciseDetails) => {
+    setDetails((prev) => ({
+      ...prev,
+      ...perf,
+      notes: prev.notes, // On garde les notes actuelles ou vides, souvent spécifiques à la séance
+    }));
   };
 
   if (!exercise) return null;
@@ -132,8 +142,41 @@ export function ExerciseDetailsModal({
               </div>
             </div>
 
+            {/* Last Performances */}
+            {lastPerformances.length > 0 && (
+              <div className="px-6 pt-5 pb-1">
+                <div className="flex items-center gap-2 text-indigo-700 mb-2">
+                  <History size={16} />
+                  <span className="text-sm font-medium">Dernière séance</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {lastPerformances.map((perf, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleUseLastPerformance(perf)}
+                      className="w-full flex items-center justify-start gap-3 p-3 bg-indigo-50/50 hover:bg-indigo-50 border border-indigo-100 rounded-xl transition-colors text-left group"
+                      title="Utiliser ces données"
+                    >
+                      <div className="text-sm text-indigo-600 font-semibold bg-white/60 px-2 py-1 rounded-lg">
+                        {!isCardio 
+                          ? `${perf.sets}×${perf.reps}${perf.weight ? ` • ${perf.weight}kg` : ''}`
+                          : `${perf.duration}min${perf.speed ? ` • ${perf.speed}km/h` : ''}`
+                        }
+                      </div>
+                      {perf.notes && (
+                        <div className="text-xs text-indigo-400 truncate max-w-[150px]" title={perf.notes}>
+                          {perf.notes}
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Form */}
-            <div className="p-6 space-y-5">
+            <div className={`p-6 space-y-5 ${lastPerformances.length > 0 ? 'pt-4' : ''}`}>
               {!isCardio ? (
                 <>
                   {/* Strength fields */}

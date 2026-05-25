@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useWorkoutSessions } from "@/hooks/tracker/useWorkoutSessions";
 import { useExercises } from "@/hooks/tracker/useExercices";
@@ -11,6 +11,7 @@ import { ExerciseDetailsModal } from "@/components/tracker/ExerciseDetailsModal"
 import type { ExerciseDetails } from "@/components/tracker/ExerciseDetailsModal";
 import { SessionInfoCard } from "@/components/tracker/SessionInfoCard";
 import { SessionActions } from "@/components/tracker/SessionActions";
+import { SessionMetadataModal } from "@/components/tracker/SessionMetadataModal";
 import { ExerciseCard } from "@/components/tracker/ExerciseCard";
 import { MuscleGroupFilter } from "@/components/tracker/MuscleGroupFilter";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
@@ -41,6 +42,7 @@ export default function WorkoutSessionDetailPage() {
   const [loading, setLoading] = useState(true);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showDuplicateConfirm, setShowDuplicateConfirm] = useState(false);
+  const [showMetadataModal, setShowMetadataModal] = useState(false);
   const [showAddExerciseModal, setShowAddExerciseModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
@@ -55,6 +57,30 @@ export default function WorkoutSessionDetailPage() {
   const [editingInitialDetails, setEditingInitialDetails] = useState<
     ExerciseDetails | undefined
   >(undefined);
+
+  // Trouver les dernières performances de l'exercice sélectionné
+  const lastPerformances = useMemo(() => {
+    if (!selectedExercise || isEditingExisting || !session) return [];
+    
+    // Parcourir toutes les séances (elles sont déjà triées par date décroissante dans le hook)
+    for (const s of sessions) {
+      if (s.id === session.id) continue; // Ignorer la séance courante
+      
+      const prevExercises = s.exercises.filter(e => e.exerciseId === selectedExercise.id);
+      if (prevExercises.length > 0) {
+        return prevExercises.map(prevEx => ({
+          sets: prevEx.sets,
+          reps: prevEx.reps,
+          weight: prevEx.weight,
+          duration: prevEx.duration,
+          speed: prevEx.speed,
+          slope: prevEx.slope,
+          notes: prevEx.notes,
+        } as ExerciseDetails));
+      }
+    }
+    return [];
+  }, [selectedExercise, sessions, session, isEditingExisting]);
 
   useEffect(() => {
     if (sessions.length > 0) {
@@ -125,6 +151,18 @@ export default function WorkoutSessionDetailPage() {
     if (duplicated) {
       router.push(`/tracker/session/${duplicated.id}`);
     }
+  };
+
+  const handleMetadataConfirm = async (metadata: { date: Date; notes: string }) => {
+    if (!session) return;
+    
+    await updateSession(session.id, {
+      date: metadata.date,
+      notes: metadata.notes,
+      exercises: session.exercises.map(({ id, exercise, ...rest }) => rest), // Keep exercises unchanged
+    });
+    
+    setShowMetadataModal(false);
   };
 
   // Step 1: User selects an exercise from the list to ADD
@@ -289,7 +327,7 @@ export default function WorkoutSessionDetailPage() {
         </div>
 
         <SessionActions
-          onEdit={() => router.push(`/tracker/edit/${session.id}`)}
+          onEdit={() => setShowMetadataModal(true)}
           onDuplicate={() => setShowDuplicateConfirm(true)}
           onDelete={() => setShowDeleteConfirm(true)}
         />
@@ -346,6 +384,7 @@ export default function WorkoutSessionDetailPage() {
         onConfirm={handleDetailsConfirmed}
         isEditing={isEditingExisting}
         initialDetails={editingInitialDetails}
+        lastPerformances={lastPerformances}
       />
 
       {/* Delete Exercise Confirmation Modal */}
@@ -368,6 +407,16 @@ export default function WorkoutSessionDetailPage() {
         message="Êtes-vous sûr de vouloir supprimer cette séance ? Cette action est irréversible."
         confirmLabel="Supprimer"
         confirmColor="bg-red-600 hover:bg-red-700"
+      />
+
+      {/* Edit Metadata Modal */}
+      <SessionMetadataModal
+        isOpen={showMetadataModal}
+        onClose={() => setShowMetadataModal(false)}
+        onConfirm={handleMetadataConfirm}
+        initialData={session ? { date: session.date, notes: session.notes || "" } : undefined}
+        title="Modifier la séance"
+        confirmLabel="Enregistrer"
       />
 
       {/* Duplicate Confirmation Modal */}

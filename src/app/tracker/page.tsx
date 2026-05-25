@@ -21,11 +21,24 @@ import { WorkoutCalendar } from "@/components/tracker/WorkoutCalendar";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { AppHeader } from "@/components/AppHeader";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
+import { SessionMetadataModal } from "@/components/tracker/SessionMetadataModal";
 
 export default function TrackerPage() {
   const router = useRouter();
-  const { sessions, loading, error, deleteSession } = useWorkoutSessions();
+  const { sessions, loading, error, deleteSession, addSession } = useWorkoutSessions();
   const [sessionToDelete, setSessionToDelete] = useState<string | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  const handleCreateSession = async (metadata: { date: Date; notes: string }) => {
+    const newSession = await addSession({
+      date: metadata.date,
+      notes: metadata.notes,
+      exercises: [],
+    });
+    if (newSession) {
+      router.push(`/tracker/session/${newSession.id}`);
+    }
+  };
 
   const handleDeleteSession = async () => {
     if (sessionToDelete) {
@@ -133,7 +146,7 @@ export default function TrackerPage() {
             </button>
 
             <button
-              onClick={() => router.push("/tracker/new")}
+              onClick={() => setShowCreateModal(true)}
               className="hidden sm:inline-flex items-center text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
             >
               <Plus size={20} className="mr-2" />
@@ -263,11 +276,11 @@ export default function TrackerPage() {
                         ? "Commencez par créer votre première séance d'entraînement."
                         : "Aucune séance ne correspond aux critères."}
                   </p>
-                  {sessions.length === 0 &&
+                    {sessions.length === 0 &&
                     !searchQuery &&
                     selectedPeriod === "all" && (
                       <button
-                        onClick={() => router.push("/tracker/new")}
+                        onClick={() => setShowCreateModal(true)}
                         className="mt-4 inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                       >
                         <Plus size={20} className="mr-2" />
@@ -300,11 +313,20 @@ export default function TrackerPage() {
 
       {/* Bouton flottant pour mobile */}
       <button
-        onClick={() => router.push("/tracker/new")}
+        onClick={() => setShowCreateModal(true)}
         className="floating-action md:hidden inline-flex items-center justify-center w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-colors active:scale-95"
       >
         <Plus size={24} />
       </button>
+
+      {/* Modal de création */}
+      <SessionMetadataModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onConfirm={handleCreateSession}
+        title="Nouvelle séance"
+        confirmLabel="Créer"
+      />
 
       {/* Modal de confirmation de suppression */}
       <ConfirmationModal
