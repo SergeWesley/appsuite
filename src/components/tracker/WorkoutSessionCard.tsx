@@ -4,6 +4,7 @@ import Link from "next/link";
 import { WorkoutSession } from "@/types/workout-session";
 import { MUSCLE_GROUP_LABELS } from "@/types/workout-session";
 import { Calendar, Activity, Clock, FileText, Trash2 } from "lucide-react";
+import { calculateEstimatedDuration } from "@/lib/workout-utils";
 
 interface WorkoutSessionCardProps {
   session: WorkoutSession;
@@ -40,8 +41,7 @@ export function WorkoutSessionCard({
   };
 
   // Calculer la durée estimée
-  const estimatedDuration =
-    session.duration || Math.max(30, session.totalExercises * 5);
+  const estimatedDuration = calculateEstimatedDuration(session);
 
   const cardClasses =
     "block w-full text-left h-full bg-white rounded-xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-200 lg:hover:shadow-md lg:hover:-translate-y-1 active:scale-[0.98]";

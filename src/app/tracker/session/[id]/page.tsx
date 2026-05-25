@@ -19,6 +19,7 @@ import { Activity, Dumbbell, TrendingUp } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { AppHeader } from "@/components/AppHeader";
+import { calculateEstimatedDuration } from "@/lib/workout-utils";
 
 export default function WorkoutSessionDetailPage() {
   const router = useRouter();
@@ -110,8 +111,7 @@ export default function WorkoutSessionDetailPage() {
           (ex) => ex.exercise?.muscleGroup === selectedMuscleGroup,
         );
 
-  const estimatedDuration =
-    session.duration || Math.max(30, session.totalExercises * 5);
+  const estimatedDuration = calculateEstimatedDuration(session);
 
   const handleDelete = async () => {
     const success = await deleteSession(session.id);
