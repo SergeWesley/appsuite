@@ -52,3 +52,23 @@ export function calculateEstimatedDuration(session: WorkoutSession): number {
 
   return Math.round(totalDuration);
 }
+
+/**
+ * Formate une durée en minutes vers un format lisible (ex: 63 -> "1h3m")
+ */
+export function formatDuration(minutes: number): string {
+  if (!minutes) return "0m";
+  
+  if (minutes < 60) {
+    return `${minutes}m`;
+  }
+  
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  
+  if (remainingMinutes === 0) {
+    return `${hours}h`;
+  }
+  
+  return `${hours}h${remainingMinutes}m`;
+}

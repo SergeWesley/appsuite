@@ -4,7 +4,7 @@ import Link from "next/link";
 import { WorkoutSession } from "@/types/workout-session";
 import { MUSCLE_GROUP_LABELS } from "@/types/workout-session";
 import { Calendar, Activity, Clock, FileText, Trash2 } from "lucide-react";
-import { calculateEstimatedDuration } from "@/lib/workout-utils";
+import { calculateEstimatedDuration, formatDuration } from "@/lib/workout-utils";
 
 interface WorkoutSessionCardProps {
   session: WorkoutSession;
@@ -67,7 +67,7 @@ export function WorkoutSessionCard({
         <div className="text-right flex items-center gap-2">
           <div className="flex items-center gap-1 text-gray-500 text-sm">
             <Clock size={14} />
-            <span>{estimatedDuration} min</span>
+            <span>{formatDuration(estimatedDuration)}</span>
           </div>
           {onDelete && (
             <button

@@ -20,7 +20,7 @@ import { Activity, Dumbbell, TrendingUp } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { AppHeader } from "@/components/AppHeader";
-import { calculateEstimatedDuration } from "@/lib/workout-utils";
+import { calculateEstimatedDuration, formatDuration } from "@/lib/workout-utils";
 
 export default function WorkoutSessionDetailPage() {
   const router = useRouter();
@@ -322,7 +322,7 @@ export default function WorkoutSessionDetailPage() {
           <p className="text-gray-600">
             {session.totalExercises} exercice
             {session.totalExercises > 1 ? "s" : ""}
-            {estimatedDuration && ` • ${estimatedDuration} min`}
+            {estimatedDuration > 0 && ` • ${formatDuration(estimatedDuration)}`}
           </p>
         </div>
 

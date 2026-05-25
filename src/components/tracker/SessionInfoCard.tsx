@@ -2,6 +2,7 @@
 
 import { WorkoutSession } from "@/types/workout-session";
 import { Calendar, Activity, Clock, FileText } from "lucide-react";
+import { formatDuration } from "@/lib/workout-utils";
 
 interface SessionInfoCardProps {
   session: WorkoutSession;
@@ -48,7 +49,7 @@ export function SessionInfoCard({
           <div>
             <p className="text-sm text-gray-500">Durée estimée</p>
             <p className="font-semibold text-gray-900">
-              {estimatedDuration} min
+              {formatDuration(estimatedDuration)}
             </p>
           </div>
         </div>
