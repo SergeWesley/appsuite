@@ -1,10 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { WorkoutSession } from "@/types/workout-session";
 import { MUSCLE_GROUP_LABELS } from "@/types/workout-session";
 import { Calendar, Activity, Clock, FileText, Trash2 } from "lucide-react";
-import { SwipeableCard } from "@/components/SwipeableCard";
 
 interface WorkoutSessionCardProps {
   session: WorkoutSession;
@@ -21,16 +20,6 @@ export function WorkoutSessionCard({
   onClick,
   onDelete,
 }: WorkoutSessionCardProps) {
-  const router = useRouter();
-
-  const handleCardClick = (e?: React.MouseEvent) => {
-    if (onClick) {
-      onClick();
-    } else if (href) {
-      router.push(href);
-    }
-  };
-
   // Calculer les groupes musculaires travaillés
   const muscleGroups = Array.from(
     new Set(
@@ -54,14 +43,11 @@ export function WorkoutSessionCard({
   const estimatedDuration =
     session.duration || Math.max(30, session.totalExercises * 5);
 
-  return (
-    <SwipeableCard
-      index={index}
-      onDelete={onDelete ? () => onDelete(session.id) : undefined}
-      onClick={handleCardClick}
-      containerClassName="h-full"
-      className="h-full p-6 cursor-pointer transition-all duration-200 lg:hover:shadow-md"
-    >
+  const cardClasses =
+    "block w-full text-left h-full bg-white rounded-xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-200 lg:hover:shadow-md lg:hover:-translate-y-1 active:scale-[0.98]";
+
+  const content = (
+    <>
       {/* En-tête avec date */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -86,10 +72,11 @@ export function WorkoutSessionCard({
           {onDelete && (
             <button
               onClick={(e) => {
+                e.preventDefault();
                 e.stopPropagation();
                 onDelete(session.id);
               }}
-              className="hidden sm:flex p-2 -mr-2 text-gray-300 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50"
+              className="p-2 -mr-2 text-gray-300 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50"
               aria-label="Supprimer la séance"
             >
               <Trash2 size={18} />
@@ -153,6 +140,23 @@ export function WorkoutSessionCard({
           <p className="text-sm text-gray-600 line-clamp-2">{session.notes}</p>
         </div>
       )}
-    </SwipeableCard>
+    </>
+  );
+
+  // Animation d'entrée CSS simple pour remplacer framer-motion
+  const animationStyle = index ? { animation: `fadeInUp 0.3s ease-out ${index * 0.1}s both` } : {};
+
+  if (href) {
+    return (
+      <Link href={href} className={cardClasses} style={animationStyle}>
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <button type="button" onClick={onClick} className={cardClasses} style={animationStyle}>
+      {content}
+    </button>
   );
 }
