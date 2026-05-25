@@ -1,23 +1,36 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { WorkoutSession } from "@/types/workout-session";
 import { MUSCLE_GROUP_LABELS } from "@/types/workout-session";
-import { Calendar, Activity, Clock, FileText } from "lucide-react";
-
-import Link from "next/link";
+import { Calendar, Activity, Clock, FileText, Trash2 } from "lucide-react";
+import { SwipeableCard } from "@/components/SwipeableCard";
 
 interface WorkoutSessionCardProps {
   session: WorkoutSession;
+  index?: number;
   href?: string;
   onClick?: () => void;
+  onDelete?: (sessionId: string) => void;
 }
 
 export function WorkoutSessionCard({
   session,
+  index = 0,
   href,
   onClick,
+  onDelete,
 }: WorkoutSessionCardProps) {
+  const router = useRouter();
+
+  const handleCardClick = (e?: React.MouseEvent) => {
+    if (onClick) {
+      onClick();
+    } else if (href) {
+      router.push(href);
+    }
+  };
+
   // Calculer les groupes musculaires travaillés
   const muscleGroups = Array.from(
     new Set(
@@ -37,14 +50,18 @@ export function WorkoutSessionCard({
     }).format(date);
   };
 
-  // Calculer la durée estimée (par défaut: 45min par séance, ajustable selon le nombre d'exercices)
+  // Calculer la durée estimée
   const estimatedDuration =
     session.duration || Math.max(30, session.totalExercises * 5);
 
-  const cardClasses = "block w-full text-left h-full bg-white rounded-xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-200 lg:hover:shadow-md lg:hover:-translate-y-1 active:scale-[0.98]";
-
-  const content = (
-    <>
+  return (
+    <SwipeableCard
+      index={index}
+      onDelete={onDelete ? () => onDelete(session.id) : undefined}
+      onClick={handleCardClick}
+      containerClassName="h-full"
+      className="h-full p-6 cursor-pointer transition-all duration-200 lg:hover:shadow-md"
+    >
       {/* En-tête avec date */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -61,11 +78,23 @@ export function WorkoutSessionCard({
             </p>
           </div>
         </div>
-        <div className="text-right">
+        <div className="text-right flex items-center gap-2">
           <div className="flex items-center gap-1 text-gray-500 text-sm">
             <Clock size={14} />
             <span>{estimatedDuration} min</span>
           </div>
+          {onDelete && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(session.id);
+              }}
+              className="hidden sm:flex p-2 -mr-2 text-gray-300 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50"
+              aria-label="Supprimer la séance"
+            >
+              <Trash2 size={18} />
+            </button>
+          )}
         </div>
       </div>
 
@@ -90,7 +119,7 @@ export function WorkoutSessionCard({
           <span className="text-sm font-medium text-gray-600">Exercices</span>
         </div>
         <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-          {session.exercises.slice(0, 6).map((exercise, index) => (
+          {session.exercises.slice(0, 6).map((exercise) => (
             <div key={exercise.id} className="text-sm text-gray-600 truncate" title={exercise.exercise?.name}>
               {exercise.exercise?.name}
               {exercise.sets && exercise.reps && (
@@ -124,20 +153,6 @@ export function WorkoutSessionCard({
           <p className="text-sm text-gray-600 line-clamp-2">{session.notes}</p>
         </div>
       )}
-    </>
-  );
-
-  if (href) {
-    return (
-      <Link href={href} className={cardClasses}>
-        {content}
-      </Link>
-    );
-  }
-
-  return (
-    <button type="button" onClick={onClick} className={cardClasses}>
-      {content}
-    </button>
+    </SwipeableCard>
   );
 }

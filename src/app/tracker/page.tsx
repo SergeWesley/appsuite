@@ -1,6 +1,7 @@
 "use client";
 
 // Framer motion retiré pour la stabilité mobile
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useWorkoutSessions } from "@/hooks/tracker/useWorkoutSessions";
 import { WorkoutSessionCard } from "@/components/tracker/WorkoutSessionCard";
@@ -19,10 +20,19 @@ import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import { WorkoutCalendar } from "@/components/tracker/WorkoutCalendar";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { AppHeader } from "@/components/AppHeader";
+import { ConfirmationModal } from "@/components/ConfirmationModal";
 
 export default function TrackerPage() {
   const router = useRouter();
-  const { sessions, loading, error } = useWorkoutSessions();
+  const { sessions, loading, error, deleteSession } = useWorkoutSessions();
+  const [sessionToDelete, setSessionToDelete] = useState<string | null>(null);
+
+  const handleDeleteSession = async () => {
+    if (sessionToDelete) {
+      await deleteSession(sessionToDelete);
+      setSessionToDelete(null);
+    }
+  };
 
   // Gestion de la persistance des filtres
   const { selectedPeriod, selectedViewMode, searchQuery, updateFilter } =
@@ -274,7 +284,9 @@ export default function TrackerPage() {
                     >
                       <WorkoutSessionCard
                         session={session}
+                        index={index}
                         href={`/tracker/session/${session.id}`}
+                        onDelete={(id) => setSessionToDelete(id)}
                       />
                     </div>
                   ))}
@@ -293,6 +305,17 @@ export default function TrackerPage() {
       >
         <Plus size={24} />
       </button>
+
+      {/* Modal de confirmation de suppression */}
+      <ConfirmationModal
+        isOpen={!!sessionToDelete}
+        onClose={() => setSessionToDelete(null)}
+        onConfirm={handleDeleteSession}
+        title="Supprimer la séance"
+        message="Êtes-vous sûr de vouloir supprimer cette séance ? Cette action est irréversible."
+        confirmLabel="Supprimer"
+        confirmColor="bg-red-600 hover:bg-red-700"
+      />
     </div>
   );
 }
