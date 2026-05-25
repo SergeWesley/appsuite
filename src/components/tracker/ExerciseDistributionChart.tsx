@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { WorkoutExercise } from "@/types/workout-session";
-import { Activity } from "lucide-react";
+import { Activity, FileText, X } from "lucide-react";
 
 interface ExerciseDistributionChartProps {
   exercises: WorkoutExercise[];
@@ -18,6 +18,7 @@ interface ProcessedSet {
 interface WeightGroup {
   weight: number;
   sets: ProcessedSet[];
+  notes?: string;
 }
 
 interface ProcessedExerciseGroup {
@@ -30,13 +31,14 @@ interface ProcessedExerciseGroup {
 
 export function ExerciseDistributionChart({ exercises, className = "" }: ExerciseDistributionChartProps) {
   const [hoveredSet, setHoveredSet] = useState<{ name: string; weight: number; reps: number; x: number; y: number } | null>(null);
+  const [activeNote, setActiveNote] = useState<{ title: string; text: string } | null>(null);
 
   const groups = useMemo(() => {
     const validExercises = exercises.filter(
       (ex) => ex.exercise?.name && typeof ex.weight === "number" && ex.weight > 0
     );
 
-    const groupedMap = new Map<string, Map<number, ProcessedSet[]>>();
+    const groupedMap = new Map<string, Map<number, { sets: ProcessedSet[]; notes?: string }>>();
 
     validExercises.forEach((ex) => {
       const name = ex.exercise!.name;
@@ -50,12 +52,15 @@ export function ExerciseDistributionChart({ exercises, className = "" }: Exercis
       
       const exerciseWeights = groupedMap.get(name)!;
       if (!exerciseWeights.has(weight)) {
-        exerciseWeights.set(weight, []);
+        exerciseWeights.set(weight, { sets: [], notes: ex.notes });
+      } else if (ex.notes && !exerciseWeights.get(weight)!.notes) {
+        // Keep the first encountered note for this weight
+        exerciseWeights.get(weight)!.notes = ex.notes;
       }
 
       // Add each set as an individual item
       for (let i = 0; i < setsCount; i++) {
-        exerciseWeights.get(weight)!.push({
+        exerciseWeights.get(weight)!.sets.push({
           id: `${ex.id}-set-${i}`,
           reps
         });
@@ -64,7 +69,7 @@ export function ExerciseDistributionChart({ exercises, className = "" }: Exercis
 
     return Array.from(groupedMap.entries()).map(([name, weightMap]) => {
       const weightGroups = Array.from(weightMap.entries())
-        .map(([weight, sets]) => ({ weight, sets }))
+        .map(([weight, data]) => ({ weight, sets: data.sets, notes: data.notes }))
         .sort((a, b) => a.weight - b.weight);
 
       const allSets = weightGroups.flatMap(g => g.sets);
@@ -144,9 +149,20 @@ export function ExerciseDistributionChart({ exercises, className = "" }: Exercis
                            ))}
                         </div>
                         
-                        {/* Weight Label */}
-                        <div className="mt-3 text-xs font-semibold text-gray-600 bg-gray-50 px-2 py-1 rounded-md">
-                            {wg.weight} <span className="text-[10px] font-normal text-gray-400">kg</span>
+                        {/* Weight Label & Notes Badge */}
+                        <div className="mt-3 flex items-center gap-1">
+                          <div className="text-xs font-semibold text-gray-600 bg-gray-50 px-2 py-1 rounded-md">
+                              {wg.weight} <span className="text-[10px] font-normal text-gray-400">kg</span>
+                          </div>
+                          {wg.notes && (
+                            <button
+                              onClick={() => setActiveNote({ title: `${group.name} (${wg.weight} kg)`, text: wg.notes! })}
+                              className="w-6 h-6 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center hover:bg-amber-200 transition-colors flex-shrink-0 shadow-sm"
+                              title="Voir les notes"
+                            >
+                              <FileText size={12} />
+                            </button>
+                          )}
                         </div>
                     </div>
                 ))}
@@ -175,6 +191,46 @@ export function ExerciseDistributionChart({ exercises, className = "" }: Exercis
                 <span className="text-[10px] text-gray-400 uppercase tracking-wider">Reps</span>
              </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Notes Modal Overlay */}
+      <AnimatePresence>
+        {activeNote && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-gray-900/40 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="bg-white rounded-xl shadow-xl max-w-sm w-full overflow-hidden relative"
+            >
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-amber-100 rounded-lg">
+                    <FileText size={20} className="text-amber-600" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 truncate pr-2 max-w-[220px]" title={activeNote.title}>{activeNote.title}</h3>
+                </div>
+                <button
+                  onClick={() => setActiveNote(null)}
+                  className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-6">
+                <p className="text-gray-700 whitespace-pre-wrap">{activeNote.text}</p>
+              </div>
+              <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+                <button
+                  onClick={() => setActiveNote(null)}
+                  className="px-4 py-2 bg-white text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+                >
+                  Fermer
+                </button>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
