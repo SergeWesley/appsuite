@@ -204,6 +204,64 @@ export function useNoteFolders() {
     }
   };
 
+  const moveFolder = async (
+    folderId: string,
+    newParentId: string | null,
+  ): Promise<boolean> => {
+    if (!user) {
+      setError("Utilisateur non connecté");
+      return false;
+    }
+
+    // Prevent moving a folder into itself
+    if (folderId === newParentId) {
+      setError("Impossible de déplacer un dossier dans lui-même");
+      return false;
+    }
+
+    // Prevent circular references: check that newParentId is not a descendant of folderId
+    if (newParentId) {
+      const isDescendant = (parentId: string, targetId: string): boolean => {
+        const children = folders.filter((f) => f.parentId === targetId);
+        for (const child of children) {
+          if (child.id === parentId) return true;
+          if (isDescendant(parentId, child.id)) return true;
+        }
+        return false;
+      };
+      if (isDescendant(newParentId, folderId)) {
+        setError("Impossible de déplacer un dossier dans un de ses sous-dossiers");
+        return false;
+      }
+    }
+
+    try {
+      setError(null);
+
+      const { error } = await supabase
+        .from("note_folders")
+        .update({ parent_id: newParentId })
+        .eq("id", folderId)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+
+      setFolders((prev) =>
+        prev.map((folder) =>
+          folder.id === folderId
+            ? { ...folder, parentId: newParentId, dateUpdated: new Date() }
+            : folder,
+        ),
+      );
+
+      return true;
+    } catch (err) {
+      console.error("Erreur lors du déplacement du dossier:", err);
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
+      return false;
+    }
+  };
+
   const importNoteData = async (data: NoteExportData, parentId?: string | null): Promise<boolean> => {
     if (!user) {
       setError("Utilisateur non connecté");
@@ -283,6 +341,7 @@ export function useNoteFolders() {
     updateFolder,
     updateFolderFields,
     deleteFolder,
+    moveFolder,
     importNoteData,
     refreshFolders: loadFolders,
   };

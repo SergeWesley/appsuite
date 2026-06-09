@@ -7,22 +7,26 @@ import { useNoteFolders } from "@/hooks/notes/useNoteFolders";
 import { NoteFolder, NoteFolderFormData, NoteExportData } from "@/types/notes";
 import { FolderCard } from "@/components/notes/FolderCard";
 import { CreateFolderModal } from "@/components/notes/CreateFolderModal";
+import { MoveFolderModal } from "@/components/notes/MoveFolderModal";
 import { ImportNoteButton } from "@/components/notes/ImportNoteButton";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
-import { StickyNote, FolderOpen } from "lucide-react";
+import { StickyNote, FolderOpen, MoveRight } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { AppHeader } from "@/components/AppHeader";
 
 export default function NotesPage() {
   const router = useRouter();
   const { user, signOut } = useAuthContext();
-  const { folders, loading, addFolder, importNoteData, deleteFolder } = useNoteFolders();
+  const { folders, loading, addFolder, importNoteData, deleteFolder, moveFolder } =
+    useNoteFolders();
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const [selectedFolders, setSelectedFolders] = useState<string[]>([]);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
+  const [moveMode, setMoveMode] = useState(false);
+  const [folderToMove, setFolderToMove] = useState<NoteFolder | null>(null);
 
   const rootFolders = folders.filter((f) => !f.parentId);
 
@@ -41,13 +45,27 @@ export default function NotesPage() {
   };
 
   const handleFolderClick = (f: NoteFolder, e: React.MouseEvent) => {
+    if (moveMode) {
+      e.preventDefault();
+      setFolderToMove(f);
+      return;
+    }
     if (e.metaKey || e.ctrlKey) {
       e.preventDefault();
       setSelectedFolders((prev) =>
-        prev.includes(f.id) ? prev.filter((id) => id !== f.id) : [...prev, f.id]
+        prev.includes(f.id)
+          ? prev.filter((id) => id !== f.id)
+          : [...prev, f.id],
       );
     } else {
       router.push(`/notes/${f.id}`);
+    }
+  };
+
+  const handleMoveFolder = async (folderId: string, newParentId: string | null) => {
+    const success = await moveFolder(folderId, newParentId);
+    if (!success) {
+      alert("Erreur lors du déplacement du dossier.");
     }
   };
 
@@ -60,7 +78,9 @@ export default function NotesPage() {
     setSelectedFolders([]);
     setShowBulkDeleteConfirm(false);
     if (successCount < selectedFolders.length) {
-      alert(`Certains dossiers n'ont pas pu être supprimés (${successCount}/${selectedFolders.length}).`);
+      alert(
+        `Certains dossiers n'ont pas pu être supprimés (${successCount}/${selectedFolders.length}).`,
+      );
     }
   };
 
@@ -94,10 +114,46 @@ export default function NotesPage() {
         icon={StickyNote}
         iconColor="text-amber-500"
         currentModule="notes"
-        actions={<ImportNoteButton onImport={handleImport} />}
+        actions={
+          <>
+            <button
+              onClick={() => setMoveMode((prev) => !prev)}
+              className={`p-2 rounded-lg transition-colors ${
+                moveMode
+                  ? "bg-amber-500 text-white shadow-md"
+                  : "text-gray-500 hover:text-amber-600 hover:bg-amber-50"
+              }`}
+              aria-label={moveMode ? "Quitter le mode déplacement" : "Mode déplacement"}
+              title={moveMode ? "Quitter le mode déplacement" : "Mode déplacement"}
+            >
+              <MoveRight size={20} />
+            </button>
+            <ImportNoteButton onImport={handleImport} />
+          </>
+        }
       />
 
       <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
+        {/* Move Mode Banner */}
+        {moveMode && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-3"
+          >
+            <MoveRight size={18} className="text-amber-600 flex-shrink-0" />
+            <p className="text-sm text-amber-800 flex-1">
+              <strong>Mode déplacement :</strong> Cliquez sur un dossier pour le déplacer.
+            </p>
+            <button
+              onClick={() => setMoveMode(false)}
+              className="text-xs font-medium text-amber-600 hover:text-amber-800 px-3 py-1 rounded-lg hover:bg-amber-100 transition-colors"
+            >
+              Quitter
+            </button>
+          </motion.div>
+        )}
+
         {/* Page Title */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -180,7 +236,9 @@ export default function NotesPage() {
                 folder={folder}
                 index={index}
                 isSelected={selectedFolders.includes(folder.id)}
-                subfolderCount={folders.filter(f => f.parentId === folder.id).length}
+                subfolderCount={
+                  folders.filter((f) => f.parentId === folder.id).length
+                }
                 onClick={handleFolderClick}
                 onConfig={(f) => router.push(`/notes/${f.id}/settings`)}
               />
@@ -204,6 +262,15 @@ export default function NotesPage() {
       />
 
       {/* Bulk Delete Confirmation Modal */}
+      {/* Move Folder Modal */}
+      <MoveFolderModal
+        isOpen={!!folderToMove}
+        folder={folderToMove}
+        allFolders={folders}
+        onClose={() => setFolderToMove(null)}
+        onMove={handleMoveFolder}
+      />
+
       <ConfirmationModal
         isOpen={showBulkDeleteConfirm}
         onClose={() => setShowBulkDeleteConfirm(false)}

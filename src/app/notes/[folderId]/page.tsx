@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
+import { motion } from "framer-motion";
 import { useNoteFolders } from "@/hooks/notes/useNoteFolders";
 import { useNotes } from "@/hooks/notes/useNotes";
 import { useNoteTemplates } from "@/hooks/notes/useNoteTemplates";
@@ -9,6 +10,7 @@ import { NoteFolder, Note } from "@/types/notes";
 import { NoteCard } from "@/components/notes/NoteCard";
 import { FolderCard } from "@/components/notes/FolderCard";
 import { CreateFolderModal } from "@/components/notes/CreateFolderModal";
+import { MoveFolderModal } from "@/components/notes/MoveFolderModal";
 import { ImportNoteButton } from "@/components/notes/ImportNoteButton";
 import { NoteFolderFormData, NoteExportData } from "@/types/notes";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
@@ -21,6 +23,7 @@ import {
   Trash2,
   FolderPlus,
   Settings,
+  MoveRight,
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { AppHeader } from "@/components/AppHeader";
@@ -38,6 +41,7 @@ export default function FolderPage() {
     updateFolderFields,
     updateFolder,
     importNoteData,
+    moveFolder,
   } = useNoteFolders();
   const { notes, loading, addNote } = useNotes(folderId);
   const { templates } = useNoteTemplates(folderId);
@@ -47,6 +51,8 @@ export default function FolderPage() {
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const [showTemplatePicker, setShowTemplatePicker] = useState(false);
   const [selectedFolders, setSelectedFolders] = useState<string[]>([]);
+  const [moveMode, setMoveMode] = useState(false);
+  const [folderToMove, setFolderToMove] = useState<NoteFolder | null>(null);
 
   const subFolders = folders.filter((f) => f.parentId === folderId);
 
@@ -94,6 +100,11 @@ export default function FolderPage() {
   };
 
   const handleFolderClick = (f: NoteFolder, e: React.MouseEvent) => {
+    if (moveMode) {
+      e.preventDefault();
+      setFolderToMove(f);
+      return;
+    }
     if (e.metaKey || e.ctrlKey) {
       e.preventDefault();
       setSelectedFolders((prev) =>
@@ -103,6 +114,13 @@ export default function FolderPage() {
       );
     } else {
       router.push(`/notes/${f.id}`);
+    }
+  };
+
+  const handleMoveFolder = async (fId: string, newParentId: string | null) => {
+    const success = await moveFolder(fId, newParentId);
+    if (!success) {
+      alert("Erreur lors du déplacement du dossier.");
     }
   };
 
@@ -187,6 +205,18 @@ export default function FolderPage() {
         actions={
           <>
             <button
+              onClick={() => setMoveMode((prev) => !prev)}
+              className={`p-2 rounded-lg transition-colors ${
+                moveMode
+                  ? "bg-amber-500 text-white shadow-md"
+                  : "text-gray-500 hover:text-amber-600 hover:bg-amber-50"
+              }`}
+              aria-label={moveMode ? "Quitter le mode déplacement" : "Mode déplacement"}
+              title={moveMode ? "Quitter le mode déplacement" : "Mode déplacement"}
+            >
+              <MoveRight size={20} />
+            </button>
+            <button
               onClick={() => router.push(`/notes/${folderId}/settings`)}
               className="p-2 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
               aria-label="Paramètres du dossier"
@@ -208,6 +238,26 @@ export default function FolderPage() {
       />
 
       <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
+        {/* Move Mode Banner */}
+        {moveMode && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-3"
+          >
+            <MoveRight size={18} className="text-amber-600 flex-shrink-0" />
+            <p className="text-sm text-amber-800 flex-1">
+              <strong>Mode déplacement :</strong> Cliquez sur un sous-dossier pour le déplacer.
+            </p>
+            <button
+              onClick={() => setMoveMode(false)}
+              className="text-xs font-medium text-amber-600 hover:text-amber-800 px-3 py-1 rounded-lg hover:bg-amber-100 transition-colors"
+            >
+              Quitter
+            </button>
+          </motion.div>
+        )}
+
         {/* Sub-folders Section */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
@@ -310,6 +360,15 @@ export default function FolderPage() {
         message={`Êtes-vous sûr de vouloir supprimer ${selectedFolders.length} dossier(s) et toutes leurs notes ? Cette action est irréversible.`}
         confirmLabel={`Supprimer ${selectedFolders.length} dossier(s)`}
         confirmColor="bg-red-600 hover:bg-red-700"
+      />
+
+      {/* Move Folder Modal */}
+      <MoveFolderModal
+        isOpen={!!folderToMove}
+        folder={folderToMove}
+        allFolders={folders}
+        onClose={() => setFolderToMove(null)}
+        onMove={handleMoveFolder}
       />
 
       {/* Template Picker Modal */}
