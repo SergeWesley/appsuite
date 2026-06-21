@@ -14,8 +14,8 @@ export interface BrowserApp {
   icon_url: string | null;
   order_index: number;
   settings: BrowserAppConfig;
-  created_at: string;
-  updated_at: string;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 export type BrowserAppFormData = Omit<BrowserApp, "id" | "user_id" | "created_at" | "updated_at">;
