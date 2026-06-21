@@ -210,9 +210,20 @@ export function ExerciseDetailsModal({
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                      Poids (kg)
-                    </label>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Poids (kg)
+                      </label>
+                      {details.weight !== undefined && details.weight > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => updateField("weight", "")}
+                          className="text-xs text-gray-500 hover:text-gray-700 underline"
+                        >
+                          Effacer
+                        </button>
+                      )}
+                    </div>
                     <input
                       type="number"
                       min="0"
@@ -222,6 +233,44 @@ export function ExerciseDetailsModal({
                       placeholder="Optionnel"
                       className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-center text-lg font-semibold"
                     />
+                    
+                    {/* Pastilles de poids (ajouts/soustractions) */}
+                    <div className="mt-3 space-y-2">
+                      <div className="grid grid-cols-6 gap-1.5">
+                        {[-20, -10, -5, -2.5, -1, -0.5].map((amount) => (
+                          <button
+                            key={`minus-${amount}`}
+                            type="button"
+                            onClick={() => {
+                              const current = details.weight || 0;
+                              const newValue = Math.max(0, current + amount);
+                              const roundedValue = Math.round(newValue * 100) / 100;
+                              updateField("weight", roundedValue.toString());
+                            }}
+                            className="py-1.5 bg-red-50 text-red-700 rounded-lg text-xs font-medium hover:bg-red-100 border border-red-100 transition-colors flex items-center justify-center"
+                          >
+                            {amount}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="grid grid-cols-6 gap-1.5">
+                        {[0.5, 1, 2.5, 5, 10, 20].map((amount) => (
+                          <button
+                            key={`plus-${amount}`}
+                            type="button"
+                            onClick={() => {
+                              const current = details.weight || 0;
+                              const newValue = Math.max(0, current + amount);
+                              const roundedValue = Math.round(newValue * 100) / 100;
+                              updateField("weight", roundedValue.toString());
+                            }}
+                            className="py-1.5 bg-green-50 text-green-700 rounded-lg text-xs font-medium hover:bg-green-100 border border-green-100 transition-colors flex items-center justify-center"
+                          >
+                            +{amount}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </>
               ) : (
