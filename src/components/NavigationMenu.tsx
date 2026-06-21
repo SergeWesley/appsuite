@@ -11,7 +11,14 @@ import { useIsAdmin } from "@/hooks/useIsAdmin";
 interface NavigationMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  currentModule: "booker" | "watcher" | "tracker" | "notes" | "spender" | "cooker";
+  currentModule:
+    | "booker"
+    | "watcher"
+    | "tracker"
+    | "notes"
+    | "spender"
+    | "cooker"
+    | "browser";
 }
 
 export function NavigationMenu({
@@ -132,7 +139,9 @@ export function NavigationMenu({
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.05 }}
                   onClick={() => {
-                    openAgent({ systemContext: `Utilisateur navigue actuellement dans le module: ${currentModule}` });
+                    openAgent({
+                      systemContext: `Utilisateur navigue actuellement dans le module: ${currentModule}`,
+                    });
                     onClose();
                   }}
                   className="w-full px-4 py-3 flex items-center group text-left transition-colors bg-amber-50 hover:bg-amber-100 mb-2 border-y border-amber-100"
@@ -144,12 +153,14 @@ export function NavigationMenu({
                   <div className="ml-3 flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 group-hover:text-gray-700 flex items-center gap-2">
                       Assistant IA
-                      <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-200 text-amber-800 rounded-full">Beta</span>
+                      <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-200 text-amber-800 rounded-full">
+                        Beta
+                      </span>
                     </p>
-                  <p className="text-xs text-amber-700/70 truncate">
-                    Posez vos questions ou exécutez des actions
-                  </p>
-                </div>
+                    <p className="text-xs text-amber-700/70 truncate">
+                      Posez vos questions ou exécutez des actions
+                    </p>
+                  </div>
 
                   <ChevronRight
                     size={16}
