@@ -1,4 +1,13 @@
-import { BookOpen, Film, Activity, StickyNote, Wallet, Utensils, LucideIcon } from "lucide-react";
+import {
+  BookOpen,
+  Film,
+  Activity,
+  StickyNote,
+  Wallet,
+  Utensils,
+  Globe,
+  LucideIcon,
+} from "lucide-react";
 
 export interface AppTheme {
   text: string;
@@ -11,7 +20,14 @@ export interface AppTheme {
   ring: string;
 }
 
-export type ModuleId = "booker" | "tracker" | "watcher" | "notes" | "spender" | "cooker";
+export type ModuleId =
+  | "booker"
+  | "tracker"
+  | "watcher"
+  | "notes"
+  | "spender"
+  | "cooker"
+  | "browser";
 
 export interface AppModule {
   id: ModuleId;
@@ -125,6 +141,23 @@ export const appModules: AppModule[] = [
       ring: "focus:ring-cyan-500/20 focus:border-cyan-500",
     },
   },
+  {
+    id: "browser",
+    name: "Browser",
+    path: "/browser",
+    icon: Globe,
+    description: "Accédez à vos sites web favoris en un clin d'œil",
+    theme: {
+      text: "text-teal-500",
+      textDark: "text-teal-600",
+      bg: "bg-teal-500",
+      bgSoft: "bg-teal-100",
+      bgFaint: "bg-teal-50",
+      bgHoverLight: "hover:bg-teal-100",
+      bgSolidHover: "hover:bg-teal-600",
+      ring: "focus:ring-teal-500/20 focus:border-teal-500",
+    },
+  },
 ];
 
 export const defaultTheme: AppTheme = {
@@ -143,5 +176,5 @@ export const defaultTheme: AppTheme = {
  * ou undefined si on n'est dans aucun module spécifique (ex: Dashboard)
  */
 export function getModuleByPath(pathname: string): AppModule | undefined {
-  return appModules.find(m => pathname.startsWith(m.path));
+  return appModules.find((m) => pathname.startsWith(m.path));
 }

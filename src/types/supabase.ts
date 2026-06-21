@@ -80,6 +80,63 @@ export type Database = {
         }
         Relationships: []
       }
+      browser_apps: {
+        Row: {
+          created_at: string | null
+          icon_url: string | null
+          id: string
+          name: string
+          order_index: number | null
+          settings: Json
+          updated_at: string | null
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          icon_url?: string | null
+          id?: string
+          name: string
+          order_index?: number | null
+          settings?: Json
+          updated_at?: string | null
+          url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          icon_url?: string | null
+          id?: string
+          name?: string
+          order_index?: number | null
+          settings?: Json
+          updated_at?: string | null
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      cooker_recipe_cache: {
+        Row: {
+          created_at: string | null
+          ingredients_hash: string
+          ingredients_list: string[]
+          recipes: Json
+        }
+        Insert: {
+          created_at?: string | null
+          ingredients_hash: string
+          ingredients_list: string[]
+          recipes: Json
+        }
+        Update: {
+          created_at?: string | null
+          ingredients_hash?: string
+          ingredients_list?: string[]
+          recipes?: Json
+        }
+        Relationships: []
+      }
       exercises: {
         Row: {
           created_at: string | null

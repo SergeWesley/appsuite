@@ -11,7 +11,14 @@ interface AppHeaderProps {
   title: string;
   icon?: LucideIcon;
   iconColor?: string;
-  currentModule: "booker" | "watcher" | "tracker" | "notes" | "spender" | "cooker";
+  currentModule:
+    | "booker"
+    | "watcher"
+    | "tracker"
+    | "notes"
+    | "spender"
+    | "cooker"
+    | "browser";
   actions?: React.ReactNode;
   maxWidth?: string;
   onBack?: () => void;
@@ -53,7 +60,9 @@ export function AppHeader({
                 aria-label="Menu de navigation"
               >
                 {Icon && <Icon className={`h-8 w-8 ${iconColor}`} />}
-                <h1 className={`${Icon ? "ml-3" : ""} text-xl font-semibold text-gray-900 truncate max-w-[200px] sm:max-w-md`}>
+                <h1
+                  className={`${Icon ? "ml-3" : ""} text-xl font-semibold text-gray-900 truncate max-w-[200px] sm:max-w-md`}
+                >
                   {title}
                 </h1>
               </button>
