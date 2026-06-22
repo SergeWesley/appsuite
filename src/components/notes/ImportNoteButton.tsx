@@ -9,7 +9,7 @@ interface ImportNoteButtonProps {
   disabled?: boolean;
 }
 
-export function ImportNoteButton({ onImport, disabled }: ImportNoteButtonProps) {
+export function useImportNote(onImport: (data: NoteExportData) => void) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +30,6 @@ export function ImportNoteButton({ onImport, disabled }: ImportNoteButtonProps) 
         alert("Impossible de lire le fichier.");
         console.error(err);
       }
-      // Reset input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -38,23 +37,37 @@ export function ImportNoteButton({ onImport, disabled }: ImportNoteButtonProps) 
     reader.readAsText(file);
   };
 
+  const triggerImport = () => {
+    fileInputRef.current?.click();
+  };
+
+  const ImportInput = () => (
+    <input
+      type="file"
+      ref={fileInputRef}
+      onChange={handleFileChange}
+      accept=".json,.appsuite"
+      className="hidden"
+    />
+  );
+
+  return { triggerImport, ImportInput };
+}
+
+export function ImportNoteButton({ onImport, disabled }: ImportNoteButtonProps) {
+  const { triggerImport, ImportInput } = useImportNote(onImport);
+
   return (
     <>
       <button
         disabled={disabled}
-        onClick={() => fileInputRef.current?.click()}
+        onClick={triggerImport}
         className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-colors font-medium border border-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Upload size={18} />
         <span className="hidden sm:inline">Importer</span>
       </button>
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        accept=".json,.appsuite"
-        className="hidden"
-      />
+      <ImportInput />
     </>
   );
 }

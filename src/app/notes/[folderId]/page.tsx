@@ -11,7 +11,7 @@ import { NoteCard } from "@/components/notes/NoteCard";
 import { FolderCard } from "@/components/notes/FolderCard";
 import { CreateFolderModal } from "@/components/notes/CreateFolderModal";
 import { MoveFolderModal } from "@/components/notes/MoveFolderModal";
-import { ImportNoteButton } from "@/components/notes/ImportNoteButton";
+import { ImportNoteButton, useImportNote } from "@/components/notes/ImportNoteButton";
 import { NoteFolderFormData, NoteExportData } from "@/types/notes";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
@@ -23,9 +23,12 @@ import {
   Trash2,
   FolderPlus,
   Settings,
+  MoreVertical,
+  Upload,
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { AppHeader } from "@/components/AppHeader";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
 export default function FolderPage() {
   const router = useRouter();
@@ -42,6 +45,7 @@ export default function FolderPage() {
     moveFolder,
     reorderFolder,
   } = useNoteFolders();
+  const { triggerImport, ImportInput } = useImportNote((data) => handleImport(data));
   const { notes, loading, addNote, deleteNote } = useNotes(folderId);
   const { templates } = useNoteTemplates(folderId);
   const [folder, setFolder] = useState<NoteFolder | null>(null);
@@ -205,8 +209,6 @@ export default function FolderPage() {
     <div className="min-h-screen bg-gray-50">
       <AppHeader
         title={folder?.name || "Dossier"}
-        icon={StickyNote}
-        iconColor="text-amber-500"
         currentModule="notes"
         onBack={() => {
           if (folder?.parentId) {
@@ -217,23 +219,41 @@ export default function FolderPage() {
         }}
         actions={
           <>
-            <button
-              onClick={() => router.push(`/notes/${folderId}/settings`)}
-              className="p-2 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-              aria-label="Paramètres du dossier"
-              title="Paramètres du dossier"
-            >
-              <Settings size={20} />
-            </button>
-            <button
-              onClick={() => setShowDeleteConfirm(true)}
-              className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-              aria-label="Supprimer le dossier"
-              title="Supprimer le dossier"
-            >
-              <Trash2 size={20} />
-            </button>
-            <div className="hidden sm:block w-px h-6 bg-gray-200 mx-1"></div>
+            <Menu as="div" className="relative inline-block text-left">
+              <MenuButton className="p-2 text-gray-500 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50">
+                <MoreVertical size={20} />
+              </MenuButton>
+
+              <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 focus:outline-none">
+                <div className="py-1">
+                  <MenuItem
+                    as="button"
+                    onClick={triggerImport}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100"
+                  >
+                    <Upload size={16} />
+                    Importer une note
+                  </MenuItem>
+                  <MenuItem
+                    as="button"
+                    onClick={() => router.push(`/notes/${folderId}/settings`)}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100"
+                  >
+                    <Settings size={16} />
+                    Paramètres
+                  </MenuItem>
+                  <MenuItem
+                    as="button"
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 flex items-center gap-2 hover:bg-red-50"
+                  >
+                    <Trash2 size={16} />
+                    Supprimer
+                  </MenuItem>
+                </div>
+              </MenuItems>
+            </Menu>
+            <ImportInput />
           </>
         }
       />
@@ -248,7 +268,6 @@ export default function FolderPage() {
               Sous-dossiers ({subFolders.length})
             </h2>
             <div className="flex items-center gap-2">
-              <ImportNoteButton onImport={handleImport} />
               <button
                 onClick={() => setShowCreateFolderModal(true)}
                 className="flex items-center gap-1.5 text-sm font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 px-2 py-1 rounded transition-colors"

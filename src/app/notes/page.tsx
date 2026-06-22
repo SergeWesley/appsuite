@@ -8,20 +8,22 @@ import { NoteFolder, NoteFolderFormData, NoteExportData } from "@/types/notes";
 import { FolderCard } from "@/components/notes/FolderCard";
 import { CreateFolderModal } from "@/components/notes/CreateFolderModal";
 import { MoveFolderModal } from "@/components/notes/MoveFolderModal";
-import { ImportNoteButton } from "@/components/notes/ImportNoteButton";
+import { ImportNoteButton, useImportNote } from "@/components/notes/ImportNoteButton";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
-import { StickyNote, FolderOpen } from "lucide-react";
+import { StickyNote, FolderOpen, MoreVertical, Upload } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { AppHeader } from "@/components/AppHeader";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
 export default function NotesPage() {
   const router = useRouter();
   const { user, signOut } = useAuthContext();
   const { folders, loading, addFolder, importNoteData, deleteFolder, moveFolder, reorderFolder } =
     useNoteFolders();
+  const { triggerImport, ImportInput } = useImportNote((data) => handleImport(data));
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const [selectedFolders, setSelectedFolders] = useState<string[]>([]);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
@@ -120,7 +122,25 @@ export default function NotesPage() {
         currentModule="notes"
         actions={
           <>
-            <ImportNoteButton onImport={handleImport} />
+            <Menu as="div" className="relative inline-block text-left">
+              <MenuButton className="p-2 text-gray-500 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50">
+                <MoreVertical size={20} />
+              </MenuButton>
+
+              <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 focus:outline-none">
+                <div className="py-1">
+                  <MenuItem
+                    as="button"
+                    onClick={triggerImport}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100"
+                  >
+                    <Upload size={16} />
+                    Importer
+                  </MenuItem>
+                </div>
+              </MenuItems>
+            </Menu>
+            <ImportInput />
           </>
         }
       />
