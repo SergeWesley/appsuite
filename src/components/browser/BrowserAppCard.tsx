@@ -3,14 +3,17 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BrowserApp } from "@/types/browser";
-import { Globe, Pencil, Trash2 } from "lucide-react";
+import { Globe, Pencil, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 
 interface BrowserAppCardProps {
   app: BrowserApp;
   index: number;
+  totalApps: number;
   onEdit: (app: BrowserApp) => void;
   onDelete: (app: BrowserApp) => void;
   onClick: (app: BrowserApp) => void;
+  onMoveUp: (app: BrowserApp) => void;
+  onMoveDown: (app: BrowserApp) => void;
 }
 
 interface ContextMenuPosition {
@@ -21,10 +24,15 @@ interface ContextMenuPosition {
 export function BrowserAppCard({
   app,
   index,
+  totalApps,
   onEdit,
   onDelete,
   onClick,
+  onMoveUp,
+  onMoveDown,
 }: BrowserAppCardProps) {
+  const isFirst = index === 0;
+  const isLast = index === totalApps - 1;
   const [contextMenu, setContextMenu] = useState<ContextMenuPosition | null>(null);
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -89,12 +97,21 @@ export function BrowserAppCard({
     }
   };
 
-  const handleMenuAction = (action: "edit" | "delete") => {
+  const handleMenuAction = (action: "edit" | "delete" | "moveUp" | "moveDown") => {
     setContextMenu(null);
-    if (action === "edit") {
-      onEdit(app);
-    } else {
-      onDelete(app);
+    switch (action) {
+      case "edit":
+        onEdit(app);
+        break;
+      case "delete":
+        onDelete(app);
+        break;
+      case "moveUp":
+        onMoveUp(app);
+        break;
+      case "moveDown":
+        onMoveDown(app);
+        break;
     }
   };
 
@@ -148,6 +165,23 @@ export function BrowserAppCard({
               top: `min(${contextMenu.y}px, calc(100vh - 120px))`,
             }}
           >
+            <button
+              onClick={() => handleMenuAction("moveUp")}
+              disabled={isFirst}
+              className="w-full px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+            >
+              <ArrowUp size={16} className="text-gray-400" />
+              Déplacer vers le haut
+            </button>
+            <button
+              onClick={() => handleMenuAction("moveDown")}
+              disabled={isLast}
+              className="w-full px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+            >
+              <ArrowDown size={16} className="text-gray-400" />
+              Déplacer vers le bas
+            </button>
+            <div className="mx-3 border-t border-gray-100" />
             <button
               onClick={() => handleMenuAction("edit")}
               className="w-full px-4 py-2.5 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors"

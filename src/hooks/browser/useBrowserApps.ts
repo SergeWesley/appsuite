@@ -164,6 +164,63 @@ export function useBrowserApps() {
       return false;
     }
   };
+  const reorderApp = async (id: string, direction: "up" | "down"): Promise<boolean> => {
+    if (!user) {
+      setError("Utilisateur non connecté");
+      return false;
+    }
+
+    try {
+      setError(null);
+
+      const currentIndex = apps.findIndex((a) => a.id === id);
+      if (currentIndex === -1) return false;
+
+      const swapIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+      if (swapIndex < 0 || swapIndex >= apps.length) return false;
+
+      const currentApp = apps[currentIndex];
+      const swapApp = apps[swapIndex];
+
+      // Échanger les order_index
+      const currentOrder = currentApp.order_index;
+      const swapOrder = swapApp.order_index;
+
+      // Si les deux ont le même order_index, on utilise les positions dans le tableau
+      const newCurrentOrder = swapOrder === currentOrder ? swapIndex : swapOrder;
+      const newSwapOrder = swapOrder === currentOrder ? currentIndex : currentOrder;
+
+      const { error: err1 } = await supabase
+        .from("browser_apps")
+        .update({ order_index: newCurrentOrder })
+        .eq("id", currentApp.id)
+        .eq("user_id", user.id);
+
+      if (err1) throw err1;
+
+      const { error: err2 } = await supabase
+        .from("browser_apps")
+        .update({ order_index: newSwapOrder })
+        .eq("id", swapApp.id)
+        .eq("user_id", user.id);
+
+      if (err2) throw err2;
+
+      // Mise à jour locale : on swap les deux éléments
+      setApps((prev) => {
+        const newApps = [...prev];
+        newApps[currentIndex] = { ...swapApp, order_index: newSwapOrder };
+        newApps[swapIndex] = { ...currentApp, order_index: newCurrentOrder };
+        return newApps;
+      });
+
+      return true;
+    } catch (err) {
+      console.error("Erreur lors du réordonnancement:", err);
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
+      return false;
+    }
+  };
 
   return {
     apps,
@@ -172,6 +229,7 @@ export function useBrowserApps() {
     addApp,
     updateApp,
     deleteApp,
+    reorderApp,
     refreshApps: loadApps,
   };
 }

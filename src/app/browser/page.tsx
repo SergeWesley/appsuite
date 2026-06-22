@@ -15,7 +15,7 @@ import { useAuthContext } from "@/components/AuthProvider";
 
 export default function BrowserPage() {
   const { user } = useAuthContext();
-  const { apps, loading, addApp, updateApp, deleteApp } = useBrowserApps();
+  const { apps, loading, addApp, updateApp, deleteApp, reorderApp } = useBrowserApps();
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingApp, setEditingApp] = useState<BrowserApp | null>(null);
   const [deletingApp, setDeletingApp] = useState<BrowserApp | null>(null);
@@ -110,9 +110,12 @@ export default function BrowserPage() {
                 key={app.id}
                 app={app}
                 index={index}
+                totalApps={apps.length}
                 onClick={handleAppClick}
                 onEdit={(app) => setEditingApp(app)}
                 onDelete={(app) => setDeletingApp(app)}
+                onMoveUp={(app) => reorderApp(app.id, "up")}
+                onMoveDown={(app) => reorderApp(app.id, "down")}
               />
             ))}
           </div>
