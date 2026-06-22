@@ -13,7 +13,7 @@ import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { NavigationMenu } from "@/components/NavigationMenu";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
-import { StickyNote, FolderOpen, MoveRight } from "lucide-react";
+import { StickyNote, FolderOpen } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { AppHeader } from "@/components/AppHeader";
 
@@ -25,8 +25,8 @@ export default function NotesPage() {
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const [selectedFolders, setSelectedFolders] = useState<string[]>([]);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
-  const [moveMode, setMoveMode] = useState(false);
   const [folderToMove, setFolderToMove] = useState<NoteFolder | null>(null);
+  const [folderToDelete, setFolderToDelete] = useState<NoteFolder | null>(null);
 
   const rootFolders = folders.filter((f) => !f.parentId);
 
@@ -45,11 +45,6 @@ export default function NotesPage() {
   };
 
   const handleFolderClick = (f: NoteFolder, e: React.MouseEvent) => {
-    if (moveMode) {
-      e.preventDefault();
-      setFolderToMove(f);
-      return;
-    }
     if (e.metaKey || e.ctrlKey) {
       e.preventDefault();
       setSelectedFolders((prev) =>
@@ -67,6 +62,15 @@ export default function NotesPage() {
     if (!success) {
       alert("Erreur lors du déplacement du dossier.");
     }
+  };
+
+  const handleSingleDelete = async () => {
+    if (!folderToDelete) return;
+    const success = await deleteFolder(folderToDelete.id);
+    if (!success) {
+      alert("Erreur lors de la suppression du dossier.");
+    }
+    setFolderToDelete(null);
   };
 
   const handleBulkDelete = async () => {
@@ -116,43 +120,13 @@ export default function NotesPage() {
         currentModule="notes"
         actions={
           <>
-            <button
-              onClick={() => setMoveMode((prev) => !prev)}
-              className={`p-2 rounded-lg transition-colors ${
-                moveMode
-                  ? "bg-amber-500 text-white shadow-md"
-                  : "text-gray-500 hover:text-amber-600 hover:bg-amber-50"
-              }`}
-              aria-label={moveMode ? "Quitter le mode déplacement" : "Mode déplacement"}
-              title={moveMode ? "Quitter le mode déplacement" : "Mode déplacement"}
-            >
-              <MoveRight size={20} />
-            </button>
             <ImportNoteButton onImport={handleImport} />
           </>
         }
       />
 
       <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
-        {/* Move Mode Banner */}
-        {moveMode && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-3"
-          >
-            <MoveRight size={18} className="text-amber-600 flex-shrink-0" />
-            <p className="text-sm text-amber-800 flex-1">
-              <strong>Mode déplacement :</strong> Cliquez sur un dossier pour le déplacer.
-            </p>
-            <button
-              onClick={() => setMoveMode(false)}
-              className="text-xs font-medium text-amber-600 hover:text-amber-800 px-3 py-1 rounded-lg hover:bg-amber-100 transition-colors"
-            >
-              Quitter
-            </button>
-          </motion.div>
-        )}
+
 
         {/* Page Title */}
         <div className="mb-8">
@@ -241,6 +215,8 @@ export default function NotesPage() {
                 }
                 onClick={handleFolderClick}
                 onConfig={(f) => router.push(`/notes/${f.id}/settings`)}
+                onMove={(f) => setFolderToMove(f)}
+                onDelete={(f) => setFolderToDelete(f)}
               />
             ))}
           </div>
@@ -269,6 +245,16 @@ export default function NotesPage() {
         allFolders={folders}
         onClose={() => setFolderToMove(null)}
         onMove={handleMoveFolder}
+      />
+
+      <ConfirmationModal
+        isOpen={!!folderToDelete}
+        onClose={() => setFolderToDelete(null)}
+        onConfirm={handleSingleDelete}
+        title="Supprimer le dossier"
+        message={`Êtes-vous sûr de vouloir supprimer le dossier « ${folderToDelete?.name} » et toutes ses notes ? Cette action est irréversible.`}
+        confirmLabel="Supprimer"
+        confirmColor="bg-red-600 hover:bg-red-700"
       />
 
       <ConfirmationModal

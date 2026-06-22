@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { NoteFolder } from "@/types/notes";
-import { Folder, StickyNote, Settings } from "lucide-react";
+import { Folder, StickyNote, Settings, MoveRight, Trash2 } from "lucide-react";
 import { useContextMenu } from "@/hooks/useContextMenu";
 import { ContextMenu, ContextMenuItem } from "@/components/ui/ContextMenu";
 
@@ -14,15 +14,31 @@ interface FolderCardProps {
   isSelected?: boolean;
   onClick?: (folder: NoteFolder, e: React.MouseEvent) => void;
   onConfig?: (folder: NoteFolder) => void;
+  onMove?: (folder: NoteFolder) => void;
+  onDelete?: (folder: NoteFolder) => void;
 }
 
-export function FolderCard({ folder, index, subfolderCount = 0, isSelected = false, onClick, onConfig }: FolderCardProps) {
+export function FolderCard({ folder, index, subfolderCount = 0, isSelected = false, onClick, onConfig, onMove, onDelete }: FolderCardProps) {
   const { contextMenu, setContextMenu, contextMenuHandlers } = useContextMenu();
 
   const handleConfig = () => {
     setContextMenu(null);
     if (onConfig) {
       onConfig(folder);
+    }
+  };
+
+  const handleMove = () => {
+    setContextMenu(null);
+    if (onMove) {
+      onMove(folder);
+    }
+  };
+
+  const handleDelete = () => {
+    setContextMenu(null);
+    if (onDelete) {
+      onDelete(folder);
     }
   };
 
@@ -118,9 +134,20 @@ export function FolderCard({ folder, index, subfolderCount = 0, isSelected = fal
 
       <ContextMenu position={contextMenu} onClose={() => setContextMenu(null)}>
         <ContextMenuItem
+          onClick={handleMove}
+          icon={<MoveRight size={16} />}
+          label="Déplacer"
+        />
+        <ContextMenuItem
           onClick={handleConfig}
           icon={<Settings size={16} />}
           label="Paramétrer"
+        />
+        <ContextMenuItem
+          onClick={handleDelete}
+          icon={<Trash2 size={16} />}
+          label="Supprimer"
+          danger
         />
       </ContextMenu>
     </>
