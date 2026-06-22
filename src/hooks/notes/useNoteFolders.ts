@@ -25,6 +25,7 @@ export function useNoteFolders() {
         .from("note_folders")
         .select("*, notes(count)")
         .eq("user_id", user.id)
+        .order("order_index", { ascending: true })
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -37,6 +38,7 @@ export function useNoteFolders() {
         parentId: row.parent_id,
         customFields: (row.custom_fields as unknown as CustomFieldDefinition[]) || [],
         noteCount: row.notes?.[0]?.count ?? 0,
+        order_index: row.order_index ?? 0,
         dateCreated: new Date(row.created_at),
         dateUpdated: new Date(row.updated_at),
       }));
@@ -76,6 +78,7 @@ export function useNoteFolders() {
           color: formData.color,
           user_id: user.id,
           parent_id: formData.parentId || null,
+          order_index: folders.filter(f => f.parentId === (formData.parentId || null)).length,
         })
         .select()
         .single();
@@ -89,6 +92,7 @@ export function useNoteFolders() {
         userId: data.user_id,
         parentId: data.parent_id,
         customFields: (data.custom_fields as unknown as CustomFieldDefinition[]) || [],
+        order_index: data.order_index ?? 0,
         dateCreated: new Date(data.created_at),
         dateUpdated: new Date(data.updated_at),
       };
@@ -333,6 +337,61 @@ export function useNoteFolders() {
     }
   };
 
+  const reorderFolder = async (folderId: string, direction: "up" | "down"): Promise<boolean> => {
+    if (!user) return false;
+
+    try {
+      const folderToMove = folders.find((f) => f.id === folderId);
+      if (!folderToMove) return false;
+
+      // Seulement réorganiser au sein du même parent
+      const siblings = folders
+        .filter((f) => f.parentId === folderToMove.parentId)
+        .sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+
+      const currentIndex = siblings.findIndex((f) => f.id === folderId);
+      if (currentIndex === -1) return false;
+      if (direction === "up" && currentIndex === 0) return false;
+      if (direction === "down" && currentIndex === siblings.length - 1) return false;
+
+      const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+      const targetFolder = siblings[targetIndex];
+
+      const currentOrderIndex = folderToMove.order_index ?? currentIndex;
+      const targetOrderIndex = targetFolder.order_index ?? targetIndex;
+
+      const { error: err1 } = await supabase
+        .from("note_folders")
+        .update({ order_index: targetOrderIndex })
+        .eq("id", folderToMove.id);
+      if (err1) throw err1;
+
+      const { error: err2 } = await supabase
+        .from("note_folders")
+        .update({ order_index: currentOrderIndex })
+        .eq("id", targetFolder.id);
+      if (err2) throw err2;
+
+      setFolders((prev) =>
+        prev
+          .map((f) => {
+            if (f.id === folderToMove.id) return { ...f, order_index: targetOrderIndex };
+            if (f.id === targetFolder.id) return { ...f, order_index: currentOrderIndex };
+            return f;
+          })
+          .sort((a, b) => {
+            // Maintenir le tri après la mise à jour locale
+            return (a.order_index || 0) - (b.order_index || 0);
+          })
+      );
+      return true;
+    } catch (err) {
+      console.error("Erreur lors de la réorganisation:", err);
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
+      return false;
+    }
+  };
+
   return {
     folders,
     loading,
@@ -343,6 +402,7 @@ export function useNoteFolders() {
     deleteFolder,
     moveFolder,
     importNoteData,
+    reorderFolder,
     refreshFolders: loadFolders,
   };
 }

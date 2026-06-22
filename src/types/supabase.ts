@@ -309,6 +309,7 @@ export type Database = {
           custom_fields: Json | null
           id: string
           name: string
+          order_index: number
           parent_id: string | null
           updated_at: string
           user_id: string
@@ -319,6 +320,7 @@ export type Database = {
           custom_fields?: Json | null
           id?: string
           name: string
+          order_index?: number
           parent_id?: string | null
           updated_at?: string
           user_id: string
@@ -329,6 +331,7 @@ export type Database = {
           custom_fields?: Json | null
           id?: string
           name?: string
+          order_index?: number
           parent_id?: string | null
           updated_at?: string
           user_id?: string

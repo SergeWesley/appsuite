@@ -38,9 +38,9 @@ export default function FolderPage() {
     deleteFolder,
     addFolder,
     updateFolderFields,
-    updateFolder,
     importNoteData,
     moveFolder,
+    reorderFolder,
   } = useNoteFolders();
   const { notes, loading, addNote, deleteNote } = useNotes(folderId);
   const { templates } = useNoteTemplates(folderId);
@@ -266,12 +266,15 @@ export default function FolderPage() {
                   folder={sf}
                   index={index}
                   isSelected={selectedFolders.includes(sf.id)}
+                  totalFolders={subFolders.length}
                   subfolderCount={
                     folders.filter((f) => f.parentId === sf.id).length
                   }
                   onClick={handleFolderClick}
                   onConfig={(f) => router.push(`/notes/${f.id}/settings`)}
                   onMove={(f) => setFolderToMove(f)}
+                  onMoveUp={(f) => reorderFolder(f.id, "up")}
+                  onMoveDown={(f) => reorderFolder(f.id, "down")}
                   onDelete={(f) => setSubFolderToDelete(f)}
                 />
               ))}

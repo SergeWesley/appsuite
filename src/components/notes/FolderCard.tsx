@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { NoteFolder } from "@/types/notes";
-import { Folder, StickyNote, Settings, MoveRight, Trash2 } from "lucide-react";
+import { Folder, StickyNote, Settings, MoveRight, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import { useContextMenu } from "@/hooks/useContextMenu";
 import { ContextMenu, ContextMenuItem } from "@/components/ui/ContextMenu";
 
@@ -12,13 +12,28 @@ interface FolderCardProps {
   index: number;
   subfolderCount?: number;
   isSelected?: boolean;
+  totalFolders?: number;
   onClick?: (folder: NoteFolder, e: React.MouseEvent) => void;
   onConfig?: (folder: NoteFolder) => void;
   onMove?: (folder: NoteFolder) => void;
+  onMoveUp?: (folder: NoteFolder) => void;
+  onMoveDown?: (folder: NoteFolder) => void;
   onDelete?: (folder: NoteFolder) => void;
 }
 
-export function FolderCard({ folder, index, subfolderCount = 0, isSelected = false, onClick, onConfig, onMove, onDelete }: FolderCardProps) {
+export function FolderCard({ 
+  folder, 
+  index, 
+  subfolderCount = 0, 
+  isSelected = false, 
+  totalFolders = 1,
+  onClick, 
+  onConfig, 
+  onMove, 
+  onMoveUp,
+  onMoveDown,
+  onDelete 
+}: FolderCardProps) {
   const { contextMenu, setContextMenu, contextMenuHandlers } = useContextMenu();
 
   const handleConfig = () => {
@@ -40,6 +55,16 @@ export function FolderCard({ folder, index, subfolderCount = 0, isSelected = fal
     if (onDelete) {
       onDelete(folder);
     }
+  };
+
+  const handleMoveUp = () => {
+    setContextMenu(null);
+    if (onMoveUp) onMoveUp(folder);
+  };
+
+  const handleMoveDown = () => {
+    setContextMenu(null);
+    if (onMoveDown) onMoveDown(folder);
   };
 
   const hasNotes = folder.noteCount !== undefined && folder.noteCount > 0;
@@ -133,10 +158,26 @@ export function FolderCard({ folder, index, subfolderCount = 0, isSelected = fal
       </motion.button>
 
       <ContextMenu position={contextMenu} onClose={() => setContextMenu(null)}>
+        {onMoveUp && onMoveDown && (
+          <>
+            <ContextMenuItem
+              onClick={handleMoveUp}
+              icon={<ArrowUp size={16} />}
+              label="Déplacer vers le haut"
+              disabled={index === 0}
+            />
+            <ContextMenuItem
+              onClick={handleMoveDown}
+              icon={<ArrowDown size={16} />}
+              label="Déplacer vers le bas"
+              disabled={index === totalFolders - 1}
+            />
+          </>
+        )}
         <ContextMenuItem
           onClick={handleMove}
           icon={<MoveRight size={16} />}
-          label="Déplacer"
+          label="Changer de dossier"
         />
         <ContextMenuItem
           onClick={handleConfig}

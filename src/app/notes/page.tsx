@@ -20,7 +20,7 @@ import { AppHeader } from "@/components/AppHeader";
 export default function NotesPage() {
   const router = useRouter();
   const { user, signOut } = useAuthContext();
-  const { folders, loading, addFolder, importNoteData, deleteFolder, moveFolder } =
+  const { folders, loading, addFolder, importNoteData, deleteFolder, moveFolder, reorderFolder } =
     useNoteFolders();
   const [showCreateFolderModal, setShowCreateFolderModal] = useState(false);
   const [selectedFolders, setSelectedFolders] = useState<string[]>([]);
@@ -210,12 +210,15 @@ export default function NotesPage() {
                 folder={folder}
                 index={index}
                 isSelected={selectedFolders.includes(folder.id)}
+                totalFolders={rootFolders.length}
                 subfolderCount={
                   folders.filter((f) => f.parentId === folder.id).length
                 }
                 onClick={handleFolderClick}
                 onConfig={(f) => router.push(`/notes/${f.id}/settings`)}
                 onMove={(f) => setFolderToMove(f)}
+                onMoveUp={(f) => reorderFolder(f.id, "up")}
+                onMoveDown={(f) => reorderFolder(f.id, "down")}
                 onDelete={(f) => setFolderToDelete(f)}
               />
             ))}
