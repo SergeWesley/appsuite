@@ -39,9 +39,10 @@ export default function BrowserPage() {
   };
 
   const handleAppClick = (app: BrowserApp) => {
-    // TODO: Ouvrir la webview
     window.open(app.url, "_blank");
   };
+
+
 
   return (
     <div className="min-h-screen bg-gray-50">
