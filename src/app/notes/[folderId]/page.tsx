@@ -42,7 +42,7 @@ export default function FolderPage() {
     importNoteData,
     moveFolder,
   } = useNoteFolders();
-  const { notes, loading, addNote } = useNotes(folderId);
+  const { notes, loading, addNote, deleteNote } = useNotes(folderId);
   const { templates } = useNoteTemplates(folderId);
   const [folder, setFolder] = useState<NoteFolder | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -52,6 +52,7 @@ export default function FolderPage() {
   const [selectedFolders, setSelectedFolders] = useState<string[]>([]);
   const [folderToMove, setFolderToMove] = useState<NoteFolder | null>(null);
   const [subFolderToDelete, setSubFolderToDelete] = useState<NoteFolder | null>(null);
+  const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
 
   const subFolders = folders.filter((f) => f.parentId === folderId);
 
@@ -143,6 +144,15 @@ export default function FolderPage() {
       alert("Une erreur s'est produite lors de la suppression du sous-dossier.");
     }
     setSubFolderToDelete(null);
+  };
+
+  const handleDeleteNote = async () => {
+    if (!noteToDelete) return;
+    const success = await deleteNote(noteToDelete.id);
+    if (!success) {
+      alert("Une erreur s'est produite lors de la suppression de la note.");
+    }
+    setNoteToDelete(null);
   };
 
   const handleBulkDelete = async () => {
@@ -295,6 +305,7 @@ export default function FolderPage() {
                 note={note}
                 index={index}
                 onClick={handleOpenNote}
+                onDelete={(n) => setNoteToDelete(n)}
               />
             ))}
           </div>
@@ -333,6 +344,17 @@ export default function FolderPage() {
         onConfirm={handleDeleteSubFolder}
         title="Supprimer le sous-dossier"
         message={`Êtes-vous sûr de vouloir supprimer le sous-dossier « ${subFolderToDelete?.name} » et toutes ses notes ? Cette action est irréversible.`}
+        confirmLabel="Supprimer"
+        confirmColor="bg-red-600 hover:bg-red-700"
+      />
+
+      {/* Delete Confirmation Modal for Note from Context Menu */}
+      <ConfirmationModal
+        isOpen={!!noteToDelete}
+        onClose={() => setNoteToDelete(null)}
+        onConfirm={handleDeleteNote}
+        title="Supprimer la note"
+        message={`Êtes-vous sûr de vouloir supprimer la note « ${noteToDelete?.title || "Sans titre"} » ? Cette action est irréversible.`}
         confirmLabel="Supprimer"
         confirmColor="bg-red-600 hover:bg-red-700"
       />
