@@ -44,7 +44,7 @@ export function AppHeader({
       <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
         <div className={`${maxWidth} mx-auto px-4 sm:px-6 lg:px-8`}>
           <div className={`flex items-center justify-between ${height}`}>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-0 flex-1 mr-4">
               {onBack && (
                 <button
                   onClick={onBack}
@@ -56,19 +56,19 @@ export function AppHeader({
               )}
               <button
                 onClick={() => setIsNavMenuOpen(true)}
-                className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors min-w-0 flex-1 text-left"
                 aria-label="Menu de navigation"
               >
                 {Icon && <Icon className={`h-8 w-8 ${iconColor}`} />}
                 <h1
-                  className={`${Icon ? "ml-3" : ""} text-xl font-semibold text-gray-900 truncate max-w-[200px] sm:max-w-md`}
+                  className={`${Icon ? "ml-3" : ""} text-xl font-semibold text-gray-900 truncate`}
                 >
                   {title}
                 </h1>
               </button>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-shrink-0">
               {actions && (
                 <div className="flex items-center gap-2 sm:gap-4">
                   {actions}

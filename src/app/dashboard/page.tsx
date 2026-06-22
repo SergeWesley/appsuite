@@ -1,12 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  User,
-  LogOut,
-  ArrowRight,
-  Grid3X3,
-} from "lucide-react";
+import { User, LogOut, ArrowRight, Grid3X3 } from "lucide-react";
 import Link from "next/link";
 import { useAuthContext } from "@/components/AuthProvider";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
@@ -100,7 +95,9 @@ export default function Dashboard() {
                   className={`h-full p-6 rounded-xl border border-gray-100 ${module.theme.bgFaint} hover:shadow-lg transition-all duration-200 hover:scale-105 group relative`}
                 >
                   <div className="flex items-start justify-between mb-4">
-                    <div className={`p-3 rounded-lg bg-white ${module.theme.text}`}>
+                    <div
+                      className={`p-3 rounded-lg bg-white ${module.theme.text}`}
+                    >
                       <module.icon size={24} />
                     </div>
                     <ArrowRight
@@ -119,25 +116,6 @@ export default function Dashboard() {
             </motion.div>
           ))}
         </div>
-
-        {/* Section d'information */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="mt-16 text-center"
-        >
-          <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-              Plus d'outils à venir
-            </h2>
-            <p className="text-gray-600 max-w-3xl mx-auto">
-              Cette suite d'outils est en constante évolution. Nous ajouterons
-              régulièrement de nouvelles fonctionnalités pour vous aider à être
-              plus productif et organisé. Restez à l'écoute !
-            </p>
-          </div>
-        </motion.div>
       </main>
     </div>
   );

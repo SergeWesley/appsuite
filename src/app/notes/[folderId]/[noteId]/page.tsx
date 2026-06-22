@@ -8,13 +8,14 @@ import { useNotes } from "@/hooks/notes/useNotes";
 import { useNoteTemplates } from "@/hooks/notes/useNoteTemplates";
 import { NoteFolder, CustomFieldDefinition } from "@/types/notes";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
-import { Trash2, Loader2, Check, Download, Sparkles } from "lucide-react";
+import { Trash2, Loader2, Check, Download, Sparkles, MoreVertical } from "lucide-react";
 import { DynamicPropertiesBanner } from "@/components/notes/DynamicPropertiesBanner";
 import { NoteExportData } from "@/types/notes";
 import { useAgent } from "@/components/chat/AgentProvider";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { AppHeader } from "@/components/AppHeader";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
 export default function NoteEditorPage() {
   const router = useRouter();
@@ -248,41 +249,47 @@ export default function NoteEditorPage() {
               </motion.div>
             )}
 
-            {/* AI Assistant button (admin only) */}
-            {isAdmin && (
-              <button
-                onClick={() => {
-                  openAgent({
-                    systemContext: `L'utilisateur est dans le module Notes, en train d'éditer une note.`,
-                  });
-                }}
-                className="p-2 text-gray-400 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50"
-                aria-label="Assistant IA"
-                title="Analyser avec l'IA"
-              >
-                <Sparkles size={18} />
-              </button>
-            )}
+            {/* AI, Export, Delete buttons grouped in a Menu */}
+            <Menu as="div" className="relative inline-block text-left">
+              <MenuButton className="p-2 text-gray-500 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50">
+                <MoreVertical size={20} />
+              </MenuButton>
 
-            {/* Export button */}
-            <button
-              onClick={handleExport}
-              className="p-2 text-gray-400 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50"
-              aria-label="Exporter la note"
-              title="Exporter"
-            >
-              <Download size={18} />
-            </button>
-
-            {/* Delete button */}
-            <button
-              onClick={() => setShowDeleteConfirm(true)}
-              className="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50"
-              aria-label="Supprimer la note"
-              title="Supprimer"
-            >
-              <Trash2 size={18} />
-            </button>
+              <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 focus:outline-none">
+                <div className="py-1">
+                  {isAdmin && (
+                    <MenuItem
+                      as="button"
+                      onClick={() => {
+                        openAgent({
+                          systemContext: `L'utilisateur est dans le module Notes, en train d'éditer une note.`,
+                        });
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100"
+                    >
+                      <Sparkles size={16} />
+                      Assistant IA
+                    </MenuItem>
+                  )}
+                  <MenuItem
+                    as="button"
+                    onClick={handleExport}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100"
+                  >
+                    <Download size={16} />
+                    Exporter
+                  </MenuItem>
+                  <MenuItem
+                    as="button"
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 flex items-center gap-2 hover:bg-red-50"
+                  >
+                    <Trash2 size={16} />
+                    Supprimer
+                  </MenuItem>
+                </div>
+              </MenuItems>
+            </Menu>
           </>
         }
       />
