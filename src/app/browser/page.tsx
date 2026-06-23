@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { AppHeader } from "@/components/AppHeader";
-import { AddBrowserAppModal } from "@/components/browser/AddBrowserAppModal";
-import { EditBrowserAppModal } from "@/components/browser/EditBrowserAppModal";
+import { BrowserAppFormModal } from "@/components/browser/BrowserAppFormModal";
 import { BrowserAppCard } from "@/components/browser/BrowserAppCard";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
@@ -130,18 +129,18 @@ export default function BrowserPage() {
       />
 
       {/* Add App Modal */}
-      <AddBrowserAppModal
+      <BrowserAppFormModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onSubmit={handleAddApp}
       />
 
       {/* Edit App Modal */}
-      <EditBrowserAppModal
+      <BrowserAppFormModal
         isOpen={!!editingApp}
-        app={editingApp}
+        initialData={editingApp}
         onClose={() => setEditingApp(null)}
-        onSubmit={handleEditApp}
+        onSubmit={(data) => handleEditApp(editingApp!.id, data)}
       />
 
       {/* Delete Confirmation Modal */}

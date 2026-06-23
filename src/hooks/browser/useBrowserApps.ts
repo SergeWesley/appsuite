@@ -70,6 +70,8 @@ export function useBrowserApps() {
     try {
       setError(null);
 
+      const newOrderIndex = apps.length > 0 ? Math.max(...apps.map(a => a.order_index)) + 1 : 0;
+
       const { data, error: insertError } = await supabase
         .from("browser_apps")
         .insert({
@@ -77,7 +79,7 @@ export function useBrowserApps() {
           name: formData.name,
           url: formData.url,
           icon_url: formData.icon_url,
-          order_index: formData.order_index || 0,
+          order_index: newOrderIndex,
           settings: formData.settings as any,
         })
         .select()

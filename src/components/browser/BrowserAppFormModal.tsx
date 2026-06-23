@@ -5,11 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { BrowserApp, BrowserAppFormData } from "@/types/browser";
 import { X, Globe, Link, Type, Image } from "lucide-react";
 
-interface EditBrowserAppModalProps {
+interface BrowserAppFormModalProps {
   isOpen: boolean;
-  app: BrowserApp | null;
   onClose: () => void;
-  onSubmit: (id: string, updates: Partial<BrowserAppFormData>) => void;
+  onSubmit: (data: BrowserAppFormData) => void;
+  initialData?: BrowserApp | null;
 }
 
 function normalizeUrl(url: string): string {
@@ -30,32 +30,40 @@ function getFaviconUrl(url: string): string {
   }
 }
 
-export function EditBrowserAppModal({
+export function BrowserAppFormModal({
   isOpen,
-  app,
   onClose,
   onSubmit,
-}: EditBrowserAppModalProps) {
+  initialData,
+}: BrowserAppFormModalProps) {
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
   const [iconUrl, setIconUrl] = useState("");
   const [useCustomIcon, setUseCustomIcon] = useState(false);
 
-  // Préremplir le formulaire quand l'app change
+  const isEditMode = !!initialData;
+
   useEffect(() => {
-    if (app) {
-      setName(app.name);
-      setUrl(app.url);
-      const autoFavicon = getFaviconUrl(app.url);
-      if (app.icon_url && app.icon_url !== autoFavicon) {
-        setIconUrl(app.icon_url);
-        setUseCustomIcon(true);
+    if (isOpen) {
+      if (initialData) {
+        setName(initialData.name);
+        setUrl(initialData.url);
+        const autoFavicon = getFaviconUrl(initialData.url);
+        if (initialData.icon_url && initialData.icon_url !== autoFavicon) {
+          setIconUrl(initialData.icon_url);
+          setUseCustomIcon(true);
+        } else {
+          setIconUrl("");
+          setUseCustomIcon(false);
+        }
       } else {
+        setName("");
+        setUrl("");
         setIconUrl("");
         setUseCustomIcon(false);
       }
     }
-  }, [app]);
+  }, [isOpen, initialData]);
 
   const normalizedUrl = normalizeUrl(url);
   const autoFaviconUrl = normalizedUrl ? getFaviconUrl(normalizedUrl) : "";
@@ -74,15 +82,15 @@ export function EditBrowserAppModal({
   const canSubmit = name.trim() !== "" && isValidUrl;
 
   const handleSubmit = () => {
-    if (!canSubmit || !app) return;
+    if (!canSubmit) return;
 
-    onSubmit(app.id, {
+    onSubmit({
       name: name.trim(),
       url: normalizedUrl,
       icon_url: resolvedIconUrl || null,
+      order_index: initialData?.order_index || 0,
+      settings: initialData?.settings || {},
     });
-
-    onClose();
   };
 
   const handleClose = () => {
@@ -91,7 +99,7 @@ export function EditBrowserAppModal({
 
   return (
     <AnimatePresence>
-      {isOpen && app && (
+      {isOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -114,7 +122,7 @@ export function EditBrowserAppModal({
                     <Globe size={20} className="text-teal-600" />
                   </div>
                   <h2 className="text-lg font-semibold text-gray-900">
-                    Modifier l&apos;application
+                    {isEditMode ? "Modifier l'application" : "Ajouter un site"}
                   </h2>
                 </div>
                 <button
@@ -158,7 +166,6 @@ export function EditBrowserAppModal({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ex: Twitter, Mon Dashboard..."
-                  autoFocus
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleSubmit();
@@ -234,7 +241,7 @@ export function EditBrowserAppModal({
                 disabled={!canSubmit}
                 className="flex-1 px-4 py-3 text-white bg-teal-500 rounded-xl hover:bg-teal-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Enregistrer
+                {isEditMode ? "Enregistrer" : "Ajouter"}
               </button>
             </div>
           </motion.div>
