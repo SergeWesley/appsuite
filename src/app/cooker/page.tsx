@@ -1,14 +1,12 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { NavigationMenu } from "@/components/NavigationMenu";
 import RecipeResults from "./RecipeResults";
+import { AppHeader } from "@/components/AppHeader";
 import {
   Search,
   Check,
   Utensils,
-  LogOut,
-  User as UserIcon,
   Loader2,
   Info,
   ChevronDown,
@@ -19,8 +17,6 @@ import {
   Trash2,
   ArrowUp,
 } from "lucide-react";
-import { useAuthContext } from "@/components/AuthProvider";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 
@@ -40,7 +36,6 @@ interface FoodCategory {
 }
 
 export default function CookerPage() {
-  const { user, signOut } = useAuthContext();
   const [foodData, setFoodData] = useState<FoodCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const {
@@ -61,7 +56,6 @@ export default function CookerPage() {
     [cookerSelectedItems],
   );
 
-  const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const [selectedItemDetails, setSelectedItemDetails] =
     useState<FoodItem | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -184,54 +178,13 @@ export default function CookerPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <button
-                onClick={() => setIsNavMenuOpen(true)}
-                className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                aria-label="Menu de navigation"
-              >
-                <Utensils className="h-8 w-8 text-cyan-600" />
-                <h1 className="ml-3 text-xl font-semibold text-gray-900">
-                  Cooker
-                </h1>
-              </button>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <Menu as="div" className="relative inline-block text-left">
-                <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                  <UserIcon size={20} />
-                  <span className="hidden sm:block">
-                    {user?.user_metadata?.name || user?.email || "Utilisateur"}
-                  </span>
-                </MenuButton>
-
-                <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 focus:outline-none">
-                  <div className="py-2">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-900">
-                        {user?.user_metadata?.name || "Utilisateur"}
-                      </p>
-                      <p className="text-xs text-gray-500">{user?.email}</p>
-                    </div>
-                    <MenuItem
-                      as="button"
-                      onClick={signOut}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100"
-                    >
-                      <LogOut size={16} />
-                      Se déconnecter
-                    </MenuItem>
-                  </div>
-                </MenuItems>
-              </Menu>
-            </div>
-          </div>
-        </div>
-      </header>
+      <AppHeader
+        title="Cooker"
+        icon={Utensils}
+        iconColor="text-cyan-600"
+        currentModule="cooker"
+        maxWidth="max-w-7xl"
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {loading ? (
@@ -580,11 +533,7 @@ export default function CookerPage() {
         )}
       </AnimatePresence>
 
-      <NavigationMenu
-        isOpen={isNavMenuOpen}
-        onClose={() => setIsNavMenuOpen(false)}
-        currentModule="cooker"
-      />
+
     </div>
   );
 }

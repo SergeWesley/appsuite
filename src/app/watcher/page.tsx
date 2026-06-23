@@ -8,8 +8,6 @@ import {
   CheckCircle,
   Clock,
   Search,
-  LogOut,
-  User,
   Heart,
   Play,
   Tv,
@@ -24,8 +22,7 @@ import { MediaCard } from "@/components/watcher/MediaCard";
 import { MediaForm } from "@/components/watcher/MediaForm";
 import { MediaStats } from "@/components/watcher/MediaStats";
 import { WatchingTimer } from "@/components/watcher/WatchingTimer";
-import { NavigationMenu } from "@/components/NavigationMenu";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { AppHeader } from "@/components/AppHeader";
 
 export default function WatcherPage() {
   const {
@@ -44,22 +41,26 @@ export default function WatcherPage() {
     getFormattedCurrentTime,
     startSession,
   } = useMediasWithSessions();
-  const { user, signOut } = useAuthContext();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingMedia, setEditingMedia] = useState<Media | undefined>(
     undefined,
   );
   const [timerMedia, setTimerMedia] = useState<Media | undefined>(undefined);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
-  const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
 
   // Gestion de la persistance des filtres
-  const { selectedStatus, selectedType, searchQuery, updateFilter, toggleArrayFilter, isFilterSelected } =
-    useFilterPersistence("watcher-filters", {
-      selectedStatus: [],
-      selectedType: [],
-      searchQuery: "",
-    });
+  const {
+    selectedStatus,
+    selectedType,
+    searchQuery,
+    updateFilter,
+    toggleArrayFilter,
+    isFilterSelected,
+  } = useFilterPersistence("watcher-filters", {
+    selectedStatus: [],
+    selectedType: [],
+    searchQuery: "",
+  });
 
   const handleAddMedia = async (data: MediaFormData) => {
     await addMedia(data);
@@ -113,11 +114,13 @@ export default function WatcherPage() {
   const filteredMedias = medias.filter((media) => {
     // Si aucun filtre de statut n'est sélectionné, on affiche tout
     const statusArray = Array.isArray(selectedStatus) ? selectedStatus : [];
-    const matchesStatus = statusArray.length === 0 || statusArray.includes(media.status);
+    const matchesStatus =
+      statusArray.length === 0 || statusArray.includes(media.status);
 
     // Si aucun filtre de type n'est sélectionné, on affiche tout
     const typeArray = Array.isArray(selectedType) ? selectedType : [];
-    const matchesType = typeArray.length === 0 || typeArray.includes(media.type);
+    const matchesType =
+      typeArray.length === 0 || typeArray.includes(media.type);
 
     const matchesSearch =
       media.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -181,63 +184,22 @@ export default function WatcherPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <button
-                onClick={() => setIsNavMenuOpen(true)}
-                className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                aria-label="Menu de navigation"
-              >
-                <Film className="h-8 w-8 text-purple-600" />
-                <h1 className="ml-3 text-xl font-semibold text-gray-900">
-                  Watcher
-                </h1>
-              </button>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => openForm()}
-                className="inline-flex items-center text-sm px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-              >
-                <Plus size={20} className="mr-2" />
-                Ajouter une œuvre
-              </button>
-
-              {/* Menu utilisateur */}
-              <Menu as="div" className="relative inline-block text-left">
-                <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                  <User size={20} />
-                  <span className="hidden sm:block">
-                    {user?.user_metadata?.name || user?.email || "Utilisateur"}
-                  </span>
-                </MenuButton>
-
-                <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 focus:outline-none">
-                  <div className="py-2">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-900">
-                        {user?.user_metadata?.name || "Utilisateur"}
-                      </p>
-                      <p className="text-xs text-gray-500">{user?.email}</p>
-                    </div>
-                    <MenuItem
-                      as="button"
-                      onClick={signOut}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100"
-                    >
-                      <LogOut size={16} />
-                      Se déconnecter
-                    </MenuItem>
-                  </div>
-                </MenuItems>
-              </Menu>
-            </div>
-          </div>
-        </div>
-      </header>
+      <AppHeader
+        title="Watcher"
+        icon={Film}
+        iconColor="text-purple-600"
+        currentModule="watcher"
+        maxWidth="max-w-7xl"
+        actions={
+          <button
+            onClick={() => openForm()}
+            className="inline-flex items-center text-sm px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          >
+            <Plus size={20} className="mr-2" />
+            Ajouter une œuvre
+          </button>
+        }
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Statistiques */}
@@ -263,9 +225,12 @@ export default function WatcherPage() {
           {/* Filtres par statut */}
           <div className="flex flex-wrap gap-2">
             {statusFilters.map((filter) => {
-              const isSelected = filter.value === "all"
-                ? (Array.isArray(selectedStatus) ? selectedStatus.length === 0 : selectedStatus === "all")
-                : isFilterSelected("selectedStatus", filter.value);
+              const isSelected =
+                filter.value === "all"
+                  ? Array.isArray(selectedStatus)
+                    ? selectedStatus.length === 0
+                    : selectedStatus === "all"
+                  : isFilterSelected("selectedStatus", filter.value);
 
               return (
                 <button
@@ -294,9 +259,12 @@ export default function WatcherPage() {
           {/* Filtres par type */}
           <div className="flex flex-wrap gap-2">
             {typeFilters.map((filter) => {
-              const isSelected = filter.value === "all"
-                ? (Array.isArray(selectedType) ? selectedType.length === 0 : selectedType === "all")
-                : isFilterSelected("selectedType", filter.value);
+              const isSelected =
+                filter.value === "all"
+                  ? Array.isArray(selectedType)
+                    ? selectedType.length === 0
+                    : selectedType === "all"
+                  : isFilterSelected("selectedType", filter.value);
 
               return (
                 <button
@@ -410,13 +378,6 @@ export default function WatcherPage() {
           onClose={closeTimer}
         />
       )}
-
-      {/* Menu de navigation */}
-      <NavigationMenu
-        isOpen={isNavMenuOpen}
-        onClose={() => setIsNavMenuOpen(false)}
-        currentModule="watcher"
-      />
     </div>
   );
 }

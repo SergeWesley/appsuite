@@ -18,7 +18,8 @@ interface AppHeaderProps {
     | "notes"
     | "spender"
     | "cooker"
-    | "browser";
+    | "browser"
+    | "dashboard";
   actions?: React.ReactNode;
   maxWidth?: string;
   onBack?: () => void;
@@ -41,7 +42,7 @@ export function AppHeader({
 
   return (
     <>
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200 sticky top-0 z-40">
         <div className={`${maxWidth} mx-auto px-4 sm:px-6 lg:px-8`}>
           <div className={`flex items-center justify-between ${height}`}>
             <div className="flex items-center gap-2 min-w-0 flex-1 mr-4">
