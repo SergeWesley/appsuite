@@ -39,18 +39,18 @@ function SplitScreenContent() {
     }
 
     return (
-      <div className="h-screen w-full flex flex-col bg-gray-900 overflow-hidden relative">
+      <div className="h-screen w-full flex flex-col lg:flex-row bg-gray-900 overflow-hidden relative">
         {/* Bouton de fermeture global */}
         <button 
           onClick={handleClose}
-          className="absolute top-1/2 right-4 -translate-y-1/2 z-50 bg-gray-900/80 text-white p-3 rounded-full shadow-2xl hover:bg-red-600 transition-colors backdrop-blur-md border border-gray-700"
+          className="absolute top-1/2 right-4 -translate-y-1/2 lg:right-1/2 lg:translate-x-1/2 z-50 bg-gray-900/80 text-white p-3 rounded-full shadow-2xl hover:bg-red-600 transition-colors backdrop-blur-md border border-gray-700"
           title="Quitter le mode Split"
         >
           <X size={24} />
         </button>
 
-        {/* Iframe 1 (Haut) */}
-        <div className="flex-1 relative border-b-4 border-gray-900 shadow-xl z-10">
+        {/* Iframe 1 (Haut ou Gauche) */}
+        <div className="flex-1 relative border-b-4 lg:border-b-0 lg:border-r-4 border-gray-900 shadow-xl z-10">
           <iframe 
             src={`${app1.path}?mode=split`} 
             className="w-full h-full bg-gray-50"
@@ -59,11 +59,11 @@ function SplitScreenContent() {
         </div>
 
         {/* Diviseur esthétique (optionnel) */}
-        <div className="h-2 w-full bg-gray-900 flex items-center justify-center relative z-20">
-           <div className="w-16 h-1 bg-gray-600 rounded-full"></div>
+        <div className="h-2 w-full lg:h-full lg:w-2 bg-gray-900 flex items-center justify-center relative z-20">
+           <div className="w-16 h-1 lg:w-1 lg:h-16 bg-gray-600 rounded-full"></div>
         </div>
 
-        {/* Iframe 2 (Bas) */}
+        {/* Iframe 2 (Bas ou Droite) */}
         <div className="flex-1 relative shadow-xl z-10">
           <iframe 
             src={`${app2.path}?mode=split`} 
@@ -89,9 +89,11 @@ function SplitScreenContent() {
       <main className="max-w-4xl mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-[calc(100vh-64px)]">
         <div className="w-full max-w-md space-y-12">
           
-          {/* Sélection Haut */}
+          {/* Sélection App 1 */}
           <div className="space-y-6">
-            <h2 className="text-center text-xs font-bold text-gray-400 uppercase tracking-widest">Écran du Haut</h2>
+            <h2 className="text-center text-xs font-bold text-gray-400 uppercase tracking-widest">
+              Écran 1 (<span className="lg:hidden">Haut</span><span className="hidden lg:inline">Gauche</span>)
+            </h2>
             <div className="flex justify-center gap-4 flex-wrap">
               {availableApps.map((app) => {
                 const Icon = app.icon;
@@ -122,9 +124,11 @@ function SplitScreenContent() {
             <div className="h-px w-32 bg-gray-200"></div>
           </div>
 
-          {/* Sélection Bas */}
+          {/* Sélection App 2 */}
           <div className="space-y-6">
-            <h2 className="text-center text-xs font-bold text-gray-400 uppercase tracking-widest">Écran du Bas</h2>
+            <h2 className="text-center text-xs font-bold text-gray-400 uppercase tracking-widest">
+              Écran 2 (<span className="lg:hidden">Bas</span><span className="hidden lg:inline">Droite</span>)
+            </h2>
             <div className="flex justify-center gap-4 flex-wrap">
               {availableApps.map((app) => {
                 const Icon = app.icon;
