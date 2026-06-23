@@ -1,150 +1,98 @@
-# 📚 Booker - Gestionnaire de bibliothèque personnelle
+# AppSuite - Votre Écosystème Personnel
 
-Une application moderne et intuitive pour gérer votre collection de livres avec un design réactif et de belles animations.
+**AppSuite** est un projet complet de type monorepo / application "tout-en-un" qui regroupe plusieurs outils essentiels du quotidien sous une seule et même interface moderne, fluide et sécurisée.
 
-## ✨ Fonctionnalités
+Construite avec une stack technique de pointe, cette plateforme offre une expérience utilisateur premium grâce à des animations soignées (Framer Motion) et une interface intuitive.
 
-- **Gestion complète des livres** : Ajoutez, modifiez et supprimez des livres
-- **Suivi de progression** : Marquez votre avancement de lecture avec un cercle de progression animé
-- **Statuts de lecture** : À lire, En cours, Terminé
-- **Recherche et filtres** : Trouvez rapidement vos livres par titre, auteur ou genre
-- **Notes et évaluations** : Ajoutez des notes personnelles et notez vos livres
-- **Statistiques** : Visualisez votre collection avec des statistiques détaillées
-- **Design responsive** : Interface optimisée pour desktop et mobile
-- **Animations fluides** : Transitions et animations modernes avec Framer Motion
-- **Timer de lecture** : Chronométrez vos sessions de lecture avec statistiques
-- **Synchronisation cloud** : Vos données sont sauvegardées et synchronisées via Supabase
-- **Migration automatique** : Migration transparente depuis localStorage vers Supabase
+## Les Modules de la Suite
 
-## 🚀 Technologies utilisées
+L'application est divisée en plusieurs "mini-apps" spécialisées :
 
-- **Next.js 15** - Framework React moderne
-- **TypeScript** - Typage statique
-- **Tailwind CSS** - Framework CSS utilitaire
-- **Framer Motion** - Animations et transitions
-- **Lucide React** - Icônes modernes
-- **Headless UI** - Composants accessibles
-- **Supabase** - Base de données et authentification en temps réel
+- **Booker** : Gestionnaire complet pour votre bibliothèque. Suivez vos lectures en cours, vos statistiques, et archivez vos livres préférés.
+- **Cooker** : Votre carnet de recettes personnel. (Gestion et suivi de recettes).
+- **Notes** : Une application de prise de notes structurée avec système de dossiers pour organiser vos idées et documents importants.
+- **Spender** : Gardez le contrôle sur votre budget ! Gestionnaire de dépenses et d'abonnements récurrents avec calcul automatique du coût mensuel.
+- **Tracker** : Votre compagnon sportif. Enregistrez vos séances, suivez vos exercices, et analysez vos performances.
+- **Watcher** : Suivi de films et séries. Ne perdez plus le fil de ce que vous regardez.
+- **Browser** : Organisez vos sites et applications web favoris au même endroit pour un accès rapide.
+- **Dashboard** : Un tableau de bord central pour naviguer facilement entre tous vos outils.
 
-## 🛠️ Installation et démarrage
+## Fonctionnalités Principales
+
+- **Authentification Unifiée** : Un seul compte pour accéder à l'ensemble des modules (propulsé par Supabase).
+- **Navigation Transversale** : Passez d'une app à l'autre en un clic via un menu de navigation global.
+- **Design Cohérent & Premium** : UI/UX harmonisée, utilisant les composants TailwindCSS et Headless UI.
+- **Animations Fluides** : Transitions douces et micro-interactions via Framer Motion.
+- **Cloud Sync en Temps Réel** : Données synchronisées instantanément sur tous vos appareils grâce à la base de données Supabase.
+- **Sécurité RLS (Row Level Security)** : Vos données sont strictement isolées et sécurisées.
+
+## Technologies Utilisées
+
+Ce projet repose sur une stack moderne et performante :
+
+- **Frontend** : Next.js 15 (App Router), React 19, TypeScript
+- **Styling** : Tailwind CSS v4, Headless UI, Framer Motion
+- **Icônes** : Lucide React
+- **Backend & Base de données** : Supabase (PostgreSQL, Auth, Storage)
+- **Validation** : Zod
+- **Formulaires & Tables** : TanStack React Table
+
+## Installation et Lancement Rapide
 
 1. **Cloner le projet**
-
    ```bash
    git clone <votre-repo>
-   cd booker
+   cd appsuite
    ```
 
 2. **Installer les dépendances**
-
    ```bash
    npm install
    ```
 
-3. **Configurer Supabase**
-
-   ```bash
-   # Créez un fichier .env.local avec vos clés Supabase
-   cp .env.example .env.local
-   # Éditez .env.local avec vos vraies clés
+3. **Configuration de l'environnement**
+   Créez un fichier `.env.local` à la racine du projet et ajoutez vos clés Supabase :
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=votre_url_supabase
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=votre_cle_anon_supabase
    ```
 
-4. **Lancer l'application**
-
+4. **Lancer le serveur de développement**
    ```bash
    npm run dev
    ```
 
-5. **Ouvrir dans le navigateur**
-   ```
-   http://localhost:3000
-   ```
+5. **Ouvrir l'application**
+   Rendez-vous sur [http://localhost:3000](http://localhost:3000) dans votre navigateur.
 
-## 🗄️ Configuration Supabase
-
-Cette application utilise Supabase comme backend. Consultez le guide détaillé de migration dans `MIGRATION_SUPABASE.md` pour :
-
-1. Créer un projet Supabase
-2. Configurer la base de données
-3. Obtenir vos clés API
-4. Migrer vos données existantes
-
-## 📱 Utilisation
-
-### Ajouter un livre
-
-- Cliquez sur le bouton "Ajouter un livre" dans l'en-tête
-- Remplissez les informations : titre, auteur, statut, pages, etc.
-- Ajoutez une note et une évaluation si souhaité
-
-### Gérer votre collection
-
-- **Filtrer** : Utilisez les boutons de filtre pour voir les livres par statut
-- **Rechercher** : Tapez dans la barre de recherche pour trouver un livre
-- **Modifier** : Cliquez sur une carte de livre pour la modifier
-- **Supprimer** : Utilisez le bouton de suppression dans chaque carte
-
-### Suivre votre progression
-
-- Le cercle de progression affiche automatiquement votre avancement
-- Mettez à jour la page actuelle pour voir le progrès se modifier
-- Les statistiques se mettent à jour en temps réel
-
-## 🎨 Design
-
-L'application utilise un design moderne avec :
-
-- **Palette de couleurs** : Bleus, verts et gris pour un look professionnel
-- **Animations** : Transitions fluides et micro-interactions
-- **Responsive** : Adaptation parfaite sur tous les écrans
-- **Accessibilité** : Interface intuitive et accessible
-
-## 📊 Structure du projet
+## Structure du Projet
 
 ```
 src/
-├── app/
-│   ├── globals.css      # Styles globaux et animations
-│   ├── layout.tsx       # Layout principal avec AuthProvider
-│   ├── page.tsx         # Page d'accueil
-│   └── not-found.tsx    # Page 404
-├── components/
-│   ├── AuthProvider.tsx # Provider d'authentification
-│   ├── BookCard.tsx     # Carte de livre
-│   ├── BookForm.tsx     # Formulaire d'ajout/modification
-│   ├── ProgressCircle.tsx # Cercle de progression
-│   ├── ReadingTimer.tsx # Timer de lecture
-│   └── Stats.tsx        # Composant de statistiques
-├── hooks/
-│   ├── useAuth.ts       # Hook d'authentification
-│   ├── useBooks.ts      # Hook de gestion des livres
-│   └── useReadingSessions.ts # Hook des sessions de lecture
-├── lib/
-│   └── supabase.ts      # Configuration client Supabase
-└── types/
-    ├── book.ts          # Types des livres
-    ├── reading-session.ts # Types des sessions
-    └── supabase.ts      # Types de base de données
+├── app/                  # Routeur Next.js (Chaque dossier = un module)
+│   ├── auth/             # Pages d'authentification
+│   ├── booker/           # Module Bibliothèque
+│   ├── cooker/           # Module Recettes
+│   ├── dashboard/        # Tableau de bord principal
+│   ├── notes/            # Module Prise de notes
+│   ├── spender/          # Module Dépenses/Abonnements
+│   ├── tracker/          # Module Sport/Fitness
+│   ├── watcher/          # Module Films/Séries
+│   └── browser/          # Module Raccourcis Web
+├── components/           # Composants React partagés et spécifiques par module
+├── hooks/                # Custom hooks (Logique métier par module)
+├── types/                # Définitions TypeScript
+└── lib/                  # Configurations utilitaires (Supabase, etc.)
 ```
 
-## 🔧 Scripts disponibles
+## Scripts NPM Disponibles
 
-- `npm run dev` - Lance le serveur de développement
-- `npm run build` - Construit l'application pour la production
-- `npm run start` - Lance l'application en production
-- `npm run lint` - Vérifie le code avec ESLint
-
-## 📝 Fonctionnalités à venir
-
-- [x] Synchronisation cloud (Supabase)
-- [x] Timer de lecture avec statistiques
-- [ ] Authentification avec email/password
-- [ ] Import/export de données
-- [ ] Recommandations de livres
-- [ ] Mode sombre
-- [ ] Notifications de rappel
-- [ ] Partage de bibliothèque
+- `npm run dev` : Lance l'environnement de développement.
+- `npm run build` : Compile l'application pour la production.
+- `npm run start` : Démarre l'application compilée.
+- `npm run lint` : Vérifie la qualité du code (ESLint).
+- `npm run format` : Formate le code (Prettier).
+- `npm run update-types` : Génère et met à jour les types TypeScript depuis la base Supabase.
 
 ---
-
-**Booker** - Votre bibliothèque personnelle, modernisée ✨
+**AppSuite** - Votre écosystème d'applications personnelles unifié.
