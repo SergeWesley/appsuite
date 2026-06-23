@@ -6,6 +6,7 @@ import {
   Wallet,
   Utensils,
   Globe,
+  SplitSquareVertical,
   LucideIcon,
 } from "lucide-react";
 
@@ -27,7 +28,8 @@ export type ModuleId =
   | "notes"
   | "spender"
   | "cooker"
-  | "browser";
+  | "browser"
+  | "split";
 
 export interface AppModule {
   id: ModuleId;
@@ -156,6 +158,23 @@ export const appModules: AppModule[] = [
       bgHoverLight: "hover:bg-teal-100",
       bgSolidHover: "hover:bg-teal-600",
       ring: "focus:ring-teal-500/20 focus:border-teal-500",
+    },
+  },
+  {
+    id: "split",
+    name: "Split Mode",
+    path: "/split",
+    icon: SplitSquareVertical,
+    description: "Utilisez deux applications simultanément",
+    theme: {
+      text: "text-gray-500",
+      textDark: "text-gray-600",
+      bg: "bg-gray-500",
+      bgSoft: "bg-gray-100",
+      bgFaint: "bg-gray-50",
+      bgHoverLight: "hover:bg-gray-100",
+      bgSolidHover: "hover:bg-gray-600",
+      ring: "focus:ring-gray-500/20 focus:border-gray-500",
     },
   },
 ];

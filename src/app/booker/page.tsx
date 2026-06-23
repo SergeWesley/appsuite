@@ -12,7 +12,6 @@ import {
   User,
   Heart,
 } from "lucide-react";
-import { useAuthContext } from "@/components/AuthProvider";
 import { useBooksWithSessions } from "@/hooks/booker/useBooksWithSessions";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import { Book, BookStatus, BookFormData } from "@/types/book";
@@ -20,8 +19,7 @@ import { BookCard } from "@/components/booker/BookCard";
 import { BookForm } from "@/components/booker/BookForm";
 import { ReadingStats } from "@/components/booker/ReadingStats";
 import { ReadingTimer } from "@/components/booker/ReadingTimer";
-import { NavigationMenu } from "@/components/NavigationMenu";
-import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
+import { AppHeader } from "@/components/AppHeader";
 
 export default function BookerPage() {
   const {
@@ -37,14 +35,10 @@ export default function BookerPage() {
     getBookStats,
     stopSession,
   } = useBooksWithSessions();
-  const { user, signOut } = useAuthContext();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | undefined>(undefined);
-  //   const [selectedStatus, setSelectedStatus] = useState<BookStatus | 'all'>('all');
-  //   const [searchQuery, setSearchQuery] = useState('');
   const [timerBook, setTimerBook] = useState<Book | undefined>(undefined);
   const [isTimerOpen, setIsTimerOpen] = useState(false);
-  const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
   const stats = getStats();
 
   // Gestion de la persistance des filtres
@@ -156,64 +150,22 @@ export default function BookerPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <button
-                onClick={() => setIsNavMenuOpen(true)}
-                className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                aria-label="Menu de navigation"
-              >
-                <BookOpen className="h-8 w-8 text-blue-600" />
-                <h1 className="ml-3 text-xl font-semibold text-gray-900">
-                  Booker
-                </h1>
-              </button>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => openForm()}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                <Plus size={20} className="mr-2" />
-                Ajouter un livre
-              </button>
-
-              {/* Menu utilisateur */}
-              <Menu as="div" className="relative inline-block text-left">
-                <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                  <User size={20} />
-                  <span className="hidden sm:block">
-                    {user?.user_metadata?.name || user?.email || "Utilisateur"}
-                  </span>
-                </MenuButton>
-
-                <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 focus:outline-none">
-                  <div className="py-2">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-900">
-                        {user?.user_metadata?.name || "Utilisateur"}
-                      </p>
-                      <p className="text-xs text-gray-500">{user?.email}</p>
-                    </div>
-                    <MenuItem
-                      as="button"
-                      onClick={signOut}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100 focus:bg-gray-100 active:bg-gray-100"
-                    >
-                      <LogOut size={16} />
-                      Se déconnecter
-                    </MenuItem>
-                  </div>
-                </MenuItems>
-              </Menu>
-            </div>
-          </div>
-        </div>
-      </header>
+      <AppHeader
+        title="Booker"
+        icon={BookOpen}
+        iconColor="text-blue-600"
+        currentModule="booker"
+        maxWidth="max-w-7xl"
+        actions={
+          <button
+            onClick={() => openForm()}
+            className="hidden sm:inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Plus size={20} className="mr-2" />
+            Ajouter un livre
+          </button>
+        }
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Statistiques */}
@@ -345,12 +297,6 @@ export default function BookerPage() {
         />
       )}
 
-      {/* Menu de navigation */}
-      <NavigationMenu
-        isOpen={isNavMenuOpen}
-        onClose={() => setIsNavMenuOpen(false)}
-        currentModule="booker"
-      />
     </div>
   );
 }

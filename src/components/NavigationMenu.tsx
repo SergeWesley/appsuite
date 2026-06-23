@@ -19,7 +19,8 @@ interface NavigationMenuProps {
     | "spender"
     | "cooker"
     | "browser"
-    | "dashboard";
+    | "dashboard"
+    | "split";
 }
 
 export function NavigationMenu({
