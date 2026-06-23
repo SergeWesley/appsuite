@@ -20,7 +20,10 @@ import { Activity, Dumbbell, TrendingUp } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { AppHeader } from "@/components/AppHeader";
-import { calculateEstimatedDuration, formatDuration } from "@/lib/workout-utils";
+import {
+  calculateEstimatedDuration,
+  formatDuration,
+} from "@/lib/workout-utils";
 
 export default function WorkoutSessionDetailPage() {
   const router = useRouter();
@@ -61,22 +64,27 @@ export default function WorkoutSessionDetailPage() {
   // Trouver les dernières performances de l'exercice sélectionné
   const lastPerformances = useMemo(() => {
     if (!selectedExercise || isEditingExisting || !session) return [];
-    
+
     // Parcourir toutes les séances (elles sont déjà triées par date décroissante dans le hook)
     for (const s of sessions) {
       if (s.id === session.id) continue; // Ignorer la séance courante
-      
-      const prevExercises = s.exercises.filter(e => e.exerciseId === selectedExercise.id);
+
+      const prevExercises = s.exercises.filter(
+        (e) => e.exerciseId === selectedExercise.id,
+      );
       if (prevExercises.length > 0) {
-        return prevExercises.map(prevEx => ({
-          sets: prevEx.sets,
-          reps: prevEx.reps,
-          weight: prevEx.weight,
-          duration: prevEx.duration,
-          speed: prevEx.speed,
-          slope: prevEx.slope,
-          notes: prevEx.notes,
-        } as ExerciseDetails));
+        return prevExercises.map(
+          (prevEx) =>
+            ({
+              sets: prevEx.sets,
+              reps: prevEx.reps,
+              weight: prevEx.weight,
+              duration: prevEx.duration,
+              speed: prevEx.speed,
+              slope: prevEx.slope,
+              notes: prevEx.notes,
+            }) as ExerciseDetails,
+        );
       }
     }
     return [];
@@ -153,15 +161,18 @@ export default function WorkoutSessionDetailPage() {
     }
   };
 
-  const handleMetadataConfirm = async (metadata: { date: Date; notes: string }) => {
+  const handleMetadataConfirm = async (metadata: {
+    date: Date;
+    notes: string;
+  }) => {
     if (!session) return;
-    
+
     await updateSession(session.id, {
       date: metadata.date,
       notes: metadata.notes,
       exercises: session.exercises.map(({ id, exercise, ...rest }) => rest), // Keep exercises unchanged
     });
-    
+
     setShowMetadataModal(false);
   };
 
@@ -341,6 +352,7 @@ export default function WorkoutSessionDetailPage() {
         <ExerciseDistributionChart
           exercises={session.exercises}
           className="mb-8"
+          onEditExercise={handleEditExercise}
         />
 
         <MuscleGroupFilter
@@ -414,7 +426,11 @@ export default function WorkoutSessionDetailPage() {
         isOpen={showMetadataModal}
         onClose={() => setShowMetadataModal(false)}
         onConfirm={handleMetadataConfirm}
-        initialData={session ? { date: session.date, notes: session.notes || "" } : undefined}
+        initialData={
+          session
+            ? { date: session.date, notes: session.notes || "" }
+            : undefined
+        }
         title="Modifier la séance"
         confirmLabel="Enregistrer"
       />
