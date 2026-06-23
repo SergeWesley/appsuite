@@ -18,7 +18,8 @@ interface NavigationMenuProps {
     | "notes"
     | "spender"
     | "cooker"
-    | "browser";
+    | "browser"
+    | "dashboard";
 }
 
 export function NavigationMenu({
