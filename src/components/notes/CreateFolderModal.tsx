@@ -125,7 +125,6 @@ export function CreateFolderModal({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ex: Travail, Personnel, Idées..."
-                  autoFocus
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm"
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleSubmit();

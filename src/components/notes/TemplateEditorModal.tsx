@@ -105,7 +105,6 @@ export function TemplateEditorModal({ isOpen, onClose, onSave, initialTemplate }
                 </label>
                 <input
                   type="text"
-                  autoFocus
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ex: Lieux à visiter, Suivi de projet..."

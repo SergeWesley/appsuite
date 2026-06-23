@@ -126,7 +126,6 @@ export function CreateSubscriptionModal({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ex: Netflix, Spotify, Salle de sport..."
-                  autoFocus
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
                 />
               </div>

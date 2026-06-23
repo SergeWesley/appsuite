@@ -130,7 +130,6 @@ export function FieldEditorSheet({ isOpen, onClose, onSave, initialField }: Fiel
                 </label>
                 <input
                   type="text"
-                  autoFocus
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Ex: Durée, Niveau..."
