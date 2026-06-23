@@ -92,7 +92,7 @@ export default function Dashboard() {
                     <div className={`p-2.5 sm:p-3 rounded-xl bg-white ${module.theme.text} mb-2 sm:mb-3 shadow-sm`}>
                       <module.icon className="w-6 h-6 sm:w-8 sm:h-8" />
                     </div>
-                    <h3 className="text-xs sm:text-sm font-semibold text-gray-900 line-clamp-2 leading-tight">
+                    <h3 className="text-xs sm:text-sm font-semibold text-gray-900">
                       {module.name}
                     </h3>
                   </div>
