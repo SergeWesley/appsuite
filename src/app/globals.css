@@ -6,12 +6,22 @@
     color: theme(colors.gray.900);
   }
 
-  /* Désactiver la sélection de texte pour toute l'app */
+  /* Désactiver la sélection de texte et le menu contextuel (long press) pour toute l'app */
   * {
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    -webkit-touch-callout: none; /* Empêche l'apparition de la bulle d'URL sur iOS/Safari */
+  }
+
+  /* Réactiver pour les champs de saisie pour qu'ils restent utilisables */
+  input, textarea {
+    user-select: auto;
+    -webkit-user-select: auto;
+    -moz-user-select: auto;
+    -ms-user-select: auto;
+    -webkit-touch-callout: default;
   }
 
 }
