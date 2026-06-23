@@ -84,7 +84,7 @@ export function NavigationMenu({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-25 z-40"
+            className="fixed inset-0 bg-black bg-opacity-25 z-50"
             onClick={onClose}
           />
 
@@ -95,7 +95,7 @@ export function NavigationMenu({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="fixed top-16 left-4 sm:left-8 z-50 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden"
+            className="fixed top-16 left-4 sm:left-8 z-[60] w-80 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden"
           >
             {/* Header */}
             <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
