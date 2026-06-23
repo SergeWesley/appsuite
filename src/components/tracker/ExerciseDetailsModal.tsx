@@ -193,6 +193,22 @@ export function ExerciseDetailsModal({
                         placeholder="3"
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-center text-lg font-semibold"
                       />
+                      <div className="mt-2 grid grid-cols-3 gap-1.5">
+                        {[1, 2, 3, 4, 5, 6].map((val) => (
+                          <button
+                            key={`set-${val}`}
+                            type="button"
+                            onClick={() => updateField("sets", val.toString())}
+                            className={`py-1.5 rounded-lg text-xs font-medium transition-colors border flex items-center justify-center ${
+                              details.sets === val
+                                ? "bg-green-100 text-green-700 border-green-200"
+                                : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+                            }`}
+                          >
+                            {val}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -206,6 +222,22 @@ export function ExerciseDetailsModal({
                         placeholder="12"
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-center text-lg font-semibold"
                       />
+                      <div className="mt-2 grid grid-cols-3 gap-1.5">
+                        {[5, 8, 10, 12, 15, 20].map((val) => (
+                          <button
+                            key={`rep-${val}`}
+                            type="button"
+                            onClick={() => updateField("reps", val.toString())}
+                            className={`py-1.5 rounded-lg text-xs font-medium transition-colors border flex items-center justify-center ${
+                              details.reps === val
+                                ? "bg-green-100 text-green-700 border-green-200"
+                                : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+                            }`}
+                          >
+                            {val}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
