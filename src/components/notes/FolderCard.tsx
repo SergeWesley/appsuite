@@ -89,7 +89,7 @@ export function FolderCard({
         }`}
       >
         {/* Folder Icon SVG */}
-        <div className="relative w-20 h-16">
+        <div className="relative w-16 h-12">
           {/* Folder tab (the small flap on top) */}
           <svg
             viewBox="0 0 80 64"
