@@ -134,18 +134,21 @@ export function FolderCard({
             />
           </svg>
 
-          {/* Counters badges */}
+          {/* Counters badge */}
           {(hasNotes || hasSubfolders) && (
-            <div className="absolute -top-2 -right-2 flex flex-col gap-1">
+            <div className="absolute -top-2 -right-2 flex items-center gap-1.5 bg-gray-800 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm border border-gray-700">
               {hasSubfolders && (
-                <div className="flex items-center gap-1 bg-amber-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">
-                  <Folder size={10} strokeWidth={2.5} /> {subfolderCount}
-                </div>
+                <span className="flex items-center gap-0.5">
+                  <Folder size={9} strokeWidth={2.5} className="text-amber-400" /> {subfolderCount}
+                </span>
+              )}
+              {hasSubfolders && hasNotes && (
+                <span className="w-[1px] h-2.5 bg-gray-600 rounded-full mx-0.5"></span>
               )}
               {hasNotes && (
-                <div className="flex items-center gap-1 bg-gray-700 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm">
-                  <StickyNote size={10} strokeWidth={2.5} /> {folder.noteCount}
-                </div>
+                <span className="flex items-center gap-0.5">
+                  <StickyNote size={9} strokeWidth={2.5} className="text-blue-300" /> {folder.noteCount}
+                </span>
               )}
             </div>
           )}
