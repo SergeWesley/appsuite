@@ -15,7 +15,9 @@ import {
   List,
   TrendingUp,
   X,
+  MoreVertical,
 } from "lucide-react";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import { WorkoutCalendar } from "@/components/tracker/WorkoutCalendar";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
@@ -129,29 +131,39 @@ export default function TrackerPage() {
         actions={
           <>
             <button
-              onClick={() => router.push("/tracker/stats")}
-              className="flex items-center text-sm px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-              title="Tableau de bord des performances"
-            >
-              <TrendingUp size={20} className="sm:mr-2" />
-              <span className="hidden sm:inline">Stats</span>
-            </button>
-
-            <button
-              onClick={() => router.push("/tracker/exercises")}
-              className="flex items-center text-sm px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-            >
-              <Dumbbell size={20} className="sm:mr-2" />
-              <span className="hidden sm:inline">Exercices</span>
-            </button>
-
-            <button
               onClick={() => setShowCreateModal(true)}
               className="hidden sm:inline-flex items-center text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
             >
               <Plus size={20} className="mr-2" />
               Nouvelle séance
             </button>
+
+            <Menu as="div" className="relative inline-block text-left">
+              <MenuButton className="p-2 text-gray-500 hover:text-green-600 transition-colors rounded-lg hover:bg-green-50">
+                <MoreVertical size={20} />
+              </MenuButton>
+
+              <MenuItems className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50 focus:outline-none">
+                <div className="py-1">
+                  <MenuItem
+                    as="button"
+                    onClick={() => router.push("/tracker/stats")}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-3 hover:bg-gray-100"
+                  >
+                    <TrendingUp size={16} className="text-indigo-600" />
+                    Performances
+                  </MenuItem>
+                  <MenuItem
+                    as="button"
+                    onClick={() => router.push("/tracker/exercises")}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-3 hover:bg-gray-100"
+                  >
+                    <Dumbbell size={16} className="text-gray-600" />
+                    Exercices
+                  </MenuItem>
+                </div>
+              </MenuItems>
+            </Menu>
           </>
         }
       />
