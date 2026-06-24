@@ -58,7 +58,7 @@ export interface Note {
   title: string;
   content: string;
   userId: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, any> | any[];
   dateCreated: Date;
   dateUpdated: Date;
 }
@@ -67,7 +67,7 @@ export interface NoteFormData {
   title: string;
   content: string;
   templateId?: string | null;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, any> | any[];
 }
 
 export const FOLDER_COLORS = [
@@ -106,6 +106,6 @@ export interface NoteExportData {
   note: {
     title: string;
     content: string;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, any> | any[];
   };
 }

@@ -8,7 +8,7 @@ import { useNotes } from "@/hooks/notes/useNotes";
 import { useNoteTemplates } from "@/hooks/notes/useNoteTemplates";
 import { NoteFolder, CustomFieldDefinition } from "@/types/notes";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
-import { Trash2, Loader2, Check, Download, Sparkles, MoreVertical } from "lucide-react";
+import { Trash2, Loader2, Check, Download, Sparkles, MoreVertical, Plus, Minus } from "lucide-react";
 import { DynamicPropertiesBanner } from "@/components/notes/DynamicPropertiesBanner";
 import { NoteExportData } from "@/types/notes";
 import { useAgent } from "@/components/chat/AgentProvider";
@@ -32,7 +32,7 @@ export default function NoteEditorPage() {
   const [folder, setFolder] = useState<NoteFolder | null>(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [metadata, setMetadata] = useState<Record<string, any>>({});
+  const [instances, setInstances] = useState<Record<string, any>[]>([{}]);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -64,7 +64,14 @@ export default function NoteEditorPage() {
       if (note) {
         setTitle(note.title === "Nouvelle note" ? "" : note.title);
         setContent(note.content);
-        setMetadata(note.metadata || {});
+        const meta = note.metadata;
+        if (Array.isArray(meta)) {
+          setInstances(meta.length > 0 ? meta : [{}]);
+        } else if (meta && Object.keys(meta).length > 0) {
+          setInstances([meta]);
+        } else {
+          setInstances([{}]);
+        }
         setInitialized(true);
       }
     }
@@ -90,7 +97,7 @@ export default function NoteEditorPage() {
 
   // Auto-save with debounce
   const saveNote = useCallback(
-    async (newTitle: string, newContent: string, newMetadata: Record<string, any>) => {
+    async (newTitle: string, newContent: string, newInstances: Record<string, any>[]) => {
       setSaving(true);
       setSaved(false);
 
@@ -99,7 +106,7 @@ export default function NoteEditorPage() {
       await updateNote(noteId, {
         title: finalTitle,
         content: newContent,
-        metadata: newMetadata,
+        metadata: newInstances,
       });
 
       setSaving(false);
@@ -112,13 +119,13 @@ export default function NoteEditorPage() {
   );
 
   const debouncedSave = useCallback(
-    (newTitle: string, newContent: string, newMetadata: Record<string, any>) => {
+    (newTitle: string, newContent: string, newInstances: Record<string, any>[]) => {
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
       }
 
       saveTimeoutRef.current = setTimeout(() => {
-        saveNote(newTitle, newContent, newMetadata);
+        saveNote(newTitle, newContent, newInstances);
       }, 1000);
     },
     [saveNote],
@@ -127,20 +134,34 @@ export default function NoteEditorPage() {
   const handleTitleChange = (value: string) => {
     setTitle(value);
     setSaved(false);
-    debouncedSave(value, content, metadata);
+    debouncedSave(value, content, instances);
   };
 
   const handleContentChange = (value: string) => {
     setContent(value);
     setSaved(false);
-    debouncedSave(title, value, metadata);
+    debouncedSave(title, value, instances);
   };
 
-  const handleMetadataChange = (key: string, value: any) => {
-    const nextMeta = { ...metadata, [key]: value };
-    setMetadata(nextMeta);
+  const handleMetadataChange = (index: number, key: string, value: any) => {
+    const nextInstances = [...instances];
+    nextInstances[index] = { ...nextInstances[index], [key]: value };
+    setInstances(nextInstances);
     setSaved(false);
-    debouncedSave(title, content, nextMeta);
+    debouncedSave(title, content, nextInstances);
+  };
+
+  const handleAddInstance = () => {
+    const nextInstances = [...instances, {}];
+    setInstances(nextInstances);
+    debouncedSave(title, content, nextInstances);
+  };
+
+  const handleRemoveInstance = (index: number) => {
+    const nextInstances = instances.filter((_, i) => i !== index);
+    const finalInstances = nextInstances.length > 0 ? nextInstances : [{}];
+    setInstances(finalInstances);
+    debouncedSave(title, content, finalInstances);
   };
 
   const handleExport = () => {
@@ -160,7 +181,7 @@ export default function NoteEditorPage() {
       note: {
         title: title.trim() || "Sans titre",
         content: content,
-        metadata: metadata,
+        metadata: instances,
       },
     };
 
@@ -188,7 +209,7 @@ export default function NoteEditorPage() {
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
     }
-    saveNote(title, content, metadata);
+    saveNote(title, content, instances);
     router.push(`/notes/${folderId}`);
   };
 
@@ -307,15 +328,36 @@ export default function NoteEditorPage() {
 
         {/* Dynamic Properties */}
         {activeFields.length > 0 && (
-          <>
-            <DynamicPropertiesBanner 
-              fields={activeFields} 
-              metadata={metadata} 
-              onChange={handleMetadataChange}
-              noteId={noteId}
-            />
-            <hr className="my-6 border-gray-100" />
-          </>
+          <div className="space-y-6">
+            {instances.map((instance, index) => (
+              <div key={index} className="relative group">
+                <DynamicPropertiesBanner 
+                  fields={activeFields} 
+                  metadata={instance} 
+                  onChange={(key, value) => handleMetadataChange(index, key, value)}
+                  noteId={noteId}
+                />
+                {instances.length > 1 && (
+                  <button
+                    onClick={() => handleRemoveInstance(index)}
+                    className="absolute top-4 right-0 p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity rounded-md hover:bg-red-50"
+                    title="Supprimer cette occurrence"
+                  >
+                    <Minus size={16} />
+                  </button>
+                )}
+                <hr className="my-6 border-gray-100" />
+              </div>
+            ))}
+            <div className="flex justify-center pb-6">
+              <button
+                onClick={handleAddInstance}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-500 bg-gray-50 hover:bg-gray-100 hover:text-gray-900 rounded-full transition-colors"
+              >
+                <Plus size={16} /> Ajouter une occurrence
+              </button>
+            </div>
+          </div>
         )}
 
         {/* Content textarea */}

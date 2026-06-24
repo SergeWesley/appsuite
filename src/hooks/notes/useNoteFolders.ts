@@ -71,6 +71,10 @@ export function useNoteFolders() {
     try {
       setError(null);
 
+      const siblings = folders.filter(f => f.parentId === (formData.parentId || null));
+      const maxOrder = siblings.length > 0 ? Math.max(...siblings.map(s => s.order_index || 0)) : -1;
+      const nextOrderIndex = maxOrder + 1;
+
       const { data, error } = await supabase
         .from("note_folders")
         .insert({
@@ -78,7 +82,7 @@ export function useNoteFolders() {
           color: formData.color,
           user_id: user.id,
           parent_id: formData.parentId || null,
-          order_index: folders.filter(f => f.parentId === (formData.parentId || null)).length,
+          order_index: nextOrderIndex,
         })
         .select()
         .single();
@@ -97,7 +101,7 @@ export function useNoteFolders() {
         dateUpdated: new Date(data.updated_at),
       };
 
-      setFolders((prev) => [newFolder, ...prev]);
+      setFolders((prev) => [...prev, newFolder]);
       return newFolder;
     } catch (err) {
       console.error("Erreur lors de la création du dossier:", err);

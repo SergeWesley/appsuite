@@ -19,6 +19,19 @@ export const createNoteFolderTool = (supabase: SupabaseClient, userId: string) =
     if (!userId)
       return { success: false, error: "Utilisateur non authentifié" };
 
+    let query = supabase.from("note_folders").select("order_index").eq("user_id", userId);
+    if (parentId) {
+      query = query.eq("parent_id", parentId);
+    } else {
+      query = query.is("parent_id", null);
+    }
+    const { data: siblings } = await query;
+
+    const maxOrder = siblings && siblings.length > 0 
+      ? Math.max(...siblings.map((s: any) => s.order_index || 0)) 
+      : -1;
+    const nextOrderIndex = maxOrder + 1;
+
     const { data, error } = await supabase
       .from("note_folders")
       .insert({
@@ -26,6 +39,7 @@ export const createNoteFolderTool = (supabase: SupabaseClient, userId: string) =
         color: color || "#f59e0b",
         user_id: userId,
         parent_id: parentId || null,
+        order_index: nextOrderIndex,
       })
       .select()
       .single();
