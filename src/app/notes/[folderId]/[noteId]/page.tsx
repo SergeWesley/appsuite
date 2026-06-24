@@ -340,7 +340,7 @@ export default function NoteEditorPage() {
                 {instances.length > 1 && (
                   <button
                     onClick={() => handleRemoveInstance(index)}
-                    className="absolute top-4 right-0 p-1.5 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity rounded-md hover:bg-red-50"
+                    className="absolute top-4 right-0 p-1.5 text-gray-400 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity rounded-md hover:bg-red-50"
                     title="Supprimer cette occurrence"
                   >
                     <Minus size={16} />
