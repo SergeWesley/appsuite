@@ -6,11 +6,11 @@ import { useRouter, useParams } from "next/navigation";
 import { useNoteFolders } from "@/hooks/notes/useNoteFolders";
 import { useNotes } from "@/hooks/notes/useNotes";
 import { useNoteTemplates } from "@/hooks/notes/useNoteTemplates";
-import { NoteFolder, CustomFieldDefinition } from "@/types/notes";
+import { NoteFolder, CustomFieldDefinition, Note, NoteExportData } from "@/types/notes";
+import { getNoteLocalStorageData } from "@/hooks/useFilterPersistence";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { Trash2, Loader2, Check, Download, Sparkles, MoreVertical, Plus, Minus } from "lucide-react";
 import { DynamicPropertiesBanner } from "@/components/notes/DynamicPropertiesBanner";
-import { NoteExportData } from "@/types/notes";
 import { useAgent } from "@/components/chat/AgentProvider";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
@@ -167,6 +167,9 @@ export default function NoteEditorPage() {
   const handleExport = () => {
     if (!folder) return;
 
+    // Récupérer les données du LocalStorage associées à cette note (ex: tailles de colonnes)
+    const lsData = getNoteLocalStorageData(noteId);
+
     const exportData: NoteExportData = {
       version: 1,
       type: "appsuite_note_export",
@@ -182,6 +185,7 @@ export default function NoteEditorPage() {
         title: title.trim() || "Sans titre",
         content: content,
         metadata: instances,
+        localStorageData: Object.keys(lsData).length > 0 ? lsData : undefined,
       },
     };
 

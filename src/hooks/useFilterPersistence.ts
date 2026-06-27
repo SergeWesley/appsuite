@@ -15,6 +15,34 @@ export interface FilterState {
 }
 
 /**
+ * Extrait toutes les données du LocalStorage associées à une note spécifique.
+ * Utile pour l'exportation d'une note.
+ */
+export const getNoteLocalStorageData = (noteId: string): Record<string, any> => {
+  const lsData: Record<string, any> = {};
+  if (typeof window !== "undefined") {
+    const prefix = `table-editor-${noteId}-`;
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith(prefix)) {
+        try {
+          const val = localStorage.getItem(key);
+          if (val) {
+            const parsed = JSON.parse(val);
+            // On extrait uniquement l'ID du champ (la partie après le prefix)
+            const fieldId = key.substring(prefix.length);
+            lsData[fieldId] = parsed;
+          }
+        } catch (e) {
+          console.error("Erreur de lecture du LS pour l'export:", e);
+        }
+      }
+    }
+  }
+  return lsData;
+};
+
+/**
  * Hook pour gérer la persistance des filtres dans localStorage
  * @param storageKey - Clé unique pour le localStorage (ex: 'booker-filters', 'watcher-filters')
  * @param defaultValues - Valeurs par défaut pour les filtres

@@ -107,5 +107,6 @@ export interface NoteExportData {
     title: string;
     content: string;
     metadata?: Record<string, any> | any[];
+    localStorageData?: Record<string, any>;
   };
 }

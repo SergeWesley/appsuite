@@ -322,16 +322,28 @@ export function useNoteFolders() {
       }
 
       // 3. Créer la note
-      const { error: noteError } = await supabase.from("notes").insert({
+      const { data: newNote, error: noteError } = await supabase.from("notes").insert({
         folder_id: newFolder.id,
         user_id: user.id,
         template_id: importedTemplateId,
         title: data.note.title,
         content: data.note.content || "",
         metadata: data.note.metadata || {},
-      });
+      }).select().single();
 
       if (noteError) throw noteError;
+      
+      // 4. Restaurer les données du LocalStorage (ex: tailles de colonnes)
+      if (data.note.localStorageData && typeof window !== "undefined") {
+        try {
+          Object.entries(data.note.localStorageData).forEach(([fieldId, lsValue]) => {
+            const key = `table-editor-${newNote.id}-${fieldId}`;
+            localStorage.setItem(key, JSON.stringify(lsValue));
+          });
+        } catch (e) {
+          console.error("Erreur lors de la restauration du LS:", e);
+        }
+      }
       
       return true;
     } catch (err) {

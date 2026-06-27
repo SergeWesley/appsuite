@@ -53,7 +53,7 @@ export function DynamicPropertiesBanner({
           <PropertyRow
             key={field.id}
             field={field}
-            value={metadata[field.id] ?? ""}
+            value={metadata[field.id]}
             onChange={(val) => onChange(field.id, val)}
             noteId={noteId}
           />

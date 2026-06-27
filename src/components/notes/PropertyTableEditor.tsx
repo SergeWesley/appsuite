@@ -280,8 +280,10 @@ export function PropertyTableEditor({
                         return (
                           <td
                             key={cell.id}
-                            className="p-0 align-top border-r border-transparent"
-                            style={{ width: cell.column.getSize() }}
+                            className="p-1 align-top border-r border-gray-100"
+                            style={{
+                              width: cell.column.getSize(),
+                            }}
                           >
                             <div className="flex flex-col w-full h-full">
                               {subTableData.length === 0 ? (
