@@ -124,8 +124,7 @@ export function PropertyTableEditor({
   const columns = field.columns;
 
   const renderTableUI = (expanded: boolean) => {
-    const displayColumns = expanded ? columns : columns.slice(0, 3);
-    const hasHiddenColumns = !expanded && columns.length > 3;
+    const displayColumns = columns;
 
     return (
       <div className="mt-2 w-full rounded-lg border border-gray-200 bg-white overflow-hidden flex flex-col h-full">
@@ -173,15 +172,6 @@ export function PropertyTableEditor({
                           </div>
                         </div>
                       ))}
-                      {hasHiddenColumns && (
-                        <button
-                          onClick={() => setEditingRowIndex(rIndex)}
-                          className="text-xs text-left text-amber-600 italic py-1 hover:text-amber-700 font-medium"
-                        >
-                          + {columns.length - 3} autres champs (éditer pour
-                          voir)
-                        </button>
-                      )}
                     </div>
                   </div>
                 ))
@@ -203,9 +193,6 @@ export function PropertyTableEditor({
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
-                    const colIndex = columns.findIndex((c) => c.id === header.column.id);
-                    if (!expanded && colIndex >= 3) return null;
-
                     const sortDir = header.column.getIsSorted();
 
                     return (
@@ -253,12 +240,7 @@ export function PropertyTableEditor({
                       </th>
                     );
                   })}
-                  {hasHiddenColumns && (
-                    <th className="px-3 py-2 whitespace-nowrap text-gray-400 italic font-normal" style={{ width: 120 }}>
-                      + {columns.length - 3} autres
-                    </th>
-                  )}
-                  <th className="px-2 py-2 w-16 text-center align-middle">
+                  <th className="px-2 py-2 w-16 text-center align-middle md:sticky md:right-0 md:bg-gray-50 md:z-20 md:shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)] md:border-l md:border-gray-100">
                     {Object.keys(columnSizing).length > 0 && (
                       <button
                         onClick={() => {
@@ -281,15 +263,13 @@ export function PropertyTableEditor({
                 return (
                   <tr
                     key={row.id}
-                    className={`hover:bg-gray-50/50 ${
+                    className={`group hover:bg-gray-50/50 ${
                       editingRowIndex === rIndex ? "bg-amber-50/30" : ""
                     }`}
                   >
                     {row.getVisibleCells().map((cell) => {
-                      const colIndex = columns.findIndex((c) => c.id === cell.column.id);
-                      if (!expanded && colIndex >= 3) return null;
-
-                      const colDef = columns[colIndex];
+                      const colDef = columns.find((c) => c.id === cell.column.id);
+                      if (!colDef) return null;
 
                       return (
                         <td
@@ -309,26 +289,27 @@ export function PropertyTableEditor({
                         </td>
                       );
                     })}
-                    {hasHiddenColumns && (
-                      <td className="p-1 align-middle text-center text-gray-300 italic">
-                        ...
-                      </td>
-                    )}
-                    <td className="p-1 align-middle text-right flex justify-end gap-1 mt-1">
-                      <button
-                        onClick={() => setEditingRowIndex(rIndex)}
-                        className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors"
-                        title="Éditer la ligne complète"
-                      >
-                        <Maximize2 size={14} />
-                      </button>
-                      <button
-                        onClick={() => removeRow(rIndex)}
-                        className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
-                        title="Supprimer la ligne"
-                      >
-                        <X size={14} />
-                      </button>
+                    <td
+                      className={`p-1 align-middle transition-colors md:sticky md:right-0 md:z-10 md:border-l md:border-gray-100 md:shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.05)] ${
+                        editingRowIndex === rIndex ? "bg-amber-50" : "md:bg-white md:group-hover:bg-gray-50"
+                      }`}
+                    >
+                      <div className="flex justify-end gap-1 mt-1 pr-1">
+                        <button
+                          onClick={() => setEditingRowIndex(rIndex)}
+                          className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors"
+                          title="Éditer la ligne complète"
+                        >
+                          <Maximize2 size={14} />
+                        </button>
+                        <button
+                          onClick={() => removeRow(rIndex)}
+                          className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                          title="Supprimer la ligne"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
