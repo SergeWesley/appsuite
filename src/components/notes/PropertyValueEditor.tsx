@@ -26,7 +26,7 @@ export function PropertyValueEditor({
           type={field.type === "url" ? "url" : "text"}
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={`...`}
+          placeholder={field.name}
           className="w-full px-2 py-1 -ml-2 text-sm text-gray-900 bg-transparent hover:bg-gray-50 focus:bg-white rounded-md border-transparent hover:border-gray-200 focus:border-amber-500 focus:ring-0 outline-none transition-all placeholder:text-gray-300"
         />
       );
@@ -36,7 +36,7 @@ export function PropertyValueEditor({
         <textarea
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Détails supplémentaires..."
+          placeholder={field.name}
           rows={2}
           className="w-full px-2 py-1 -ml-2 text-sm text-gray-900 bg-transparent hover:bg-gray-50 focus:bg-white rounded-md border-transparent hover:border-gray-200 focus:border-amber-500 focus:ring-0 outline-none transition-all resize-none placeholder:text-gray-300"
         />
@@ -50,7 +50,7 @@ export function PropertyValueEditor({
             type="number"
             value={value || ""}
             onChange={(e) => onChange(e.target.value)}
-            placeholder="0"
+            placeholder={field.name}
             className="w-full px-2 py-1 -ml-2 text-sm text-gray-900 bg-transparent hover:bg-gray-50 focus:bg-white rounded-md border-transparent hover:border-gray-200 focus:border-amber-500 focus:ring-0 outline-none transition-all"
           />
           {field.type === "currency" && (

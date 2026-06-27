@@ -96,6 +96,7 @@ export function PropertyTableEditor({
       header: col.name,
       size: 150, // Base default size
       minSize: 60,
+      meta: { colDef: col },
     }));
   }, [field.columns]);
 
@@ -268,8 +269,77 @@ export function PropertyTableEditor({
                     }`}
                   >
                     {row.getVisibleCells().map((cell) => {
-                      const colDef = columns.find((c) => c.id === cell.column.id);
+                      const meta = cell.column.columnDef.meta as any;
+                      const colDef = meta?.colDef as CustomFieldDefinition;
                       if (!colDef) return null;
+
+                      if (colDef.type === "table") {
+                        const subCols = colDef.columns || [];
+                        const subTableData = Array.isArray(row.original[colDef.id]) ? row.original[colDef.id] : [];
+                        
+                        return (
+                          <td
+                            key={cell.id}
+                            className="p-0 align-top border-r border-transparent"
+                            style={{ width: cell.column.getSize() }}
+                          >
+                            <div className="flex flex-col w-full h-full">
+                              {subTableData.length === 0 ? (
+                                <div className="p-2 text-xs text-gray-400 italic">Aucune entrée</div>
+                              ) : (
+                                subTableData.map((subRow: any, subIndex: number) => (
+                                  <div key={subIndex} className="flex flex-row border-b border-gray-100 last:border-b-0 w-full group/subrow relative">
+                                    {subCols.map((scDef, scIdx) => (
+                                      <div 
+                                        key={scDef.id} 
+                                        className={`flex-1 p-1 shrink-0 ${scIdx < subCols.length - 1 ? 'border-r border-gray-100' : 'pr-8'}`}
+                                      >
+                                        <div className="w-full h-full overflow-hidden">
+                                          {renderEditor(
+                                            { ...scDef, name: scDef.name }, // This is passed directly as field to PropertyValueEditor
+                                            subRow[scDef.id] ?? "",
+                                            (val) => {
+                                              const newSubData = [...subTableData];
+                                              newSubData[subIndex] = { ...newSubData[subIndex], [scDef.id]: val };
+                                              updateRow(rIndex, colDef.id, newSubData);
+                                            }
+                                          )}
+                                        </div>
+                                      </div>
+                                    ))}
+                                    {/* Bouton de suppression */}
+                                    <div className="w-0 relative">
+                                      <button 
+                                        onClick={() => {
+                                          const newSubData = [...subTableData];
+                                          newSubData.splice(subIndex, 1);
+                                          updateRow(rIndex, colDef.id, newSubData);
+                                        }}
+                                        className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-red-500 opacity-60 md:opacity-0 md:group-hover/subrow:opacity-100 transition-opacity bg-white/90 shadow-sm border border-gray-100 rounded z-10"
+                                        title="Supprimer la sous-ligne"
+                                      >
+                                        <X size={12} />
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))
+                              )}
+                              <div className="p-1">
+                                <button
+                                  onClick={() => {
+                                    const newSubData = [...subTableData, {}];
+                                    updateRow(rIndex, colDef.id, newSubData);
+                                  }}
+                                  className="text-gray-400 hover:text-amber-600 hover:bg-gray-50 rounded p-1 flex items-center justify-center transition-colors w-max"
+                                  title={`Ajouter ${colDef.name}`}
+                                >
+                                  <Plus size={14} />
+                                </button>
+                              </div>
+                            </div>
+                          </td>
+                        );
+                      }
 
                       return (
                         <td

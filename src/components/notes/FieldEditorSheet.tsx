@@ -25,9 +25,11 @@ interface FieldEditorSheetProps {
   onClose: () => void;
   onSave: (field: CustomFieldDefinition) => void;
   initialField?: CustomFieldDefinition | null;
+  isNested?: boolean;
 }
 
-export function FieldEditorSheet({ isOpen, onClose, onSave, initialField }: FieldEditorSheetProps) {
+export function FieldEditorSheet({ isOpen, onClose, onSave, initialField, isNested }: FieldEditorSheetProps) {
+  const [editingSubColId, setEditingSubColId] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [type, setType] = useState<CustomFieldType>("text");
   const [optionsStr, setOptionsStr] = useState("");
@@ -92,8 +94,9 @@ export function FieldEditorSheet({ isOpen, onClose, onSave, initialField }: Fiel
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
+    <>
+      <AnimatePresence>
+        {isOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -146,8 +149,11 @@ export function FieldEditorSheet({ isOpen, onClose, onSave, initialField }: Fiel
                     value={type}
                     onChange={(e) => setType(e.target.value as CustomFieldType)}
                     className="w-full px-4 py-3 sm:py-2 pl-10 border border-gray-200 rounded-xl text-base sm:text-sm bg-white focus:ring-2 focus:ring-amber-500 focus:border-transparent appearance-none"
+                    disabled={isNested && type === "table"} // Bloque le changement si on est forcé en table
                   >
-                    {Object.entries(TYPE_CONFIGS).map(([key, config]) => (
+                    {Object.entries(TYPE_CONFIGS)
+                      .filter(([key]) => !isNested || key !== "table" || type === "table")
+                      .map(([key, config]) => (
                       <option key={key} value={key}>{config.label}</option>
                     ))}
                   </select>
@@ -268,6 +274,16 @@ export function FieldEditorSheet({ isOpen, onClose, onSave, initialField }: Fiel
                             />
                           </div>
                         )}
+                        {col.type === "table" && !isNested && (
+                          <div className="flex flex-col pl-7 pr-1 pt-1 pb-1">
+                            <button
+                              onClick={() => setEditingSubColId(col.id)}
+                              className="text-xs text-amber-600 hover:text-amber-700 font-medium flex items-center gap-1.5 w-max px-3 py-1.5 hover:bg-amber-50 border border-amber-200 bg-amber-50/50 rounded-lg transition-colors shadow-sm"
+                            >
+                              <Table size={14} /> Configurer le sous-tableau ({col.columns?.length || 0} colonnes)
+                            </button>
+                          </div>
+                        )}
                       </div>
                       ))}
                     </div>
@@ -290,7 +306,7 @@ export function FieldEditorSheet({ isOpen, onClose, onSave, initialField }: Fiel
                         className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                       >
                         {Object.entries(TYPE_CONFIGS)
-                          .filter(([key]) => key !== "table")
+                          .filter(([key]) => !isNested || key !== "table")
                           .map(([key, config]) => (
                           <option key={key} value={key}>{config.label}</option>
                         ))}
@@ -337,5 +353,20 @@ export function FieldEditorSheet({ isOpen, onClose, onSave, initialField }: Fiel
         </motion.div>
       )}
     </AnimatePresence>
+    
+    {/* Modal imbriquée pour le sous-tableau */}
+    {editingSubColId && (
+      <FieldEditorSheet
+        isOpen={!!editingSubColId}
+        onClose={() => setEditingSubColId(null)}
+        isNested={true}
+        initialField={columns.find(c => c.id === editingSubColId)}
+        onSave={(updatedCol) => {
+          setColumns(columns.map(c => c.id === updatedCol.id ? updatedCol : c));
+          setEditingSubColId(null);
+        }}
+      />
+    )}
+    </>
   );
 }
