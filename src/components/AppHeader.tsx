@@ -20,6 +20,7 @@ interface AppHeaderProps {
     | "cooker"
     | "browser"
     | "dashboard"
+    | "forge"
     | "split";
   actions?: React.ReactNode;
   maxWidth?: string;
@@ -41,7 +42,7 @@ export function AppHeader({
   const searchParams = useSearchParams();
   const { user, signOut } = useAuthContext();
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
-  
+
   const isSplitMode = searchParams.get("mode") === "split";
 
   return (
@@ -97,7 +98,9 @@ export function AppHeader({
                   <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
                     <User size={20} />
                     <span className="hidden sm:block text-sm">
-                      {user?.user_metadata?.name || user?.email || "Utilisateur"}
+                      {user?.user_metadata?.name ||
+                        user?.email ||
+                        "Utilisateur"}
                     </span>
                   </MenuButton>
 

@@ -20,6 +20,7 @@ interface NavigationMenuProps {
     | "cooker"
     | "browser"
     | "dashboard"
+    | "forge"
     | "split";
 }
 

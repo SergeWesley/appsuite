@@ -7,6 +7,7 @@ import {
   Utensils,
   Globe,
   SplitSquareVertical,
+  Hammer,
   LucideIcon,
 } from "lucide-react";
 
@@ -29,7 +30,8 @@ export type ModuleId =
   | "spender"
   | "cooker"
   | "browser"
-  | "split";
+  | "split"
+  | "forge";
 
 export interface AppModule {
   id: ModuleId;
@@ -158,6 +160,23 @@ export const appModules: AppModule[] = [
       bgHoverLight: "hover:bg-teal-100",
       bgSolidHover: "hover:bg-teal-600",
       ring: "focus:ring-teal-500/20 focus:border-teal-500",
+    },
+  },
+  {
+    id: "forge",
+    name: "Forge",
+    path: "/forge",
+    icon: Hammer,
+    description: "Constructeur d'UI intelligente connectée à votre API backend",
+    theme: {
+      text: "text-indigo-500",
+      textDark: "text-indigo-600",
+      bg: "bg-indigo-500",
+      bgSoft: "bg-indigo-100",
+      bgFaint: "bg-indigo-50",
+      bgHoverLight: "hover:bg-indigo-100",
+      bgSolidHover: "hover:bg-indigo-600",
+      ring: "focus:ring-indigo-500/20 focus:border-indigo-500",
     },
   },
   {
