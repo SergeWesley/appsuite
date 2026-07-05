@@ -98,7 +98,7 @@ export function NavigationMenu({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="fixed top-16 left-4 sm:left-8 z-[60] w-80 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden"
+            className="fixed top-16 left-4 sm:left-8 z-[60] w-80 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden flex flex-col max-h-[calc(100vh-5rem)]"
           >
             {/* Header */}
             <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
@@ -207,6 +207,16 @@ export function NavigationMenu({
                 );
               })}
             </div>
+
+            {/* Version Footer */}
+            {process.env.NEXT_PUBLIC_APP_VERSION && (
+              <div className="mt-auto px-4 py-3 border-t border-gray-100 bg-gray-50 text-center shrink-0">
+                <p className="text-[10px] text-gray-400 font-mono tracking-wide">
+                  AppSuite v{process.env.NEXT_PUBLIC_APP_VERSION}
+                  {process.env.NEXT_PUBLIC_GIT_COMMIT && `-${process.env.NEXT_PUBLIC_GIT_COMMIT}`}
+                </p>
+              </div>
+            )}
           </motion.div>
         </>
       )}

@@ -67,14 +67,16 @@ export function AppHeader({
                   aria-label="Menu de navigation"
                 >
                   {Icon && <Icon className={`h-8 w-8 ${iconColor}`} />}
-                  <h1
-                    className={`${Icon ? "ml-3" : ""} text-xl font-semibold text-gray-900 truncate`}
-                  >
-                    {title}
-                  </h1>
+                  <div className="flex items-center gap-2">
+                    <h1
+                      className={`${Icon ? "ml-3" : ""} text-xl font-semibold text-gray-900 truncate`}
+                    >
+                      {title}
+                    </h1>
+                  </div>
                 </button>
               ) : (
-                <div className="flex items-center p-2 min-w-0 flex-1 text-left">
+                <div className="flex items-center p-2 min-w-0 flex-1 text-left gap-2">
                   {Icon && <Icon className={`h-6 w-6 ${iconColor}`} />}
                   <h1
                     className={`${Icon ? "ml-3" : ""} text-lg font-semibold text-gray-900 truncate`}
