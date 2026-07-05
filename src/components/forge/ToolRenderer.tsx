@@ -1,6 +1,7 @@
 import React from "react";
 import { WeatherCard } from "@/components/forge/WeatherCard";
 import { AnimeCard } from "@/components/forge/AnimeCard";
+import { ArtMosaic } from "@/components/forge/ArtMosaic";
 
 const toolRegistry: Record<string, React.FC<{ result: any }>> = {
   fetchWeatherTool: ({ result }) => (
@@ -8,6 +9,9 @@ const toolRegistry: Record<string, React.FC<{ result: any }>> = {
   ),
   fetchRandomAnimeTool: ({ result }) => (
     <AnimeCard data={result.data} />
+  ),
+  searchArtTool: ({ result }) => (
+    <ArtMosaic result={result} />
   ),
 };
 
