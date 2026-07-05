@@ -2,15 +2,8 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  BookOpen,
-  Mail,
-  Lock,
-  User,
-  Eye,
-  EyeOff,
-  AlertCircle,
-} from "lucide-react";
+import Image from "next/image";
+import { Mail, Lock, User, Eye, EyeOff, AlertCircle } from "lucide-react";
 
 interface AuthFormProps {
   onSignIn: (email: string, password: string) => Promise<void>;
@@ -97,25 +90,31 @@ export function AuthForm({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md"
+        className="w-full max-w-md p-6 sm:p-8"
       >
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-10">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4"
+            className="inline-flex items-center justify-center mb-6"
           >
-            <BookOpen className="w-8 h-8 text-blue-600" />
+            <Image
+              src="/icon-192x192.png"
+              alt="AppSuite Logo"
+              width={96}
+              height={96}
+              className="w-24 h-24 object-contain"
+            />
           </motion.div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {isSignUp ? "Créer un compte" : "Connexion"}
+          <h1 className="text-3xl font-bold text-gray-900 mb-3 tracking-tight">
+            {isSignUp ? "Créer un compte" : "Bon retour"}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 text-lg">
             {isSignUp
-              ? "Rejoignez Booker et organisez votre bibliothèque"
-              : "Accédez à votre bibliothèque personnelle"}
+              ? "Rejoignez l'écosystème AppSuite"
+              : "Accédez à votre espace AppSuite"}
           </p>
         </div>
 
@@ -151,10 +150,10 @@ export function AuthForm({
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none ${
                     formErrors.name
-                      ? "border-red-300 bg-red-50"
-                      : "border-gray-300"
+                      ? "border-red-300 bg-red-50/80 backdrop-blur-sm"
+                      : "border-white/40 bg-white/60 backdrop-blur-md hover:bg-white/80 focus:bg-white"
                   }`}
                   placeholder="Votre nom complet"
                   disabled={loading}
@@ -179,10 +178,10 @@ export function AuthForm({
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
-                className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+                className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none ${
                   formErrors.email
-                    ? "border-red-300 bg-red-50"
-                    : "border-gray-300"
+                    ? "border-red-300 bg-red-50/80 backdrop-blur-sm"
+                    : "border-white/40 bg-white/60 backdrop-blur-md hover:bg-white/80 focus:bg-white"
                 }`}
                 placeholder="votre@email.com"
                 disabled={loading}
@@ -206,10 +205,10 @@ export function AuthForm({
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
                 }
-                className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+                className={`w-full pl-10 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none ${
                   formErrors.password
-                    ? "border-red-300 bg-red-50"
-                    : "border-gray-300"
+                    ? "border-red-300 bg-red-50/80 backdrop-blur-sm"
+                    : "border-white/40 bg-white/60 backdrop-blur-md hover:bg-white/80 focus:bg-white"
                 }`}
                 placeholder="••••••••"
                 disabled={loading}
@@ -253,10 +252,10 @@ export function AuthForm({
                       confirmPassword: e.target.value,
                     })
                   }
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+                  className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none ${
                     formErrors.confirmPassword
-                      ? "border-red-300 bg-red-50"
-                      : "border-gray-300"
+                      ? "border-red-300 bg-red-50/80 backdrop-blur-sm"
+                      : "border-white/40 bg-white/60 backdrop-blur-md hover:bg-white/80 focus:bg-white"
                   }`}
                   placeholder="••••••••"
                   disabled={loading}
@@ -276,10 +275,10 @@ export function AuthForm({
             disabled={loading}
             whileHover={{ scale: loading ? 1 : 1.02 }}
             whileTap={{ scale: loading ? 1 : 0.98 }}
-            className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-colors ${
+            className={`w-full py-3 px-4 rounded-xl font-medium text-white shadow-md transition-all ${
               loading
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-200"
+                : "bg-blue-600 hover:bg-blue-700 hover:shadow-lg focus:ring-4 focus:ring-blue-200"
             }`}
           >
             {loading ? (
