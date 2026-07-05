@@ -1,17 +1,20 @@
 "use client";
 
 import { useChat } from "ai/react";
-import { useRef, useEffect } from "react";
-import { Send, Bot, User, Loader2 } from "lucide-react";
+import { useRef, useEffect, useState } from "react";
+import { Send, Bot, User, Loader2, BookOpen } from "lucide-react";
 import { ToolRenderer } from "@/components/forge/ToolRenderer";
 import { AppHeader } from "@/components/AppHeader";
 import { Hammer } from "lucide-react";
+import { ApiCatalog } from "@/components/forge/ApiCatalog";
 
 export default function ForgeBuilderPage() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, setInput } =
     useChat({
       api: "/api/forge-chat",
     });
+
+  const [showCatalog, setShowCatalog] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -26,8 +29,18 @@ export default function ForgeBuilderPage() {
         icon={Hammer}
         iconColor="text-indigo-600"
         currentModule="forge"
+        actions={
+          <button
+            onClick={() => setShowCatalog(!showCatalog)}
+            className={`p-2 rounded-lg transition-colors flex items-center gap-2 ${showCatalog ? "bg-indigo-50 text-indigo-600" : "text-gray-600 hover:bg-gray-100"}`}
+            aria-label="Afficher le catalogue d'actions"
+          >
+            <BookOpen size={20} />
+            <span className="hidden sm:inline text-sm font-medium">Catalogue API</span>
+          </button>
+        }
       />
-      <div className="flex-1 flex flex-col w-full overflow-hidden">
+      <div className="flex-1 flex w-full overflow-hidden">
         {/* Chat Area */}
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto p-4 md:p-8">
@@ -166,6 +179,34 @@ export default function ForgeBuilderPage() {
             </div>
           </div>
         </div>
+
+        {/* Catalogue: Modal (Mobile) ou Sidebar (Desktop) */}
+        {showCatalog && (
+          <>
+            {/* Overlay Modal pour Mobile */}
+            <div 
+              className="md:hidden fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+              onClick={() => setShowCatalog(false)}
+            >
+              <div 
+                className="bg-white w-full max-w-sm max-h-[80vh] rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <ApiCatalog 
+                  onActionClick={(text) => {
+                    setInput(text);
+                    setShowCatalog(false);
+                  }} 
+                />
+              </div>
+            </div>
+
+            {/* Sidebar pour Desktop */}
+            <div className="hidden md:block w-[350px] flex-shrink-0 shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.05)] z-10 transition-all border-l border-gray-100 bg-gray-50">
+              <ApiCatalog onActionClick={(text) => setInput(text)} />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
