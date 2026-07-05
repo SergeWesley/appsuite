@@ -1,6 +1,7 @@
 import { createGroq } from "@ai-sdk/groq";
 import { streamText } from "ai";
 import { getForgeTools } from "@/lib/ai/tools/forge";
+import { checkUserRoles } from "@/lib/server/api-auth";
 
 const groq = createGroq({
   apiKey: process.env.GROQ_API_KEY || "",
@@ -10,7 +11,11 @@ export const maxDuration = 30;
 
 export async function POST(req: Request) {
   try {
-    const { messages } = await req.json();
+    const { messages, accessToken } = await req.json();
+
+    // Authentification Supabase pour vérifier les rôles (Admin / VIP)
+    const { errorResponse } = await checkUserRoles(accessToken, ["admin", "vip"]);
+    if (errorResponse) return errorResponse;
 
     // Pour réduire drastiquement le nombre de tokens envoyés (et rester sous la limite de 6000 TPM),
     // on ne garde que la toute dernière requête de l'utilisateur (requête standalone).

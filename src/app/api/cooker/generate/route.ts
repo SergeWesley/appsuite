@@ -1,7 +1,7 @@
 import { createGroq } from "@ai-sdk/groq";
 import { generateObject } from "ai";
 import { z } from "zod";
-import { createClient } from "@supabase/supabase-js";
+import { checkUserRoles } from "@/lib/server/api-auth";
 import { createHash } from "crypto";
 
 const groq = createGroq({
@@ -21,27 +21,9 @@ export async function POST(req: Request) {
       });
     }
 
-    // 2. Client Supabase pour Auth & Cache
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        global: {
-          headers: { Authorization: `Bearer ${accessToken || ""}` },
-        },
-      }
-    );
-
-    // Vérification de l'utilisateur
-    const { data: { user } } = await supabase.auth.getUser(accessToken || "");
-    const role = (user?.app_metadata?.role as string | undefined) || (user?.user_metadata?.role as string | undefined);
-
-    if (role !== "admin" && role !== "vip") {
-      return new Response(JSON.stringify({ error: "Accès réservé aux administrateurs et membres VIP." }), {
-        status: 403,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+    // 2. Vérification de l'utilisateur (Admin / VIP) via Supabase
+    const { supabase, errorResponse } = await checkUserRoles(accessToken, ["admin", "vip"]);
+    if (errorResponse) return errorResponse;
 
     // 3. Logique de Cache
     // Trier les ingrédients pour assurer la cohérence du hash

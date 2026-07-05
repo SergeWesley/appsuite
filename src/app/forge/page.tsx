@@ -2,15 +2,23 @@
 
 import { useChat } from "ai/react";
 import { useRef, useEffect, useState } from "react";
-import { Send, Bot, User, Loader2, BookOpen, Hammer, PlusCircle } from "lucide-react";
+import { Send, Bot, User, Loader2, BookOpen, Hammer, PlusCircle, Lock } from "lucide-react";
 import { ToolRenderer } from "@/components/forge/ToolRenderer";
 import { AppHeader } from "@/components/AppHeader";
 import { ApiCatalog } from "@/components/forge/ApiCatalog";
+import { useAuthContext } from "@/components/AuthProvider";
 
 export default function ForgeBuilderPage() {
+  const { session, user } = useAuthContext();
+  const accessToken = session?.access_token || "";
+
+  const role = (user?.app_metadata?.role as string | undefined) || (user?.user_metadata?.role as string | undefined);
+  const isAllowed = role === "admin" || role === "vip";
+
   const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, setMessages } =
     useChat({
       api: "/api/forge-chat",
+      body: { accessToken },
     });
 
   const [showCatalog, setShowCatalog] = useState(false);
@@ -46,6 +54,28 @@ export default function ForgeBuilderPage() {
     localStorage.removeItem("forge-chat-history");
     setInput("");
   };
+
+  if (isMounted && !isAllowed) {
+    return (
+      <div className="h-screen bg-white flex flex-col overflow-hidden">
+        <AppHeader
+          title="Forge Builder"
+          icon={Hammer}
+          iconColor="text-indigo-600"
+          currentModule="forge"
+        />
+        <div className="flex-1 flex flex-col items-center justify-center p-4 text-center">
+          <div className="bg-red-50 p-6 rounded-full mb-6">
+            <Lock size={48} className="text-red-500" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Accès restreint</h1>
+          <p className="text-gray-600 max-w-md text-lg">
+            L'utilisation de Forge Builder nécessite des crédits IA et est exclusivement réservée aux administrateurs et aux utilisateurs VIP.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen bg-white flex flex-col overflow-hidden">

@@ -1,7 +1,7 @@
 import { createGroq } from "@ai-sdk/groq";
 import { streamText } from "ai";
 import { getAgentTools } from "@/lib/ai/tools";
-import { createClient } from "@supabase/supabase-js";
+import { checkUserRoles } from "@/lib/server/api-auth";
 
 // Configuration explicite du provider Groq avec la clé côté serveur
 const groq = createGroq({
@@ -77,30 +77,11 @@ export async function POST(req: Request) {
   try {
     const { messages, data, accessToken } = await req.json();
 
-    // Créer un client Supabase authentifié avec le token du client
-    // Le token dans global.headers est envoyé pour chaque requête DB → RLS fonctionne
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        global: {
-          headers: { Authorization: `Bearer ${accessToken || ""}` },
-        },
-      }
-    );
-    const { data: { user } } = await supabase.auth.getUser(accessToken || "");
+    // Vérification du rôle admin (double protection côté serveur) et création du client Supabase authentifié
+    const { user, supabase, errorResponse } = await checkUserRoles(accessToken, ["admin"]);
+    if (errorResponse) return errorResponse;
+    
     const userId = user?.id;
-
-    // Vérification du rôle admin (double protection côté serveur)
-    const role =
-      (user?.app_metadata?.role as string | undefined) ||
-      (user?.user_metadata?.role as string | undefined);
-    if (role !== "admin") {
-      return new Response(JSON.stringify({ error: "Accès réservé aux administrateurs." }), {
-        status: 403,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
 
     // Contexte additionnel optionnel
     const contextStr = data?.systemContext
