@@ -2,6 +2,7 @@ import React from "react";
 import { WeatherCard } from "@/components/forge/WeatherCard";
 import { AnimeCard } from "@/components/forge/AnimeCard";
 import { ArtMosaic } from "@/components/forge/ArtMosaic";
+import { MealList } from "@/components/forge/MealList";
 
 const toolRegistry: Record<string, React.FC<{ result: any }>> = {
   fetchWeatherTool: ({ result }) => (
@@ -12,6 +13,9 @@ const toolRegistry: Record<string, React.FC<{ result: any }>> = {
   ),
   searchArtTool: ({ result }) => (
     <ArtMosaic result={result} />
+  ),
+  searchMealTool: ({ result }) => (
+    <MealList result={result} />
   ),
 };
 

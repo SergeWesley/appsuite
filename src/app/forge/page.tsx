@@ -74,7 +74,11 @@ export default function ForgeBuilderPage() {
                     </div>
 
                     <div
-                      className={`flex flex-col max-w-[80%] ${m.role === "user" ? "items-end" : "items-start"}`}
+                      className={`flex flex-col w-full md:max-w-[80%] ${
+                        m.role === "user" 
+                          ? "max-w-[85%] items-end" 
+                          : "max-w-[95%] items-start"
+                      }`}
                     >
                       {/* Texte du message (si présent) */}
                       {m.content && (
