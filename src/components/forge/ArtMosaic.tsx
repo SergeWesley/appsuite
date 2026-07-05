@@ -36,10 +36,9 @@ export function ArtMosaic({ result }: { result: any }) {
               {art.imageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={art.imageUrl}
+                  src={`/api/image-proxy?url=${encodeURIComponent(art.imageUrl)}`}
                   alt={art.title}
                   loading="lazy"
-                  referrerPolicy="no-referrer"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               ) : (
