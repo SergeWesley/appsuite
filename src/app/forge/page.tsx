@@ -2,25 +2,50 @@
 
 import { useChat } from "ai/react";
 import { useRef, useEffect, useState } from "react";
-import { Send, Bot, User, Loader2, BookOpen } from "lucide-react";
+import { Send, Bot, User, Loader2, BookOpen, Hammer, PlusCircle } from "lucide-react";
 import { ToolRenderer } from "@/components/forge/ToolRenderer";
 import { AppHeader } from "@/components/AppHeader";
-import { Hammer } from "lucide-react";
 import { ApiCatalog } from "@/components/forge/ApiCatalog";
 
 export default function ForgeBuilderPage() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading, setInput } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, setMessages } =
     useChat({
       api: "/api/forge-chat",
     });
 
   const [showCatalog, setShowCatalog] = useState(false);
-
+  const [isMounted, setIsMounted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Restauration de l'historique au chargement
+  useEffect(() => {
+    setIsMounted(true);
+    const saved = localStorage.getItem("forge-chat-history");
+    if (saved) {
+      try {
+        setMessages(JSON.parse(saved));
+      } catch (e) {
+        console.error("Erreur de parsing de l'historique", e);
+      }
+    }
+  }, [setMessages]);
+
+  // Sauvegarde à chaque changement (uniquement après le montage pour ne pas écraser l'existant)
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem("forge-chat-history", JSON.stringify(messages));
+    }
+  }, [messages, isMounted]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const handleNewChat = () => {
+    setMessages([]);
+    localStorage.removeItem("forge-chat-history");
+    setInput("");
+  };
 
   return (
     <div className="h-screen bg-white flex flex-col overflow-hidden">
@@ -30,14 +55,25 @@ export default function ForgeBuilderPage() {
         iconColor="text-indigo-600"
         currentModule="forge"
         actions={
-          <button
-            onClick={() => setShowCatalog(!showCatalog)}
-            className={`p-2 rounded-lg transition-colors flex items-center gap-2 ${showCatalog ? "bg-indigo-50 text-indigo-600" : "text-gray-600 hover:bg-gray-100"}`}
-            aria-label="Afficher le catalogue d'actions"
-          >
-            <BookOpen size={20} />
-            <span className="hidden sm:inline text-sm font-medium">Catalogue API</span>
-          </button>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={handleNewChat}
+              className="p-2 rounded-lg transition-colors flex items-center gap-2 text-gray-600 hover:bg-gray-100"
+              aria-label="Nouvelle discussion"
+              title="Nouvelle discussion"
+            >
+              <PlusCircle size={20} />
+              <span className="hidden sm:inline text-sm font-medium">Nouveau</span>
+            </button>
+            <button
+              onClick={() => setShowCatalog(!showCatalog)}
+              className={`p-2 rounded-lg transition-colors flex items-center gap-2 ${showCatalog ? "bg-indigo-50 text-indigo-600" : "text-gray-600 hover:bg-gray-100"}`}
+              aria-label="Afficher le catalogue d'actions"
+            >
+              <BookOpen size={20} />
+              <span className="hidden sm:inline text-sm font-medium">Catalogue API</span>
+            </button>
+          </div>
         }
       />
       <div className="flex-1 flex w-full overflow-hidden">
