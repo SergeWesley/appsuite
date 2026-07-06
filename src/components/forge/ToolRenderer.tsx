@@ -3,6 +3,7 @@ import { WeatherCard } from "@/components/forge/WeatherCard";
 import { AnimeCard } from "@/components/forge/AnimeCard";
 import { ArtMosaic } from "@/components/forge/ArtMosaic";
 import { MealList } from "@/components/forge/MealList";
+import { CryptoCard } from "@/components/forge/CryptoCard";
 
 const toolRegistry: Record<string, React.FC<{ result: any }>> = {
   fetchWeatherTool: ({ result }) => (
@@ -16,6 +17,9 @@ const toolRegistry: Record<string, React.FC<{ result: any }>> = {
   ),
   searchMealTool: ({ result }) => (
     <MealList result={result} />
+  ),
+  fetchCryptoMarketTool: ({ result }) => (
+    <CryptoCard data={result.data} currency={result.currency} />
   ),
 };
 
