@@ -160,7 +160,7 @@ export default function ForgeBuilderPage() {
                     </div>
 
                     <div
-                      className={`flex flex-col w-full md:max-w-[80%] ${
+                      className={`flex flex-col min-w-0 overflow-hidden w-full md:max-w-[80%] ${
                         m.role === "user" 
                           ? "max-w-[85%] items-end" 
                           : "max-w-[95%] items-start"
@@ -212,7 +212,7 @@ export default function ForgeBuilderPage() {
 
                             // Utilisation du Design Pattern Strategy via ToolRenderer
                             return (
-                              <div key={toolCallId}>
+                              <div key={toolCallId} className="w-full overflow-hidden">
                                 <ToolRenderer
                                   toolName={toolName}
                                   result={result}
