@@ -4,6 +4,7 @@ import { AnimeCard } from "@/components/forge/AnimeCard";
 import { ArtMosaic } from "@/components/forge/ArtMosaic";
 import { MealList } from "@/components/forge/MealList";
 import { CryptoCard } from "@/components/forge/CryptoCard";
+import { TempMailManager } from "@/components/forge/TempMailManager";
 
 const toolRegistry: Record<string, React.FC<{ result: any }>> = {
   fetchWeatherTool: ({ result }) => (
@@ -20,6 +21,12 @@ const toolRegistry: Record<string, React.FC<{ result: any }>> = {
   ),
   fetchCryptoMarketTool: ({ result }) => (
     <CryptoCard data={result.data} currency={result.currency} />
+  ),
+  generateTempEmailTool: ({ result }) => (
+    <TempMailManager result={result} />
+  ),
+  checkTempEmailTool: ({ result }) => (
+    <TempMailManager result={result} />
   ),
 };
 

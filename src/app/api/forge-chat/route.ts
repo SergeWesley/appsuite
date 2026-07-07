@@ -11,7 +11,7 @@ export const maxDuration = 30;
 
 export async function POST(req: Request) {
   try {
-    const { messages, accessToken } = await req.json();
+    const { messages, accessToken, systemContext } = await req.json();
 
     // Authentification Supabase pour vérifier les rôles (Admin / VIP)
     const { errorResponse } = await checkUserRoles(accessToken, ["admin", "vip"]);
@@ -27,11 +27,7 @@ export async function POST(req: Request) {
     ];
     let lastError: any;
 
-    for (const modelName of modelsToTry) {
-      try {
-        const result = await streamText({
-          model: groq(modelName),
-          system: `Tu es un assistant "Builder" intelligent pour l'application AppSuite.
+    let systemPrompt = `Tu es un assistant "Builder" intelligent pour l'application AppSuite.
                    Ton rôle est de comprendre les requêtes de l'utilisateur concernant les données du backend Forge (API Java), 
                    d'appeler les outils appropriés pour récupérer ces données, et de laisser le frontend afficher des composants UI riches.
                    
@@ -39,7 +35,21 @@ export async function POST(req: Request) {
                    - Analyse la requête et choisis le ou les outils les plus pertinents parmi ceux à ta disposition.
                    - CRITIQUE : Transmets les paramètres (ex: nom de ville, identifiant, recherche) EXACTEMENT tels que fournis par l'utilisateur, sans aucune modification, traduction ou correction.
                    - Ne rédige pas de résumé textuel des données si un outil a été appelé avec succès. Réponds simplement "Voici les informations demandées :" ou une phrase d'accroche similaire ; le frontend s'occupera du rendu visuel des données.
-                   - Parle toujours en français de façon concise et professionnelle.`,
+                   - Parle toujours en français de façon concise et professionnelle.`;
+
+    // Injection générique du contexte système
+    if (systemContext && Object.keys(systemContext).length > 0) {
+      systemPrompt += `\n\nCONTEXTE ACTUEL DU SYSTEME ET DE L'UTILISATEUR :`;
+      for (const [key, value] of Object.entries(systemContext)) {
+        systemPrompt += `\n- ${key}: ${value}`;
+      }
+    }
+
+    for (const modelName of modelsToTry) {
+      try {
+        const result = await streamText({
+          model: groq(modelName),
+          system: systemPrompt,
           messages: standaloneMessage,
           tools: getForgeTools(),
           maxToolRoundtrips: 1,

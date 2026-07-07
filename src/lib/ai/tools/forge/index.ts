@@ -3,6 +3,8 @@ import { fetchRandomAnimeTool } from "./fetchRandomAnimeTool";
 import { searchArtTool } from "./searchArtTool";
 import { searchMealTool } from "./searchMealTool";
 import { fetchCryptoMarketTool } from "./fetchCryptoMarketTool";
+import { generateTempEmailTool } from "./generateTempEmailTool";
+import { checkTempEmailTool } from "./checkTempEmailTool";
 
 // Registre des outils pour interagir avec le backend (Forge)
 export const getForgeTools = () => {
@@ -12,5 +14,7 @@ export const getForgeTools = () => {
     searchArtTool: searchArtTool(),
     searchMealTool: searchMealTool(),
     fetchCryptoMarketTool: fetchCryptoMarketTool(),
+    generateTempEmailTool: generateTempEmailTool(),
+    checkTempEmailTool: checkTempEmailTool(),
   };
 };

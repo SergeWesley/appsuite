@@ -15,10 +15,30 @@ export default function ForgeBuilderPage() {
   const role = (user?.app_metadata?.role as string | undefined) || (user?.user_metadata?.role as string | undefined);
   const isAllowed = role === "admin" || role === "vip";
 
+  const [systemContext, setSystemContext] = useState<Record<string, any>>({});
+
+  useEffect(() => {
+    // Lecture du contexte global
+    const savedContext = localStorage.getItem("forge-system-context");
+    if (savedContext) {
+      try {
+        setSystemContext(JSON.parse(savedContext));
+      } catch (e) {
+        console.error("Erreur de lecture du contexte global", e);
+      }
+    }
+    
+    const handleContextUpdate = (e: CustomEvent) => {
+      setSystemContext(e.detail);
+    };
+    window.addEventListener("forgeContextUpdated", handleContextUpdate as EventListener);
+    return () => window.removeEventListener("forgeContextUpdated", handleContextUpdate as EventListener);
+  }, []);
+
   const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, setMessages } =
     useChat({
       api: "/api/forge-chat",
-      body: { accessToken },
+      body: { accessToken, systemContext },
     });
 
   const [showCatalog, setShowCatalog] = useState(false);
