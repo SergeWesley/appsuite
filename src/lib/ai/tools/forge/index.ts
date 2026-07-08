@@ -5,6 +5,7 @@ import { searchMealTool } from "./searchMealTool";
 import { fetchCryptoMarketTool } from "./fetchCryptoMarketTool";
 import { generateTempEmailTool } from "./generateTempEmailTool";
 import { checkTempEmailTool } from "./checkTempEmailTool";
+import { geocodeAddressTool } from "./geocodeAddressTool";
 
 // Registre des outils pour interagir avec le backend (Forge)
 export const getForgeTools = () => {
@@ -16,5 +17,6 @@ export const getForgeTools = () => {
     fetchCryptoMarketTool: fetchCryptoMarketTool(),
     generateTempEmailTool: generateTempEmailTool(),
     checkTempEmailTool: checkTempEmailTool(),
+    geocodeAddressTool: geocodeAddressTool(),
   };
 };

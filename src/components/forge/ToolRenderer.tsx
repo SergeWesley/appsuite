@@ -5,6 +5,7 @@ import { ArtMosaic } from "@/components/forge/ArtMosaic";
 import { MealList } from "@/components/forge/MealList";
 import { CryptoCard } from "@/components/forge/CryptoCard";
 import { TempMailManager } from "@/components/forge/TempMailManager";
+import { NominatimMap } from "@/components/forge/NominatimMap";
 
 const toolRegistry: Record<string, React.FC<{ result: any }>> = {
   fetchWeatherTool: ({ result }) => (
@@ -27,6 +28,9 @@ const toolRegistry: Record<string, React.FC<{ result: any }>> = {
   ),
   checkTempEmailTool: ({ result }) => (
     <TempMailManager result={result} />
+  ),
+  geocodeAddressTool: ({ result }) => (
+    <NominatimMap result={result} />
   ),
 };
 
