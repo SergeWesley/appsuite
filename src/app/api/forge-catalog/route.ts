@@ -4,8 +4,12 @@ export async function GET() {
   try {
     const baseUrl = process.env.FORGE_API_URL || "http://localhost:8080";
     
-    // On appelle directement la doc OpenAPI du backend Java
-    const response = await fetch(`${baseUrl}/v3/api-docs`);
+    // On appelle directement la doc OpenAPI du backend Java en demandant la version française
+    const response = await fetch(`${baseUrl}/v3/api-docs`, {
+      headers: {
+        'Accept-Language': 'fr'
+      }
+    });
     
     if (!response.ok) {
       throw new Error(`Erreur lors de la récupération de la spécification OpenAPI: ${response.status}`);
