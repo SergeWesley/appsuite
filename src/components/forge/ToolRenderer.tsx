@@ -6,6 +6,7 @@ import { MealList } from "@/components/forge/MealList";
 import { CryptoCard } from "@/components/forge/CryptoCard";
 import { TempMailManager } from "@/components/forge/TempMailManager";
 import { NominatimMap } from "@/components/forge/NominatimMap";
+import { McuCard } from "@/components/forge/McuCard";
 
 const toolRegistry: Record<string, React.FC<{ result: any }>> = {
   fetchWeatherTool: ({ result }) => (
@@ -31,6 +32,9 @@ const toolRegistry: Record<string, React.FC<{ result: any }>> = {
   ),
   geocodeAddressTool: ({ result }) => (
     <NominatimMap result={result} />
+  ),
+  fetchMcuNextTool: ({ result }) => (
+    <McuCard data={result.data} />
   ),
 };
 

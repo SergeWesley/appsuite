@@ -50,7 +50,7 @@ export function CryptoCard({ data, currency }: CryptoCardProps) {
       initial={{ opacity: 0, y: 16, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="relative overflow-hidden rounded-2xl max-w-sm w-full my-4 shadow-xl"
+      className="relative overflow-hidden rounded-2xl max-w-sm w-full my-4"
     >
       {/* Background gradient based on performance */}
       <div
