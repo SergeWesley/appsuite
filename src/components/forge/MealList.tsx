@@ -31,7 +31,7 @@ export function MealList({ result }: { result: any }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+            className="bg-white border border-gray-200 rounded-2xl overflow-hidden"
           >
             <div className="flex flex-col md:flex-row">
               {/* Image Section */}

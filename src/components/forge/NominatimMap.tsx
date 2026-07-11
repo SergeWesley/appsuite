@@ -33,7 +33,7 @@ export function NominatimMap({ result }: { result: any }) {
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-2xl overflow-hidden rounded-2xl border border-white/20 bg-white/50 backdrop-blur-xl shadow-lg dark:bg-black/40 dark:border-white/10"
+      className="w-full max-w-2xl overflow-hidden rounded-2xl border border-white/20 bg-white/50 backdrop-blur-xl dark:bg-black/40 dark:border-white/10"
     >
       <div className="p-5 border-b border-gray-100 dark:border-white/10 flex items-start gap-4 bg-white dark:bg-gray-800">
         <div className="p-3 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-xl shrink-0">

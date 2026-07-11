@@ -65,7 +65,7 @@ export function TempMailManager({ result }: TempMailManagerProps) {
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-blue-900 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden"
+        className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-blue-900 rounded-2xl p-6 text-white relative overflow-hidden"
       >
         <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
           <ShieldCheck size={160} className="transform rotate-12" />

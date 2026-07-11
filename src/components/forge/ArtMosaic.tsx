@@ -30,7 +30,7 @@ export function ArtMosaic({ result }: { result: any }) {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
-            className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col"
+            className="bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col"
           >
             <div className="aspect-square w-full bg-gray-100 relative overflow-hidden group">
               {art.imageUrl ? (

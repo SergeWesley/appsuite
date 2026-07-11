@@ -16,7 +16,7 @@ export function WeatherCard({ data, city }: WeatherCardProps) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white shadow-xl max-w-sm w-full my-4"
+      className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-6 text-white max-w-sm w-full my-4"
     >
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">

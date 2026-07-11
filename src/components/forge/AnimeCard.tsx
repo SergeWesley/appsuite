@@ -21,7 +21,7 @@ export function AnimeCard({ data }: AnimeCardProps) {
   const imageUrl = data.images?.jpg?.image_url;
 
   return (
-    <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm w-full max-w-sm overflow-hidden transition-all hover:shadow-md group">
+    <div className="bg-white rounded-2xl p-5 border border-gray-100 w-full max-w-sm overflow-hidden transition-all group">
       {imageUrl && (
         <div className="relative w-full h-64 mb-4 rounded-xl overflow-hidden bg-gray-100 shrink-0">
           <img 

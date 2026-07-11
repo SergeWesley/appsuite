@@ -41,7 +41,6 @@ export default function ForgeBuilderPage() {
       body: { accessToken, systemContext },
     });
 
-  const [showCatalog, setShowCatalog] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -114,14 +113,6 @@ export default function ForgeBuilderPage() {
             >
               <PlusCircle size={20} />
               <span className="hidden sm:inline text-sm font-medium">Nouveau</span>
-            </button>
-            <button
-              onClick={() => setShowCatalog(!showCatalog)}
-              className={`p-2 rounded-lg transition-colors flex items-center gap-2 ${showCatalog ? "bg-indigo-50 text-indigo-600" : "text-gray-600 hover:bg-gray-100"}`}
-              aria-label="Afficher le catalogue d'actions"
-            >
-              <BookOpen size={20} />
-              <span className="hidden sm:inline text-sm font-medium">Catalogue API</span>
             </button>
           </div>
         }
@@ -246,7 +237,8 @@ export default function ForgeBuilderPage() {
 
           {/* Input Area */}
           <div className="bg-white border-t border-gray-100 p-4 md:p-6">
-            <div className="max-w-5xl mx-auto w-full">
+            <div className="max-w-5xl mx-auto w-full flex flex-col gap-3">
+              <ApiCatalog onActionClick={(text) => setInput(text)} />
               <form
                 onSubmit={handleSubmit}
                 className="relative flex items-center"
@@ -269,34 +261,6 @@ export default function ForgeBuilderPage() {
             </div>
           </div>
         </div>
-
-        {/* Catalogue: Modal (Mobile) ou Sidebar (Desktop) */}
-        {showCatalog && (
-          <>
-            {/* Overlay Modal pour Mobile */}
-            <div 
-              className="md:hidden fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-              onClick={() => setShowCatalog(false)}
-            >
-              <div 
-                className="bg-white w-full max-w-sm max-h-[80vh] rounded-2xl overflow-hidden shadow-2xl flex flex-col"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <ApiCatalog 
-                  onActionClick={(text) => {
-                    setInput(text);
-                    setShowCatalog(false);
-                  }} 
-                />
-              </div>
-            </div>
-
-            {/* Sidebar pour Desktop */}
-            <div className="hidden md:block w-[350px] flex-shrink-0 shadow-[-4px_0_15px_-3px_rgba(0,0,0,0.05)] z-10 transition-all border-l border-gray-100 bg-gray-50">
-              <ApiCatalog onActionClick={(text) => setInput(text)} />
-            </div>
-          </>
-        )}
       </div>
     </div>
   );
