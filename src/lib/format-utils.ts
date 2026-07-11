@@ -44,3 +44,15 @@ export function formatLargeNumber(value: number): string {
   if (value >= 1e6) return `${(value / 1e6).toFixed(2)} M`;
   return value.toLocaleString("fr-FR");
 }
+
+/**
+ * Formate une durée en secondes en heures et minutes (ex: 3660 -> "1h01").
+ */
+export function formatDuration(seconds: number): string {
+  if (!seconds || seconds < 0) return "--h--";
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const hStr = h > 0 ? `${h}h` : "";
+  const mStr = m.toString().padStart(2, "0");
+  return `${hStr}${mStr}`;
+}

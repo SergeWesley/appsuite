@@ -8,6 +8,7 @@ import { TempMailManager } from "@/components/forge/TempMailManager";
 import { NominatimMap } from "@/components/forge/NominatimMap";
 import { McuCard } from "@/components/forge/McuCard";
 import { SncfBoard } from "@/components/forge/SncfBoard";
+import { SncfJourneyWrapper } from "@/components/forge/SncfJourneyWrapper";
 
 const toolRegistry: Record<string, React.FC<{ result: any }>> = {
   fetchWeatherTool: ({ result }) => (
@@ -42,6 +43,9 @@ const toolRegistry: Record<string, React.FC<{ result: any }>> = {
   ),
   fetchSncfArrivalsTool: ({ result }) => (
     <SncfBoard data={result.data} station={result.station} mode="arrivals" />
+  ),
+  fetchSncfJourneysTool: ({ result }) => (
+    <SncfJourneyWrapper data={result.data} from={result.from} to={result.to} />
   ),
 };
 

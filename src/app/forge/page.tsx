@@ -2,7 +2,7 @@
 
 import { useChat } from "ai/react";
 import { useRef, useEffect, useState } from "react";
-import { Send, Bot, User, Loader2, BookOpen, Hammer, PlusCircle, Lock } from "lucide-react";
+import { Send, Bot, User, Loader2, BookOpen, Hammer, PlusCircle, Lock, Calendar } from "lucide-react";
 import { ToolRenderer } from "@/components/forge/ToolRenderer";
 import { AppHeader } from "@/components/AppHeader";
 import { ApiCatalog } from "@/components/forge/ApiCatalog";
@@ -43,6 +43,8 @@ export default function ForgeBuilderPage() {
 
   const [isMounted, setIsMounted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+
 
   // Restauration de l'historique au chargement
   useEffect(() => {
