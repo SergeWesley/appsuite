@@ -2,7 +2,7 @@
 
 import { useChat } from "ai/react";
 import { useRef, useEffect, useState } from "react";
-import { Send, Bot, User, Loader2, BookOpen, Hammer, PlusCircle, Lock, Calendar } from "lucide-react";
+import { Send, Bot, User, Loader2, BookOpen, Hammer, PlusCircle, Lock, Calendar, RotateCcw } from "lucide-react";
 import { ToolRenderer } from "@/components/forge/ToolRenderer";
 import { AppHeader } from "@/components/AppHeader";
 import { ApiCatalog } from "@/components/forge/ApiCatalog";
@@ -35,7 +35,7 @@ export default function ForgeBuilderPage() {
     return () => window.removeEventListener("forgeContextUpdated", handleContextUpdate as EventListener);
   }, []);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, setMessages } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, setMessages, append } =
     useChat({
       api: "/api/forge-chat",
       body: { accessToken, systemContext },
@@ -161,14 +161,25 @@ export default function ForgeBuilderPage() {
                     >
                       {/* Texte du message (si présent) */}
                       {m.content && (
-                        <div
-                          className={`rounded-2xl px-4 py-3 text-sm ${
-                            m.role === "user"
-                              ? "bg-indigo-600 text-white rounded-tr-sm"
-                              : "bg-gray-100 text-gray-800 rounded-tl-sm"
-                          }`}
-                        >
-                          {m.content}
+                        <div className={`flex flex-col gap-1 w-full ${m.role === "user" ? "items-end" : "items-start"}`}>
+                          <div
+                            className={`rounded-2xl px-4 py-3 text-sm ${
+                              m.role === "user"
+                                ? "bg-indigo-600 text-white rounded-tr-sm"
+                                : "bg-gray-100 text-gray-800 rounded-tl-sm"
+                            }`}
+                          >
+                            {m.content}
+                          </div>
+                          {m.role === "user" && !isLoading && (
+                            <button
+                              onClick={() => append({ role: "user", content: m.content })}
+                              className="text-gray-400 hover:text-indigo-600 mt-0.5 flex items-center gap-1 text-[11px] transition-colors px-1"
+                              title="Rejouer cette requête"
+                            >
+                              <RotateCcw size={12} /> Rejouer
+                            </button>
+                          )}
                         </div>
                       )}
 
