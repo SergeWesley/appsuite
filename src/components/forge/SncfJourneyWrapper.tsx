@@ -27,7 +27,7 @@ export function SncfJourneyWrapper(props: any) {
   const ActiveComponent = components[styleIndex];
 
   const renderSwitcher = (isModal: boolean) => (
-    <div className={`absolute ${isModal ? '-top-4 -right-4 sm:-top-6 sm:-right-6' : '-top-3 right-4'} z-[100] ${isModal ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'} transition-opacity bg-white border border-gray-200 shadow-sm rounded-full p-1 flex gap-1`}>
+    <div className={`absolute ${isModal ? '-top-4 -right-4 sm:-top-6 sm:-right-6 z-[100] opacity-100' : '-top-3 right-4 z-10 opacity-40 group-hover:opacity-100'} transition-opacity bg-white border border-gray-200 shadow-sm rounded-full p-1 flex gap-1`}>
       {icons.map((item, idx) => (
         <button
           key={idx}
