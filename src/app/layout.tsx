@@ -4,6 +4,7 @@ import { AuthProvider } from "@/components/AuthProvider";
 import AppTracker from "@/components/tracker/AppTracker";
 import { AgentChatModal } from "@/components/chat/AgentChatModal";
 import { AgentProvider } from "@/components/chat/AgentProvider";
+import { VersionChecker } from "@/components/VersionChecker";
 
 export const metadata: Metadata = {
   title: "AppSuite - Votre suite d'applications",
@@ -45,6 +46,7 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className="antialiased">
+        <VersionChecker />
         <AuthProvider>
           <AppTracker />
           <AgentProvider>
