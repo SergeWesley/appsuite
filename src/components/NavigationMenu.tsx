@@ -87,7 +87,7 @@ export function NavigationMenu({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-25 z-50"
+            className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-[100]"
             onClick={onClose}
           />
 
@@ -98,10 +98,10 @@ export function NavigationMenu({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="fixed top-16 left-4 sm:left-8 z-[60] w-80 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden flex flex-col max-h-[calc(100vh-5rem)]"
+            className="fixed top-16 left-4 sm:left-8 z-[110] w-80 max-w-[calc(100vw-2rem)] bg-white/85 backdrop-blur-xl rounded-xl shadow-2xl border border-white/40 overflow-hidden flex flex-col max-h-[calc(100vh-5rem)] ring-1 ring-black/5"
           >
             {/* Header */}
-            <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
+            <div className="px-4 py-3 border-b border-gray-200/50 bg-white/40">
               <h3 className="text-sm font-medium text-gray-900">Navigation</h3>
               <p className="text-xs text-gray-500 mt-1">
                 Accédez aux autres modules
@@ -109,32 +109,34 @@ export function NavigationMenu({
             </div>
 
             {/* Menu items */}
-            <div className="py-2">
-              <motion.button
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0 }}
-                onClick={() => router.push("/dashboard")} // ou '/' si tu préfères
-                className="w-full px-4 py-3 flex items-center group text-left transition-colors bg-gray-100 hover:bg-gray-200"
-              >
-                <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-300 flex items-center justify-center">
-                  <HomeIcon size={20} className="text-gray-700" />
-                </div>
-
-                <div className="ml-3 flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 group-hover:text-gray-700">
-                    Tableau de bord
-                  </p>
-                  <p className="text-xs text-gray-500 truncate">
-                    Retour à la page principale
-                  </p>
-                </div>
-
-                <ChevronRight
-                  size={16}
-                  className="text-gray-400 group-hover:text-gray-600 transition-colors"
-                />
-              </motion.button>
+            <div className="py-2 overflow-y-auto flex-1 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              {currentModule !== "dashboard" && (
+                <motion.button
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0 }}
+                  onClick={() => router.push("/dashboard")} // ou '/' si tu préfères
+                  className="w-full px-4 py-3 flex items-center group text-left transition-colors bg-white/40 hover:bg-white/60"
+                >
+                  <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gray-300 flex items-center justify-center">
+                    <HomeIcon size={20} className="text-gray-700" />
+                  </div>
+  
+                  <div className="ml-3 flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 group-hover:text-gray-700">
+                      Tableau de bord
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      Retour à la page principale
+                    </p>
+                  </div>
+  
+                  <ChevronRight
+                    size={16}
+                    className="text-gray-400 group-hover:text-gray-600 transition-colors"
+                  />
+                </motion.button>
+              )}
 
               {isAdmin && (
                 <motion.button
@@ -210,7 +212,7 @@ export function NavigationMenu({
 
             {/* Version Footer */}
             {process.env.NEXT_PUBLIC_APP_VERSION && (
-              <div className="mt-auto px-4 py-3 border-t border-gray-100 bg-gray-50 text-center shrink-0">
+              <div className="mt-auto px-4 py-3 border-t border-gray-200/50 bg-white/40 text-center shrink-0">
                 <p className="text-[10px] text-gray-400 font-mono tracking-wide">
                   AppSuite v{process.env.NEXT_PUBLIC_APP_VERSION}
                   {process.env.NEXT_PUBLIC_GIT_COMMIT && `-${process.env.NEXT_PUBLIC_GIT_COMMIT}`}
