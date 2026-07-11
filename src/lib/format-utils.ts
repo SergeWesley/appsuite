@@ -56,3 +56,18 @@ export function formatDuration(seconds: number): string {
   const mStr = m.toString().padStart(2, "0");
   return `${hStr}${mStr}`;
 }
+
+/**
+ * Normalise un texte (enlève les accents, la ponctuation, et les espaces en trop)
+ * Utile pour la recherche, la comparaison ou la génération de clés de cache.
+ */
+export function normalizeText(text: string): string {
+  if (!text) return "";
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // Supprime les accents
+    .replace(/[^\w\s]/gi, "") // Supprime la ponctuation
+    .replace(/\s+/g, " ") // Remplace les espaces multiples par un seul
+    .trim();
+}

@@ -2,6 +2,7 @@ import { createGroq } from "@ai-sdk/groq";
 import { streamText } from "ai";
 import { getForgeTools } from "@/lib/ai/tools/forge";
 import { checkUserRoles } from "@/lib/server/api-auth";
+import { getCachedStream, cacheStreamResponseAsync } from "@/lib/server/redis-cache";
 
 const groq = createGroq({
   apiKey: process.env.GROQ_API_KEY || "",
@@ -20,6 +21,23 @@ export async function POST(req: Request) {
     // Pour réduire drastiquement le nombre de tokens envoyés (et rester sous la limite de 6000 TPM),
     // on ne garde que la toute dernière requête de l'utilisateur (requête standalone).
     const standaloneMessage = [messages[messages.length - 1]];
+    const prompt = standaloneMessage[0]?.content?.trim() || "";
+
+    // Vérification dans le cache Redis via notre utilitaire
+    if (prompt) {
+      const cachedStream = await getCachedStream("forge_chat_cache", prompt);
+      if (cachedStream) {
+        console.log(`[API Forge Chat] Cache HIT pour la requête : "${prompt}"`);
+        return new Response(cachedStream, {
+          status: 200,
+          headers: {
+            "Content-Type": "text/plain; charset=utf-8",
+            "x-vercel-ai-data-stream": "v1",
+          },
+        });
+      }
+    }
+
     const modelsToTry = [
       "llama-3.1-8b-instant",
       "llama-3.3-70b-versatile",
@@ -59,7 +77,7 @@ export async function POST(req: Request) {
           `[API Forge Chat] Modèle utilisé avec succès : ${modelName}`,
         );
 
-        return result.toDataStreamResponse({
+        const response = result.toDataStreamResponse({
           getErrorMessage: (error) => {
             console.error(
               `[API Forge Chat] Erreur durant le streaming avec ${modelName}:`,
@@ -68,6 +86,13 @@ export async function POST(req: Request) {
             return String(error);
           },
         });
+
+        // Mise en cache asynchrone de la réponse
+        if (prompt) {
+          cacheStreamResponseAsync("forge_chat_cache", prompt, response, 300);
+        }
+
+        return response;
       } catch (error: any) {
         lastError = error;
 
@@ -105,3 +130,4 @@ export async function POST(req: Request) {
     );
   }
 }
+
