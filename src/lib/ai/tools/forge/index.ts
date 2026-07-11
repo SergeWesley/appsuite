@@ -7,6 +7,8 @@ import { generateTempEmailTool } from "./generateTempEmailTool";
 import { checkTempEmailTool } from "./checkTempEmailTool";
 import { geocodeAddressTool } from "./geocodeAddressTool";
 import { fetchMcuNextTool } from "./fetchMcuNextTool";
+import { fetchSncfDeparturesTool } from "./fetchSncfDeparturesTool";
+import { fetchSncfArrivalsTool } from "./fetchSncfArrivalsTool";
 
 // Registre des outils pour interagir avec le backend (Forge)
 export const getForgeTools = () => {
@@ -20,5 +22,7 @@ export const getForgeTools = () => {
     checkTempEmailTool: checkTempEmailTool(),
     geocodeAddressTool: geocodeAddressTool(),
     fetchMcuNextTool: fetchMcuNextTool(),
+    fetchSncfDeparturesTool: fetchSncfDeparturesTool(),
+    fetchSncfArrivalsTool: fetchSncfArrivalsTool(),
   };
 };

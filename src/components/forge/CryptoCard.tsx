@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { formatCurrency, formatLargeNumber } from "@/lib/format-utils";
 import {
   TrendingUp,
   TrendingDown,
@@ -22,21 +23,7 @@ interface CryptoCardProps {
   currency: string;
 }
 
-function formatPrice(value: number, currency: string): string {
-  return new Intl.NumberFormat("fr-FR", {
-    style: "currency",
-    currency: currency.toUpperCase(),
-    minimumFractionDigits: 2,
-    maximumFractionDigits: value < 1 ? 6 : 2,
-  }).format(value);
-}
 
-function formatMarketCap(value: number): string {
-  if (value >= 1e12) return `${(value / 1e12).toFixed(2)} T`;
-  if (value >= 1e9) return `${(value / 1e9).toFixed(2)} Md`;
-  if (value >= 1e6) return `${(value / 1e6).toFixed(2)} M`;
-  return value.toLocaleString("fr-FR");
-}
 
 export function CryptoCard({ data, currency }: CryptoCardProps) {
   const isPositive = data.price_change_percentage_24h >= 0;
@@ -137,7 +124,7 @@ export function CryptoCard({ data, currency }: CryptoCardProps) {
           </p>
           <div className="flex items-baseline gap-2">
             <span className="text-4xl font-black text-white tracking-tight">
-              {formatPrice(data.current_price, currency)}
+              {formatCurrency(data.current_price, currency)}
             </span>
           </div>
         </motion.div>
@@ -177,8 +164,8 @@ export function CryptoCard({ data, currency }: CryptoCardProps) {
             />
           </div>
           <div className="flex items-center justify-between text-xs font-semibold text-white/70 mt-2">
-            <span>{formatPrice(data.low_24h, currency)}</span>
-            <span>{formatPrice(data.high_24h, currency)}</span>
+            <span>{formatCurrency(data.low_24h, currency)}</span>
+            <span>{formatCurrency(data.high_24h, currency)}</span>
           </div>
         </motion.div>
 
@@ -197,7 +184,7 @@ export function CryptoCard({ data, currency }: CryptoCardProps) {
               </span>
             </div>
             <span className="text-sm font-bold text-white">
-              {formatMarketCap(data.market_cap)} $
+              {formatLargeNumber(data.market_cap)} $
             </span>
           </div>
           <div className="bg-white/[0.06] backdrop-blur-sm rounded-xl p-3 border border-white/[0.06]">

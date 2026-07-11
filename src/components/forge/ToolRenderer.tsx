@@ -7,6 +7,7 @@ import { CryptoCard } from "@/components/forge/CryptoCard";
 import { TempMailManager } from "@/components/forge/TempMailManager";
 import { NominatimMap } from "@/components/forge/NominatimMap";
 import { McuCard } from "@/components/forge/McuCard";
+import { SncfBoard } from "@/components/forge/SncfBoard";
 
 const toolRegistry: Record<string, React.FC<{ result: any }>> = {
   fetchWeatherTool: ({ result }) => (
@@ -35,6 +36,12 @@ const toolRegistry: Record<string, React.FC<{ result: any }>> = {
   ),
   fetchMcuNextTool: ({ result }) => (
     <McuCard data={result.data} />
+  ),
+  fetchSncfDeparturesTool: ({ result }) => (
+    <SncfBoard data={result.data} station={result.station} mode="departures" />
+  ),
+  fetchSncfArrivalsTool: ({ result }) => (
+    <SncfBoard data={result.data} station={result.station} mode="arrivals" />
   ),
 };
 
