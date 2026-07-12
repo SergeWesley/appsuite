@@ -9,12 +9,13 @@ import { useNoteTemplates } from "@/hooks/notes/useNoteTemplates";
 import { NoteFolder, CustomFieldDefinition, Note, NoteExportData } from "@/types/notes";
 import { getNoteLocalStorageData } from "@/hooks/useFilterPersistence";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
-import { Trash2, Loader2, Check, Download, Sparkles, MoreVertical, Plus, Minus } from "lucide-react";
+import { Trash2, Loader2, Check, Download, Sparkles, MoreVertical, Plus, Minus, Undo2, Redo2 } from "lucide-react";
 import { DynamicPropertiesBanner } from "@/components/notes/DynamicPropertiesBanner";
 import { useAgent } from "@/components/chat/AgentProvider";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { AppHeader } from "@/components/AppHeader";
+import { useNoteHistory } from "@/hooks/notes/useNoteHistory";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
 export default function NoteEditorPage() {
@@ -40,6 +41,12 @@ export default function NoteEditorPage() {
 
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const contentRef = useRef<HTMLTextAreaElement>(null);
+
+  const { pushHistory, undo, redo, canUndo, canRedo, updateCurrentRef, clearHistory } = useNoteHistory({ title, content, instances });
+
+  useEffect(() => {
+    updateCurrentRef({ title, content, instances });
+  }, [title, content, instances, updateCurrentRef]);
 
   // Find the folder
   useEffect(() => {
@@ -73,6 +80,8 @@ export default function NoteEditorPage() {
           setInstances([{}]);
         }
         setInitialized(true);
+        // On attend que les React states se mettent à jour pour clear l'historique proprement
+        setTimeout(() => clearHistory(), 0);
       }
     }
   }, [notes, noteId, loading, initialized]);
@@ -132,18 +141,21 @@ export default function NoteEditorPage() {
   );
 
   const handleTitleChange = (value: string) => {
+    pushHistory({ title, content, instances });
     setTitle(value);
     setSaved(false);
     debouncedSave(value, content, instances);
   };
 
   const handleContentChange = (value: string) => {
+    pushHistory({ title, content, instances });
     setContent(value);
     setSaved(false);
     debouncedSave(title, value, instances);
   };
 
   const handleMetadataChange = (index: number, key: string, value: any) => {
+    pushHistory({ title, content, instances }, true);
     const nextInstances = [...instances];
     nextInstances[index] = { ...nextInstances[index], [key]: value };
     setInstances(nextInstances);
@@ -152,17 +164,41 @@ export default function NoteEditorPage() {
   };
 
   const handleAddInstance = () => {
+    pushHistory({ title, content, instances }, true);
     const nextInstances = [...instances, {}];
     setInstances(nextInstances);
     debouncedSave(title, content, nextInstances);
   };
 
   const handleRemoveInstance = (index: number) => {
+    pushHistory({ title, content, instances }, true);
     const nextInstances = instances.filter((_, i) => i !== index);
     const finalInstances = nextInstances.length > 0 ? nextInstances : [{}];
     setInstances(finalInstances);
     debouncedSave(title, content, finalInstances);
   };
+
+  const handleUndo = useCallback(() => {
+    const previous = undo();
+    if (previous) {
+      setTitle(previous.title);
+      setContent(previous.content);
+      setInstances(previous.instances);
+      setSaved(false);
+      debouncedSave(previous.title, previous.content, previous.instances);
+    }
+  }, [undo, debouncedSave]);
+
+  const handleRedo = useCallback(() => {
+    const next = redo();
+    if (next) {
+      setTitle(next.title);
+      setContent(next.content);
+      setInstances(next.instances);
+      setSaved(false);
+      debouncedSave(next.title, next.content, next.instances);
+    }
+  }, [redo, debouncedSave]);
 
   const handleExport = () => {
     if (!folder) return;
@@ -228,6 +264,27 @@ export default function NoteEditorPage() {
       ctrlKey: true,
       action: () => setShowDeleteConfirm(true),
     },
+    {
+      key: "z",
+      metaKey: true,
+      action: handleUndo,
+    },
+    {
+      key: "z",
+      metaKey: true,
+      shiftKey: true,
+      action: handleRedo,
+    },
+    {
+      key: "z",
+      ctrlKey: true,
+      action: handleUndo,
+    },
+    {
+      key: "y",
+      ctrlKey: true,
+      action: handleRedo,
+    },
   ]);
 
   if (loading && !initialized) {
@@ -251,28 +308,40 @@ export default function NoteEditorPage() {
         onBack={handleBack}
         actions={
           <>
+            {/* Undo / Redo Buttons */}
+            <div className="flex items-center gap-1 sm:mr-2 sm:border-r border-gray-200 sm:pr-2">
+              <button
+                onClick={handleUndo}
+                disabled={!canUndo}
+                className={`p-1.5 rounded transition-colors ${canUndo ? "text-gray-600 hover:bg-gray-100 hover:text-amber-600" : "text-gray-300 cursor-not-allowed"}`}
+                title="Annuler (Ctrl+Z)"
+              >
+                <Undo2 size={18} />
+              </button>
+              <button
+                onClick={handleRedo}
+                disabled={!canRedo}
+                className={`p-1.5 rounded transition-colors ${canRedo ? "text-gray-600 hover:bg-gray-100 hover:text-amber-600" : "text-gray-300 cursor-not-allowed"}`}
+                title="Rétablir (Ctrl+Shift+Z)"
+              >
+                <Redo2 size={18} />
+              </button>
+            </div>
+
             {/* Save status indicator */}
-            {saving && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-center gap-1.5 text-gray-400 text-sm"
-              >
-                <Loader2 size={14} className="animate-spin" />
-                <span>Enregistrement...</span>
-              </motion.div>
-            )}
-            {saved && !saving && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                className="flex items-center gap-1.5 text-green-600 text-sm"
-              >
-                <Check size={14} />
-                <span>Enregistré</span>
-              </motion.div>
-            )}
+            <div className="w-5 h-5 flex items-center justify-center" title={saving ? "Enregistrement en cours..." : "Synchronisé"}>
+              {saving ? (
+                <Loader2 size={14} className="animate-spin text-amber-500/50" />
+              ) : saved ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <Check size={14} className="text-emerald-500/70" />
+                </motion.div>
+              ) : null}
+            </div>
 
             {/* AI, Export, Delete buttons grouped in a Menu */}
             <Menu as="div" className="relative inline-block text-left">
