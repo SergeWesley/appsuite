@@ -31,6 +31,8 @@ interface PropertyTableEditorProps {
     onChange: (val: any) => void
   ) => React.ReactNode;
   noteId?: string;
+  metadata?: Record<string, any>;
+  onMetadataChange?: (key: string, val: any) => void;
 }
 
 export function PropertyTableEditor({
@@ -39,35 +41,58 @@ export function PropertyTableEditor({
   onChange,
   renderEditor,
   noteId,
+  metadata,
+  onMetadataChange,
 }: PropertyTableEditorProps) {
-  // On combine l'ID de la note (s'il existe) avec l'ID du champ pour isoler la config par note
+  const dbSettings = useMemo(() => {
+    return metadata?._tableSettings?.[field.id] || {};
+  }, [metadata, field.id]);
+
   const safeStorageKey = `table-editor-${noteId ? `${noteId}-` : ""}${field.id}`;
-  const { tableColumnSizing, updateFilter } = useFilterPersistence(safeStorageKey);
+  const { tableColumnSizing } = useFilterPersistence(safeStorageKey);
 
   const [editingRowIndex, setEditingRowIndex] = useState<number | null>(null);
   const [isTableExpanded, setIsTableExpanded] = useState(false);
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
+  
+  const [sorting, setSorting] = useState<SortingState>(dbSettings.sorting || []);
+  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(dbSettings.columnSizing || {});
 
-  // Synchronisation au chargement : useFilterPersistence lit le LS de manière asynchrone
-  // On met donc à jour notre sizing local seulement quand les données finissent d'arriver
   useEffect(() => {
-    if (tableColumnSizing && Object.keys(tableColumnSizing).length > 0) {
+    if (Object.keys(dbSettings.columnSizing || {}).length === 0 && tableColumnSizing && Object.keys(tableColumnSizing).length > 0) {
       setColumnSizing((current) => 
         Object.keys(current).length === 0 ? tableColumnSizing : current
       );
     }
-  }, [tableColumnSizing]);
+  }, [tableColumnSizing, dbSettings.columnSizing]);
 
-  // Debounce the save to LocalStorage to avoid performance issues during drag
+  const updateSettings = (newSettings: any) => {
+    if (!onMetadataChange) return;
+    const currentTableSettings = metadata?._tableSettings || {};
+    const fieldSettings = currentTableSettings[field.id] || {};
+    
+    onMetadataChange("_tableSettings", {
+      ...currentTableSettings,
+      [field.id]: {
+        ...fieldSettings,
+        ...newSettings
+      }
+    });
+  };
+
+  const handleSortingChange = (updaterOrValue: any) => {
+    const newSorting = typeof updaterOrValue === "function" ? updaterOrValue(sorting) : updaterOrValue;
+    setSorting(newSorting);
+    updateSettings({ sorting: newSorting });
+  };
+
   useEffect(() => {
     const timer = setTimeout(() => {
       if (Object.keys(columnSizing).length > 0) {
-        updateFilter("tableColumnSizing", columnSizing);
+        updateSettings({ columnSizing });
       }
-    }, 500); // Save half a second after the user stops dragging
+    }, 500);
     return () => clearTimeout(timer);
-  }, [columnSizing, updateFilter]);
+  }, [columnSizing]);
 
   const rows = useMemo(() => (Array.isArray(value) ? value : []), [value]);
 
@@ -110,7 +135,7 @@ export function PropertyTableEditor({
       sorting,
       columnSizing,
     },
-    onSortingChange: setSorting,
+    onSortingChange: handleSortingChange,
     onColumnSizingChange: setColumnSizing,
   });
 
@@ -246,7 +271,7 @@ export function PropertyTableEditor({
                       <button
                         onClick={() => {
                           setColumnSizing({});
-                          updateFilter("tableColumnSizing", undefined);
+                          updateSettings({ columnSizing: {} });
                         }}
                         className="p-1 text-gray-300 hover:text-amber-600 transition-colors"
                         title="Réinitialiser la largeur des colonnes"

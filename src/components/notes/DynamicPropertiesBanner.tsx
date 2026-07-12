@@ -56,6 +56,8 @@ export function DynamicPropertiesBanner({
             value={metadata[field.id]}
             onChange={(val) => onChange(field.id, val)}
             noteId={noteId}
+            metadata={metadata}
+            onMetadataChange={onChange}
           />
         ))}
       </div>
@@ -68,11 +70,15 @@ function PropertyRow({
   value,
   onChange,
   noteId,
+  metadata,
+  onMetadataChange,
 }: {
   field: CustomFieldDefinition;
   value: any;
   onChange: (val: any) => void;
   noteId?: string;
+  metadata?: Record<string, any>;
+  onMetadataChange?: (key: string, val: any) => void;
 }) {
   const Icon = TYPE_ICONS[field.type] || Type;
   const isCheckbox = field.type === "checkbox";
@@ -92,7 +98,7 @@ function PropertyRow({
 
       {/* Value Editor */}
       <div className="flex-1 min-w-0 w-full">
-        <PropertyValueEditor field={field} value={value} onChange={onChange} noteId={noteId} />
+        <PropertyValueEditor field={field} value={value} onChange={onChange} noteId={noteId} metadata={metadata} onMetadataChange={onMetadataChange} />
       </div>
     </div>
   );

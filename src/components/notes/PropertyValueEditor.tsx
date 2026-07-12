@@ -8,6 +8,8 @@ interface PropertyValueEditorProps {
   value: any;
   onChange: (val: any) => void;
   noteId?: string;
+  metadata?: Record<string, any>;
+  onMetadataChange?: (key: string, val: any) => void;
 }
 
 export function PropertyValueEditor({
@@ -15,6 +17,8 @@ export function PropertyValueEditor({
   value,
   onChange,
   noteId,
+  metadata,
+  onMetadataChange,
 }: PropertyValueEditorProps) {
   const [hover, setHover] = useState(0); // pour "rating"
 
@@ -159,6 +163,8 @@ export function PropertyValueEditor({
           value={value}
           onChange={onChange}
           noteId={noteId}
+          metadata={metadata}
+          onMetadataChange={onMetadataChange}
           renderEditor={(f, v, o) => (
             <PropertyValueEditor field={f} value={v} onChange={o} noteId={noteId} />
           )}
