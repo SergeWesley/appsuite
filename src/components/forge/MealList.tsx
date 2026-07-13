@@ -34,7 +34,7 @@ export function MealList({ result }: { result: any }) {
             className="bg-white border border-gray-200 rounded-2xl overflow-hidden"
           >
             <div className="flex flex-col md:flex-row">
-              {/* Image Section */}
+              {/* Section d'image */}
               <div className="md:w-1/3 h-64 md:h-auto bg-gray-100 relative shrink-0">
                 {meal.imageUrl ? (
                   <img
@@ -50,7 +50,7 @@ export function MealList({ result }: { result: any }) {
                 )}
               </div>
 
-              {/* Content Section */}
+              {/* Section de contenu */}
               <div className="p-6 flex-1 flex flex-col">
                 <div className="flex justify-between items-start mb-2">
                   <h4 className="text-xl font-bold text-gray-900 leading-tight">
@@ -81,7 +81,7 @@ export function MealList({ result }: { result: any }) {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1">
-                  {/* Ingredients */}
+                  {/* Ingrédients */}
                   <div>
                     <h5 className="text-sm font-bold text-gray-800 mb-3 border-b pb-1">
                       Ingrédients

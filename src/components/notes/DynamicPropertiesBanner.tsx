@@ -96,12 +96,11 @@ function PropertyRow({
         <span className="text-sm font-medium">{field.name}</span>
       </div>
 
-      {/* Value Editor */}
+      {/* Éditeur de valeur */}
       <div className="flex-1 min-w-0 w-full">
         <PropertyValueEditor field={field} value={value} onChange={onChange} noteId={noteId} metadata={metadata} onMetadataChange={onMetadataChange} />
       </div>
     </div>
   );
 }
-
 

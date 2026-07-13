@@ -19,6 +19,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
 export default function NotesPage() {
+  // Cette page affiche la liste des dossiers de notes de l'utilisateur
   const router = useRouter();
   const { user, signOut } = useAuthContext();
   const { folders, loading, addFolder, importNoteData, deleteFolder, moveFolder, reorderFolder } =
@@ -30,23 +31,30 @@ export default function NotesPage() {
   const [folderToMove, setFolderToMove] = useState<NoteFolder | null>(null);
   const [folderToDelete, setFolderToDelete] = useState<NoteFolder | null>(null);
 
+  // Filtre les dossiers racines
   const rootFolders = folders.filter((f) => !f.parentId);
 
+  // Gère la création d'un nouveau dossier
   const handleCreateFolder = async (data: NoteFolderFormData) => {
+    // Ajoute le dossier et ferme la modale de création
     const folder = await addFolder(data);
     if (folder) {
       setShowCreateFolderModal(false);
     }
   };
 
+  // Gère l'importation de notes
   const handleImport = async (data: NoteExportData) => {
+    // Importe les notes et affiche un message de succès
     const success = await importNoteData(data, null);
     if (success) {
       alert("Note importée avec succès !");
     }
   };
 
+  // Gère le clic sur un dossier
   const handleFolderClick = (f: NoteFolder, e: React.MouseEvent) => {
+    // Sélectionne ou désélectionne le dossier si le clic est effectué avec Ctrl ou Meta
     if (e.metaKey || e.ctrlKey) {
       e.preventDefault();
       setSelectedFolders((prev) =>
@@ -55,18 +63,23 @@ export default function NotesPage() {
           : [...prev, f.id],
       );
     } else {
+      // Navigue vers la page du dossier
       router.push(`/notes/${f.id}`);
     }
   };
 
+  // Gère le déplacement d'un dossier
   const handleMoveFolder = async (folderId: string, newParentId: string | null) => {
+    // Déplace le dossier et affiche un message d'erreur si nécessaire
     const success = await moveFolder(folderId, newParentId);
     if (!success) {
       alert("Erreur lors du déplacement du dossier.");
     }
   };
 
+  // Gère la suppression d'un dossier
   const handleSingleDelete = async () => {
+    // Supprime le dossier sélectionné
     if (!folderToDelete) return;
     const success = await deleteFolder(folderToDelete.id);
     if (!success) {
@@ -75,7 +88,9 @@ export default function NotesPage() {
     setFolderToDelete(null);
   };
 
+  // Gère la suppression de plusieurs dossiers
   const handleBulkDelete = async () => {
+    // Supprime les dossiers sélectionnés et affiche un message d'erreur si nécessaire
     let successCount = 0;
     for (const id of selectedFolders) {
       const success = await deleteFolder(id);
@@ -90,6 +105,7 @@ export default function NotesPage() {
     }
   };
 
+  // Définit les raccourcis clavier
   useKeyboardShortcut([
     {
       key: "n",

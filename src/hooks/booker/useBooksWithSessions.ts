@@ -6,7 +6,7 @@ import { useReadingSessions } from "../useReadingSessions";
 
 /**
  * Hook combiné qui synchronise automatiquement les livres et les sessions de lecture.
- * Quand une session est créée/modifiée, les livres sont automatiquement rafraîchis
+ * Lorsqu'une session est créée/modifiée, les livres sont automatiquement rafraîchis
  * pour refléter les changements de pages lues et de progrès.
  */
 export function useBooksWithSessions() {
@@ -15,7 +15,7 @@ export function useBooksWithSessions() {
   // Callback pour rafraîchir les livres après modification des sessions
   const handleBookDataChanged = useCallback(() => {
     console.log(
-      "🔄 Hook combiné: Données de session modifiées, rafraîchissement des livres...",
+      "🔄 Hook combiné : Données de session modifiées, rafraîchissement des livres...",
     );
     // Rafraîchir les livres pour récupérer les mises à jour du trigger SQL
     booksHook.refreshBooks();

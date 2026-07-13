@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // D'abord essayer OpenLibrary (gratuit)
+    // Tout d'abord essayer OpenLibrary (gratuit)
     const openLibraryData = await searchOpenLibrary(query, type as "title" | "author" | "isbn");
     
     if (openLibraryData && openLibraryData.length > 0) {

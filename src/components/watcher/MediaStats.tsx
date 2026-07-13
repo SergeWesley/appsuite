@@ -61,7 +61,7 @@ export function MediaStats({
 
   return (
     <div className="mb-8">
-      {/* Header cliquable */}
+      {/* En-tête cliquable */}
       <button
         onClick={() => {
           updateFilter("isStatsOpen", !isStatsOpen)

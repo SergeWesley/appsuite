@@ -64,7 +64,7 @@ export function ExerciseCard({ exercise, index, onDelete, onEdit }: ExerciseCard
           </span>
         </div>
         <div className="flex items-center gap-3">
-          {/* Edit button on hover (desktop only) */}
+          {/* Bouton d'édition au survol (seulement pour les ordinateurs de bureau) */}
           {onEdit && (
             <button
               onClick={(e) => {
@@ -77,7 +77,7 @@ export function ExerciseCard({ exercise, index, onDelete, onEdit }: ExerciseCard
               <Edit2 size={18} />
             </button>
           )}
-          {/* Delete button on hover (desktop only) */}
+          {/* Bouton de suppression au survol (seulement pour les ordinateurs de bureau) */}
           {onDelete && (
             <button
               onClick={(e) => {
@@ -96,7 +96,7 @@ export function ExerciseCard({ exercise, index, onDelete, onEdit }: ExerciseCard
         </div>
       </div>
 
-      {/* Exercise Details */}
+      {/* Détails de l'exercice */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         {exercise.sets && (
           <div>
@@ -140,7 +140,7 @@ export function ExerciseCard({ exercise, index, onDelete, onEdit }: ExerciseCard
         )}
       </div>
 
-      {/* Exercise Notes */}
+      {/* Notes de l'exercice */}
       {exercise.notes && (
         <div className="pt-4 border-t border-gray-100">
           <p className="text-sm text-gray-600">

@@ -5,7 +5,7 @@ import { SupabaseClient } from "@supabase/supabase-js";
 export const updateNoteMetadataTool = (supabase: SupabaseClient, userId: string) => tool({
   description: `Mettre à jour les données structurées (metadata) d'une note. Permet d'ajouter des lignes à un tableau, de modifier un champ texte/nombre/date/etc.
   
-  IMPORTANT : Avant d'utiliser cet outil, tu DOIS d'abord appeler getNoteContentTool pour :
+  IMPORTANT : Avant d'utiliser cet outil, vous DEVEZ d'abord appeler getNoteContentTool pour :
   1. Connaître la structure exacte du template (noms et IDs des champs)
   2. Récupérer les données existantes pour ne pas les écraser
   
@@ -14,7 +14,7 @@ export const updateNoteMetadataTool = (supabase: SupabaseClient, userId: string)
   - Pour un champ de type "table" : la valeur est un tableau d'objets, chaque objet représente une ligne avec les IDs des colonnes comme clés
   
   L'outil fait un MERGE : les champs non mentionnés dans metadataUpdates restent inchangés.
-  Pour les tableaux, utilise "appendRows" pour ajouter des lignes sans écraser les existantes.`,
+  Pour les tableaux, utilisez "appendRows" pour ajouter des lignes sans écraser les existantes.`,
   parameters: z.object({
     noteId: z.string().describe("L'ID de la note à modifier"),
     metadataUpdates: z
@@ -36,7 +36,7 @@ export const updateNoteMetadataTool = (supabase: SupabaseClient, userId: string)
       })
       .optional()
       .describe(
-        "Pour ajouter des lignes à un champ tableau existant sans écraser les données. Utiliser ceci plutôt que metadataUpdates pour les tableaux.",
+        "Pour ajouter des lignes à un champ tableau existant sans écraser les données. Utilisez ceci plutôt que metadataUpdates pour les tableaux.",
       ),
   }),
   execute: async ({ noteId, metadataUpdates, appendRows }) => {

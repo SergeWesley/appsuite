@@ -61,13 +61,13 @@ export function SncfJourney4Card({ data, from, to }: SncfJourneyCardProps) {
         boxShadow: "0 0 0 1px rgba(0,0,0,0.05), 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03)"
       }}
     >
-       {/* Left side: Main Ticket */}
+       {/* Côté gauche : Billet principal */}
        <div className="flex-1 p-6 sm:p-10 flex flex-col justify-between">
-          {/* Header */}
+          {/* En-tête */}
           <div className="flex items-center justify-between mb-10">
              <div className="flex items-center gap-2">
                <TrainFront className="text-indigo-600" size={24} />
-               <span className="font-bold tracking-widest text-indigo-600 uppercase text-xs">Premium E-Ticket</span>
+               <span className="font-bold tracking-widest text-indigo-600 uppercase text-xs">Billet Électronique Premium</span>
              </div>
              {journey.co2EmissionValue && (
                 <div className="flex items-center gap-1.5 text-emerald-600 text-[11px] font-bold uppercase tracking-widest">
@@ -76,7 +76,7 @@ export function SncfJourney4Card({ data, from, to }: SncfJourneyCardProps) {
              )}
           </div>
 
-          {/* Main Info */}
+          {/* Informations principales */}
           <div className="flex items-center justify-between gap-4 mb-10">
              <div className="flex flex-col w-1/3">
                 <span className="text-4xl sm:text-6xl font-black text-gray-900 tracking-tighter leading-none">{formatNavitiaTime(journey.departureTime)}</span>
@@ -104,7 +104,7 @@ export function SncfJourney4Card({ data, from, to }: SncfJourneyCardProps) {
              </div>
           </div>
 
-          {/* Trains Info */}
+          {/* Informations sur les trains */}
           <div className="flex items-center gap-3 flex-wrap">
             {validSections.filter(s => s.type === "public_transport").map((sec, i) => (
                <div key={i} className="px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-[10px] font-black text-gray-600 uppercase tracking-wider flex items-center gap-2">
@@ -115,21 +115,21 @@ export function SncfJourney4Card({ data, from, to }: SncfJourneyCardProps) {
           </div>
        </div>
 
-       {/* Right side: Ticket Stub */}
+       {/* Côté droit : Stub de billet */}
        <div className="w-full sm:w-72 bg-indigo-50 border-t-2 sm:border-t-0 sm:border-l-2 border-dashed border-indigo-200/50 p-6 sm:p-10 flex flex-col justify-between relative">
           
-          {/* Top and Bottom Cutout Holes (to blend with the grey chat bubble) */}
+          {/* Trous de découpure en haut et en bas (pour se fondre dans la bulle de discussion grise) */}
           <div className="hidden sm:block absolute -left-4 -top-4 w-8 h-8 bg-gray-100 rounded-full" />
           <div className="hidden sm:block absolute -left-4 -bottom-4 w-8 h-8 bg-gray-100 rounded-full" />
           
-          {/* Mobile Cutout Holes */}
+          {/* Trous de découpure pour les appareils mobiles */}
           <div className="sm:hidden absolute -top-4 -left-4 w-8 h-8 bg-gray-100 rounded-full" />
           <div className="sm:hidden absolute -top-4 -right-4 w-8 h-8 bg-gray-100 rounded-full" />
 
           <div className="flex flex-col gap-6">
              <div>
                <span className="block text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1">Passager</span>
-               <span className="block text-sm font-black text-indigo-900 uppercase">Forge User</span>
+               <span className="block text-sm font-black text-indigo-900 uppercase">Utilisateur Forge</span>
              </div>
              <div>
                <span className="block text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1">Trajet</span>
@@ -141,7 +141,7 @@ export function SncfJourney4Card({ data, from, to }: SncfJourneyCardProps) {
              </div>
           </div>
 
-          {/* Barcode Illusion */}
+          {/* Illusion de code à barres */}
           <div 
             className="mt-8 h-12 w-full opacity-50 mix-blend-multiply" 
             style={{

@@ -30,7 +30,7 @@ export function useBrowserApps() {
 
       if (fetchError) throw fetchError;
 
-      // Mapping des données avec typage de JSONB (settings)
+      // Mapping des données avec typage de JSONB (paramètres)
       const mappedApps: BrowserApp[] = (data || []).map((row: any) => ({
         id: row.id,
         user_id: row.user_id,
@@ -45,7 +45,7 @@ export function useBrowserApps() {
 
       setApps(mappedApps);
     } catch (err) {
-      console.error("Erreur lors du chargement des apps browser:", err);
+      console.error("Erreur lors du chargement des applications du navigateur :", err);
       setError(err instanceof Error ? err.message : "Erreur inconnue");
     } finally {
       setLoading(false);
@@ -102,7 +102,7 @@ export function useBrowserApps() {
       setApps((prev) => [...prev, newApp]);
       return newApp;
     } catch (err) {
-      console.error("Erreur lors de l'ajout de l'app:", err);
+      console.error("Erreur lors de l'ajout de l'application :", err);
       setError(err instanceof Error ? err.message : "Erreur inconnue");
       return null;
     }
@@ -135,7 +135,7 @@ export function useBrowserApps() {
 
       return true;
     } catch (err) {
-      console.error("Erreur lors de la mise à jour de l'app:", err);
+      console.error("Erreur lors de la mise à jour de l'application :", err);
       setError(err instanceof Error ? err.message : "Erreur inconnue");
       return false;
     }
@@ -161,7 +161,7 @@ export function useBrowserApps() {
       setApps((prev) => prev.filter((app) => app.id !== id));
       return true;
     } catch (err) {
-      console.error("Erreur lors de la suppression de l'app:", err);
+      console.error("Erreur lors de la suppression de l'application :", err);
       setError(err instanceof Error ? err.message : "Erreur inconnue");
       return false;
     }
@@ -218,7 +218,7 @@ export function useBrowserApps() {
 
       return true;
     } catch (err) {
-      console.error("Erreur lors du réordonnancement:", err);
+      console.error("Erreur lors du réordonnancement :", err);
       setError(err instanceof Error ? err.message : "Erreur inconnue");
       return false;
     }

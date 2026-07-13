@@ -114,7 +114,7 @@ export function ExerciseForm({
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Name */}
+                {/* Nom */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Nom de l'exercice *
@@ -140,7 +140,7 @@ export function ExerciseForm({
                   </div>
                 </div>
 
-                {/* Muscle Group */}
+                {/* Groupe musculaire */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Groupe musculaire *

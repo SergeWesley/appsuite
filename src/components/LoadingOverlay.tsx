@@ -22,6 +22,7 @@ export function LoadingOverlay({
   fullPage = false,
   color = "green",
 }: LoadingOverlayProps) {
+  // Définition des classes de couleur pour le composant de chargement
   const colorClasses = {
     green: "text-green-600 bg-green-400",
     amber: "text-amber-600 bg-amber-400",

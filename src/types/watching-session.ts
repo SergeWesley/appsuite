@@ -3,7 +3,7 @@ export interface WatchingSession {
   mediaId: string;
   startTime: Date;
   endTime?: Date;
-  duration?: number; // durée en secondes
+  duration?: number; // Durée en secondes
   isActive: boolean;
   notes?: string;
   userId: string;

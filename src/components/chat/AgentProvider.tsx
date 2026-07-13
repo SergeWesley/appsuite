@@ -6,7 +6,7 @@ import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 
 export interface OpenAgentOptions {
   initialMessage?: string;
-  systemContext?: string; // Peut être passé au backend via des headers ou un state
+  systemContext?: string; // Peut être passé au backend via des headers ou un état
 }
 
 interface AgentContextType {
@@ -24,7 +24,7 @@ export function AgentProvider({ children }: { children: ReactNode }) {
   const isAdmin = useIsAdmin();
 
   const openAgent = (newOptions?: OpenAgentOptions) => {
-    if (!isAdmin) return; // Accès refusé pour les non-admins
+    if (!isAdmin) return; // Accès refusé pour les non-administrateurs
     setOptions(newOptions || null);
     setIsOpen(true);
   };

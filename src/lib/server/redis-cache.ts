@@ -1,12 +1,12 @@
 import { Redis } from "@upstash/redis";
 import { normalizeText } from "@/lib/format-utils";
 
-// On initialise l'instance Redis une seule fois
+// Nous initialisons l'instance Redis une seule fois
 const redis = Redis.fromEnv();
 
 /**
- * Tente de récupérer un stream brut du cache Redis.
- * Retourne la chaîne de caractères du stream si elle existe, ou null.
+ * Tente de récupérer un flux brut du cache Redis.
+ * Retourne la chaîne de caractères du flux si elle existe, ou null.
  */
 export async function getCachedStream(prefix: string, prompt: string): Promise<string | null> {
   const normalized = normalizeText(prompt);
@@ -44,5 +44,5 @@ export function cacheStreamResponseAsync(
       });
       console.log(`[Redis Cache] Cache mis à jour pour la clé : "${cacheKey}"`);
     }
-  }).catch((err) => console.error(`[Redis Cache] Erreur lors du clonage du stream pour le cache ${cacheKey}:`, err));
+  }).catch((err) => console.error(`[Redis Cache] Erreur lors du clonage du flux pour le cache ${cacheKey}:`, err));
 }

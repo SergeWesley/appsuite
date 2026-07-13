@@ -20,7 +20,7 @@ export function PropertyValueEditor({
   metadata,
   onMetadataChange,
 }: PropertyValueEditorProps) {
-  const [hover, setHover] = useState(0); // pour "rating"
+  const [hover, setHover] = useState(0); // pour le "rating"
 
   switch (field.type) {
     case "text":

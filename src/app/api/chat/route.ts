@@ -3,12 +3,12 @@ import { streamText } from "ai";
 import { getAgentTools } from "@/lib/ai/tools";
 import { checkUserRoles } from "@/lib/server/api-auth";
 
-// Configuration explicite du provider Groq avec la clé côté serveur
+// Configuration explicite du fournisseur Groq avec la clé côté serveur
 const groq = createGroq({
   apiKey: process.env.GROQ_API_KEY || "",
 });
 
-// Optionnel: autoriser un temps d'exécution plus long pour l'IA
+// Optionnel : autoriser un temps d'exécution plus long pour l'IA
 export const maxDuration = 30;
 
 function getErrorResponse(error: unknown): { message: string; status: number } {
@@ -46,7 +46,7 @@ function getErrorResponse(error: unknown): { message: string; status: number } {
       };
     }
 
-    // Quota dépassé / Rate limit
+    // Quota dépassé / Limite de taux
     if (msg.includes("quota") || msg.includes("rate") || msg.includes("429")) {
       return {
         message:

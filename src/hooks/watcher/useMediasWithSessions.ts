@@ -15,7 +15,7 @@ export function useMediasWithSessions() {
   // Callback pour rafraîchir les médias après modification des sessions
   const handleMediaDataChanged = useCallback(() => {
     console.log(
-      "🔄 Hook combiné: Données de session modifiées, rafraîchissement des médias...",
+      "Hook combiné : Données de session modifiées, rafraîchissement des médias...",
     );
     // Rafraîchir les médias pour récupérer les mises à jour du trigger SQL
     mediasHook.refreshMedias();

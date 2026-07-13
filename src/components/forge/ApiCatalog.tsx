@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 
 interface ApiCatalogProps {
+  // Propriétés du composant ApiCatalog
   onActionClick: (description: string) => void;
 }
 
@@ -11,6 +12,7 @@ export function ApiCatalog({ onActionClick }: ApiCatalogProps) {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // Fonction asynchrone pour récupérer le catalogue
     async function fetchCatalog() {
       try {
         const res = await fetch("/api/forge-catalog");
@@ -18,8 +20,10 @@ export function ApiCatalog({ onActionClick }: ApiCatalogProps) {
         const json = await res.json();
         setData(json);
       } catch (err: any) {
+        // En cas d'erreur, on stocke le message d'erreur
         setError(err.message);
       } finally {
+        // Quoi qu'il arrive, on met fin au chargement
         setLoading(false);
       }
     }
@@ -27,12 +31,14 @@ export function ApiCatalog({ onActionClick }: ApiCatalogProps) {
   }, []);
 
   if (loading || error || !data) {
-    return null; // On ne montre rien si erreur ou chargement pour ne pas polluer le chat
+    // On ne montre rien si erreur ou chargement pour ne pas polluer le chat
+    return null;
   }
 
   const paths = data.paths || {};
   const operations: any[] = [];
   
+  // On itère sur les chemins et les méthodes pour trouver les opérations génératives
   Object.keys(paths).forEach((pathUrl) => {
     const methods = paths[pathUrl];
     Object.keys(methods).forEach((method) => {
@@ -41,6 +47,7 @@ export function ApiCatalog({ onActionClick }: ApiCatalogProps) {
         operation["x-generative-ui"]?.enabled === "true" || 
         operation["x-generative-ui"]?.enabled === true;
         
+      // On ne garde que les opérations génératives
       if (!isGenerativeUI) return;
 
       operations.push({

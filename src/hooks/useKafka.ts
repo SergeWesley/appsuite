@@ -15,14 +15,14 @@ interface UserConnectionEventData {
 export function useKafka() {
   const sendConnectionEvent = useCallback(
     async (_userData: UserConnectionEventData) => {
-      // Kafka désactivé — no-op
+      // Cette fonction est désactivée pour le moment et ne fait rien.
     },
     [],
   );
 
   const sendDisconnectionEvent = useCallback(
     async (_userData: UserConnectionEventData) => {
-      // Kafka désactivé — no-op
+      // Cette fonction est désactivée pour le moment et ne fait rien.
     },
     [],
   );

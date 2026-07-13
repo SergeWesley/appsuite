@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
   try {
     const body: UserConnectionEventRequest = await request.json();
 
-    // Validation des données requises
+    // Vérification des données requises
     if (!body.userId || !body.email || !body.eventType || !body.sessionId) {
       return NextResponse.json(
         {
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validation du type d'événement
+    // Vérification du type d'événement
     if (!["connection", "disconnection"].includes(body.eventType)) {
       return NextResponse.json(
         { error: 'eventType doit être "connection" ou "disconnection"' },

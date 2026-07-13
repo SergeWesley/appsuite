@@ -21,17 +21,17 @@ export default function TrackerStatsPage() {
   const stats = getStats();
   const { exercises } = useExercises();
 
-  
+  // Récupérer les filtres persistants pour la page des statistiques de suivi
   const { selectedExerciseId, updateFilter } = useFilterPersistence("tracker-stats-filters", {
     selectedExerciseId: "",
   });
 
-  // Get all valid exercises (strength/weight based) that the user ACTUALLY performed
+  // Obtenir tous les exercices valides (de force/poids) que l'utilisateur a réellement effectués
   const performedExerciseIds = useMemo(() => {
     const ids = new Set<string>();
     sessions.forEach(session => {
       session.exercises.forEach(ex => {
-        if (ex.weight && ex.weight > 0) { // Keep only those with weight
+        if (ex.weight && ex.weight > 0) { // Conserver uniquement ceux avec un poids
           ids.add(ex.exerciseId);
         }
       });
@@ -39,7 +39,7 @@ export default function TrackerStatsPage() {
     return Array.from(ids);
   }, [sessions]);
 
-  // Map to exercise objects and sort alphabetically
+  // Mapper les exercices et les trier par ordre alphabétique
   const availableExercises = useMemo(() => {
     return performedExerciseIds
       .map(id => exercises.find(e => e.id === id))
@@ -47,28 +47,28 @@ export default function TrackerStatsPage() {
       .sort((a, b) => a!.name.localeCompare(b!.name));
   }, [performedExerciseIds, exercises]);
 
-  // Select the first exercise automatically if none selected
+  // Sélectionner automatiquement le premier exercice si aucun n'est sélectionné
   useEffect(() => {
     if (!selectedExerciseId && availableExercises.length > 0) {
       updateFilter("selectedExerciseId", availableExercises[0]!.id);
     }
   }, [selectedExerciseId, availableExercises, updateFilter]);
 
-  // Generate data points for the selected exercise
+  // Générer les points de données pour l'exercice sélectionné
   const chartData = useMemo(() => {
     if (!selectedExerciseId) return [];
 
-    // Group sessions chronologically
+    // Regrouper les séances par ordre chronologique
     const chronologicalSessions = [...sessions].sort((a, b) => a.date.getTime() - b.date.getTime());
     
     const dataPoints: ProgressionDataPoint[] = [];
 
     chronologicalSessions.forEach(session => {
-      // Find all sets/exercises matching the selected exercise inside this session
+      // Trouver tous les ensembles/exercices correspondant à l'exercice sélectionné dans cette séance
       const matchingEx = session.exercises.filter(ex => ex.exerciseId === selectedExerciseId);
       if (matchingEx.length === 0) return;
 
-      // Find the absolute max weight lifted during this session for this exercise
+      // Trouver le poids maximum levé pendant cette séance pour cet exercice
       let maxWeight = 0;
       let repsAtMaxWeight = 0;
       let hasData = false;
@@ -94,7 +94,7 @@ export default function TrackerStatsPage() {
     return dataPoints;
   }, [selectedExerciseId, sessions]);
 
-  // Compute Overall bests for Top PRs Showcase
+  // Calculer les meilleures performances globales pour l'affichage des meilleures performances
   const topRecords = useMemo(() => {
     const recordsMap = new Map<string, { weight: number, name: string }>();
     sessions.forEach(session => {
@@ -108,10 +108,10 @@ export default function TrackerStatsPage() {
       });
     });
 
-    // Sort by heaviest weight lifted globally
+    // Trier par poids levé le plus lourd au niveau global
     return Array.from(recordsMap.values())
       .sort((a, b) => b.weight - a.weight)
-      .slice(0, 3); // Top 3
+      .slice(0, 3); // Meilleures performances
   }, [sessions]);
 
   if (loading) {

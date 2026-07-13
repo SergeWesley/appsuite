@@ -31,7 +31,7 @@ export function NoteCard({ note, index, onClick, onDelete }: NoteCardProps) {
     }
   };
 
-  // Get a preview of the content (first 100 chars, strip any markdown)
+  // Obtenir un aperçu du contenu (premiers 100 caractères, supprimer tout markdown)
   const preview = note.content
     .replace(/[#*_~`>\-\[\]()]/g, "")
     .trim()

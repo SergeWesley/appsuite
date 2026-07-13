@@ -13,10 +13,10 @@ interface MediaSuggestion {
   vote_average?: number;
   vote_count?: number;
   media_type?: "movie" | "tv";
-  // For TV shows
+  // Pour les séries TV
   name?: string;
   original_name?: string;
-  // For person search
+  // Pour la recherche de personnes
   known_for_department?: string;
   known_for?: MediaSuggestion[];
 }
@@ -103,7 +103,7 @@ async function searchByTitle(
   const results: MediaSuggestion[] = [];
 
   try {
-    // Search movies if requested
+    // Recherche de films si demandé
     if (mediaType === "all" || mediaType === "movie") {
       const movieUrl = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=fr-FR`;
       const movieResponse = await fetch(movieUrl);
@@ -117,7 +117,7 @@ async function searchByTitle(
       results.push(...movies);
     }
 
-    // Search TV shows if requested
+    // Recherche de séries TV si demandé
     if (mediaType === "all" || mediaType === "tv") {
       const tvUrl = `https://api.themoviedb.org/3/search/tv?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=fr-FR`;
       const tvResponse = await fetch(tvUrl);
@@ -133,14 +133,14 @@ async function searchByTitle(
       results.push(...tvShows);
     }
 
-    // Sort by popularity (vote_count * vote_average)
+    // Tri par popularité (vote_count * vote_average)
     return results
       .sort((a, b) => {
         const scoreA = (a.vote_count || 0) * (a.vote_average || 0);
         const scoreB = (b.vote_count || 0) * (b.vote_average || 0);
         return scoreB - scoreA;
       })
-      .slice(0, 20); // Limit to 20 results
+      .slice(0, 20); // Limite à 20 résultats
 
   } catch (error) {
     console.error("Erreur lors de la recherche par titre:", error);
@@ -154,27 +154,27 @@ async function searchByPerson(
   role: string
 ): Promise<MediaSuggestion[]> {
   try {
-    // First, search for the person
+    // Tout d'abord, recherche de la personne
     const personUrl = `https://api.themoviedb.org/3/search/person?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=fr-FR`;
     const personResponse = await fetch(personUrl);
     const personData: TMDBResponse = await personResponse.json();
 
     const results: MediaSuggestion[] = [];
 
-    // For each person found, get their credits
+    // Pour chaque personne trouvée, récupération de ses crédits
     for (const person of personData.results as PersonSuggestion[]) {
       try {
-        // Get movie credits
+        // Récupération des crédits de film
         const movieCreditsUrl = `https://api.themoviedb.org/3/person/${person.id}/movie_credits?api_key=${apiKey}&language=fr-FR`;
         const movieCreditsResponse = await fetch(movieCreditsUrl);
         const movieCredits = await movieCreditsResponse.json();
 
-        // Get TV credits
+        // Récupération des crédits de série TV
         const tvCreditsUrl = `https://api.themoviedb.org/3/person/${person.id}/tv_credits?api_key=${apiKey}&language=fr-FR`;
         const tvCreditsResponse = await fetch(tvCreditsUrl);
         const tvCredits = await tvCreditsResponse.json();
 
-        // Filter by role (director for movies, creator for TV)
+        // Filtre par rôle (réalisateur pour les films, créateur pour les séries TV)
         if (role === "director" && movieCredits.crew) {
           const directedMovies = movieCredits.crew
             .filter((credit: any) => credit.job === "Director")
@@ -206,15 +206,15 @@ async function searchByPerson(
       }
     }
 
-    // Sort by release date (most recent first) and limit results
+    // Tri par date de sortie (les plus récents en premier) et limitation des résultats
     return results
-      .filter(item => item.release_date) // Only items with release dates
+      .filter(item => item.release_date) // Seuls les éléments avec une date de sortie
       .sort((a, b) => {
         const dateA = new Date(a.release_date || "").getTime();
         const dateB = new Date(b.release_date || "").getTime();
         return dateB - dateA;
       })
-      .slice(0, 15); // Limit to 15 results
+      .slice(0, 15); // Limite à 15 résultats
 
   } catch (error) {
     console.error("Erreur lors de la recherche par personne:", error);
@@ -230,7 +230,7 @@ async function searchByGenre(
   try {
     const results: MediaSuggestion[] = [];
 
-    // Get genre list for movies and TV shows
+    // Récupération de la liste des genres pour les films et les séries TV
     const movieGenresUrl = `https://api.themoviedb.org/3/genre/movie/list?api_key=${apiKey}&language=fr-FR`;
     const tvGenresUrl = `https://api.themoviedb.org/3/genre/tv/list?api_key=${apiKey}&language=fr-FR`;
 
@@ -242,7 +242,7 @@ async function searchByGenre(
     const movieGenres: GenreResponse = await movieGenresResponse.json();
     const tvGenres: GenreResponse = await tvGenresResponse.json();
 
-    // Find matching genres (case insensitive)
+    // Recherche de genres correspondants (insensible à la casse)
     const queryLower = query.toLowerCase();
     const matchingMovieGenres = movieGenres.genres.filter(genre =>
       genre.name.toLowerCase().includes(queryLower)
@@ -251,15 +251,15 @@ async function searchByGenre(
       genre.name.toLowerCase().includes(queryLower)
     );
 
-    // Search movies by genre
+    // Recherche de films par genre
     if ((mediaType === "all" || mediaType === "movie") && matchingMovieGenres.length > 0) {
-      for (const genre of matchingMovieGenres.slice(0, 2)) { // Limit to 2 genres to avoid too many requests
+      for (const genre of matchingMovieGenres.slice(0, 2)) { // Limite à 2 genres pour éviter trop de requêtes
         const discoverUrl = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_genres=${genre.id}&language=fr-FR&sort_by=popularity.desc&page=1`;
         const discoverResponse = await fetch(discoverUrl);
         const discoverData: TMDBResponse = await discoverResponse.json();
 
         const movies = (discoverData.results as MediaSuggestion[])
-          .slice(0, 10) // Limit per genre
+          .slice(0, 10) // Limite par genre
           .map(movie => ({
             ...movie,
             media_type: "movie" as const,
@@ -270,15 +270,15 @@ async function searchByGenre(
       }
     }
 
-    // Search TV shows by genre
+    // Recherche de séries TV par genre
     if ((mediaType === "all" || mediaType === "tv") && matchingTvGenres.length > 0) {
-      for (const genre of matchingTvGenres.slice(0, 2)) { // Limit to 2 genres
+      for (const genre of matchingTvGenres.slice(0, 2)) { // Limite à 2 genres
         const discoverUrl = `https://api.themoviedb.org/3/discover/tv?api_key=${apiKey}&with_genres=${genre.id}&language=fr-FR&sort_by=popularity.desc&page=1`;
         const discoverResponse = await fetch(discoverUrl);
         const discoverData: TMDBResponse = await discoverResponse.json();
 
         const tvShows = (discoverData.results as MediaSuggestion[])
-          .slice(0, 10) // Limit per genre
+          .slice(0, 10) // Limite par genre
           .map(show => ({
             ...show,
             media_type: "tv" as const,
@@ -291,7 +291,7 @@ async function searchByGenre(
       }
     }
 
-    // Sort by popularity and limit total results
+    // Tri par popularité et limitation des résultats totaux
     return results
       .sort((a, b) => (b.vote_average || 0) - (a.vote_average || 0))
       .slice(0, 20);

@@ -6,7 +6,7 @@ import { getExercisePerformanceTool } from "./tools/getExercisePerformance";
 import { getNoteContentTool } from "./tools/getNoteContent";
 import { updateNoteMetadataTool } from "./tools/updateNoteMetadata";
 
-// C'est ici qu'on définit le registre des outils disponibles pour l'Agent.
+// Ceci est l'endroit où nous définissons le registre des outils disponibles pour l'Agent.
 // Ce registre est générique et peut être étendu avec d'autres modules (tracker, spender, etc.)
 export const getAgentTools = (supabase: SupabaseClient, userId: string) => {
   return {

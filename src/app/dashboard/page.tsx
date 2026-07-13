@@ -14,7 +14,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* En-tête */}
       <AppHeader
         title="AppSuite"
         icon={Grid3X3}
@@ -23,7 +23,7 @@ export default function Dashboard() {
         maxWidth="max-w-7xl"
       />
 
-      {/* Main Content */}
+      {/* Contenu principal */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <motion.h1
@@ -44,7 +44,7 @@ export default function Dashboard() {
           </motion.p>
         </div>
 
-        {/* Toggle Vue */}
+        {/* Basculer la vue */}
         <div className="flex justify-end mb-6">
           <div className="flex items-center bg-gray-100 rounded-lg p-1">
             <button

@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     const { errorResponse } = await checkUserRoles(accessToken, ["admin", "vip"]);
     if (errorResponse) return errorResponse;
 
-    // Pour réduire drastiquement le nombre de tokens envoyés (et rester sous la limite de 6000 TPM),
+    // Pour réduire drastiquement le nombre de tokens envoyés (et rester sous la limite de 6000 TPM), 
     // on ne garde que la toute dernière requête de l'utilisateur (requête standalone).
     const standaloneMessage = [messages[messages.length - 1]];
     const prompt = standaloneMessage[0]?.content?.trim() || "";
@@ -130,4 +130,3 @@ export async function POST(req: Request) {
     );
   }
 }
-

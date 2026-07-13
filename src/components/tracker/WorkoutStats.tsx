@@ -70,7 +70,7 @@ export function WorkoutStats({ stats }: WorkoutStatsProps) {
 
   return (
     <div className="mb-8">
-      {/* Header cliquable */}
+      {/* En-tête cliquable */}
       <button
         onClick={() => updateFilter("isStatsOpen", !isStatsOpen)}
         className="flex items-center justify-between w-full bg-white p-4 rounded-xl shadow-sm border border-gray-200"

@@ -44,7 +44,7 @@ export function BookStatsCard({ book, rank }: BookStatsCardProps) {
 
   return (
     <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-      {/* Rang */}
+      {/* Rang du livre */}
       <div className={`
         flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold border-2
         ${getRankColor(rank)}
@@ -76,7 +76,7 @@ export function BookStatsCard({ book, rank }: BookStatsCardProps) {
           {book.author}
         </div>
         
-        {/* Statistiques */}
+        {/* Statistiques de lecture */}
         <div className="mt-2 space-y-1">
           <div className="flex items-center space-x-2 text-xs text-gray-600">
             <Clock size={12} />
@@ -86,7 +86,7 @@ export function BookStatsCard({ book, rank }: BookStatsCardProps) {
           </div>
           
           <div className="text-xs text-gray-500">
-            Moyenne: {formatTime(book.averageSessionTime)} par session
+            Moyenne : {formatTime(book.averageSessionTime)} par session
           </div>
           
           {book.completionDate && (

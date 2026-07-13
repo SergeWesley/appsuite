@@ -42,7 +42,7 @@ export function useSubscriptions() {
     if (!user) return null;
 
     try {
-      // Nettoyage de l'objet pour Supabase (on évite les undefinied explicites)
+      // Nettoyage de l'objet pour Supabase (on évite les valeurs undefined explicites)
       const payload: any = {
         name: data.name,
         amount: data.amount,
@@ -72,7 +72,7 @@ export function useSubscriptions() {
       );
       return mappedNewSub as any;
     } catch (err: any) {
-      console.error("Supabase Error:", err);
+      console.error("Erreur Supabase :", err);
       alert(`Erreur d'ajout : ${err.message}`);
       setError(err.message);
       return null;

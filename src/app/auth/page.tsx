@@ -16,7 +16,7 @@ export default function AuthPage() {
       await signIn(email, password);
       router.push("/");
     } catch (err) {
-      // L'erreur est déjà gérée dans useAuth
+      // L'erreur est déjà gérée dans useAuth, donc on affiche l'erreur d'authentification
       setAuthError(error);
     }
   };
@@ -32,7 +32,7 @@ export default function AuthPage() {
       // Après inscription, rediriger vers la page d'accueil
       router.push("/");
     } catch (err) {
-      // L'erreur est déjà gérée dans useAuth
+      // L'erreur est déjà gérée dans useAuth, donc on affiche l'erreur d'authentification
       setAuthError(error);
     }
   };
