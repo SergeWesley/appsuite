@@ -1,5 +1,6 @@
 import { fetchWeatherTool } from "./fetchWeatherTool";
 import { fetchRandomAnimeTool } from "./fetchRandomAnimeTool";
+import { fetchRandomDogTool } from "./fetchRandomDogTool";
 import { searchArtTool } from "./searchArtTool";
 import { searchMealTool } from "./searchMealTool";
 import { fetchCryptoMarketTool } from "./fetchCryptoMarketTool";
@@ -16,6 +17,7 @@ export const getForgeTools = () => {
   return {
     fetchWeatherTool: fetchWeatherTool(),
     fetchRandomAnimeTool: fetchRandomAnimeTool(),
+    fetchRandomDogTool: fetchRandomDogTool(),
     searchArtTool: searchArtTool(),
     searchMealTool: searchMealTool(),
     fetchCryptoMarketTool: fetchCryptoMarketTool(),

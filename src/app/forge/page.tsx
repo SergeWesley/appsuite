@@ -80,7 +80,7 @@ export default function ForgeBuilderPage() {
     return (
       <div className="h-screen bg-white flex flex-col overflow-hidden">
         <AppHeader
-          title="Forge Builder"
+          title="Forge"
           icon={Hammer}
           iconColor="text-indigo-600"
           currentModule="forge"
@@ -91,7 +91,7 @@ export default function ForgeBuilderPage() {
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Accès restreint</h1>
           <p className="text-gray-600 max-w-md text-lg">
-            L'utilisation de Forge Builder nécessite des crédits IA et est exclusivement réservée aux administrateurs et aux utilisateurs VIP.
+            L'utilisation de Forge nécessite des crédits IA et est exclusivement réservée aux administrateurs et aux utilisateurs VIP.
           </p>
         </div>
       </div>
@@ -101,7 +101,7 @@ export default function ForgeBuilderPage() {
   return (
     <div className="h-screen bg-white flex flex-col overflow-hidden">
       <AppHeader
-        title="Forge Builder"
+        title="Forge"
         icon={Hammer}
         iconColor="text-indigo-600"
         currentModule="forge"
