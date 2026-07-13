@@ -57,6 +57,24 @@ export function PropertyTableEditor({
   const [sorting, setSorting] = useState<SortingState>(dbSettings.sorting || []);
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(dbSettings.columnSizing || {});
 
+  // Synchronize state when dbSettings changes (e.g. late data loading or note switch)
+  useEffect(() => {
+    if (dbSettings.sorting) {
+      setSorting((current) =>
+        JSON.stringify(current) !== JSON.stringify(dbSettings.sorting)
+          ? dbSettings.sorting
+          : current
+      );
+    }
+    if (dbSettings.columnSizing) {
+      setColumnSizing((current) =>
+        JSON.stringify(current) !== JSON.stringify(dbSettings.columnSizing)
+          ? dbSettings.columnSizing
+          : current
+      );
+    }
+  }, [dbSettings.sorting, dbSettings.columnSizing]);
+
   useEffect(() => {
     if (Object.keys(dbSettings.columnSizing || {}).length === 0 && tableColumnSizing && Object.keys(tableColumnSizing).length > 0) {
       setColumnSizing((current) => 
