@@ -110,7 +110,7 @@ export default function NotesPage() {
     {
       key: "n",
       altKey: true,
-      shiftKey: true,
+      shiftKey: false,
       action: () => setShowCreateFolderModal(true),
     },
     {

@@ -11,6 +11,7 @@ import { useBrowserApps } from "@/hooks/browser/useBrowserApps";
 import { BrowserApp, BrowserAppFormData } from "@/types/browser";
 import { Globe } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 
 export default function BrowserPage() {
   const { user } = useAuthContext();
@@ -40,6 +41,15 @@ export default function BrowserPage() {
   const handleAppClick = (app: BrowserApp) => {
     window.open(app.url, "_blank");
   };
+
+  useKeyboardShortcut([
+    {
+      key: "n",
+      altKey: true,
+      shiftKey: false,
+      action: () => setShowAddModal(true),
+    },
+  ]);
 
 
 

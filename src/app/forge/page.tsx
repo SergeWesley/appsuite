@@ -7,6 +7,7 @@ import { ToolRenderer } from "@/components/forge/ToolRenderer";
 import { AppHeader } from "@/components/AppHeader";
 import { ApiCatalog } from "@/components/forge/ApiCatalog";
 import { useAuthContext } from "@/components/AuthProvider";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 
 export default function ForgeBuilderPage() {
   const { session, user } = useAuthContext();
@@ -75,6 +76,15 @@ export default function ForgeBuilderPage() {
     localStorage.removeItem("forge-chat-history");
     setInput("");
   };
+
+  useKeyboardShortcut([
+    {
+      key: "n",
+      altKey: true,
+      shiftKey: false,
+      action: handleNewChat,
+    },
+  ]);
 
   if (isMounted && !isAllowed) {
     return (
