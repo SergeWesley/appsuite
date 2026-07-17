@@ -21,6 +21,7 @@ import { useNoteTemplates } from "@/hooks/notes/useNoteTemplates";
 import { FOLDER_COLORS, CustomFieldDefinition, NoteFolder, NoteTemplate } from "@/types/notes";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { TemplateEditorModal } from "@/components/notes/TemplateEditorModal";
+import { AppLayout } from "@/components/AppLayout";
 
 export default function FolderSettingsPage() {
   const router = useRouter();
@@ -124,44 +125,27 @@ export default function FolderSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
-      {/* HEADER */}
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleBack}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                aria-label="Retour"
-              >
-                <ArrowLeft size={20} className="text-gray-600" />
-              </button>
-              <div className="flex items-center gap-2">
-                <Settings className="h-5 w-5 text-amber-500" />
-                <h1 className="text-lg font-semibold text-gray-900 leading-tight">
-                  Paramètres du dossier
-                </h1>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleSaveIdentity}
-                disabled={isSaving}
-                className="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-xl hover:bg-amber-600 transition-colors text-sm font-medium disabled:opacity-50 shadow-sm"
-              >
-                <Save size={16} />
-                <span className="hidden sm:inline">
-                  {isSaving ? "Enregistrement..." : "Enregistrer"}
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <AppLayout
+      title="Paramètres du dossier"
+      icon={Settings}
+      iconColor="text-amber-500"
+      currentModule="notes"
+      onBack={handleBack}
+      bgClass="min-h-screen bg-gray-50 pb-24"
+      actions={
+        <button
+          onClick={handleSaveIdentity}
+          disabled={isSaving}
+          className="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-xl hover:bg-amber-600 transition-colors text-sm font-medium disabled:opacity-50 shadow-sm"
+        >
+          <Save size={16} />
+          <span className="hidden sm:inline">
+            {isSaving ? "Enregistrement..." : "Enregistrer"}
+          </span>
+        </button>
+      }
+    >
+      <div className="space-y-8">
 
         {/* IDENTITÉ DU DOSSIER */}
         <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -362,7 +346,7 @@ export default function FolderSettingsPage() {
             </button>
           </div>
         </section>
-      </main>
+      </div>
 
       {/* Modale suppr dossier */}
       <ConfirmationModal
@@ -393,6 +377,6 @@ export default function FolderSettingsPage() {
         onSave={handleSaveTemplate}
         initialTemplate={editingTemplate}
       />
-    </div>
+    </AppLayout>
   );
 }
