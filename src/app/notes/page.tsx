@@ -15,7 +15,7 @@ import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { StickyNote, FolderOpen, MoreVertical, Upload } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
-import { AppHeader } from "@/components/AppHeader";
+import { AppLayout } from "@/components/AppLayout";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
 export default function NotesPage() {
@@ -130,38 +130,36 @@ export default function NotesPage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AppHeader
-        title="Notes"
-        icon={StickyNote}
-        iconColor="text-amber-500"
-        currentModule="notes"
-        actions={
-          <>
-            <Menu as="div" className="relative inline-block text-left">
-              <MenuButton className="p-2 text-gray-500 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50">
-                <MoreVertical size={20} />
-              </MenuButton>
+    <AppLayout
+      title="Notes"
+      icon={StickyNote}
+      iconColor="text-amber-500"
+      currentModule="notes"
+      padding="px-4 sm:px-6 lg:px-8 py-8 pb-24"
+      actions={
+        <>
+          <Menu as="div" className="relative inline-block text-left">
+            <MenuButton className="p-2 text-gray-500 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50">
+              <MoreVertical size={20} />
+            </MenuButton>
 
-              <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 focus:outline-none">
-                <div className="py-1">
-                  <MenuItem
-                    as="button"
-                    onClick={triggerImport}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100"
-                  >
-                    <Upload size={16} />
-                    Importer
-                  </MenuItem>
-                </div>
-              </MenuItems>
-            </Menu>
-            <ImportInput />
-          </>
-        }
-      />
-
-      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
+            <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 focus:outline-none">
+              <div className="py-1">
+                <MenuItem
+                  as="button"
+                  onClick={triggerImport}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100"
+                >
+                  <Upload size={16} />
+                  Importer
+                </MenuItem>
+              </div>
+            </MenuItems>
+          </Menu>
+          <ImportInput />
+        </>
+      }
+    >
 
 
         {/* Page Title */}
@@ -260,7 +258,7 @@ export default function NotesPage() {
             ))}
           </div>
         )}
-      </main>
+
 
       {/* Floating Add Button */}
       <FloatingAddButton
@@ -305,6 +303,6 @@ export default function NotesPage() {
         confirmLabel={`Supprimer ${selectedFolders.length} dossier(s)`}
         confirmColor="bg-red-600 hover:bg-red-700"
       />
-    </div>
+    </AppLayout>
   );
 }

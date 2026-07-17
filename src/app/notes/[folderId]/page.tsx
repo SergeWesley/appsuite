@@ -27,7 +27,7 @@ import {
   Upload,
 } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
-import { AppHeader } from "@/components/AppHeader";
+import { AppLayout } from "@/components/AppLayout";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
 export default function FolderPage() {
@@ -206,59 +206,57 @@ export default function FolderPage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AppHeader
-        title={folder?.name || "Dossier"}
-        currentModule="notes"
-        onBack={() => {
-          if (folder?.parentId) {
-            router.push(`/notes/${folder.parentId}`);
-          } else {
-            router.push("/notes");
-          }
-        }}
-        actions={
-          <>
-            <Menu as="div" className="relative inline-block text-left">
-              <MenuButton className="p-2 text-gray-500 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50">
-                <MoreVertical size={20} />
-              </MenuButton>
-
-              <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 focus:outline-none">
-                <div className="py-1">
-                  <MenuItem
-                    as="button"
-                    onClick={triggerImport}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100"
-                  >
-                    <Upload size={16} />
-                    Importer une note
-                  </MenuItem>
-                  <MenuItem
-                    as="button"
-                    onClick={() => router.push(`/notes/${folderId}/settings`)}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100"
-                  >
-                    <Settings size={16} />
-                    Paramètres
-                  </MenuItem>
-                  <MenuItem
-                    as="button"
-                    onClick={() => setShowDeleteConfirm(true)}
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 flex items-center gap-2 hover:bg-red-50"
-                  >
-                    <Trash2 size={16} />
-                    Supprimer
-                  </MenuItem>
-                </div>
-              </MenuItems>
-            </Menu>
-            <ImportInput />
-          </>
+    <AppLayout
+      title={folder?.name || "Dossier"}
+      currentModule="notes"
+      onBack={() => {
+        if (folder?.parentId) {
+          router.push(`/notes/${folder.parentId}`);
+        } else {
+          router.push("/notes");
         }
-      />
+      }}
+      padding="px-4 sm:px-6 lg:px-8 py-8 pb-24"
+      actions={
+        <>
+          <Menu as="div" className="relative inline-block text-left">
+            <MenuButton className="p-2 text-gray-500 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50">
+              <MoreVertical size={20} />
+            </MenuButton>
 
-      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
+            <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 focus:outline-none">
+              <div className="py-1">
+                <MenuItem
+                  as="button"
+                  onClick={triggerImport}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100"
+                >
+                  <Upload size={16} />
+                  Importer une note
+                </MenuItem>
+                <MenuItem
+                  as="button"
+                  onClick={() => router.push(`/notes/${folderId}/settings`)}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100"
+                >
+                  <Settings size={16} />
+                  Paramètres
+                </MenuItem>
+                <MenuItem
+                  as="button"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 flex items-center gap-2 hover:bg-red-50"
+                >
+                  <Trash2 size={16} />
+                  Supprimer
+                </MenuItem>
+              </div>
+            </MenuItems>
+          </Menu>
+          <ImportInput />
+        </>
+      }
+    >
 
 
         {/* Sub-folders Section */}
@@ -332,7 +330,7 @@ export default function FolderPage() {
             ))}
           </div>
         )}
-      </main>
+
 
       {/* Floating Add Button */}
       <FloatingAddButton
@@ -411,6 +409,6 @@ export default function FolderPage() {
           handleCreateNote(templateId);
         }}
       />
-    </div>
+    </AppLayout>
   );
 }

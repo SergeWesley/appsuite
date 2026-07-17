@@ -34,7 +34,7 @@ export function AppHeader({
   iconColor = "text-gray-900",
   currentModule,
   actions,
-  maxWidth = "max-w-[1600px]",
+  maxWidth = "w-full",
   onBack,
   height = "h-16",
 }: AppHeaderProps) {

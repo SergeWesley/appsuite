@@ -16,10 +16,9 @@ import { ExerciseCard } from "@/components/tracker/ExerciseCard";
 import { MuscleGroupFilter } from "@/components/tracker/MuscleGroupFilter";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
-import { Activity, Dumbbell, TrendingUp } from "lucide-react";
-import { useAuthContext } from "@/components/AuthProvider";
+import { Activity } from "lucide-react";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
-import { AppHeader } from "@/components/AppHeader";
+import { AppLayout } from "@/components/AppLayout";
 import {
   calculateEstimatedDuration,
   formatDuration,
@@ -29,7 +28,6 @@ export default function WorkoutSessionDetailPage() {
   const router = useRouter();
   const params = useParams();
   const sessionId = params.id as string;
-  const { user, signOut } = useAuthContext();
 
   const {
     sessions,
@@ -315,16 +313,14 @@ export default function WorkoutSessionDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AppHeader
-        title="Tracker"
-        icon={Activity}
-        iconColor="text-green-600"
-        currentModule="tracker"
-        onBack={() => router.push("/tracker")}
-      />
-
-      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
+    <AppLayout
+      title="Tracker"
+      icon={Activity}
+      iconColor="text-green-600"
+      currentModule="tracker"
+      onBack={() => router.push("/tracker")}
+      padding="px-4 sm:px-6 lg:px-8 py-8 pb-24"
+    >
         {/* En-tête de la séance */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2 capitalize">
@@ -373,7 +369,7 @@ export default function WorkoutSessionDetailPage() {
             />
           ))}
         </div>
-      </main>
+
 
       {/* Floating Add Exercise Button */}
       <FloatingAddButton
@@ -445,6 +441,6 @@ export default function WorkoutSessionDetailPage() {
         confirmLabel="Dupliquer"
         confirmColor="bg-gray-600 hover:bg-gray-700"
       />
-    </div>
+    </AppLayout>
   );
 }

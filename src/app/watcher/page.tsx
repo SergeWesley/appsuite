@@ -22,7 +22,7 @@ import { MediaCard } from "@/components/watcher/MediaCard";
 import { MediaForm } from "@/components/watcher/MediaForm";
 import { MediaStats } from "@/components/watcher/MediaStats";
 import { WatchingTimer } from "@/components/watcher/WatchingTimer";
-import { AppHeader } from "@/components/AppHeader";
+import { AppLayout } from "@/components/AppLayout";
 
 export default function WatcherPage() {
   const {
@@ -182,26 +182,21 @@ export default function WatcherPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <AppHeader
-        title="Watcher"
-        icon={Film}
-        iconColor="text-purple-600"
-        currentModule="watcher"
-        maxWidth="max-w-7xl"
-        actions={
-          <button
-            onClick={() => openForm()}
-            className="inline-flex items-center text-sm px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            <Plus size={20} className="mr-2" />
-            Ajouter une œuvre
-          </button>
-        }
-      />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <AppLayout
+      title="Watcher"
+      icon={Film}
+      iconColor="text-purple-600"
+      currentModule="watcher"
+      actions={
+        <button
+          onClick={() => openForm()}
+          className="inline-flex items-center text-sm px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+        >
+          <Plus size={20} className="mr-2" />
+          Ajouter une œuvre
+        </button>
+      }
+    >
         {/* Statistiques */}
         <MediaStats {...stats} />
 
@@ -347,7 +342,7 @@ export default function WatcherPage() {
             </div>
           )}
         </div>
-      </main>
+
 
       {/* Bouton flottant pour mobile */}
       <motion.button
@@ -378,6 +373,6 @@ export default function WatcherPage() {
           onClose={closeTimer}
         />
       )}
-    </div>
+    </AppLayout>
   );
 }

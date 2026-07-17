@@ -3,7 +3,7 @@
 import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { appModules } from "@/config/modules";
-import { AppHeader } from "@/components/AppHeader";
+import { AppLayout } from "@/components/AppLayout";
 import { SplitSquareVertical, X, ArrowRight, Layers } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -77,16 +77,13 @@ function SplitScreenContent() {
 
   // Mode Sélection
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AppHeader
-        title="Split Mode"
-        icon={SplitSquareVertical}
-        iconColor="text-gray-600"
-        currentModule="split"
-        maxWidth="max-w-4xl"
-      />
-      
-      <main className="max-w-4xl mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-[calc(100vh-64px)]">
+    <AppLayout
+      title="Split Mode"
+      icon={SplitSquareVertical}
+      iconColor="text-gray-600"
+      currentModule="split"
+      padding="px-4 py-12 flex flex-col items-center justify-center min-h-[calc(100vh-64px)]"
+    >
         <div className="w-full max-w-md space-y-12">
           
           {/* Sélection App 1 */}
@@ -171,8 +168,8 @@ function SplitScreenContent() {
           </div>
 
         </div>
-      </main>
-    </div>
+
+    </AppLayout>
   );
 }
 

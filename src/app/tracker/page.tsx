@@ -21,7 +21,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import { WorkoutCalendar } from "@/components/tracker/WorkoutCalendar";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
-import { AppHeader } from "@/components/AppHeader";
+import { AppLayout } from "@/components/AppLayout";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { SessionMetadataModal } from "@/components/tracker/SessionMetadataModal";
 
@@ -122,53 +122,50 @@ export default function TrackerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AppHeader
-        title="Tracker"
-        icon={Activity}
-        iconColor="text-green-600"
-        currentModule="tracker"
-        actions={
-          <>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="hidden sm:inline-flex items-center text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-            >
-              <Plus size={20} className="mr-2" />
-              Nouvelle séance
-            </button>
+    <AppLayout
+      title="Tracker"
+      icon={Activity}
+      iconColor="text-green-600"
+      currentModule="tracker"
+      actions={
+        <>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="hidden sm:inline-flex items-center text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          >
+            <Plus size={20} className="mr-2" />
+            Nouvelle séance
+          </button>
 
-            <Menu as="div" className="relative inline-block text-left">
-              <MenuButton className="p-2 text-gray-500 hover:text-green-600 transition-colors rounded-lg hover:bg-green-50">
-                <MoreVertical size={20} />
-              </MenuButton>
+          <Menu as="div" className="relative inline-block text-left">
+            <MenuButton className="p-2 text-gray-500 hover:text-green-600 transition-colors rounded-lg hover:bg-green-50">
+              <MoreVertical size={20} />
+            </MenuButton>
 
-              <MenuItems className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50 focus:outline-none">
-                <div className="py-1">
-                  <MenuItem
-                    as="button"
-                    onClick={() => router.push("/tracker/stats")}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-3 hover:bg-gray-100"
-                  >
-                    <TrendingUp size={16} className="text-indigo-600" />
-                    Performances
-                  </MenuItem>
-                  <MenuItem
-                    as="button"
-                    onClick={() => router.push("/tracker/exercises")}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-3 hover:bg-gray-100"
-                  >
-                    <Dumbbell size={16} className="text-gray-600" />
-                    Exercices
-                  </MenuItem>
-                </div>
-              </MenuItems>
-            </Menu>
-          </>
-        }
-      />
-
-      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <MenuItems className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50 focus:outline-none">
+              <div className="py-1">
+                <MenuItem
+                  as="button"
+                  onClick={() => router.push("/tracker/stats")}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-3 hover:bg-gray-100"
+                >
+                  <TrendingUp size={16} className="text-indigo-600" />
+                  Performances
+                </MenuItem>
+                <MenuItem
+                  as="button"
+                  onClick={() => router.push("/tracker/exercises")}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-3 hover:bg-gray-100"
+                >
+                  <Dumbbell size={16} className="text-gray-600" />
+                  Exercices
+                </MenuItem>
+              </div>
+            </MenuItems>
+          </Menu>
+        </>
+      }
+    >
         {/* Filtres et recherche */}
         <div className="mb-8 space-y-4">
           {/* Barre de recherche */}
@@ -321,7 +318,7 @@ export default function TrackerPage() {
           )}
         </div>
 
-      </main>
+
 
       {/* Bouton flottant pour mobile */}
       <button
@@ -350,6 +347,6 @@ export default function TrackerPage() {
         confirmLabel="Supprimer"
         confirmColor="bg-red-600 hover:bg-red-700"
       />
-    </div>
+    </AppLayout>
   );
 }

@@ -14,7 +14,7 @@ import {
 import { Activity, Plus, Search, Edit, Star, Dumbbell, X } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
-import { AppHeader } from "@/components/AppHeader";
+import { AppLayout } from "@/components/AppLayout";
 
 export default function ExerciseCatalogPage() {
   const router = useRouter();
@@ -105,25 +105,22 @@ export default function ExerciseCatalogPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AppHeader
-        title="Tracker"
-        icon={Activity}
-        iconColor="text-green-600"
-        currentModule="tracker"
-        onBack={() => router.push("/tracker")}
-        actions={
-          <button
-            onClick={() => setShowExerciseForm(true)}
-            className="hidden sm:inline-flex items-center text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <Plus size={20} className="mr-2" />
-            Créer un exercice
-          </button>
-        }
-      />
-
-      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <AppLayout
+      title="Tracker"
+      icon={Activity}
+      iconColor="text-green-600"
+      currentModule="tracker"
+      onBack={() => router.push("/tracker")}
+      actions={
+        <button
+          onClick={() => setShowExerciseForm(true)}
+          className="hidden sm:inline-flex items-center text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+        >
+          <Plus size={20} className="mr-2" />
+          Créer un exercice
+        </button>
+      }
+    >
         {/* En-tête */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -328,7 +325,7 @@ export default function ExerciseCatalogPage() {
             </div>
           </div>
         )}
-      </main>
+
 
       {/* Bouton flottant pour mobile */}
       <button
@@ -346,6 +343,6 @@ export default function ExerciseCatalogPage() {
         onSubmit={editingExercise ? handleEditExercise : handleAddExercise}
         onDelete={editingExercise?.isCustom ? handleDeleteExercise : undefined}
       />
-    </div>
+    </AppLayout>
   );
 }

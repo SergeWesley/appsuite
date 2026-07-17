@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import RecipeResults from "./RecipeResults";
-import { AppHeader } from "@/components/AppHeader";
+import { AppLayout } from "@/components/AppLayout";
 import {
   Search,
   Check,
@@ -176,17 +176,12 @@ export default function CookerPage() {
   }, [foodData, selectedItems]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <AppHeader
-        title="Cooker"
-        icon={Utensils}
-        iconColor="text-cyan-600"
-        currentModule="cooker"
-        maxWidth="max-w-7xl"
-      />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <AppLayout
+      title="Cooker"
+      icon={Utensils}
+      iconColor="text-cyan-600"
+      currentModule="cooker"
+    >
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="h-12 w-12 text-cyan-500 animate-spin mb-4" />
@@ -419,7 +414,7 @@ export default function CookerPage() {
             )}
           </AnimatePresence>
         )}
-      </main>
+
 
       {/* Back to Top Button */}
       <AnimatePresence>
@@ -534,6 +529,6 @@ export default function CookerPage() {
       </AnimatePresence>
 
 
-    </div>
+    </AppLayout>
   );
 }

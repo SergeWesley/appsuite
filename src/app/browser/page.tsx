@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { AppHeader } from "@/components/AppHeader";
+import { AppLayout } from "@/components/AppLayout";
 import { BrowserAppFormModal } from "@/components/browser/BrowserAppFormModal";
 import { BrowserAppCard } from "@/components/browser/BrowserAppCard";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
@@ -54,15 +54,13 @@ export default function BrowserPage() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AppHeader
-        title="Browser"
-        icon={Globe}
-        iconColor="text-teal-500"
-        currentModule="browser"
-      />
-
-      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
+    <AppLayout
+      title="Browser"
+      icon={Globe}
+      iconColor="text-teal-500"
+      currentModule="browser"
+      padding="px-4 sm:px-6 lg:px-8 py-8 pb-24"
+    >
         {/* Page Title */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -129,7 +127,7 @@ export default function BrowserPage() {
             ))}
           </div>
         )}
-      </main>
+
 
       {/* Floating Add Button */}
       <FloatingAddButton
@@ -163,6 +161,6 @@ export default function BrowserPage() {
         confirmLabel="Supprimer"
         confirmColor="bg-red-600 hover:bg-red-700"
       />
-    </div>
+    </AppLayout>
   );
 }

@@ -4,7 +4,7 @@ import { useChat } from "ai/react";
 import { useRef, useEffect, useState } from "react";
 import { Send, Bot, User, Loader2, BookOpen, Hammer, PlusCircle, Lock, Calendar, RotateCcw } from "lucide-react";
 import { ToolRenderer } from "@/components/forge/ToolRenderer";
-import { AppHeader } from "@/components/AppHeader";
+import { AppLayout } from "@/components/AppLayout";
 import { ApiCatalog } from "@/components/forge/ApiCatalog";
 import { useAuthContext } from "@/components/AuthProvider";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
@@ -88,13 +88,15 @@ export default function ForgeBuilderPage() {
 
   if (isMounted && !isAllowed) {
     return (
-      <div className="h-screen bg-white flex flex-col overflow-hidden">
-        <AppHeader
-          title="Forge"
-          icon={Hammer}
-          iconColor="text-indigo-600"
-          currentModule="forge"
-        />
+      <AppLayout
+        title="Forge"
+        icon={Hammer}
+        iconColor="text-indigo-600"
+        currentModule="forge"
+        bgClass="h-screen bg-white flex flex-col overflow-hidden"
+        noPadding
+        maxWidth="flex-1 flex w-full overflow-hidden"
+      >
         <div className="flex-1 flex flex-col items-center justify-center p-4 text-center">
           <div className="bg-red-50 p-6 rounded-full mb-6">
             <Lock size={48} className="text-red-500" />
@@ -104,32 +106,33 @@ export default function ForgeBuilderPage() {
             L'utilisation de Forge nécessite des crédits IA et est exclusivement réservée aux administrateurs et aux utilisateurs VIP.
           </p>
         </div>
-      </div>
+      </AppLayout>
     );
   }
 
   return (
-    <div className="h-screen bg-white flex flex-col overflow-hidden">
-      <AppHeader
-        title="Forge"
-        icon={Hammer}
-        iconColor="text-indigo-600"
-        currentModule="forge"
-        actions={
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              onClick={handleNewChat}
-              className="p-2 rounded-lg transition-colors flex items-center gap-2 text-gray-600 hover:bg-gray-100"
-              aria-label="Nouvelle discussion"
-              title="Nouvelle discussion"
-            >
-              <PlusCircle size={20} />
-              <span className="hidden sm:inline text-sm font-medium">Nouveau</span>
-            </button>
-          </div>
-        }
-      />
-      <div className="flex-1 flex w-full overflow-hidden">
+    <AppLayout
+      title="Forge"
+      icon={Hammer}
+      iconColor="text-indigo-600"
+      currentModule="forge"
+      bgClass="h-screen bg-white flex flex-col overflow-hidden"
+      noPadding
+      maxWidth="flex-1 flex w-full overflow-hidden"
+      actions={
+        <div className="flex items-center gap-2 sm:gap-3">
+          <button
+            onClick={handleNewChat}
+            className="p-2 rounded-lg transition-colors flex items-center gap-2 text-gray-600 hover:bg-gray-100"
+            aria-label="Nouvelle discussion"
+            title="Nouvelle discussion"
+          >
+            <PlusCircle size={20} />
+            <span className="hidden sm:inline text-sm font-medium">Nouveau</span>
+          </button>
+        </div>
+      }
+    >
         {/* Chat Area */}
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="flex-1 overflow-y-auto p-4 md:p-8">
@@ -284,7 +287,7 @@ export default function ForgeBuilderPage() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+
+    </AppLayout>
   );
 }

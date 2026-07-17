@@ -9,7 +9,7 @@ import { Activity, Trophy, TrendingUp } from "lucide-react";
 import { useAuthContext } from "@/components/AuthProvider";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
-import { AppHeader } from "@/components/AppHeader";
+import { AppLayout } from "@/components/AppLayout";
 
 import { ExerciseProgressionChart, ProgressionDataPoint } from "@/components/tracker/ExerciseProgressionChart";
 import { WorkoutStats } from "@/components/tracker/WorkoutStats";
@@ -121,16 +121,13 @@ export default function TrackerStatsPage() {
   const selectedExerciseObj = exercises.find(e => e.id === selectedExerciseId);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AppHeader
-        title="Performances"
-        icon={TrendingUp}
-        iconColor="text-indigo-600"
-        currentModule="tracker"
-        onBack={() => router.push("/tracker")}
-      />
-
-      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <AppLayout
+      title="Performances"
+      icon={TrendingUp}
+      iconColor="text-indigo-600"
+      currentModule="tracker"
+      onBack={() => router.push("/tracker")}
+    >
         
         {/* Statistiques Globales */}
         <div className="mb-8">
@@ -208,9 +205,9 @@ export default function TrackerStatsPage() {
           </div>
         )}
 
-      </main>
 
 
-    </div>
+
+    </AppLayout>
   );
 }

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { NavigationMenu } from "@/components/NavigationMenu";
-import { AppHeader } from "@/components/AppHeader";
+import { AppLayout } from "@/components/AppLayout";
 import { Wallet, LogOut, User, Plus, Receipt } from "lucide-react";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { useSubscriptions } from "@/hooks/spender/useSubscriptions";
@@ -37,16 +37,13 @@ export default function SpenderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AppHeader
-        title="Spender"
-        icon={Wallet}
-        iconColor="text-red-500"
-        currentModule="spender"
-        maxWidth="max-w-3xl"
-      />
-
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
+    <AppLayout
+      title="Spender"
+      icon={Wallet}
+      iconColor="text-red-500"
+      currentModule="spender"
+      padding="px-4 sm:px-6 lg:px-8 py-8 pb-24"
+    >
         {/* Page Title & Total Summary */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -116,7 +113,7 @@ export default function SpenderPage() {
             ))}
           </div>
         )}
-      </main>
+
 
       {/* Floating Add Button */}
       <FloatingAddButton
@@ -142,6 +139,6 @@ export default function SpenderPage() {
         confirmLabel="Supprimer"
         confirmColor="bg-red-600 hover:bg-red-700"
       />
-    </div>
+    </AppLayout>
   );
 }

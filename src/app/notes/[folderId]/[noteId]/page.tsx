@@ -14,7 +14,7 @@ import { DynamicPropertiesBanner } from "@/components/notes/DynamicPropertiesBan
 import { useAgent } from "@/components/chat/AgentProvider";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
-import { AppHeader } from "@/components/AppHeader";
+import { AppLayout } from "@/components/AppLayout";
 import { useNoteHistory } from "@/hooks/notes/useNoteHistory";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
@@ -299,97 +299,94 @@ export default function NoteEditorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <AppHeader
-        title={folder?.name || "Retour"}
-        currentModule="notes"
-        height="h-14"
-        onBack={handleBack}
-        actions={
-          <>
-            {/* Undo / Redo Buttons */}
-            <div className="flex items-center gap-1 sm:mr-2 sm:border-r border-gray-200 sm:pr-2">
-              <button
-                onClick={handleUndo}
-                disabled={!canUndo}
-                className={`p-1.5 rounded transition-colors ${canUndo ? "text-gray-600 hover:bg-gray-100 hover:text-amber-600" : "text-gray-300 cursor-not-allowed"}`}
-                title="Annuler (Ctrl+Z)"
+    <AppLayout
+      title={folder?.name || "Retour"}
+      currentModule="notes"
+      height="h-14"
+      onBack={handleBack}
+      bgClass="min-h-screen bg-white"
+      padding="px-4 sm:px-6 py-6"
+      actions={
+        <>
+          {/* Undo / Redo Buttons */}
+          <div className="flex items-center gap-1 sm:mr-2 sm:border-r border-gray-200 sm:pr-2">
+            <button
+              onClick={handleUndo}
+              disabled={!canUndo}
+              className={`p-1.5 rounded transition-colors ${canUndo ? "text-gray-600 hover:bg-gray-100 hover:text-amber-600" : "text-gray-300 cursor-not-allowed"}`}
+              title="Annuler (Ctrl+Z)"
+            >
+              <Undo2 size={18} />
+            </button>
+            <button
+              onClick={handleRedo}
+              disabled={!canRedo}
+              className={`p-1.5 rounded transition-colors ${canRedo ? "text-gray-600 hover:bg-gray-100 hover:text-amber-600" : "text-gray-300 cursor-not-allowed"}`}
+              title="Rétablir (Ctrl+Shift+Z)"
+            >
+              <Redo2 size={18} />
+            </button>
+          </div>
+
+          {/* Save status indicator */}
+          <div className="w-5 h-5 flex items-center justify-center" title={saving ? "Enregistrement en cours..." : "Synchronisé"}>
+            {saving ? (
+              <Loader2 size={14} className="animate-spin text-amber-500/50" />
+            ) : saved ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
               >
-                <Undo2 size={18} />
-              </button>
-              <button
-                onClick={handleRedo}
-                disabled={!canRedo}
-                className={`p-1.5 rounded transition-colors ${canRedo ? "text-gray-600 hover:bg-gray-100 hover:text-amber-600" : "text-gray-300 cursor-not-allowed"}`}
-                title="Rétablir (Ctrl+Shift+Z)"
-              >
-                <Redo2 size={18} />
-              </button>
-            </div>
+                <Check size={14} className="text-emerald-500/70" />
+              </motion.div>
+            ) : null}
+          </div>
 
-            {/* Save status indicator */}
-            <div className="w-5 h-5 flex items-center justify-center" title={saving ? "Enregistrement en cours..." : "Synchronisé"}>
-              {saving ? (
-                <Loader2 size={14} className="animate-spin text-amber-500/50" />
-              ) : saved ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <Check size={14} className="text-emerald-500/70" />
-                </motion.div>
-              ) : null}
-            </div>
+          {/* AI, Export, Delete buttons grouped in a Menu */}
+          <Menu as="div" className="relative inline-block text-left">
+            <MenuButton className="p-2 text-gray-500 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50">
+              <MoreVertical size={20} />
+            </MenuButton>
 
-            {/* AI, Export, Delete buttons grouped in a Menu */}
-            <Menu as="div" className="relative inline-block text-left">
-              <MenuButton className="p-2 text-gray-500 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50">
-                <MoreVertical size={20} />
-              </MenuButton>
-
-              <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 focus:outline-none">
-                <div className="py-1">
-                  {isAdmin && (
-                    <MenuItem
-                      as="button"
-                      onClick={() => {
-                        openAgent({
-                          systemContext: `L'utilisateur est dans le module Notes, en train d'éditer une note.`,
-                        });
-                      }}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100"
-                    >
-                      <Sparkles size={16} />
-                      Assistant IA
-                    </MenuItem>
-                  )}
+            <MenuItems className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50 focus:outline-none">
+              <div className="py-1">
+                {isAdmin && (
                   <MenuItem
                     as="button"
-                    onClick={handleExport}
+                    onClick={() => {
+                      openAgent({
+                        systemContext: `L'utilisateur est dans le module Notes, en train d'éditer une note.`,
+                      });
+                    }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100"
                   >
-                    <Download size={16} />
-                    Exporter
+                    <Sparkles size={16} />
+                    Assistant IA
                   </MenuItem>
-                  <MenuItem
-                    as="button"
-                    onClick={() => setShowDeleteConfirm(true)}
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 flex items-center gap-2 hover:bg-red-50"
-                  >
-                    <Trash2 size={16} />
-                    Supprimer
-                  </MenuItem>
-                </div>
-              </MenuItems>
-            </Menu>
-          </>
-        }
-      />
-
-      {/* Editor */}
-      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 py-6">
+                )}
+                <MenuItem
+                  as="button"
+                  onClick={handleExport}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 flex items-center gap-2 hover:bg-gray-100"
+                >
+                  <Download size={16} />
+                  Exporter
+                </MenuItem>
+                <MenuItem
+                  as="button"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 flex items-center gap-2 hover:bg-red-50"
+                >
+                  <Trash2 size={16} />
+                  Supprimer
+                </MenuItem>
+              </div>
+            </MenuItems>
+          </Menu>
+        </>
+      }
+    >
         {/* Title input */}
         <input
           type="text"
@@ -441,7 +438,7 @@ export default function NoteEditorPage() {
           placeholder="Commencez à écrire..."
           className="w-full text-gray-700 placeholder-gray-300 border-none outline-none bg-transparent resize-none leading-relaxed text-base min-h-[60vh]"
         />
-      </main>
+
 
       {/* Delete Confirmation Modal */}
       <ConfirmationModal
@@ -453,6 +450,6 @@ export default function NoteEditorPage() {
         confirmLabel="Supprimer"
         confirmColor="bg-red-600 hover:bg-red-700"
       />
-    </div>
+    </AppLayout>
   );
 }

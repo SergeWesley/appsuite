@@ -19,7 +19,7 @@ import { BookCard } from "@/components/booker/BookCard";
 import { BookForm } from "@/components/booker/BookForm";
 import { ReadingStats } from "@/components/booker/ReadingStats";
 import { ReadingTimer } from "@/components/booker/ReadingTimer";
-import { AppHeader } from "@/components/AppHeader";
+import { AppLayout } from "@/components/AppLayout";
 
 export default function BookerPage() {
   const {
@@ -149,25 +149,22 @@ export default function BookerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AppHeader
-        title="Booker"
-        icon={BookOpen}
-        iconColor="text-blue-600"
-        currentModule="booker"
-        maxWidth="max-w-7xl"
-        actions={
-          <button
-            onClick={() => openForm()}
-            className="hidden sm:inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <Plus size={20} className="mr-2" />
-            Ajouter un livre
-          </button>
-        }
-      />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <AppLayout
+      title="Booker"
+      icon={BookOpen}
+      iconColor="text-blue-600"
+      currentModule="booker"
+      actions={
+        <button
+          onClick={() => openForm()}
+          className="hidden sm:inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <Plus size={20} className="mr-2" />
+          Ajouter un livre
+        </button>
+      }
+    >
+      <div className="space-y-8">
         {/* Statistiques */}
         <ReadingStats {...stats} />
 
@@ -261,7 +258,7 @@ export default function BookerPage() {
             </div>
           )}
         </div>
-      </main>
+      </div>
 
       {/* Bouton flottant pour mobile */}
       <motion.button
@@ -297,6 +294,6 @@ export default function BookerPage() {
         />
       )}
 
-    </div>
+    </AppLayout>
   );
 }

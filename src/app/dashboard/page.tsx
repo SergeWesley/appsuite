@@ -5,7 +5,7 @@ import { ArrowRight, Grid3X3, LayoutGrid, LayoutList } from "lucide-react";
 import Link from "next/link";
 import { appModules } from "@/config/modules";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
-import { AppHeader } from "@/components/AppHeader";
+import { AppLayout } from "@/components/AppLayout";
 
 export default function Dashboard() {
   const { selectedViewMode, updateFilter } = useFilterPersistence("dashboard-view", {
@@ -13,19 +13,14 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* En-tête */}
-      <AppHeader
-        title="AppSuite"
-        icon={Grid3X3}
-        iconColor="text-blue-600"
-        currentModule="dashboard"
-        maxWidth="max-w-7xl"
-      />
-
-      {/* Contenu principal */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center mb-12">
+    <AppLayout
+      title="AppSuite"
+      icon={Grid3X3}
+      iconColor="text-blue-600"
+      currentModule="dashboard"
+      padding="px-4 sm:px-6 lg:px-8 py-12"
+    >
+      <div className="text-center mb-12">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -137,7 +132,6 @@ export default function Dashboard() {
             ))}
           </div>
         )}
-      </main>
-    </div>
+    </AppLayout>
   );
 }
