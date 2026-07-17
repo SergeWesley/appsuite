@@ -126,7 +126,7 @@ export default function FolderSettingsPage() {
 
   return (
     <AppLayout
-      title="Paramètres du dossier"
+      title="Paramètres"
       icon={Settings}
       iconColor="text-amber-500"
       currentModule="notes"
