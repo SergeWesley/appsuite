@@ -10,6 +10,8 @@ import {
   ChevronDown,
   Maximize2,
   RotateCcw,
+  Sigma,
+  CheckSquare,
 } from "lucide-react";
 import {
   useReactTable,
@@ -19,6 +21,7 @@ import {
   ColumnDef,
   SortingState,
   ColumnSizingState,
+  RowSelectionState,
 } from "@tanstack/react-table";
 
 interface PropertyTableEditorProps {
@@ -56,6 +59,8 @@ export function PropertyTableEditor({
   
   const [sorting, setSorting] = useState<SortingState>(dbSettings.sorting || []);
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(dbSettings.columnSizing || {});
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
 
   // Synchronize state when dbSettings changes (e.g. late data loading or note switch)
   useEffect(() => {
@@ -132,15 +137,40 @@ export function PropertyTableEditor({
 
   // Convert custom field columns to TanStack columns
   const tableColumns = useMemo<ColumnDef<any>[]>(() => {
-    if (!field.columns) return [];
-    return field.columns.map((col) => ({
-      accessorKey: col.id, // access using column ID
-      id: col.id,
-      header: col.name,
-      size: 150, // Base default size
-      minSize: 60,
-      meta: { colDef: col },
-    }));
+    const cols: ColumnDef<any>[] = [];
+    if (!field.columns) return cols;
+
+    cols.push({
+      id: "select",
+      header: () => null,
+      cell: ({ row }) => (
+        <div className="flex justify-center items-center h-full px-2">
+          <input
+            type="checkbox"
+            className="w-4 h-4 rounded border-gray-300 text-amber-500 focus:ring-amber-500 cursor-pointer"
+            checked={row.getIsSelected()}
+            disabled={!row.getCanSelect()}
+            onChange={row.getToggleSelectedHandler()}
+          />
+        </div>
+      ),
+      size: 40,
+      minSize: 40,
+      enableResizing: false,
+    });
+
+    cols.push(
+      ...field.columns.map((col) => ({
+        accessorKey: col.id, // access using column ID
+        id: col.id,
+        header: col.name,
+        size: 150, // Base default size
+        minSize: 60,
+        meta: { colDef: col },
+      }))
+    );
+
+    return cols;
   }, [field.columns]);
 
   const table = useReactTable({
@@ -152,7 +182,13 @@ export function PropertyTableEditor({
     state: {
       sorting,
       columnSizing,
+      rowSelection,
+      columnVisibility: {
+        select: isSelectionMode,
+      },
     },
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
     onSortingChange: handleSortingChange,
     onColumnSizingChange: setColumnSizing,
   });
@@ -164,6 +200,36 @@ export function PropertyTableEditor({
       </div>
     );
   }
+
+  const handleSum = () => {
+    const selectedIndices = Object.keys(rowSelection).map(Number);
+    if (selectedIndices.length === 0) return;
+
+    const numericCols = field.columns?.filter((c) => c.type === "number" || c.type === "currency") || [];
+    if (numericCols.length === 0) {
+      setRowSelection({});
+      return;
+    }
+
+    const newRow: any = {};
+    const textCols = field.columns?.filter((c) => c.type === "text" || c.type === "textarea" || c.type === "select") || [];
+    
+    if (textCols.length > 0) {
+      newRow[textCols[0].id] = "Total";
+    }
+
+    numericCols.forEach((col) => {
+      const sum = selectedIndices.reduce((acc, idx) => {
+        const val = rows[idx][col.id];
+        const num = parseFloat(val);
+        return acc + (isNaN(num) ? 0 : num);
+      }, 0);
+      newRow[col.id] = sum.toString();
+    });
+
+    onChange([...rows, newRow]);
+    setRowSelection({});
+  };
 
   const columns = field.columns;
 
@@ -181,44 +247,57 @@ export function PropertyTableEditor({
                   Aucune donnée
                 </div>
               ) : (
-                rows.map((rowValue, rIndex) => (
-                  <div
-                    key={`card-${rIndex}`}
-                    className="p-4 flex flex-col gap-3 relative group hover:bg-gray-50/50 transition-colors"
-                  >
-                    <div className="absolute top-3 right-3 flex gap-1 z-10">
-                      <button
-                        onClick={() => setEditingRowIndex(rIndex)}
-                        className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors bg-white shadow-sm border border-gray-100"
-                        title="Éditer la ligne complète"
-                      >
-                        <Maximize2 size={14} />
-                      </button>
-                      <button
-                        onClick={() => removeRow(rIndex)}
-                        className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors bg-white shadow-sm border border-gray-100"
-                        title="Supprimer la ligne"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-
-                    <div className="flex flex-col gap-3 pr-16">
-                      {displayColumns.map((col) => (
-                        <div key={col.id} className="flex flex-col">
-                          <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">
-                            {col.name}
-                          </span>
-                          <div className="min-h-[32px] flex items-center bg-gray-50/50 rounded border border-transparent focus-within:border-amber-200 focus-within:bg-white transition-colors">
-                            {renderEditor(col, rowValue[col.id] ?? "", (val) =>
-                              updateRow(rIndex, col.id, val)
-                            )}
-                          </div>
+                rows.map((rowValue, rIndex) => {
+                  const row = table.getRowModel().rows[rIndex];
+                  return (
+                    <div
+                      key={`card-${rIndex}`}
+                      className={`p-4 flex flex-col gap-3 relative group transition-colors ${row?.getIsSelected() ? "bg-amber-50/50" : "hover:bg-gray-50/50"}`}
+                    >
+                      {isSelectionMode && (
+                        <div className="absolute top-4 left-4 flex gap-1 z-10">
+                          <input
+                            type="checkbox"
+                            className="w-4 h-4 rounded border-gray-300 text-amber-500 focus:ring-amber-500 cursor-pointer"
+                            checked={row?.getIsSelected() || false}
+                            onChange={row?.getToggleSelectedHandler()}
+                          />
                         </div>
-                      ))}
+                      )}
+                      <div className="absolute top-3 right-3 flex gap-1 z-10">
+                        <button
+                          onClick={() => setEditingRowIndex(rIndex)}
+                          className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors bg-white shadow-sm border border-gray-100"
+                          title="Éditer la ligne complète"
+                        >
+                          <Maximize2 size={14} />
+                        </button>
+                        <button
+                          onClick={() => removeRow(rIndex)}
+                          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors bg-white shadow-sm border border-gray-100"
+                          title="Supprimer la ligne"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+
+                      <div className="flex flex-col gap-3 pr-16">
+                        {displayColumns.map((col) => (
+                          <div key={col.id} className="flex flex-col">
+                            <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-1">
+                              {col.name}
+                            </span>
+                            <div className="min-h-[32px] flex items-center bg-gray-50/50 rounded border border-transparent focus-within:border-amber-200 focus-within:bg-white transition-colors">
+                              {renderEditor(col, rowValue[col.id] ?? "", (val) =>
+                                updateRow(rIndex, col.id, val)
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           )}
@@ -308,10 +387,22 @@ export function PropertyTableEditor({
                   <tr
                     key={row.id}
                     className={`group hover:bg-gray-50/50 ${
-                      editingRowIndex === rIndex ? "bg-amber-50/30" : ""
+                      row.getIsSelected() || editingRowIndex === rIndex ? "bg-amber-50/30" : ""
                     }`}
                   >
                     {row.getVisibleCells().map((cell) => {
+                      if (cell.column.id === "select") {
+                        return (
+                          <td
+                            key={cell.id}
+                            className="p-1 align-middle border-r border-transparent"
+                            style={{ width: cell.column.getSize() }}
+                          >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </td>
+                        );
+                      }
+
                       const meta = cell.column.columnDef.meta as any;
                       const colDef = meta?.colDef as CustomFieldDefinition;
                       if (!colDef) return null;
@@ -433,13 +524,29 @@ export function PropertyTableEditor({
           </table>
         </div>
         <div className="p-1 bg-gray-50 border-t border-gray-200 shrink-0 flex justify-between items-center">
-          <button
-            onClick={addRow}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors w-max"
-          >
-            <Plus size={14} />
-            Ajouter une ligne
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={addRow}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors w-max"
+            >
+              <Plus size={14} />
+              Ajouter une ligne
+            </button>
+            <button
+              onClick={() => {
+                if (isSelectionMode) setRowSelection({});
+                setIsSelectionMode(!isSelectionMode);
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded transition-colors w-max ${
+                isSelectionMode
+                  ? "text-amber-600 bg-amber-50"
+                  : "text-gray-500 hover:text-amber-600 hover:bg-amber-50"
+              }`}
+            >
+              <CheckSquare size={14} />
+              Sélectionner
+            </button>
+          </div>
           {!expanded && (
             <button
               onClick={() => setIsTableExpanded(true)}
@@ -541,6 +648,37 @@ export function PropertyTableEditor({
                 ))}
               </div>
             </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {Object.keys(rowSelection).length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-4 z-[80]"
+          >
+            <span className="text-sm font-medium whitespace-nowrap">
+              {Object.keys(rowSelection).length} ligne{Object.keys(rowSelection).length > 1 ? "s" : ""} sélectionnée{Object.keys(rowSelection).length > 1 ? "s" : ""}
+            </span>
+            <div className="w-px h-5 bg-gray-700" />
+            <button
+              onClick={handleSum}
+              className="flex items-center gap-2 text-sm font-medium hover:text-amber-400 transition-colors whitespace-nowrap"
+            >
+              <Sigma size={16} />
+              Somme
+            </button>
+            <div className="w-px h-5 bg-gray-700" />
+            <button
+              onClick={() => setRowSelection({})}
+              className="text-gray-400 hover:text-white transition-colors"
+              title="Annuler la sélection"
+            >
+              <X size={18} />
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
