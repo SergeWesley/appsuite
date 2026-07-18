@@ -160,14 +160,26 @@ export function PropertyTableEditor({
     });
 
     cols.push(
-      ...field.columns.map((col) => ({
-        accessorKey: col.id, // access using column ID
-        id: col.id,
-        header: col.name,
-        size: 150, // Base default size
-        minSize: 60,
-        meta: { colDef: col },
-      }))
+      ...field.columns.map((col) => {
+        const isNumeric = col.type === "number" || col.type === "currency";
+        return {
+          accessorKey: col.id, // accès via l'ID de la colonne
+          id: col.id,
+          header: col.name,
+          size: 150, // Taille par défaut de base
+          minSize: 60,
+          meta: { colDef: col },
+          ...(isNumeric ? {
+            sortingFn: (rowA: any, rowB: any, columnId: string) => {
+              const a = parseFloat(rowA.getValue(columnId));
+              const b = parseFloat(rowB.getValue(columnId));
+              const numA = isNaN(a) ? -Infinity : a;
+              const numB = isNaN(b) ? -Infinity : b;
+              return numA < numB ? -1 : numA > numB ? 1 : 0;
+            }
+          } : {})
+        };
+      })
     );
 
     return cols;
