@@ -93,6 +93,16 @@ export function PropertyTableEditor({
     const currentTableSettings = metadata?._tableSettings || {};
     const fieldSettings = currentTableSettings[field.id] || {};
     
+    let hasChanges = false;
+    for (const key in newSettings) {
+      if (JSON.stringify(newSettings[key]) !== JSON.stringify(fieldSettings[key])) {
+        hasChanges = true;
+        break;
+      }
+    }
+    
+    if (!hasChanges) return;
+
     onMetadataChange("_tableSettings", {
       ...currentTableSettings,
       [field.id]: {
