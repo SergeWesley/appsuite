@@ -9,7 +9,7 @@ import { useNoteTemplates } from "@/hooks/notes/useNoteTemplates";
 import { NoteFolder, CustomFieldDefinition, Note, NoteExportData } from "@/types/notes";
 import { getNoteLocalStorageData } from "@/hooks/useFilterPersistence";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
-import { Trash2, Loader2, Check, Download, Sparkles, MoreVertical, Plus, Minus, Undo2, Redo2 } from "lucide-react";
+import { Trash2, Loader2, Check, Download, Sparkles, MoreVertical, Plus, Minus, Undo2, Redo2, Lock, Unlock } from "lucide-react";
 import { DynamicPropertiesBanner } from "@/components/notes/DynamicPropertiesBanner";
 import { useAgent } from "@/components/chat/AgentProvider";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
@@ -38,6 +38,7 @@ export default function NoteEditorPage() {
   const [saved, setSaved] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [initialized, setInitialized] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
 
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const contentRef = useRef<HTMLTextAreaElement>(null);
@@ -79,6 +80,7 @@ export default function NoteEditorPage() {
         } else {
           setInstances([{}]);
         }
+        setIsLocked(note.isLocked || false);
         setInitialized(true);
         // On attend que les React states se mettent à jour pour clear l'historique proprement
         setTimeout(() => clearHistory(), 0);
@@ -200,6 +202,7 @@ export default function NoteEditorPage() {
     }
   }, [redo, debouncedSave]);
 
+
   const handleExport = () => {
     if (!folder) return;
 
@@ -257,12 +260,12 @@ export default function NoteEditorPage() {
     {
       key: "Backspace",
       metaKey: true,
-      action: () => setShowDeleteConfirm(true),
+      action: () => { if (!isLocked) setShowDeleteConfirm(true); },
     },
     {
       key: "Backspace",
       ctrlKey: true,
-      action: () => setShowDeleteConfirm(true),
+      action: () => { if (!isLocked) setShowDeleteConfirm(true); },
     },
     {
       key: "z",
@@ -343,6 +346,7 @@ export default function NoteEditorPage() {
             ) : null}
           </div>
 
+
           {/* AI, Export, Delete buttons grouped in a Menu */}
           <Menu as="div" className="relative inline-block text-left">
             <MenuButton className="p-2 text-gray-500 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50">
@@ -373,10 +377,17 @@ export default function NoteEditorPage() {
                   <Download size={16} />
                   Exporter
                 </MenuItem>
+
                 <MenuItem
                   as="button"
+                  disabled={isLocked}
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="w-full text-left px-4 py-2 text-sm text-red-600 flex items-center gap-2 hover:bg-red-50"
+                  className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 ${
+                    isLocked 
+                      ? "text-gray-400 cursor-not-allowed" 
+                      : "text-red-600 hover:bg-red-50"
+                  }`}
+                  title={isLocked ? "Déverrouillez la note pour la supprimer" : ""}
                 >
                   <Trash2 size={16} />
                   Supprimer

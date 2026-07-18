@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { motion } from "framer-motion";
 import { useNoteFolders } from "@/hooks/notes/useNoteFolders";
 import { useNotes } from "@/hooks/notes/useNotes";
 import { useNoteTemplates } from "@/hooks/notes/useNoteTemplates";
@@ -11,22 +10,19 @@ import { NoteCard } from "@/components/notes/NoteCard";
 import { FolderCard } from "@/components/notes/FolderCard";
 import { CreateFolderModal } from "@/components/notes/CreateFolderModal";
 import { MoveFolderModal } from "@/components/notes/MoveFolderModal";
-import { ImportNoteButton, useImportNote } from "@/components/notes/ImportNoteButton";
+import { useImportNote } from "@/components/notes/ImportNoteButton";
 import { NoteFolderFormData, NoteExportData } from "@/types/notes";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { TemplatePickerModal } from "@/components/notes/TemplatePickerModal";
 import {
-  StickyNote,
-  FileText,
   Trash2,
   FolderPlus,
   Settings,
   MoreVertical,
   Upload,
 } from "lucide-react";
-import { useAuthContext } from "@/components/AuthProvider";
 import { AppLayout } from "@/components/AppLayout";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
@@ -34,19 +30,17 @@ export default function FolderPage() {
   const router = useRouter();
   const params = useParams();
   const folderId = params.folderId as string;
-  const { user, signOut } = useAuthContext();
 
   const {
     folders,
     deleteFolder,
     addFolder,
-    updateFolderFields,
     importNoteData,
     moveFolder,
     reorderFolder,
   } = useNoteFolders();
   const { triggerImport, ImportInput } = useImportNote((data) => handleImport(data));
-  const { notes, loading, addNote, deleteNote } = useNotes(folderId);
+  const { notes, loading, addNote, deleteNote, updateNote } = useNotes(folderId);
   const { templates } = useNoteTemplates(folderId);
   const [folder, setFolder] = useState<NoteFolder | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -157,6 +151,13 @@ export default function FolderPage() {
       alert("Une erreur s'est produite lors de la suppression de la note.");
     }
     setNoteToDelete(null);
+  };
+
+  const handleToggleLock = async (note: Note) => {
+    const success = await updateNote(note.id, { isLocked: !note.isLocked });
+    if (!success) {
+      alert("Erreur lors de la modification du verrouillage de la note.");
+    }
   };
 
   const handleBulkDelete = async () => {
@@ -326,6 +327,7 @@ export default function FolderPage() {
                 index={index}
                 onClick={handleOpenNote}
                 onDelete={(n) => setNoteToDelete(n)}
+                onToggleLock={handleToggleLock}
               />
             ))}
           </div>

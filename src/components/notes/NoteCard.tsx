@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Note } from "@/types/notes";
-import { FileText, Trash2 } from "lucide-react";
+import { FileText, Trash2, Lock, Unlock } from "lucide-react";
 import { useContextMenu } from "@/hooks/useContextMenu";
 import { ContextMenu, ContextMenuItem } from "@/components/ui/ContextMenu";
 
@@ -11,9 +11,10 @@ interface NoteCardProps {
   index: number;
   onClick?: (note: Note) => void;
   onDelete?: (note: Note) => void;
+  onToggleLock?: (note: Note) => void;
 }
 
-export function NoteCard({ note, index, onClick, onDelete }: NoteCardProps) {
+export function NoteCard({ note, index, onClick, onDelete, onToggleLock }: NoteCardProps) {
   const { contextMenu, setContextMenu, contextMenuHandlers } = useContextMenu();
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("fr-FR", {
@@ -57,9 +58,16 @@ export function NoteCard({ note, index, onClick, onDelete }: NoteCardProps) {
           <FileText size={16} className="text-amber-500" />
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-gray-900 truncate">
-            {note.title || "Sans titre"}
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold text-gray-900 truncate">
+              {note.title || "Sans titre"}
+            </h3>
+            {note.isLocked && (
+              <span title="Note verrouillée" className="flex items-center">
+                <Lock size={14} className="text-amber-500/70" />
+              </span>
+            )}
+          </div>
           {preview && (
             <p className="text-sm text-gray-500 mt-1 line-clamp-2">
               {preview}
@@ -74,7 +82,18 @@ export function NoteCard({ note, index, onClick, onDelete }: NoteCardProps) {
 
       <ContextMenu position={contextMenu} onClose={() => setContextMenu(null)}>
         <ContextMenuItem
+          onClick={() => {
+            setContextMenu(null);
+            if (onToggleLock) {
+              onToggleLock(note);
+            }
+          }}
+          icon={note.isLocked ? <Unlock size={16} /> : <Lock size={16} />}
+          label={note.isLocked ? "Déverrouiller" : "Verrouiller"}
+        />
+        <ContextMenuItem
           onClick={handleDelete}
+          disabled={note.isLocked}
           icon={<Trash2 size={16} />}
           label="Supprimer"
           danger

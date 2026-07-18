@@ -59,6 +59,7 @@ export interface Note {
   content: string;
   userId: string;
   metadata?: Record<string, any> | any[];
+  isLocked?: boolean;
   dateCreated: Date;
   dateUpdated: Date;
 }
@@ -68,6 +69,7 @@ export interface NoteFormData {
   content: string;
   templateId?: string | null;
   metadata?: Record<string, any> | any[];
+  isLocked?: boolean;
 }
 
 export const FOLDER_COLORS = [

@@ -137,6 +137,39 @@ export type Database = {
         }
         Relationships: []
       }
+      designer_templates: {
+        Row: {
+          created_at: string
+          elements: Json
+          format: string
+          id: string
+          name: string
+          orientation: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          elements?: Json
+          format?: string
+          id?: string
+          name: string
+          orientation?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          elements?: Json
+          format?: string
+          id?: string
+          name?: string
+          orientation?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       exercises: {
         Row: {
           created_at: string | null
@@ -390,6 +423,7 @@ export type Database = {
           created_at: string
           folder_id: string
           id: string
+          is_locked: boolean | null
           metadata: Json | null
           template_id: string | null
           title: string
@@ -401,6 +435,7 @@ export type Database = {
           created_at?: string
           folder_id: string
           id?: string
+          is_locked?: boolean | null
           metadata?: Json | null
           template_id?: string | null
           title?: string
@@ -412,6 +447,7 @@ export type Database = {
           created_at?: string
           folder_id?: string
           id?: string
+          is_locked?: boolean | null
           metadata?: Json | null
           template_id?: string | null
           title?: string

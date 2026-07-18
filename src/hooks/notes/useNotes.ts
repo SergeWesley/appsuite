@@ -38,6 +38,7 @@ export function useNotes(folderId?: string) {
         content: row.content || "",
         userId: row.user_id,
         metadata: (row.metadata as unknown as Record<string, any>) || {},
+        isLocked: row.is_locked || false,
         dateCreated: new Date(row.created_at),
         dateUpdated: new Date(row.updated_at),
       }));
@@ -90,6 +91,7 @@ export function useNotes(folderId?: string) {
           content: formData.content,
           template_id: formData.templateId || null,
           metadata: formData.metadata || {},
+          is_locked: formData.isLocked || false,
           user_id: user.id,
         })
         .select()
@@ -105,6 +107,7 @@ export function useNotes(folderId?: string) {
         content: data.content || "",
         userId: data.user_id,
         metadata: (data.metadata as unknown as Record<string, any>) || {},
+        isLocked: data.is_locked || false,
         dateCreated: new Date(data.created_at),
         dateUpdated: new Date(data.updated_at),
       };
@@ -134,6 +137,7 @@ export function useNotes(folderId?: string) {
       if (updates.title !== undefined) updateData.title = updates.title;
       if (updates.content !== undefined) updateData.content = updates.content;
       if (updates.metadata !== undefined) updateData.metadata = updates.metadata;
+      if (updates.isLocked !== undefined) updateData.is_locked = updates.isLocked;
 
       const { error } = await supabase
         .from("notes")
