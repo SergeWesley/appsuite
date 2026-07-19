@@ -30,6 +30,16 @@ export function useNoteFolders() {
 
       if (error) throw error;
 
+      const { data: lockedNotes, error: lockedError } = await supabase
+        .from("notes")
+        .select("folder_id")
+        .eq("user_id", user.id)
+        .eq("is_locked", true);
+
+      if (lockedError) throw lockedError;
+
+      const directLockedFolderIds = new Set((lockedNotes || []).map((n: any) => n.folder_id));
+
       const mapped: NoteFolder[] = (data || []).map((row: any) => ({
         id: row.id,
         name: row.name,
@@ -41,7 +51,25 @@ export function useNoteFolders() {
         order_index: row.order_index ?? 0,
         dateCreated: new Date(row.created_at),
         dateUpdated: new Date(row.updated_at),
+        isLocked: false, // Initialisé ci-dessous
       }));
+
+      // Fonction récursive pour calculer isLocked
+      const computeLocked = (folderId: string): boolean => {
+        const folder = mapped.find((f) => f.id === folderId);
+        if (!folder) return false;
+        
+        // Si le dossier contient directement une note verrouillée
+        if (directLockedFolderIds.has(folderId)) return true;
+
+        // Ou si l'un de ses enfants est verrouillé
+        const children = mapped.filter((f) => f.parentId === folderId);
+        return children.some((child) => computeLocked(child.id));
+      };
+
+      mapped.forEach((folder) => {
+        folder.isLocked = computeLocked(folder.id);
+      });
 
       setFolders(mapped);
     } catch (err) {

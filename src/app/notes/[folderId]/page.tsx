@@ -26,7 +26,8 @@ import {
   List,
   ArrowDownAZ,
   ArrowUpZA,
-  ArrowUpDown
+  ArrowUpDown,
+  Lock
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
@@ -265,10 +266,14 @@ export default function FolderPage() {
                 </MenuItem>
                 <MenuItem
                   as="button"
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="w-full text-left px-4 py-2 text-sm text-red-600 flex items-center gap-2 hover:bg-red-50"
+                  disabled={folder?.isLocked}
+                  onClick={() => {
+                    if (!folder?.isLocked) setShowDeleteConfirm(true);
+                  }}
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 flex items-center gap-2 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                  title={folder?.isLocked ? "Contient des notes verrouillées" : ""}
                 >
-                  <Trash2 size={16} />
+                  {folder?.isLocked ? <Lock size={16} /> : <Trash2 size={16} />}
                   Supprimer
                 </MenuItem>
               </div>

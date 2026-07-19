@@ -1,7 +1,7 @@
 "use client";
 
 import { NoteFolder } from "@/types/notes";
-import { Folder, StickyNote, Settings, MoveRight, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { Folder, StickyNote, Settings, MoveRight, Trash2, ArrowUp, ArrowDown, Lock } from "lucide-react";
 import { useContextMenu } from "@/hooks/useContextMenu";
 import { ContextMenu, ContextMenuItem } from "@/components/ui/ContextMenu";
 
@@ -136,8 +136,16 @@ export function FolderCard({
           </svg>
 
           {/* Counters badge for grid mode */}
-          {viewMode === "grid" && (hasNotes || hasSubfolders) && (
+          {viewMode === "grid" && (hasNotes || hasSubfolders || folder.isLocked) && (
             <div className="absolute -top-2 -right-2 flex items-center gap-1.5 bg-gray-800 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm border border-gray-700">
+              {folder.isLocked && (
+                <span className="flex items-center text-red-400" title="Contient des notes verrouillées">
+                  <Lock size={10} strokeWidth={3} />
+                </span>
+              )}
+              {folder.isLocked && (hasSubfolders || hasNotes) && (
+                <span className="w-[1px] h-2.5 bg-gray-600 rounded-full mx-0.5"></span>
+              )}
               {hasSubfolders && (
                 <span className="flex items-center gap-0.5">
                   <Folder size={9} strokeWidth={2.5} className="text-amber-400" /> {subfolderCount}
@@ -161,8 +169,13 @@ export function FolderCard({
         </p>
 
         {/* Counters for list mode */}
-        {viewMode === "list" && (hasNotes || hasSubfolders) && (
+        {viewMode === "list" && (hasNotes || hasSubfolders || folder.isLocked) && (
           <div className="flex items-center gap-3 text-xs font-medium text-gray-400 shrink-0 px-2">
+            {folder.isLocked && (
+              <span className="flex items-center text-red-400" title="Contient des notes verrouillées">
+                <Lock size={13} strokeWidth={2.5} />
+              </span>
+            )}
             {hasSubfolders && (
               <span className="flex items-center gap-1">
                 <Folder size={12} strokeWidth={2.5} className="text-amber-400/80" /> {subfolderCount}
@@ -209,6 +222,7 @@ export function FolderCard({
           icon={<Trash2 size={16} />}
           label="Supprimer"
           danger
+          disabled={folder.isLocked}
         />
       </ContextMenu>
     </>

@@ -31,6 +31,7 @@ export interface NoteFolder {
   parentId?: string | null;
   customFields?: CustomFieldDefinition[]; // LEGACY — sera remplacé par les templates
   noteCount?: number;
+  isLocked?: boolean;
   order_index?: number;
   dateCreated: Date;
   dateUpdated: Date;
