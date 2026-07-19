@@ -13,6 +13,7 @@ import {
   Link,
   Euro,
   Table,
+  ListOrdered
 } from "lucide-react";
 import { PropertyValueEditor } from "./PropertyValueEditor";
 
@@ -36,6 +37,7 @@ const TYPE_ICONS: Record<CustomFieldType, React.ElementType> = {
   rating: Star,
   url: Link,
   table: Table,
+  autoincrement: ListOrdered,
 };
 
 export function DynamicPropertiesBanner({

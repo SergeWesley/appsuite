@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Type, List, Hash, Calendar, Clock, CheckSquare, Palette, Star, Link, Euro, Table, ChevronUp, ChevronDown } from "lucide-react";
+import { X, Plus, Type, List, Hash, Calendar, Clock, CheckSquare, Palette, Star, Link, Euro, Table, ChevronUp, ChevronDown, ListOrdered } from "lucide-react";
 import { CustomFieldDefinition, CustomFieldType } from "@/types/notes";
 
 export const TYPE_CONFIGS: Record<CustomFieldType, { label: string; icon: React.ElementType }> = {
@@ -18,6 +18,7 @@ export const TYPE_CONFIGS: Record<CustomFieldType, { label: string; icon: React.
   rating: { label: "Note (étoiles)", icon: Star },
   url: { label: "Lien web", icon: Link },
   table: { label: "Tableau de données", icon: Table },
+  autoincrement: { label: "Auto-incrément", icon: ListOrdered },
 };
 
 interface FieldEditorSheetProps {
@@ -152,7 +153,10 @@ export function FieldEditorSheet({ isOpen, onClose, onSave, initialField, isNest
                     disabled={isNested && type === "table"} // Bloque le changement si on est forcé en table
                   >
                     {Object.entries(TYPE_CONFIGS)
-                      .filter(([key]) => !isNested || key !== "table" || type === "table")
+                      .filter(([key]) => {
+                        if (key === "autoincrement" && !isNested) return false;
+                        return !isNested || key !== "table" || type === "table";
+                      })
                       .map(([key, config]) => (
                       <option key={key} value={key}>{config.label}</option>
                     ))}
@@ -306,7 +310,7 @@ export function FieldEditorSheet({ isOpen, onClose, onSave, initialField, isNest
                         className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                       >
                         {Object.entries(TYPE_CONFIGS)
-                          .filter(([key]) => !isNested || key !== "table")
+                          .filter(([key]) => key !== "table")
                           .map(([key, config]) => (
                           <option key={key} value={key}>{config.label}</option>
                         ))}

@@ -136,7 +136,20 @@ export function PropertyTableEditor({
   };
 
   const addRow = () => {
-    onChange([...rows, {}]);
+    const newRow: Record<string, any> = {};
+    if (field.columns) {
+      field.columns.forEach((col) => {
+        if (col.type === "autoincrement") {
+          const existingValues = rows
+            .map((r) => r[col.id])
+            .map((v) => parseInt(v, 10))
+            .filter((v) => !isNaN(v));
+          const max = existingValues.length > 0 ? Math.max(...existingValues) : 0;
+          newRow[col.id] = max + 1;
+        }
+      });
+    }
+    onChange([...rows, newRow]);
   };
 
   const removeRow = (rowIndex: number) => {
@@ -171,7 +184,7 @@ export function PropertyTableEditor({
 
     cols.push(
       ...field.columns.map((col) => {
-        const isNumeric = col.type === "number" || col.type === "currency";
+        const isNumeric = col.type === "number" || col.type === "currency" || col.type === "autoincrement";
         return {
           accessorKey: col.id, // accès via l'ID de la colonne
           id: col.id,
@@ -485,7 +498,18 @@ export function PropertyTableEditor({
                               <div className="p-1">
                                 <button
                                   onClick={() => {
-                                    const newSubData = [...subTableData, {}];
+                                    const newSubRow: Record<string, any> = {};
+                                    subCols.forEach((sc) => {
+                                      if (sc.type === "autoincrement") {
+                                        const existingValues = subTableData
+                                          .map((r: any) => r[sc.id])
+                                          .map((v: any) => parseInt(v, 10))
+                                          .filter((v: any) => !isNaN(v));
+                                        const max = existingValues.length > 0 ? Math.max(...existingValues) : 0;
+                                        newSubRow[sc.id] = max + 1;
+                                      }
+                                    });
+                                    const newSubData = [...subTableData, newSubRow];
                                     updateRow(rIndex, colDef.id, newSubData);
                                   }}
                                   className="text-gray-400 hover:text-amber-600 hover:bg-gray-50 rounded p-1 flex items-center justify-center transition-colors w-max"

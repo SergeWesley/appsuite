@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Edit2, Trash2, LayoutTemplate, Type } from "lucide-react";
+import { X, Plus, Trash2, LayoutTemplate, Type } from "lucide-react";
 import { CustomFieldDefinition, NoteTemplate } from "@/types/notes";
 import { FieldEditorSheet, TYPE_CONFIGS } from "./FieldEditorSheet";
 
@@ -165,9 +165,7 @@ export function TemplateEditorModal({ isOpen, onClose, onSave, initialTemplate }
                             </div>
                             
                             <div className="flex items-center gap-2 self-end sm:self-auto sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                              <span className="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors">
-                                <Edit2 size={18} />
-                              </span>
+
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();

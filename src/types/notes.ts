@@ -10,7 +10,8 @@ export type CustomFieldType =
   | "color"     // Sélecteur de couleur
   | "rating"    // Note sur 5 étoiles
   | "url"       // Lien web (ex: Source, Référence)
-  | "table";    // Tableau de données (ex: Liste d'ingrédients)
+  | "table"     // Tableau de données (ex: Liste d'ingrédients)
+  | "autoincrement"; // ID auto-incrémenté pour tableaux
 
 export interface CustomFieldDefinition {
   id: string;          // UUID du champ (généré à la création)

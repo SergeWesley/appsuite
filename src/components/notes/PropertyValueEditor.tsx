@@ -65,6 +65,13 @@ export function PropertyValueEditor({
         </div>
       );
 
+    case "autoincrement":
+      return (
+        <div className="w-full px-2 py-1.5 -ml-2 text-sm text-gray-500 bg-gray-50/50 rounded-md border border-gray-100 font-mono cursor-not-allowed select-none">
+          {value || "-"}
+        </div>
+      );
+
     case "date":
       return (
         <input
