@@ -163,6 +163,7 @@ export function useTableLogic({
     }
   }, [field.columns, rows, onChange]);
 
+
   const updateRow = (rowIndex: number, colId: string, colValue: any) => {
     const newRows = [...rows];
     newRows[rowIndex] = { ...newRows[rowIndex], [colId]: colValue };
@@ -287,6 +288,47 @@ export function useTableLogic({
     setColumnSizing({});
     updateSettings({ columnSizing: {} });
   };
+
+  // Réassignation dynamique des IDs pour respecter l'ordre de tri visuel
+  useEffect(() => {
+    if (!field.columns || rows.length === 0) return;
+
+    // Ne pas réassigner si on trie explicitement par une colonne autoincrementée
+    const activeSort = sorting[0];
+    if (activeSort) {
+      const sortColDef = field.columns.find(c => c.id === activeSort.id);
+      if (sortColDef && sortColDef.type === "autoincrement") {
+        return;
+      }
+    }
+
+    const autoCols = field.columns.filter(c => c.type === "autoincrement");
+    if (autoCols.length === 0) return;
+
+    let changed = false;
+    const updatedRows = rows.map(r => ({ ...r }));
+    
+    // Obtenir les lignes triées visuellement
+    const sortedTableRows = table.getRowModel().rows;
+
+    autoCols.forEach(col => {
+      sortedTableRows.forEach((tableRow, index) => {
+        const expectedId = index + 1;
+        const originalIndex = tableRow.index;
+        
+        const actualId = parseInt(updatedRows[originalIndex][col.id], 10);
+        
+        if (actualId !== expectedId) {
+          updatedRows[originalIndex][col.id] = expectedId;
+          changed = true;
+        }
+      });
+    });
+
+    if (changed) {
+      onChange(updatedRows);
+    }
+  }, [sorting, table.getRowModel().rows, field.columns, rows, onChange]);
 
   return {
     table,
