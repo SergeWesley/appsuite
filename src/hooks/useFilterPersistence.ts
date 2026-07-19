@@ -12,6 +12,7 @@ export interface FilterState {
   tableColumnSizing?: Record<string, number>;
   selectedCategory?: string;
   cookerSelectedItems?: string[];
+  folderSortOrder?: "custom" | "asc" | "desc";
 }
 
 /**
@@ -180,6 +181,8 @@ export const useFilterPersistence = (
     selectedCategory:
       filters.selectedCategory || defaultValues.selectedCategory || "Toutes les catégories",
     cookerSelectedItems:
-      filters.cookerSelectedItems || defaultValues.cookerSelectedItems || []
+      filters.cookerSelectedItems || defaultValues.cookerSelectedItems || [],
+    folderSortOrder:
+      filters.folderSortOrder || defaultValues.folderSortOrder || "custom",
   };
 };

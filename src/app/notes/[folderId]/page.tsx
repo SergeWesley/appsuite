@@ -22,9 +22,16 @@ import {
   Settings,
   MoreVertical,
   Upload,
+  LayoutGrid,
+  List,
+  ArrowDownAZ,
+  ArrowUpZA,
+  ArrowUpDown
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { useFilterPersistence } from "@/hooks/useFilterPersistence";
+import { sortFolders, getNextSortOrder, SortOrder } from "@/lib/folder-utils";
 
 export default function FolderPage() {
   const router = useRouter();
@@ -52,7 +59,20 @@ export default function FolderPage() {
   const [subFolderToDelete, setSubFolderToDelete] = useState<NoteFolder | null>(null);
   const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
 
+  const { selectedViewMode, folderSortOrder, updateFilter } = useFilterPersistence("appsuite_notes_folder_view", { selectedViewMode: "grid", folderSortOrder: "custom" });
+  const viewMode = (selectedViewMode as "grid" | "list") || "grid";
+  const sortOrder = (folderSortOrder as SortOrder) || "custom";
+
+  const handleViewModeChange = (mode: "grid" | "list") => {
+    updateFilter("selectedViewMode", mode);
+  };
+
+  const handleSortToggle = () => {
+    updateFilter("folderSortOrder", getNextSortOrder(sortOrder));
+  };
+
   const subFolders = folders.filter((f) => f.parentId === folderId);
+  const displayedSubFolders = sortFolders(subFolders, sortOrder);
 
   // Find the folder info
   useEffect(() => {
@@ -267,6 +287,47 @@ export default function FolderPage() {
               Sous-dossiers ({subFolders.length})
             </h2>
             <div className="flex items-center gap-2">
+              {subFolders.length > 0 && (
+                <>
+                  <button
+                    onClick={handleSortToggle}
+                    className={`p-1 rounded-md transition-all flex items-center gap-1 border ${
+                      sortOrder !== "custom" 
+                        ? "bg-amber-50 text-amber-600 border-amber-200" 
+                        : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"
+                    }`}
+                    title={sortOrder === "asc" ? "Trié de A à Z" : sortOrder === "desc" ? "Trié de Z à A" : "Tri personnalisé"}
+                  >
+                    {sortOrder === "asc" && <ArrowDownAZ size={14} />}
+                    {sortOrder === "desc" && <ArrowUpZA size={14} />}
+                    {sortOrder === "custom" && <ArrowUpDown size={14} />}
+                  </button>
+                  <div className="flex items-center gap-1 bg-gray-100/50 p-1 rounded-lg border border-gray-200/50 mr-1">
+                  <button
+                    onClick={() => handleViewModeChange("grid")}
+                    className={`p-1 rounded-md transition-all ${
+                      viewMode === "grid" 
+                        ? "bg-white text-gray-900 shadow-sm ring-1 ring-gray-200" 
+                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+                    }`}
+                    title="Vue grille"
+                  >
+                    <LayoutGrid size={14} />
+                  </button>
+                  <button
+                    onClick={() => handleViewModeChange("list")}
+                    className={`p-1 rounded-md transition-all ${
+                      viewMode === "list" 
+                        ? "bg-white text-gray-900 shadow-sm ring-1 ring-gray-200" 
+                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+                    }`}
+                    title="Vue liste"
+                  >
+                    <List size={14} />
+                  </button>
+                </div>
+                </>
+              )}
               <button
                 onClick={() => setShowCreateFolderModal(true)}
                 className="flex items-center gap-1.5 text-sm font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 px-2 py-1 rounded transition-colors"
@@ -277,23 +338,24 @@ export default function FolderPage() {
             </div>
           </div>
           {subFolders.length > 0 && (
-            <div className="grid grid-cols-3 sm:grid-cols-3 gap-2 mb-6">
-              {subFolders.map((sf, index) => (
+            <div className={viewMode === "grid" ? "grid grid-cols-3 sm:grid-cols-3 gap-2 mb-6" : "flex flex-col gap-2 mb-6"}>
+              {displayedSubFolders.map((sf, index) => (
                 <FolderCard
                   key={sf.id}
                   folder={sf}
                   index={index}
                   isSelected={selectedFolders.includes(sf.id)}
-                  totalFolders={subFolders.length}
+                  totalFolders={displayedSubFolders.length}
                   subfolderCount={
                     folders.filter((f) => f.parentId === sf.id).length
                   }
                   onClick={handleFolderClick}
                   onConfig={(f) => router.push(`/notes/${f.id}/settings`)}
                   onMove={(f) => setFolderToMove(f)}
-                  onMoveUp={(f) => reorderFolder(f.id, "up")}
-                  onMoveDown={(f) => reorderFolder(f.id, "down")}
+                  onMoveUp={sortOrder === "custom" ? (f) => reorderFolder(f.id, "up") : undefined}
+                  onMoveDown={sortOrder === "custom" ? (f) => reorderFolder(f.id, "down") : undefined}
                   onDelete={(f) => setSubFolderToDelete(f)}
+                  viewMode={viewMode}
                 />
               ))}
             </div>

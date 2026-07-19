@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useNoteFolders } from "@/hooks/notes/useNoteFolders";
@@ -8,20 +8,19 @@ import { NoteFolder, NoteFolderFormData, NoteExportData } from "@/types/notes";
 import { FolderCard } from "@/components/notes/FolderCard";
 import { CreateFolderModal } from "@/components/notes/CreateFolderModal";
 import { MoveFolderModal } from "@/components/notes/MoveFolderModal";
-import { ImportNoteButton, useImportNote } from "@/components/notes/ImportNoteButton";
+import { useImportNote } from "@/components/notes/ImportNoteButton";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
-import { NavigationMenu } from "@/components/NavigationMenu";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
-import { StickyNote, FolderOpen, MoreVertical, Upload } from "lucide-react";
-import { useAuthContext } from "@/components/AuthProvider";
+import { StickyNote, MoreVertical, Upload, LayoutGrid, List, ArrowDownAZ, ArrowUpZA, ArrowUpDown } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { useFilterPersistence } from "@/hooks/useFilterPersistence";
+import { sortFolders, getNextSortOrder, SortOrder } from "@/lib/folder-utils";
 
 export default function NotesPage() {
   // Cette page affiche la liste des dossiers de notes de l'utilisateur
   const router = useRouter();
-  const { user, signOut } = useAuthContext();
   const { folders, loading, addFolder, importNoteData, deleteFolder, moveFolder, reorderFolder } =
     useNoteFolders();
   const { triggerImport, ImportInput } = useImportNote((data) => handleImport(data));
@@ -33,6 +32,20 @@ export default function NotesPage() {
 
   // Filtre les dossiers racines
   const rootFolders = folders.filter((f) => !f.parentId);
+
+  const { selectedViewMode, folderSortOrder, updateFilter } = useFilterPersistence("appsuite_notes_root_view", { selectedViewMode: "grid", folderSortOrder: "custom" });
+  const viewMode = (selectedViewMode as "grid" | "list") || "grid";
+  const sortOrder = (folderSortOrder as SortOrder) || "custom";
+
+  const handleViewModeChange = (mode: "grid" | "list") => {
+    updateFilter("selectedViewMode", mode);
+  };
+
+  const handleSortToggle = () => {
+    updateFilter("folderSortOrder", getNextSortOrder(sortOrder));
+  };
+
+  const displayedFolders = sortFolders(rootFolders, sortOrder);
 
   // Gère la création d'un nouveau dossier
   const handleCreateFolder = async (data: NoteFolderFormData) => {
@@ -163,13 +176,54 @@ export default function NotesPage() {
 
 
         {/* Page Title */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Mes dossiers
-          </h1>
-          <p className="text-gray-600">
-            {rootFolders.length} dossier{rootFolders.length > 1 ? "s" : ""}
-          </p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Mes dossiers
+            </h1>
+            <p className="text-gray-600">
+              {rootFolders.length} dossier{rootFolders.length > 1 ? "s" : ""}
+            </p>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleSortToggle}
+              className={`p-1.5 rounded-md transition-all flex items-center gap-1 border ${
+                sortOrder !== "custom" 
+                  ? "bg-amber-50 text-amber-600 border-amber-200" 
+                  : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"
+              }`}
+              title={sortOrder === "asc" ? "Trié de A à Z" : sortOrder === "desc" ? "Trié de Z à A" : "Tri personnalisé"}
+            >
+              {sortOrder === "asc" && <ArrowDownAZ size={18} />}
+              {sortOrder === "desc" && <ArrowUpZA size={18} />}
+              {sortOrder === "custom" && <ArrowUpDown size={18} />}
+            </button>
+            <div className="flex items-center gap-1 bg-gray-100/50 p-1 rounded-lg border border-gray-200/50">
+            <button
+              onClick={() => handleViewModeChange("grid")}
+              className={`p-1.5 rounded-md transition-all ${
+                viewMode === "grid" 
+                  ? "bg-white text-gray-900 shadow-sm ring-1 ring-gray-200" 
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+              }`}
+              title="Vue grille"
+            >
+              <LayoutGrid size={18} />
+            </button>
+            <button
+              onClick={() => handleViewModeChange("list")}
+              className={`p-1.5 rounded-md transition-all ${
+                viewMode === "list" 
+                  ? "bg-white text-gray-900 shadow-sm ring-1 ring-gray-200" 
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+              }`}
+            >
+              <List size={18} />
+            </button>
+          </div>
+          </div>
         </div>
 
         {/* Loading */}
@@ -237,23 +291,24 @@ export default function NotesPage() {
 
         {/* Folders Grid */}
         {!loading && rootFolders.length > 0 && (
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
-            {rootFolders.map((folder, index) => (
+          <div className={viewMode === "grid" ? "grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2" : "flex flex-col gap-2"}>
+            {displayedFolders.map((folder, index) => (
               <FolderCard
                 key={folder.id}
                 folder={folder}
                 index={index}
                 isSelected={selectedFolders.includes(folder.id)}
-                totalFolders={rootFolders.length}
+                totalFolders={displayedFolders.length}
                 subfolderCount={
                   folders.filter((f) => f.parentId === folder.id).length
                 }
                 onClick={handleFolderClick}
                 onConfig={(f) => router.push(`/notes/${f.id}/settings`)}
                 onMove={(f) => setFolderToMove(f)}
-                onMoveUp={(f) => reorderFolder(f.id, "up")}
-                onMoveDown={(f) => reorderFolder(f.id, "down")}
+                onMoveUp={sortOrder === "custom" ? (f) => reorderFolder(f.id, "up") : undefined}
+                onMoveDown={sortOrder === "custom" ? (f) => reorderFolder(f.id, "down") : undefined}
                 onDelete={(f) => setFolderToDelete(f)}
+                viewMode={viewMode}
               />
             ))}
           </div>

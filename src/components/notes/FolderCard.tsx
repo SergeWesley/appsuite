@@ -19,6 +19,7 @@ interface FolderCardProps {
   onMoveUp?: (folder: NoteFolder) => void;
   onMoveDown?: (folder: NoteFolder) => void;
   onDelete?: (folder: NoteFolder) => void;
+  viewMode?: "grid" | "list";
 }
 
 export function FolderCard({ 
@@ -32,7 +33,8 @@ export function FolderCard({
   onMove, 
   onMoveUp,
   onMoveDown,
-  onDelete 
+  onDelete,
+  viewMode = "grid"
 }: FolderCardProps) {
   const { contextMenu, setContextMenu, contextMenuHandlers } = useContextMenu();
 
@@ -76,7 +78,6 @@ export function FolderCard({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: index * 0.05 }}
-        whileHover={{ scale: 1.03, y: -2 }}
         whileTap={{ scale: 0.97 }}
         onClick={(e) => {
           if (!contextMenu) {
@@ -84,18 +85,24 @@ export function FolderCard({
           }
         }}
         {...contextMenuHandlers}
-        className={`relative flex flex-col items-center gap-2 p-3 rounded-xl transition-colors group select-none ${
-          isSelected ? "bg-amber-50 ring-2 ring-amber-500" : "hover:bg-gray-50"
+        className={`relative transition-all duration-200 group select-none text-left outline-none focus:outline-none ${
+          viewMode === "list" 
+            ? "flex items-center gap-4 p-3 rounded-lg w-full border border-gray-100 bg-white shadow-sm hover:shadow-md" 
+            : "flex flex-col items-center gap-2 p-3 rounded-xl border border-transparent"
+        } ${
+          isSelected 
+            ? "bg-amber-50 ring-2 ring-amber-500" 
+            : "hover:bg-gray-50"
         }`}
       >
         {/* Folder Icon SVG */}
-        <div className="relative w-16 h-12">
+        <div className={`relative flex-shrink-0 ${viewMode === 'list' ? 'w-8 h-6' : 'w-16 h-12'}`}>
           {/* Folder tab (the small flap on top) */}
           <svg
             viewBox="0 0 80 64"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-full drop-shadow-md group-hover:drop-shadow-lg transition-all"
+            className="w-full h-full drop-shadow-sm"
           >
             {/* Back panel */}
             <rect
@@ -134,8 +141,8 @@ export function FolderCard({
             />
           </svg>
 
-          {/* Counters badge */}
-          {(hasNotes || hasSubfolders) && (
+          {/* Counters badge for grid mode */}
+          {viewMode === "grid" && (hasNotes || hasSubfolders) && (
             <div className="absolute -top-2 -right-2 flex items-center gap-1.5 bg-gray-800 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow-sm border border-gray-700">
               {hasSubfolders && (
                 <span className="flex items-center gap-0.5">
@@ -155,9 +162,25 @@ export function FolderCard({
         </div>
 
         {/* Folder name */}
-        <p className="text-sm font-medium text-gray-800 text-center truncate w-full max-w-[100px]">
+        <p className={`text-sm font-medium text-gray-800 truncate ${viewMode === 'list' ? 'flex-1 text-left' : 'text-center w-full max-w-[100px]'}`}>
           {folder.name}
         </p>
+
+        {/* Counters for list mode */}
+        {viewMode === "list" && (hasNotes || hasSubfolders) && (
+          <div className="flex items-center gap-3 text-xs font-medium text-gray-400 shrink-0 px-2">
+            {hasSubfolders && (
+              <span className="flex items-center gap-1">
+                <Folder size={12} strokeWidth={2.5} className="text-amber-400/80" /> {subfolderCount}
+              </span>
+            )}
+            {hasNotes && (
+              <span className="flex items-center gap-1">
+                <StickyNote size={12} strokeWidth={2.5} className="text-blue-300/80" /> {folder.noteCount}
+              </span>
+            )}
+          </div>
+        )}
       </motion.button>
 
       <ContextMenu position={contextMenu} onClose={() => setContextMenu(null)}>
