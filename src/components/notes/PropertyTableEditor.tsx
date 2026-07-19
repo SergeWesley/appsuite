@@ -129,6 +129,60 @@ export function PropertyTableEditor({
 
   const rows = useMemo(() => (Array.isArray(value) ? value : []), [value]);
 
+  // Génération automatique des ID manquants pour les lignes et sous-lignes existantes
+  useEffect(() => {
+    if (!field.columns || rows.length === 0) return;
+
+    const fixAutoincrements = (cols: CustomFieldDefinition[], data: any[]): { fixedData: any[], changed: boolean } => {
+      let changed = false;
+      const newData = [...data];
+
+      // Correction au niveau courant
+      const autoCols = cols.filter(c => c.type === "autoincrement");
+      autoCols.forEach(col => {
+        const existingIds = newData
+          .map(r => r?.[col.id])
+          .map(v => parseInt(v, 10))
+          .filter(v => !isNaN(v));
+        
+        let nextId = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1;
+
+        newData.forEach((row, i) => {
+          if (!row) return;
+          const val = parseInt(row[col.id], 10);
+          if (isNaN(val) || val === null || val === undefined) {
+            newData[i] = { ...newData[i], [col.id]: nextId };
+            nextId++;
+            changed = true;
+          }
+        });
+      });
+
+      // Parcours récursif des sous-tableaux
+      const tableCols = cols.filter(c => c.type === "table" && c.columns && c.columns.length > 0);
+      tableCols.forEach(tableCol => {
+        newData.forEach((row, i) => {
+          if (!row) return;
+          const subData = Array.isArray(row[tableCol.id]) ? row[tableCol.id] : [];
+          if (subData.length > 0) {
+            const result = fixAutoincrements(tableCol.columns!, subData);
+            if (result.changed) {
+              newData[i] = { ...newData[i], [tableCol.id]: result.fixedData };
+              changed = true;
+            }
+          }
+        });
+      });
+
+      return { fixedData: newData, changed };
+    };
+
+    const result = fixAutoincrements(field.columns, rows);
+    if (result.changed) {
+      onChange(result.fixedData);
+    }
+  }, [field.columns, rows, onChange]);
+
   const updateRow = (rowIndex: number, colId: string, colValue: any) => {
     const newRows = [...rows];
     newRows[rowIndex] = { ...newRows[rowIndex], [colId]: colValue };
