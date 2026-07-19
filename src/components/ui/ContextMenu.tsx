@@ -34,6 +34,19 @@ export function ContextMenu({ position, onClose, children }: ContextMenuProps) {
     };
   }, [position, onClose]);
 
+  const getPositionStyle = () => {
+    if (!position || typeof window === "undefined") return {};
+
+    const isBottom = position.y > window.innerHeight / 2;
+    const isRight = position.x > window.innerWidth / 2;
+
+    return {
+      ...(isBottom ? { bottom: window.innerHeight - position.y } : { top: position.y }),
+      ...(isRight ? { right: window.innerWidth - position.x } : { left: position.x }),
+      transformOrigin: `${isRight ? "right" : "left"} ${isBottom ? "bottom" : "top"}`,
+    };
+  };
+
   return (
     <AnimatePresence>
       {position && (
@@ -44,10 +57,7 @@ export function ContextMenu({ position, onClose, children }: ContextMenuProps) {
           exit={{ opacity: 0, scale: 0.9 }}
           transition={{ duration: 0.12 }}
           className="fixed z-[60] bg-white rounded-xl shadow-xl border border-gray-200 py-1.5 min-w-[180px] overflow-hidden"
-          style={{
-            left: `min(${position.x}px, calc(100vw - 200px))`,
-            top: `min(${position.y}px, calc(100vh - 120px))`,
-          }}
+          style={getPositionStyle()}
         >
           {children}
         </motion.div>
