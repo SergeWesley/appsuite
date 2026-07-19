@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CustomFieldDefinition } from "@/types/notes";
 import { Star } from "lucide-react";
-import { PropertyTableEditor } from "./PropertyTableEditor";
+import { PropertyTableEditor } from "./table/PropertyTableEditor";
 
 interface PropertyValueEditorProps {
   field: CustomFieldDefinition;
