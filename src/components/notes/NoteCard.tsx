@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+
 import { Note } from "@/types/notes";
 import { FileText, Trash2, Lock, Unlock } from "lucide-react";
 import { useContextMenu } from "@/hooks/useContextMenu";
@@ -40,11 +40,7 @@ export function NoteCard({ note, index, onClick, onDelete, onToggleLock }: NoteC
 
   return (
     <>
-      <motion.button
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.04 }}
-        whileTap={{ scale: 0.98 }}
+      <button
         onClick={(e) => {
           if (!contextMenu) {
             onClick?.(note);
@@ -78,7 +74,7 @@ export function NoteCard({ note, index, onClick, onDelete, onToggleLock }: NoteC
           </p>
         </div>
         </div>
-      </motion.button>
+      </button>
 
       <ContextMenu position={contextMenu} onClose={() => setContextMenu(null)}>
         <ContextMenuItem

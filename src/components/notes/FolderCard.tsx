@@ -1,7 +1,5 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion } from "framer-motion";
 import { NoteFolder } from "@/types/notes";
 import { Folder, StickyNote, Settings, MoveRight, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import { useContextMenu } from "@/hooks/useContextMenu";
@@ -74,11 +72,7 @@ export function FolderCard({
 
   return (
     <>
-      <motion.button
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.05 }}
-        whileTap={{ scale: 0.97 }}
+      <button
         onClick={(e) => {
           if (!contextMenu) {
             onClick?.(folder, e);
@@ -181,7 +175,7 @@ export function FolderCard({
             )}
           </div>
         )}
-      </motion.button>
+      </button>
 
       <ContextMenu position={contextMenu} onClose={() => setContextMenu(null)}>
         {onMoveUp && onMoveDown && (

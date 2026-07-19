@@ -16,19 +16,21 @@ export function CreateFolderModal({
   onClose,
   onSubmit,
 }: CreateFolderModalProps) {
+  const DEFAULT_FOLDER_COLOR = FOLDER_COLORS.find(c => c.value === "#3b82f6")?.value || FOLDER_COLORS[0].value;
+
   const [name, setName] = useState("");
-  const [color, setColor] = useState(FOLDER_COLORS[0].value);
+  const [color, setColor] = useState(DEFAULT_FOLDER_COLOR);
 
   const handleSubmit = () => {
     if (!name.trim()) return;
     onSubmit({ name: name.trim(), color });
     setName("");
-    setColor(FOLDER_COLORS[0].value);
+    setColor(DEFAULT_FOLDER_COLOR);
   };
 
   const handleClose = () => {
     setName("");
-    setColor(FOLDER_COLORS[0].value);
+    setColor(DEFAULT_FOLDER_COLOR);
     onClose();
   };
 
