@@ -33,19 +33,21 @@ export function AppLayout({
   height,
 }: AppLayoutProps) {
   return (
-    <div className={`min-h-screen ${bgClass}`}>
-      <AppHeader
-        title={title}
-        icon={icon}
-        iconColor={iconColor}
-        currentModule={currentModule as any}
-        actions={actions}
-        onBack={onBack}
-        maxWidth="w-full" // L'en-tête est toujours en largeur maximale fluide
-        height={height}
-      />
+    <div className={`h-[100dvh] flex flex-col overflow-hidden ${bgClass}`}>
+      <div className="shrink-0 z-40">
+        <AppHeader
+          title={title}
+          icon={icon}
+          iconColor={iconColor}
+          currentModule={currentModule as any}
+          actions={actions}
+          onBack={onBack}
+          maxWidth="w-full" // L'en-tête est toujours en largeur maximale fluide
+          height={height}
+        />
+      </div>
       
-      <main className={`${maxWidth} mx-auto ${noPadding ? "" : padding}`}>
+      <main className={`flex-1 overflow-y-auto ${maxWidth} mx-auto ${noPadding ? "" : padding}`}>
         {children}
       </main>
     </div>
