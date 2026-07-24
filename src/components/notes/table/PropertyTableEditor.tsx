@@ -1,5 +1,5 @@
 import { CustomFieldDefinition } from "@/types/notes";
-import { Plus, CheckSquare, Search } from "lucide-react";
+import { Plus, CheckSquare, Search, X } from "lucide-react";
 import { useTableLogic } from "./useTableLogic";
 import { TableCoreUI } from "./TableCoreUI";
 import { TableModals } from "./TableModals";
@@ -97,8 +97,17 @@ export function PropertyTableEditor({
               value={globalFilter ?? ""}
               onChange={(e) => setGlobalFilter(e.target.value)}
               placeholder="Rechercher..."
-              className="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-gray-700 transition-colors"
+              className="w-full pl-8 pr-8 py-1.5 text-xs bg-white border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-gray-700 transition-colors"
             />
+            {globalFilter && (
+              <button
+                onClick={() => setGlobalFilter("")}
+                className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                title="Effacer la recherche"
+              >
+                <X size={14} />
+              </button>
+            )}
           </div>
         </div>
       </div>
