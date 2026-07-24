@@ -35,7 +35,7 @@ export function TableCoreUI({
   renderEditor,
 }: TableCoreUIProps) {
   return (
-    <div className="w-full overflow-auto flex-1 bg-white relative">
+    <div className="w-full overflow-auto flex-1 bg-white relative [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {/* Table View */}
       <table
         className="text-left text-sm text-gray-600 border-collapse relative table-fixed"
