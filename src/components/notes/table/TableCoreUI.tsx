@@ -36,7 +36,7 @@ export function TableCoreUI({
 }: TableCoreUIProps) {
   return (
     <div className="w-full overflow-auto flex-1 bg-white relative [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-      {/* Table View */}
+      {/* Vue du tableau */}
       <table
         className="text-left text-sm text-gray-600 border-collapse relative table-fixed"
         style={{
@@ -98,7 +98,7 @@ export function TableCoreUI({
                         </>
                       )}
                     </div>
-                    {/* Resizer Handle */}
+                    {/* Poignée de redimensionnement */}
                     {header.column.id !== "select" && (
                       <div
                         onMouseDown={header.getResizeHandler()}

@@ -49,7 +49,7 @@ export default function NoteEditorPage() {
     updateCurrentRef({ title, content, instances });
   }, [title, content, instances, updateCurrentRef]);
 
-  // Find the folder
+  // Trouver le dossier
   useEffect(() => {
     if (folders.length > 0) {
       const found = folders.find((f) => f.id === folderId);
@@ -57,7 +57,7 @@ export default function NoteEditorPage() {
     }
   }, [folders, folderId]);
 
-  // Resolve the active fields: template fields > legacy folder customFields
+  // Résoudre les champs actifs : champs du modèle > champs personnalisés du dossier existant
   const currentNote = notes.find((n) => n.id === noteId);
   const noteTemplate = currentNote?.templateId
     ? templates.find((t) => t.id === currentNote.templateId)
@@ -65,7 +65,7 @@ export default function NoteEditorPage() {
   const activeFields: CustomFieldDefinition[] =
     noteTemplate?.fields || folder?.customFields || [];
 
-  // Initialize note content
+  // Initialiser le contenu de la note
   useEffect(() => {
     if (!loading && notes.length >= 0 && !initialized) {
       const note = notes.find((n) => n.id === noteId);
@@ -98,7 +98,7 @@ export default function NoteEditorPage() {
     return () => window.removeEventListener("appsuite:refresh-data", handleRefresh);
   }, []);
 
-  // Auto-resize textarea
+  // Redimensionnement automatique de la zone de texte
   useEffect(() => {
     if (contentRef.current) {
       contentRef.current.style.height = "auto";
@@ -106,7 +106,7 @@ export default function NoteEditorPage() {
     }
   }, [content]);
 
-  // Auto-save with debounce
+  // Sauvegarde automatique avec délai (debounce)
   const saveNote = useCallback(
     async (newTitle: string, newContent: string, newInstances: Record<string, any>[]) => {
       setSaving(true);
@@ -123,7 +123,7 @@ export default function NoteEditorPage() {
       setSaving(false);
       setSaved(true);
 
-      // Hide the "saved" indicator after 2 seconds
+      // Masquer l'indicateur "enregistré" après 2 secondes
       setTimeout(() => setSaved(false), 2000);
     },
     [noteId, updateNote],
@@ -248,7 +248,7 @@ export default function NoteEditorPage() {
   };
 
   const handleBack = () => {
-    // Save immediately before leaving
+    // Sauvegarder immédiatement avant de quitter
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
     }
@@ -317,7 +317,7 @@ export default function NoteEditorPage() {
       padding="px-4 sm:px-6 py-6"
       actions={
         <>
-          {/* Undo / Redo Buttons */}
+          {/* Boutons Annuler / Rétablir */}
           <div className="flex items-center gap-1 sm:mr-2 sm:border-r border-gray-200 sm:pr-2">
             <button
               onClick={handleUndo}
@@ -337,7 +337,7 @@ export default function NoteEditorPage() {
             </button>
           </div>
 
-          {/* Save status indicator */}
+          {/* Indicateur de statut de sauvegarde */}
           <div className="w-5 h-5 flex items-center justify-center" title={saving ? "Enregistrement en cours..." : "Synchronisé"}>
             {saving ? (
               <Loader2 size={14} className="animate-spin text-amber-500/50" />
@@ -353,7 +353,7 @@ export default function NoteEditorPage() {
           </div>
 
 
-          {/* AI, Export, Delete buttons grouped in a Menu */}
+          {/* Boutons IA, Exporter, Supprimer regroupés dans un menu */}
           <Menu as="div" className="relative inline-block text-left">
             <MenuButton className="p-2 text-gray-500 hover:text-amber-600 transition-colors rounded-lg hover:bg-amber-50">
               <MoreVertical size={20} />
@@ -404,7 +404,7 @@ export default function NoteEditorPage() {
         </>
       }
     >
-        {/* Title input */}
+        {/* Champ de titre */}
         <input
           type="text"
           value={title}
@@ -413,7 +413,7 @@ export default function NoteEditorPage() {
           className="w-full text-2xl sm:text-3xl font-bold text-gray-900 placeholder-gray-300 border-none outline-none bg-transparent mb-4 leading-tight"
         />
 
-        {/* Dynamic Properties */}
+        {/* Propriétés dynamiques */}
         {activeFields.length > 0 && (
           <div className="space-y-6">
             {instances.map((instance, index) => (
@@ -447,7 +447,7 @@ export default function NoteEditorPage() {
           </div>
         )}
 
-        {/* Content textarea */}
+        {/* Zone de contenu */}
         <textarea
           ref={contentRef}
           value={content}
@@ -457,7 +457,7 @@ export default function NoteEditorPage() {
         />
 
 
-      {/* Delete Confirmation Modal */}
+      {/* Modale de confirmation de suppression */}
       <ConfirmationModal
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}

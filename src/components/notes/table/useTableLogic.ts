@@ -44,7 +44,7 @@ export function useTableLogic({
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [globalFilter, setGlobalFilter] = useState("");
 
-  // Synchronize state when dbSettings changes
+  // Synchroniser l'état quand les paramètres changent
   useEffect(() => {
     if (dbSettings.sorting) {
       setSorting((current) =>
@@ -195,13 +195,13 @@ export function useTableLogic({
     onChange(newRows);
   };
 
-  // Convert custom field columns to TanStack columns
+  // Convertir les colonnes personnalisées en colonnes TanStack
   const tableColumns = useMemo<ColumnDef<any>[]>(() => {
     const cols: ColumnDef<any>[] = [];
     if (!field.columns) return cols;
 
-    // We do NOT render the cell here, we only define the id "select" 
-    // The rendering of the checkbox is handled in TableCoreUI
+    // On ne rend pas la cellule ici, on définit seulement l'id "select" 
+    // Le rendu de la case à cocher est géré dans TableCoreUI
     cols.push({
       id: "select",
       header: () => null,
