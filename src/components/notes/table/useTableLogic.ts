@@ -9,6 +9,7 @@ import {
   SortingState,
   ColumnSizingState,
   RowSelectionState,
+  getFilteredRowModel,
 } from "@tanstack/react-table";
 
 interface UseTableLogicProps {
@@ -41,6 +42,7 @@ export function useTableLogic({
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(dbSettings.columnSizing || {});
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [globalFilter, setGlobalFilter] = useState("");
 
   // Synchronize state when dbSettings changes
   useEffect(() => {
@@ -247,11 +249,37 @@ export function useTableLogic({
       columnVisibility: {
         select: isSelectionMode,
       },
+      globalFilter,
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: handleSortingChange,
     onColumnSizingChange: setColumnSizing,
+    onGlobalFilterChange: setGlobalFilter,
+    getFilteredRowModel: getFilteredRowModel(),
+    globalFilterFn: (row, columnId, filterValue) => {
+      const search = String(filterValue).toLowerCase();
+      const cells = row.getAllCells();
+      for (const cell of cells) {
+        if (cell.column.id === 'select') continue;
+        const val = cell.getValue();
+        if (val == null || val === "") continue;
+        
+        let strVal = "";
+        if (Array.isArray(val)) {
+          strVal = val.join(" ");
+        } else if (typeof val === 'object') {
+          strVal = JSON.stringify(val);
+        } else {
+          strVal = String(val);
+        }
+        
+        if (strVal.toLowerCase().includes(search)) {
+          return true;
+        }
+      }
+      return false;
+    },
   });
 
   const handleSum = () => {
@@ -346,5 +374,7 @@ export function useTableLogic({
     removeRow,
     updateRow,
     handleSum,
+    globalFilter,
+    setGlobalFilter,
   };
 }

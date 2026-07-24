@@ -1,6 +1,7 @@
 import { flexRender, Table as TanStackTable } from "@tanstack/react-table";
 import { ChevronUp, ChevronDown, Maximize2, X, RotateCcw, Plus } from "lucide-react";
 import { CustomFieldDefinition } from "@/types/notes";
+import { TYPE_CONFIGS } from "../FieldEditorSheet";
 
 interface TableCoreUIProps {
   table: TanStackTable<any>;
@@ -61,10 +62,25 @@ export function TableCoreUI({
                       className="group flex items-center gap-1 cursor-pointer hover:text-amber-600 transition-colors select-none overflow-hidden"
                       onClick={header.column.getToggleSortingHandler()}
                     >
-                      <span className="truncate">
-                        {header.column.id === "select" ? null : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
+                      <span className="truncate flex items-center gap-1.5">
+                        {header.column.id === "select" ? null : (
+                          <>
+                            {(() => {
+                              const meta = header.column.columnDef.meta as any;
+                              const colDef = meta?.colDef as CustomFieldDefinition;
+                              if (colDef) {
+                                const TypeIcon = TYPE_CONFIGS[colDef.type]?.icon;
+                                return TypeIcon ? <TypeIcon size={14} className="text-gray-400 shrink-0" /> : null;
+                              }
+                              return null;
+                            })()}
+                            <span className="truncate">
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                            </span>
+                          </>
                         )}
                       </span>
                       {header.column.id !== "select" && (
