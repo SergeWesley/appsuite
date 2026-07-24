@@ -284,6 +284,12 @@ export default function NoteEditorPage() {
       action: handleUndo,
     },
     {
+      key: "z",
+      ctrlKey: true,
+      shiftKey: true,
+      action: handleRedo,
+    },
+    {
       key: "y",
       ctrlKey: true,
       action: handleRedo,

@@ -1,8 +1,10 @@
+import { useRef } from "react";
 import { CustomFieldDefinition } from "@/types/notes";
 import { Plus, CheckSquare, Search, X } from "lucide-react";
 import { useTableLogic } from "./useTableLogic";
 import { TableCoreUI } from "./TableCoreUI";
 import { TableModals } from "./TableModals";
+import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 
 interface PropertyTableEditorProps {
   field: CustomFieldDefinition;
@@ -46,8 +48,42 @@ export function PropertyTableEditor({
     setGlobalFilter,
   } = useTableLogic({ field, value, onChange, noteId, metadata, onMetadataChange });
 
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useKeyboardShortcut([
+    {
+      key: "f",
+      metaKey: true,
+      action: (e) => {
+        if (!containerRef.current) return;
+        if (
+          containerRef.current.contains(document.activeElement) ||
+          containerRef.current.matches(":hover")
+        ) {
+          e.preventDefault();
+          searchInputRef.current?.focus();
+        }
+      },
+    },
+    {
+      key: "f",
+      ctrlKey: true,
+      action: (e) => {
+        if (!containerRef.current) return;
+        if (
+          containerRef.current.contains(document.activeElement) ||
+          containerRef.current.matches(":hover")
+        ) {
+          e.preventDefault();
+          searchInputRef.current?.focus();
+        }
+      },
+    },
+  ]);
+
   return (
-    <>
+    <div ref={containerRef} className="h-full">
       <div className="mt-2 w-full rounded-lg border border-gray-200 bg-white overflow-hidden flex flex-col h-full">
         <TableCoreUI
           table={table}
@@ -62,11 +98,11 @@ export function PropertyTableEditor({
           resetColumnSizing={resetColumnSizing}
           renderEditor={renderEditor}
         />
-        <div className="p-1 bg-gray-50 border-t border-gray-200 shrink-0 flex justify-between items-center gap-2">
-          <div className="flex gap-2 shrink-0">
+        <div className="p-2 bg-gray-50 border-t border-gray-200 shrink-0 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
+          <div className="flex gap-2 shrink-0 justify-start">
             <button
               onClick={addRow}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors w-max"
+              className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors flex-1 sm:flex-none sm:w-max"
             >
               <Plus size={14} />
               <span className="hidden sm:inline">Ajouter une ligne</span>
@@ -77,22 +113,23 @@ export function PropertyTableEditor({
                 if (isSelectionMode) setRowSelection({});
                 setIsSelectionMode(!isSelectionMode);
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded transition-colors w-max ${
+              className={`flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded transition-colors flex-1 sm:flex-none sm:w-max ${
                 isSelectionMode
                   ? "text-amber-600 bg-amber-50"
                   : "text-gray-500 hover:text-amber-600 hover:bg-amber-50"
               }`}
             >
               <CheckSquare size={14} />
-              <span className="hidden sm:inline">Sélectionner</span>
+              <span>Sélectionner</span>
             </button>
           </div>
           
-          <div className="relative flex-1 max-w-xs ml-auto">
+          <div className="relative w-full sm:w-auto sm:flex-1 sm:max-w-xs sm:ml-auto">
             <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
               <Search size={14} className="text-gray-400" />
             </div>
             <input
+              ref={searchInputRef}
               type="text"
               value={globalFilter ?? ""}
               onChange={(e) => setGlobalFilter(e.target.value)}
@@ -123,6 +160,6 @@ export function PropertyTableEditor({
         renderEditor={renderEditor}
         updateRow={updateRow}
       />
-    </>
+    </div>
   );
 }
