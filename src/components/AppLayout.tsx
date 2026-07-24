@@ -33,7 +33,7 @@ export function AppLayout({
   height,
 }: AppLayoutProps) {
   return (
-    <div className={`h-[100dvh] flex flex-col overflow-hidden ${bgClass}`}>
+    <div className={`fixed top-0 left-0 w-full h-[100dvh] flex flex-col overflow-hidden overscroll-none ${bgClass}`}>
       <div className="shrink-0 z-40">
         <AppHeader
           title={title}
@@ -47,7 +47,7 @@ export function AppLayout({
         />
       </div>
       
-      <main className={`flex-1 overflow-y-auto ${maxWidth} mx-auto ${noPadding ? "" : padding}`}>
+      <main className={`flex-1 overflow-y-auto overscroll-y-contain ${maxWidth} mx-auto ${noPadding ? "" : padding}`}>
         {children}
       </main>
     </div>
