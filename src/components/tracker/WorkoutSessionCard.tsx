@@ -49,40 +49,41 @@ export function WorkoutSessionCard({
   const content = (
     <>
       {/* En-tête avec date */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-50 rounded-lg">
+          <div className="p-2 bg-blue-50 rounded-lg shrink-0">
             <Calendar size={20} className="text-blue-600" />
           </div>
           <div>
             <h3 className="font-semibold text-gray-900 capitalize">
               {formatDate(session.date)}
             </h3>
-            <p className="text-sm text-gray-500">
-              {session.totalExercises} exercice
-              {session.totalExercises > 1 ? "s" : ""}
-            </p>
+            <div className="flex items-center flex-wrap gap-x-2 gap-y-1 text-sm text-gray-500 mt-0.5">
+              <span>
+                {session.totalExercises} exercice{session.totalExercises > 1 ? "s" : ""}
+              </span>
+              <span className="text-gray-300">•</span>
+              <span className="flex items-center gap-1">
+                <Clock size={13} />
+                {formatDuration(estimatedDuration)}
+              </span>
+            </div>
           </div>
         </div>
-        <div className="text-right flex items-center gap-2">
-          <div className="flex items-center gap-1 text-gray-500 text-sm">
-            <Clock size={14} />
-            <span>{formatDuration(estimatedDuration)}</span>
-          </div>
-          {onDelete && (
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onDelete(session.id);
-              }}
-              className="p-2 -mr-2 text-gray-300 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50"
-              aria-label="Supprimer la séance"
-            >
-              <Trash2 size={18} />
-            </button>
-          )}
-        </div>
+        
+        {onDelete && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onDelete(session.id);
+            }}
+            className="p-2 -mt-1 -mr-2 text-gray-400 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50 shrink-0"
+            aria-label="Supprimer la séance"
+          >
+            <Trash2 size={18} />
+          </button>
+        )}
       </div>
 
       {/* Groupes musculaires */}
