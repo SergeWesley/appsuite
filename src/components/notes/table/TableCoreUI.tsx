@@ -53,7 +53,7 @@ export function TableCoreUI({
                 return (
                   <th
                     key={header.id}
-                    className="px-3 py-2 whitespace-nowrap relative border-r border-transparent hover:border-gray-200 group/th"
+                    className="px-3 py-2 whitespace-nowrap relative border-r border-gray-200 group/th"
                     style={{
                       width: header.getSize(),
                     }}
@@ -103,14 +103,12 @@ export function TableCoreUI({
                       <div
                         onMouseDown={header.getResizeHandler()}
                         onTouchStart={header.getResizeHandler()}
-                        className={`absolute right-0 top-0 bottom-0 w-3 flex justify-center cursor-col-resize z-10 transition-colors touch-none select-none ${
+                        className={`absolute -right-1.5 top-0 bottom-0 w-3 cursor-col-resize z-10 transition-colors touch-none select-none ${
                           header.column.getIsResizing()
                             ? "bg-amber-400"
                             : "bg-transparent hover:bg-amber-400 group-hover/th:bg-gray-200"
                         }`}
-                      >
-                        <div className="w-[1px] h-full bg-gray-200 md:hidden" />
-                      </div>
+                      />
                     )}
                   </th>
                 );
@@ -144,7 +142,7 @@ export function TableCoreUI({
                     return (
                       <td
                         key={cell.id}
-                        className="p-1 align-middle border-r border-transparent"
+                        className="p-1 align-middle border-r border-gray-100"
                         style={{ width: cell.column.getSize() }}
                       >
                         <div className="flex justify-center items-center h-full px-2">
@@ -247,7 +245,7 @@ export function TableCoreUI({
                   return (
                     <td
                       key={cell.id}
-                      className="p-1 align-top border-r border-transparent"
+                      className="p-1 align-top border-r border-gray-100"
                       style={{
                         width: cell.column.getSize(),
                       }}
