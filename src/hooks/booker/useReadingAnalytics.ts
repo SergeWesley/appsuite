@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "../useAuth";
+import { useAuthContext } from "@/components/AuthProvider";
 
 export interface DailyStat {
   date: string;
@@ -82,7 +82,7 @@ export function useReadingAnalytics() {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user } = useAuthContext();
 
   // Fonction pour formater une date en string YYYY-MM-DD
   const formatDate = (date: Date): string => {

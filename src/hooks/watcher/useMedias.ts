@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Media, MediaFormData, MediaStatus, MediaType } from "@/types/media";
 import { Database } from "@/types/supabase";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "../useAuth";
+import { useAuthContext } from "@/components/AuthProvider";
 
 type MediaRow = Database["public"]["Tables"]["medias"]["Row"];
 type MediaInsert = Database["public"]["Tables"]["medias"]["Insert"];
@@ -91,7 +91,7 @@ export function useMedias() {
   const [medias, setMedias] = useState<Media[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user } = useAuthContext();
 
   // Charger les médias depuis Supabase
   const loadMedias = async () => {

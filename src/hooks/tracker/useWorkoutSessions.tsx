@@ -10,7 +10,7 @@ import {
 } from "@/types/workout-session";
 import { Database } from "@/types/supabase";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/components/AuthProvider";
 
 type WorkoutSessionRow =
   Database["public"]["Tables"]["workout_sessions"]["Row"];
@@ -93,7 +93,7 @@ export function useWorkoutSessions() {
   const [sessions, setSessions] = useState<WorkoutSession[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user } = useAuthContext();
 
   // Charger les séances
   const loadSessions = async () => {

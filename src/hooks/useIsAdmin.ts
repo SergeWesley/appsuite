@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/components/AuthProvider";
 
 /**
  * Retourne true si l'utilisateur connecté a le rôle "admin".
@@ -16,7 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
  *   Dashboard → Authentication → Users → [user] → Edit → app_metadata: { "role": "admin" }
  */
 export function useIsAdmin(): boolean {
-  const { user } = useAuth();
+  const { user } = useAuthContext();
 
   return useMemo(() => {
     if (!user) return false;

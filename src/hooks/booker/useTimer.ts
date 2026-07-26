@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useAuth } from "../useAuth";
+import { useAuthContext } from "@/components/AuthProvider";
 import { supabase } from "@/lib/supabase";
 
 interface ActiveTimer {
@@ -37,7 +37,7 @@ export function useTimer(): TimerHookReturn {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user } = useAuthContext();
 
   // Référence pour l'intervalle de mise à jour
   const intervalRef = useRef<NodeJS.Timeout | null>(null);

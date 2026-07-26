@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Book, BookFormData, BookStatus } from "@/types/book";
 import { Database } from "@/types/supabase";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "../useAuth";
+import { useAuthContext } from "@/components/AuthProvider";
 
 type BookRow = Database["public"]["Tables"]["books"]["Row"];
 type BookInsert = Database["public"]["Tables"]["books"]["Insert"];
@@ -72,7 +72,7 @@ export function useBooks() {
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user } = useAuthContext();
 
   // Charger les livres depuis Supabase
   const loadBooks = async () => {

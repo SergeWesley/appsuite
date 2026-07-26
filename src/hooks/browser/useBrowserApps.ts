@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react";
 import { BrowserApp, BrowserAppFormData, BrowserAppConfig } from "@/types/browser";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/components/AuthProvider";
 
 export function useBrowserApps() {
   const [apps, setApps] = useState<BrowserApp[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user } = useAuthContext();
 
   const loadApps = async () => {
     if (!user) {

@@ -8,7 +8,7 @@ import {
 } from "@/types/workout-session";
 import { Database } from "@/types/supabase";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/components/AuthProvider";
 
 type ExerciseRow = Database["public"]["Tables"]["exercises"]["Row"];
 type ExerciseInsert = Database["public"]["Tables"]["exercises"]["Insert"];
@@ -48,7 +48,7 @@ export function useExercises() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user } = useAuthContext();
 
   // Charger les exercices (prédéfinis + personnalisés)
   const loadExercises = async () => {

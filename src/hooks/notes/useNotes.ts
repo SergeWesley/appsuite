@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react";
 import { Note, NoteFormData } from "@/types/notes";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/components/AuthProvider";
 
 export function useNotes(folderId?: string) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user } = useAuthContext();
 
   const loadNotes = async () => {
     if (!user || !folderId) {

@@ -8,7 +8,7 @@ import {
 } from "@/types/reading-session";
 import { Database } from "@/types/supabase";
 import { supabase } from "@/lib/supabase";
-import { useAuth } from "./useAuth";
+import { useAuthContext } from "@/components/AuthProvider";
 
 type SessionRow = Database["public"]["Tables"]["reading_sessions"]["Row"];
 type SessionInsert = Database["public"]["Tables"]["reading_sessions"]["Insert"];
@@ -35,7 +35,7 @@ export function useReadingSessions(onBookDataChanged?: () => void) {
   >(new Map());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const { user } = useAuthContext();
 
   // Charger les sessions depuis Supabase
   const loadSessions = async () => {
