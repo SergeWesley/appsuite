@@ -26,12 +26,12 @@ export default function TrackerStatsPage() {
     selectedExerciseId: "",
   });
 
-  // Obtenir tous les exercices valides (de force/poids) que l'utilisateur a réellement effectués
+  // Obtenir tous les exercices valides (de force/poids ou poids du corps) que l'utilisateur a réellement effectués
   const performedExerciseIds = useMemo(() => {
     const ids = new Set<string>();
     sessions.forEach(session => {
       session.exercises.forEach(ex => {
-        if (ex.weight && ex.weight > 0) { // Conserver uniquement ceux avec un poids
+        if ((ex.weight && ex.weight > 0) || (ex.reps && ex.reps > 0)) { // Conserver ceux avec un poids ou des répétitions
           ids.add(ex.exerciseId);
         }
       });
@@ -68,16 +68,32 @@ export default function TrackerStatsPage() {
       const matchingEx = session.exercises.filter(ex => ex.exerciseId === selectedExerciseId);
       if (matchingEx.length === 0) return;
 
-      // Trouver le poids maximum levé pendant cette séance pour cet exercice
+      // Déterminer s'il s'agit d'un exercice uniquement au poids du corps dans cette séance
+      let isBodyweightOnly = true;
+      matchingEx.forEach(ex => {
+        if (ex.weight && ex.weight > 0) {
+          isBodyweightOnly = false;
+        }
+      });
+
+      // Trouver le poids maximum levé ou le max de reps pendant cette séance pour cet exercice
       let maxWeight = 0;
       let repsAtMaxWeight = 0;
+      let maxRepsForBodyweight = 0;
       let hasData = false;
 
       matchingEx.forEach(ex => {
-        if (ex.weight && ex.weight > maxWeight) {
-          maxWeight = ex.weight;
-          repsAtMaxWeight = ex.reps || 0;
-          hasData = true;
+        if (!isBodyweightOnly) {
+          if (ex.weight && ex.weight > maxWeight) {
+            maxWeight = ex.weight;
+            repsAtMaxWeight = ex.reps || 0;
+            hasData = true;
+          }
+        } else {
+          if (ex.reps && ex.reps > maxRepsForBodyweight) {
+            maxRepsForBodyweight = ex.reps;
+            hasData = true;
+          }
         }
       });
 
@@ -85,8 +101,9 @@ export default function TrackerStatsPage() {
         dataPoints.push({
           date: session.date,
           dateStr: new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short' }).format(session.date),
-          weight: maxWeight,
-          reps: repsAtMaxWeight
+          weight: isBodyweightOnly ? maxRepsForBodyweight : maxWeight,
+          reps: isBodyweightOnly ? 0 : repsAtMaxWeight,
+          isBodyweight: isBodyweightOnly
         });
       }
     });
@@ -169,9 +186,9 @@ export default function TrackerStatsPage() {
 
         {availableExercises.length === 0 ? (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Aucune donnée de poids exploitable</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Aucune donnée exploitable</h3>
             <p className="text-gray-500">
-              Réalisez des séances avec des exercices à poids (haltérophilie, force) pour générer des courbes d'évolution.
+              Réalisez des séances avec des exercices à poids ou au poids du corps pour générer des courbes d'évolution.
             </p>
           </div>
         ) : (

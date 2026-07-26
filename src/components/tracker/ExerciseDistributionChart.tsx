@@ -45,7 +45,7 @@ export function ExerciseDistributionChart({
   const groups = useMemo(() => {
     const validExercises = exercises.filter(
       (ex) =>
-        ex.exercise?.name && typeof ex.weight === "number" && ex.weight > 0,
+        ex.exercise?.name && ((typeof ex.weight === "number" && ex.weight > 0) || (typeof ex.reps === "number" && ex.reps > 0)),
     );
 
     const groupedMap = new Map<
@@ -55,7 +55,7 @@ export function ExerciseDistributionChart({
 
     validExercises.forEach((ex) => {
       const name = ex.exercise!.name;
-      const weight = ex.weight!;
+      const weight = ex.weight || 0;
       const setsCount = ex.sets || 1;
       const reps = ex.reps || 0;
 
@@ -115,7 +115,7 @@ export function ExerciseDistributionChart({
           </h3>
         </div>
         <p className="text-gray-500 text-center py-8">
-          Aucune donnée de poids disponible.
+          Aucune donnée disponible.
         </p>
       </div>
     );
@@ -204,10 +204,12 @@ export function ExerciseDistributionChart({
                       title="Modifier cet exercice"
                     >
                       <span>
-                        {wg.weight}{" "}
-                        <span className="text-[10px] font-normal text-gray-400 group-hover:text-gray-500 transition-colors">
-                          kg
-                        </span>
+                        {wg.weight === 0 ? "PdC" : wg.weight}{" "}
+                        {wg.weight > 0 && (
+                          <span className="text-[10px] font-normal text-gray-400 group-hover:text-gray-500 transition-colors">
+                            kg
+                          </span>
+                        )}
                       </span>
                       <Pencil size={12} className="hidden sm:inline-block opacity-0 group-hover:opacity-100 transition-opacity text-gray-500" />
                     </button>
@@ -215,7 +217,7 @@ export function ExerciseDistributionChart({
                       <button
                         onClick={() =>
                           setActiveNote({
-                            title: `${group.name} (${wg.weight} kg)`,
+                            title: `${group.name} (${wg.weight === 0 ? "PdC" : wg.weight + " kg"})`,
                             text: wg.notes!,
                           })
                         }

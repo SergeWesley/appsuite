@@ -63,10 +63,10 @@ export function ExerciseSelectionModal({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-6 border-b border-gray-200 shrink-0">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-gray-900">
                   Choisir un exercice
@@ -114,7 +114,7 @@ export function ExerciseSelectionModal({
               </div>
             </div>
 
-            <div className="p-6 overflow-y-auto max-h-96">
+            <div className="p-6 overflow-y-auto flex-1">
               <div className="grid gap-3">
                 {filteredExercises.map((exercise) => (
                   <motion.button

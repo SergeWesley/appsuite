@@ -15,8 +15,9 @@ import {
 export interface ProgressionDataPoint {
   date: Date;
   dateStr: string;
-  weight: number;
-  reps: number;
+  weight: number; // For bodyweight, this stores the max reps
+  reps: number;   // For bodyweight, this might be 0 or unused
+  isBodyweight?: boolean;
 }
 
 interface ExerciseProgressionChartProps {
@@ -31,7 +32,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       <div className="bg-gray-900 text-white p-3 rounded-lg shadow-xl text-sm transform">
         <p className="font-semibold mb-1 text-gray-300">{data.dateStr}</p>
         <p className="font-bold text-lg text-indigo-400">
-          {data.weight} kg <span className="text-gray-400 text-sm font-normal">x {data.reps} reps</span>
+          {data.isBodyweight ? (
+            <>{data.weight} reps</>
+          ) : (
+            <>{data.weight} kg <span className="text-gray-400 text-sm font-normal">x {data.reps} reps</span></>
+          )}
         </p>
       </div>
     );
@@ -53,19 +58,23 @@ export function ExerciseProgressionChart({ data, exerciseName }: ExerciseProgres
     );
   }
 
+  const isBodyweight = data[0]?.isBodyweight;
+
   // To make chart readable, we add some padding to Y axis
   const minWeight = Math.min(...data.map(d => d.weight));
   const maxWeight = maxWeightRef!;
   
   // Custom domains
-  const yMin = Math.max(0, Math.floor(minWeight - 5));
-  const yMax = Math.ceil(maxWeight + 5);
+  const yMin = Math.max(0, Math.floor(minWeight - (isBodyweight ? 2 : 5)));
+  const yMax = Math.ceil(maxWeight + (isBodyweight ? 2 : 5));
 
   return (
     <div className="w-full bg-white rounded-xl border border-gray-100 shadow-sm p-4 sm:p-6">
       <div className="mb-6">
         <h3 className="text-lg font-semibold text-gray-900">Progression</h3>
-        <p className="text-sm text-gray-500">Évolution de votre charge maximale sur la période ({exerciseName})</p>
+        <p className="text-sm text-gray-500">
+          {isBodyweight ? `Évolution du nombre maximum de répétitions sur la période (${exerciseName})` : `Évolution de votre charge maximale sur la période (${exerciseName})`}
+        </p>
       </div>
       
       <div className="w-full h-80">
@@ -104,7 +113,7 @@ export function ExerciseProgressionChart({ data, exerciseName }: ExerciseProgres
                 strokeDasharray="4 4"
                 label={{ 
                   position: 'insideTopRight',
-                  value: `🏆 PR: ${maxWeightRef}kg`, 
+                  value: `🏆 PR: ${maxWeightRef}${isBodyweight ? ' reps' : 'kg'}`, 
                   fill: '#d97706', // Amber 600
                   fontSize: 12,
                   fontWeight: 'bold'

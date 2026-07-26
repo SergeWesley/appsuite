@@ -106,11 +106,11 @@ export function ExerciseDetailsModal({
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-6 border-b border-gray-200 shrink-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div
@@ -142,7 +142,9 @@ export function ExerciseDetailsModal({
               </div>
             </div>
 
-            {/* Last Performances */}
+            {/* Scrollable Content */}
+            <div className="overflow-y-auto">
+              {/* Last Performances */}
             {lastPerformances.length > 0 && (
               <div className="px-6 pt-5 pb-1">
                 <div className="flex items-center gap-2 text-indigo-700 mb-2">
@@ -369,8 +371,10 @@ export function ExerciseDetailsModal({
               </div>
             </div>
 
+            </div>
+
             {/* Actions */}
-            <div className="p-6 pt-0 flex gap-3">
+            <div className="p-6 border-t border-gray-100 flex gap-3 shrink-0">
               <button
                 onClick={onClose}
                 className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors font-medium"
