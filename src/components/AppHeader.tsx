@@ -66,10 +66,10 @@ export function AppHeader({
                   className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors min-w-0 flex-1 text-left"
                   aria-label="Menu de navigation"
                 >
-                  {Icon && <Icon className={`h-8 w-8 ${iconColor}`} />}
-                  <div className="flex items-center gap-2">
+                  {Icon && <Icon className={`h-8 w-8 flex-shrink-0 ${iconColor}`} />}
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
                     <h1
-                      className={`${Icon ? "ml-3" : ""} text-xl font-semibold text-gray-900 truncate`}
+                      className={`${Icon ? "ml-3" : ""} text-xl font-semibold text-gray-900 truncate block`}
                     >
                       {title}
                     </h1>
@@ -77,9 +77,9 @@ export function AppHeader({
                 </button>
               ) : (
                 <div className="flex items-center p-2 min-w-0 flex-1 text-left gap-2">
-                  {Icon && <Icon className={`h-6 w-6 ${iconColor}`} />}
+                  {Icon && <Icon className={`h-6 w-6 flex-shrink-0 ${iconColor}`} />}
                   <h1
-                    className={`${Icon ? "ml-3" : ""} text-lg font-semibold text-gray-900 truncate`}
+                    className={`${Icon ? "ml-3" : ""} text-lg font-semibold text-gray-900 truncate min-w-0 flex-1`}
                   >
                     {title}
                   </h1>

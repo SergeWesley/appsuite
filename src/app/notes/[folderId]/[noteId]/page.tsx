@@ -307,7 +307,7 @@ export default function NoteEditorPage() {
       currentModule="notes"
       height="h-14"
       onBack={handleBack}
-      bgClass="min-h-screen bg-white"
+      bgClass="bg-white"
       padding="px-4 sm:px-6 py-6"
       actions={
         <>

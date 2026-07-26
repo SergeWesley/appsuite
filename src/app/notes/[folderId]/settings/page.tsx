@@ -129,7 +129,8 @@ export default function FolderSettingsPage() {
       iconColor="text-amber-500"
       currentModule="notes"
       onBack={handleBack}
-      bgClass="min-h-screen bg-gray-50 pb-24"
+      bgClass="bg-gray-50"
+      padding="px-4 sm:px-6 lg:px-8 pt-8 pb-24"
       actions={
         <button
           onClick={handleSaveIdentity}
@@ -164,7 +165,7 @@ export default function FolderSettingsPage() {
                 type="text"
                 value={folderName}
                 onChange={(e) => setFolderName(e.target.value)}
-                className="w-full max-w-md px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm"
+                className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm"
               />
             </div>
 

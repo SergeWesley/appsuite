@@ -67,7 +67,7 @@ export default function BookerStatsPage() {
       iconColor="text-blue-600"
       currentModule="booker"
       onBack={() => router.push("/booker")}
-      bgClass="min-h-screen bg-gray-50 overflow-x-hidden"
+      bgClass="bg-gray-50 overflow-x-hidden"
     >
         {/* Statistiques globales */}
         <div className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
