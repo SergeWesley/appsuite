@@ -50,7 +50,7 @@ export function ExerciseDistributionChart({
 
     const groupedMap = new Map<
       string,
-      Map<number, { sets: ProcessedSet[]; notes?: string }>
+      { id: string; weight: number; sets: ProcessedSet[]; notes?: string; order: number }[]
     >();
 
     validExercises.forEach((ex) => {
@@ -60,45 +60,40 @@ export function ExerciseDistributionChart({
       const reps = ex.reps || 0;
 
       if (!groupedMap.has(name)) {
-        groupedMap.set(name, new Map());
+        groupedMap.set(name, []);
       }
 
-      const exerciseWeights = groupedMap.get(name)!;
-      if (!exerciseWeights.has(weight)) {
-        exerciseWeights.set(weight, { sets: [], notes: ex.notes });
-      } else if (ex.notes && !exerciseWeights.get(weight)!.notes) {
-        // Keep the first encountered note for this weight
-        exerciseWeights.get(weight)!.notes = ex.notes;
-      }
+      const exerciseEntries = groupedMap.get(name)!;
 
-      // Add each set as an individual item
+      const sets: ProcessedSet[] = [];
       for (let i = 0; i < setsCount; i++) {
-        exerciseWeights.get(weight)!.sets.push({
+        sets.push({
           id: `${ex.id}-set-${i}`,
           reps,
           workoutExerciseId: ex.id,
         });
       }
+
+      exerciseEntries.push({
+        id: ex.id,
+        weight,
+        sets,
+        notes: ex.notes,
+        order: ex.order || 0,
+      });
     });
 
-    return Array.from(groupedMap.entries()).map(([name, weightMap]) => {
-      const weightGroups = Array.from(weightMap.entries())
-        .map(([weight, data]) => ({
-          weight,
-          sets: data.sets,
-          notes: data.notes,
-        }))
-        .sort((a, b) => a.weight - b.weight);
-
-      const allSets = weightGroups.flatMap((g) => g.sets);
-      const allWeights = weightGroups.map((g) => g.weight);
+    return Array.from(groupedMap.entries()).map(([name, entries]) => {
+      const sortedEntries = entries.sort((a, b) => a.order - b.order);
+      const allSets = sortedEntries.flatMap((g) => g.sets);
+      const allWeights = sortedEntries.map((g) => g.weight);
 
       return {
         name,
-        weightGroups,
-        maxWeight: Math.max(...allWeights),
-        minWeight: Math.min(...allWeights),
-        maxReps: Math.max(...allSets.map((s) => s.reps), 10), // Ensure at least scale to 10
+        weightGroups: sortedEntries, // Conserver le nom pour la compatibilité avec JSX
+        maxWeight: Math.max(...allWeights, 0),
+        minWeight: Math.min(...allWeights, 0),
+        maxReps: Math.max(...allSets.map((s) => s.reps), 10), // Assurer une échelle d'au moins 10
       };
     });
   }, [exercises]);
@@ -146,19 +141,19 @@ export function ExerciseDistributionChart({
               </h4>
             </div>
 
-            {/* Charts Area */}
+            {/* Zone des graphiques */}
             <div
               className="flex items-end gap-1 overflow-x-auto pb-4 pt-4"
               style={{ minHeight: "140px" }}
             >
               {group.weightGroups.map((wg) => (
                 <div
-                  key={wg.weight}
+                  key={wg.id}
                   className="flex flex-col items-center flex-shrink-0 group/weight"
                   style={{ minWidth: "60px" }}
                 >
-                  {/* Bars Container - Reversed so first set is bottom */}
-                  <div className="flex flex-col-reverse gap-1 items-center w-full">
+                  {/* Conteneur de barres - Première série en haut */}
+                  <div className="flex flex-col gap-1 items-center w-full">
                     {wg.sets.map((set, setIndex) => {
                       const isCompleted = completedSets.has(set.id);
                       return (
@@ -168,7 +163,7 @@ export function ExerciseDistributionChart({
                         animate={{
                           height: Math.max(set.reps * 4, 8) + "px",
                           opacity: 1,
-                        }} // Scale height by reps
+                        }} // Ajuster la hauteur en fonction des répétitions
                         className={`w-8 rounded-md cursor-pointer transition-all flex items-center justify-center relative ${getColorClass(
                           groupIndex,
                         )}`}
@@ -196,7 +191,7 @@ export function ExerciseDistributionChart({
                     )})}
                   </div>
 
-                  {/* Weight Label & Notes Badge */}
+                  {/* Étiquette de poids et badge de notes */}
                   <div className="mt-3 flex items-center gap-1">
                     <button
                       onClick={() => onEditExercise?.(wg.sets[0].workoutExerciseId)}
@@ -235,10 +230,10 @@ export function ExerciseDistributionChart({
         ))}
       </div>
 
-      {/* Reps Legend/Scale Hint could go here */}
+      {/* La légende des répétitions ou l'échelle pourrait aller ici */}
 
 
-      {/* Notes Modal Overlay */}
+      {/* Overlay de la modale des notes */}
       <AnimatePresence>
         {activeNote && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center px-4 bg-gray-900/40 backdrop-blur-sm">
@@ -289,7 +284,7 @@ export function ExerciseDistributionChart({
 }
 
 function getColorClass(index: number) {
-  // Tailwind classes for background colors
+  // Classes Tailwind pour les couleurs de fond
   const colors = [
     "bg-green-500 hover:bg-green-400",
     "bg-blue-500 hover:bg-blue-400",

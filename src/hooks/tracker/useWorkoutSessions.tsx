@@ -66,7 +66,7 @@ function mapRowToWorkoutSession(
       slope: we.slope || undefined,
       notes: we.notes || undefined,
       order: we.exercise_order,
-    })),
+    })).sort((a, b) => (a.order || 0) - (b.order || 0)),
     totalExercises: row.total_exercises || 0,
     duration: row.duration || undefined,
     userId: row.user_id,
