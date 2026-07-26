@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/components/AuthProvider";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
+import { Grid3X3 } from "lucide-react";
 
 export default function Home() {
   const router = useRouter();
@@ -20,12 +22,5 @@ export default function Home() {
   }, [isAuthenticated, loading, router, selectedApp]);
 
   // Afficher un écran de chargement pendant la redirection
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-        <p className="mt-4 text-gray-600">Redirection en cours...</p>
-      </div>
-    </div>
-  );
+  return <LoadingOverlay isLoading={true} message="" fullPage color="blue" icon={Grid3X3} animateType="pulse" />;
 }
