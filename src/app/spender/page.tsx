@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { NavigationMenu } from "@/components/NavigationMenu";
 import { AppLayout } from "@/components/AppLayout";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { Wallet, LogOut, User, Plus, Receipt } from "lucide-react";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
 import { useSubscriptions } from "@/hooks/spender/useSubscriptions";
@@ -36,6 +36,10 @@ export default function SpenderPage() {
     }
   };
 
+  if (loading) {
+    return <LoadingOverlay isLoading={true} message="" fullPage color="red" icon={Wallet} animateType="pulse" />;
+  }
+
   return (
     <AppLayout
       title="Spender"
@@ -64,15 +68,6 @@ export default function SpenderPage() {
           </div>
         </div>
 
-        {/* Loading */}
-        {loading && (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <div className="animate-spin h-12 w-12 border-4 border-red-500 rounded-full border-t-transparent mx-auto mb-4"></div>
-              <p className="text-gray-600">Chargement des abonnements...</p>
-            </div>
-          </div>
-        )}
 
         {/* Empty state */}
         {!loading && subscriptions.length === 0 && (

@@ -100,8 +100,10 @@ export default function WorkoutSessionDetailPage() {
     return (
       <LoadingOverlay
         isLoading={true}
-        message="Chargement de la séance..."
+        message=""
         fullPage
+        icon={Activity}
+        animateType="pulse"
       />
     );
   }

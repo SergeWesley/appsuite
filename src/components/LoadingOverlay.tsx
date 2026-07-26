@@ -2,13 +2,16 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2 } from "lucide-react";
+import React from "react";
 
 interface LoadingOverlayProps {
   isLoading: boolean;
   message?: string;
   className?: string;
   fullPage?: boolean;
-  color?: "green" | "amber" | "indigo" | "gray" | "blue";
+  color?: "green" | "amber" | "indigo" | "gray" | "blue" | "cyan" | "teal" | "red" | "purple";
+  icon?: React.ElementType;
+  animateType?: "spin" | "pulse";
 }
 
 /**
@@ -21,6 +24,8 @@ export function LoadingOverlay({
   className = "",
   fullPage = false,
   color = "green",
+  icon: Icon = Loader2,
+  animateType = "spin",
 }: LoadingOverlayProps) {
   // Définition des classes de couleur pour le composant de chargement
   const colorClasses = {
@@ -29,7 +34,16 @@ export function LoadingOverlay({
     indigo: "text-indigo-600 bg-indigo-400",
     gray: "text-gray-600 bg-gray-400",
     blue: "text-blue-600 bg-blue-400",
+    cyan: "text-cyan-600 bg-cyan-400",
+    teal: "text-teal-600 bg-teal-400",
+    red: "text-red-600 bg-red-400",
+    purple: "text-purple-600 bg-purple-400",
   };
+
+  const animationProps = animateType === "spin" 
+    ? { animate: { rotate: 360 }, transition: { repeat: Infinity, duration: 1, ease: "linear" as const } }
+    : { animate: { scale: [1, 1.2, 1] }, transition: { repeat: Infinity, duration: 1.5, ease: "easeInOut" as const } };
+
   return (
     <AnimatePresence>
       {isLoading && (
@@ -46,15 +60,16 @@ export function LoadingOverlay({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-100 flex flex-col items-center gap-4 max-w-xs w-full mx-4"
+            className={`flex flex-col items-center justify-center ${
+              message ? "bg-white p-6 rounded-2xl shadow-2xl border border-gray-100 gap-4 max-w-xs w-full mx-4" : ""
+            }`}
           >
             <div className="relative">
               <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                {...animationProps}
                 className={colorClasses[color].split(" ")[0]}
               >
-                <Loader2 size={40} strokeWidth={2.5} />
+                <Icon size={40} strokeWidth={2.5} />
               </motion.div>
               <motion.div
                 initial={{ opacity: 0 }}
@@ -63,7 +78,7 @@ export function LoadingOverlay({
                 className={`absolute inset-0 ${colorClasses[color].split(" ")[1]} blur-xl opacity-20`}
               />
             </div>
-            <p className="text-gray-900 font-semibold text-center">{message}</p>
+            {message && <p className="text-gray-900 font-semibold text-center">{message}</p>}
           </motion.div>
         </motion.div>
       )}

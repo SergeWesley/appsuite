@@ -14,6 +14,7 @@ import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { StickyNote, MoreVertical, Upload, LayoutGrid, List, ArrowDownAZ, ArrowUpZA, ArrowUpDown } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import { sortFolders, getNextSortOrder, SortOrder } from "@/lib/folder-utils";
@@ -142,6 +143,10 @@ export default function NotesPage() {
     },
   ]);
 
+  if (loading) {
+    return <LoadingOverlay isLoading={true} message="" fullPage color="amber" icon={StickyNote} animateType="pulse" />;
+  }
+
   return (
     <AppLayout
       title="Notes"
@@ -226,15 +231,7 @@ export default function NotesPage() {
           </div>
         </div>
 
-        {/* Loading */}
-        {loading && (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <div className="animate-spin h-12 w-12 border-4 border-amber-500 rounded-full border-t-transparent mx-auto mb-4"></div>
-              <p className="text-gray-600">Chargement des dossiers...</p>
-            </div>
-          </div>
-        )}
+
 
         {/* Empty state */}
         {!loading && folders.length === 0 && (

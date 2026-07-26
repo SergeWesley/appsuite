@@ -15,6 +15,7 @@ import {
   X,
   ChevronDown,
   ChevronUp,
+  StickyNote
 } from "lucide-react";
 import { useNoteFolders } from "@/hooks/notes/useNoteFolders";
 import { useNoteTemplates } from "@/hooks/notes/useNoteTemplates";
@@ -22,6 +23,7 @@ import { FOLDER_COLORS, CustomFieldDefinition, NoteFolder, NoteTemplate } from "
 import { ConfirmationModal } from "@/components/ConfirmationModal";
 import { TemplateEditorModal } from "@/components/notes/TemplateEditorModal";
 import { AppLayout } from "@/components/AppLayout";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 
 export default function FolderSettingsPage() {
   const router = useRouter();
@@ -117,11 +119,7 @@ export default function FolderSettingsPage() {
   const loading = foldersLoading || templatesLoading;
 
   if (loading || !folder) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin h-8 w-8 border-4 border-amber-500 rounded-full border-t-transparent"></div>
-      </div>
-    );
+    return <LoadingOverlay isLoading={true} message="" fullPage color="amber" icon={StickyNote} animateType="pulse" />;
   }
 
   return (

@@ -23,6 +23,7 @@ import { MediaForm } from "@/components/watcher/MediaForm";
 import { MediaStats } from "@/components/watcher/MediaStats";
 import { WatchingTimer } from "@/components/watcher/WatchingTimer";
 import { AppLayout } from "@/components/AppLayout";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 
 export default function WatcherPage() {
   const {
@@ -155,16 +156,7 @@ export default function WatcherPage() {
   const stats = getStats();
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">
-            Chargement de votre médiathèque...
-          </p>
-        </div>
-      </div>
-    );
+    return <LoadingOverlay isLoading={true} message="" fullPage color="purple" icon={Film} animateType="pulse" />;
   }
 
   if (error) {

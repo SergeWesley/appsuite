@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { AppLayout } from "@/components/AppLayout";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { BrowserAppFormModal } from "@/components/browser/BrowserAppFormModal";
 import { BrowserAppCard } from "@/components/browser/BrowserAppCard";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
@@ -53,6 +54,10 @@ export default function BrowserPage() {
 
 
 
+  if (loading) {
+    return <LoadingOverlay isLoading={true} message="" fullPage color="teal" icon={Globe} animateType="pulse" />;
+  }
+
   return (
     <AppLayout
       title="Browser"
@@ -73,15 +78,6 @@ export default function BrowserPage() {
           </p>
         </div>
 
-        {/* Loading */}
-        {loading && (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <div className="animate-spin h-12 w-12 border-4 border-teal-500 rounded-full border-t-transparent mx-auto mb-4"></div>
-              <p className="text-gray-600">Chargement des applications...</p>
-            </div>
-          </div>
-        )}
 
         {/* Empty state */}
         {!loading && apps.length === 0 && (

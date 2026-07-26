@@ -10,6 +10,7 @@ import { NoteCard } from "@/components/notes/NoteCard";
 import { FolderCard } from "@/components/notes/FolderCard";
 import { CreateFolderModal } from "@/components/notes/CreateFolderModal";
 import { MoveFolderModal } from "@/components/notes/MoveFolderModal";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { useImportNote } from "@/components/notes/ImportNoteButton";
 import { NoteFolderFormData, NoteExportData } from "@/types/notes";
 import { FloatingAddButton } from "@/components/tracker/FloatingAddButton";
@@ -27,7 +28,8 @@ import {
   ArrowDownAZ,
   ArrowUpZA,
   ArrowUpDown,
-  Lock
+  Lock,
+  StickyNote
 } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
@@ -227,6 +229,10 @@ export default function FolderPage() {
     },
   ]);
 
+  if (loading) {
+    return <LoadingOverlay isLoading={true} message="" fullPage color="amber" icon={StickyNote} animateType="pulse" />;
+  }
+
   return (
     <AppLayout
       title={folder?.name || "Dossier"}
@@ -374,15 +380,7 @@ export default function FolderPage() {
           </h2>
         </div>
 
-        {/* Loading */}
-        {loading && (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <div className="animate-spin h-12 w-12 border-4 border-amber-500 rounded-full border-t-transparent mx-auto mb-4"></div>
-              <p className="text-gray-600">Chargement des notes...</p>
-            </div>
-          </div>
-        )}
+
 
         {/* Notes list */}
         {!loading && notes.length > 0 && (

@@ -84,8 +84,10 @@ export default function ExerciseCatalogPage() {
     return (
       <LoadingOverlay
         isLoading={true}
-        message="Chargement des exercices..."
+        message=""
         fullPage
+        icon={Activity}
+        animateType="pulse"
       />
     );
   }

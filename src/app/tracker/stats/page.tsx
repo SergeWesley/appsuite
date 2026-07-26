@@ -132,7 +132,7 @@ export default function TrackerStatsPage() {
   }, [sessions]);
 
   if (loading) {
-    return <LoadingOverlay isLoading={true} message="Chargement de vos statistiques..." fullPage />;
+    return <LoadingOverlay isLoading={true} message="" fullPage icon={Activity} animateType="pulse" />;
   }
 
   const selectedExerciseObj = exercises.find(e => e.id === selectedExerciseId);

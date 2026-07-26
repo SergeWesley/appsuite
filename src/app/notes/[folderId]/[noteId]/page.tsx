@@ -9,12 +9,13 @@ import { useNoteTemplates } from "@/hooks/notes/useNoteTemplates";
 import { NoteFolder, CustomFieldDefinition, Note, NoteExportData } from "@/types/notes";
 import { getNoteLocalStorageData } from "@/hooks/useFilterPersistence";
 import { ConfirmationModal } from "@/components/ConfirmationModal";
-import { Trash2, Loader2, Check, Download, Sparkles, MoreVertical, Plus, Minus, Undo2, Redo2, Lock, Unlock } from "lucide-react";
+import { Trash2, Loader2, Check, Download, Sparkles, MoreVertical, Plus, Minus, Undo2, Redo2, Lock, Unlock, StickyNote } from "lucide-react";
 import { DynamicPropertiesBanner } from "@/components/notes/DynamicPropertiesBanner";
 import { useAgent } from "@/components/chat/AgentProvider";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { useKeyboardShortcut } from "@/hooks/useKeyboardShortcut";
 import { AppLayout } from "@/components/AppLayout";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { useNoteHistory } from "@/hooks/notes/useNoteHistory";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
@@ -297,14 +298,7 @@ export default function NoteEditorPage() {
   ]);
 
   if (loading && !initialized) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin h-12 w-12 border-4 border-amber-500 rounded-full border-t-transparent mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement de la note...</p>
-        </div>
-      </div>
-    );
+    return <LoadingOverlay isLoading={true} message="" fullPage color="amber" icon={StickyNote} animateType="pulse" />;
   }
 
   return (

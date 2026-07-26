@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 import RecipeResults from "./RecipeResults";
 import { AppLayout } from "@/components/AppLayout";
 import {
@@ -175,6 +176,10 @@ export default function CookerPage() {
       .map((item) => item.name);
   }, [foodData, selectedItems]);
 
+  if (loading) {
+    return <LoadingOverlay isLoading={true} message="" fullPage color="cyan" icon={Utensils} animateType="pulse" />;
+  }
+
   return (
     <AppLayout
       title="Cooker"
@@ -182,15 +187,8 @@ export default function CookerPage() {
       iconColor="text-cyan-600"
       currentModule="cooker"
     >
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="h-12 w-12 text-cyan-500 animate-spin mb-4" />
-            <p className="text-gray-500 font-medium animate-pulse">
-              Initialisation des données...
-            </p>
-          </div>
-        ) : (
-          <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait">
+
             {!showRecipes ? (
               <motion.div
                 key="ingredients"
@@ -413,7 +411,7 @@ export default function CookerPage() {
               />
             )}
           </AnimatePresence>
-        )}
+
 
 
       {/* Back to Top Button */}

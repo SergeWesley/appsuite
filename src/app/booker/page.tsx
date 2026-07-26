@@ -20,6 +20,7 @@ import { BookForm } from "@/components/booker/BookForm";
 import { ReadingStats } from "@/components/booker/ReadingStats";
 import { ReadingTimer } from "@/components/booker/ReadingTimer";
 import { AppLayout } from "@/components/AppLayout";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 
 export default function BookerPage() {
   const {
@@ -122,16 +123,7 @@ export default function BookerPage() {
   ];
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">
-            Chargement de votre bibliothèque...
-          </p>
-        </div>
-      </div>
-    );
+    return <LoadingOverlay isLoading={true} message="" fullPage color="blue" icon={BookOpen} animateType="pulse" />;
   }
 
   if (error) {

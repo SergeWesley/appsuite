@@ -101,8 +101,10 @@ export default function TrackerPage() {
     return (
       <LoadingOverlay
         isLoading={true}
-        message="Chargement de vos séances..."
+        message=""
         fullPage
+        icon={Activity}
+        animateType="pulse"
       />
     );
   }

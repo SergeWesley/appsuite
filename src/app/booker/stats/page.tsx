@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AppLayout } from "@/components/AppLayout";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { useReadingAnalytics } from "@/hooks/booker/useReadingAnalytics";
 import { ReadingTimeChart } from "@/components/booker/ReadingTimeChart";
 import { ReadingProgressChart } from "@/components/booker/ReadingProgressChart";
@@ -35,16 +36,7 @@ export default function BookerStatsPage() {
   } = useReadingAnalytics();
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">
-            Chargement des statistiques...
-          </p>
-        </div>
-      </div>
-    );
+    return <LoadingOverlay isLoading={true} message="" fullPage color="blue" icon={BarChart3} animateType="pulse" />;
   }
 
   if (error) {
