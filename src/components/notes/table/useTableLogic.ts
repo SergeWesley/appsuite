@@ -42,6 +42,8 @@ export function useTableLogic({
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(dbSettings.columnSizing || {});
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [newlyAddedRowIndices, setNewlyAddedRowIndices] = useState<Set<number>>(new Set());
   const [globalFilter, setGlobalFilter] = useState("");
 
   // Synchroniser l'état quand les paramètres changent
@@ -186,6 +188,7 @@ export function useTableLogic({
         }
       });
     }
+    setNewlyAddedRowIndices(prev => new Set(prev).add(rows.length));
     onChange([...rows, newRow]);
   };
 
@@ -193,6 +196,14 @@ export function useTableLogic({
     const newRows = [...rows];
     newRows.splice(rowIndex, 1);
     onChange(newRows);
+    setNewlyAddedRowIndices(prev => {
+      const next = new Set<number>();
+      for (const idx of prev) {
+        if (idx < rowIndex) next.add(idx);
+        else if (idx > rowIndex) next.add(idx - 1);
+      }
+      return next;
+    });
   };
 
   // Convertir les colonnes personnalisées en colonnes TanStack
@@ -366,6 +377,9 @@ export function useTableLogic({
     setEditingRowIndex,
     isSelectionMode,
     setIsSelectionMode,
+    isEditMode,
+    setIsEditMode,
+    newlyAddedRowIndices,
     rowSelection,
     setRowSelection,
     columnSizing,

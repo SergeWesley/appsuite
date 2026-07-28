@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { CustomFieldDefinition } from "@/types/notes";
-import { Plus, CheckSquare, Search, X } from "lucide-react";
+import { Plus, CheckSquare, Search, X, Lock, Unlock } from "lucide-react";
 import { useTableLogic } from "./useTableLogic";
 import { TableCoreUI } from "./TableCoreUI";
 import { TableModals } from "./TableModals";
@@ -36,6 +36,9 @@ export function PropertyTableEditor({
     setEditingRowIndex,
     isSelectionMode,
     setIsSelectionMode,
+    isEditMode,
+    setIsEditMode,
+    newlyAddedRowIndices,
     rowSelection,
     setRowSelection,
     columnSizing,
@@ -90,6 +93,8 @@ export function PropertyTableEditor({
           rows={rows}
           columns={field.columns || []}
           isSelectionMode={isSelectionMode}
+          isEditMode={isEditMode}
+          newlyAddedRowIndices={newlyAddedRowIndices}
           editingRowIndex={editingRowIndex}
           setEditingRowIndex={setEditingRowIndex}
           removeRow={removeRow}
@@ -121,6 +126,18 @@ export function PropertyTableEditor({
             >
               <CheckSquare size={14} />
               <span>Sélectionner</span>
+            </button>
+            <button
+              onClick={() => setIsEditMode(!isEditMode)}
+              className={`flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded transition-colors flex-1 sm:flex-none sm:w-max ${
+                isEditMode
+                  ? "text-amber-600 bg-amber-50"
+                  : "text-gray-500 hover:text-amber-600 hover:bg-amber-50"
+              }`}
+            >
+              {isEditMode ? <Unlock size={14} /> : <Lock size={14} />}
+              <span className="hidden sm:inline">{isEditMode ? "Mode édition" : "Verrouillé"}</span>
+              <span className="sm:hidden">{isEditMode ? "Éditer" : "Verrou"}</span>
             </button>
           </div>
           

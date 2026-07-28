@@ -8,6 +8,8 @@ interface TableCoreUIProps {
   rows: any[];
   columns: CustomFieldDefinition[];
   isSelectionMode: boolean;
+  isEditMode?: boolean;
+  newlyAddedRowIndices?: Set<number>;
   editingRowIndex: number | null;
   setEditingRowIndex: (idx: number | null) => void;
   removeRow: (idx: number) => void;
@@ -26,6 +28,8 @@ export function TableCoreUI({
   rows,
   columns,
   isSelectionMode,
+  isEditMode = true,
+  newlyAddedRowIndices = new Set(),
   editingRowIndex,
   setEditingRowIndex,
   removeRow,
@@ -130,6 +134,8 @@ export function TableCoreUI({
         <tbody className="divide-y divide-gray-100">
           {table.getRowModel().rows.map((row) => {
             const rIndex = parseInt(row.id, 10);
+            const isRowLocked = !isEditMode && !newlyAddedRowIndices.has(rIndex);
+            
             return (
               <tr
                 key={row.id}
@@ -182,7 +188,7 @@ export function TableCoreUI({
                           width: cell.column.getSize(),
                         }}
                       >
-                        <div className={`flex flex-col w-full h-full ${isSelectionMode ? "pointer-events-none" : ""}`}>
+                        <div className={`flex flex-col w-full h-full ${isSelectionMode || isRowLocked ? "pointer-events-none" : ""}`}>
                           {subTableData.length === 0 ? (
                             <div className="p-2 text-xs text-gray-400 italic">Aucune entrée</div>
                           ) : (
@@ -258,7 +264,7 @@ export function TableCoreUI({
                         width: cell.column.getSize(),
                       }}
                     >
-                      <div className={`w-full h-full overflow-hidden ${isSelectionMode ? "pointer-events-none" : ""}`}>
+                      <div className={`w-full h-full overflow-hidden ${isSelectionMode || isRowLocked ? "pointer-events-none" : ""}`}>
                         {renderEditor(
                           colDef,
                           row.original[colDef.id] ?? "",
@@ -273,7 +279,7 @@ export function TableCoreUI({
                     editingRowIndex === rIndex ? "bg-amber-50" : "md:bg-white md:group-hover:bg-gray-50"
                   }`}
                 >
-                  <div className={`flex justify-end gap-1 mt-1 pr-1 ${isSelectionMode ? "pointer-events-none opacity-50" : ""}`}>
+                  <div className={`flex justify-end gap-1 mt-1 pr-1 ${isSelectionMode || isRowLocked ? "pointer-events-none opacity-50" : ""}`}>
                     <button
                       onClick={() => setEditingRowIndex(rIndex)}
                       className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors"
