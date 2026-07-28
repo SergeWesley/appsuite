@@ -139,6 +139,7 @@ export function TableCoreUI({
             return (
               <tr
                 key={row.id}
+                id={`row-${rIndex}`}
                 onClick={(e) => {
                   if (isSelectionMode) {
                     if ((e.target as HTMLElement).tagName.toLowerCase() === 'input' && (e.target as HTMLInputElement).type === 'checkbox') {
@@ -147,8 +148,9 @@ export function TableCoreUI({
                     row.toggleSelected();
                   }
                 }}
-                className={`group hover:bg-gray-50/50 ${isSelectionMode ? "cursor-pointer" : ""} ${
-                  row.getIsSelected() || editingRowIndex === rIndex ? "bg-amber-50/30" : ""
+                className={`group hover:bg-gray-50/50 transition-colors ${isSelectionMode ? "cursor-pointer" : ""} ${
+                  row.getIsSelected() || editingRowIndex === rIndex ? "bg-amber-50/30" : 
+                  newlyAddedRowIndices.has(rIndex) ? "bg-green-50/30" : ""
                 }`}
               >
                 {row.getVisibleCells().map((cell) => {

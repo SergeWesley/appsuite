@@ -88,25 +88,15 @@ export function PropertyTableEditor({
   return (
     <div ref={containerRef} className="h-full">
       <div className="mt-2 w-full rounded-lg border border-gray-200 bg-white overflow-hidden flex flex-col h-full">
-        <TableCoreUI
-          table={table}
-          rows={rows}
-          columns={field.columns || []}
-          isSelectionMode={isSelectionMode}
-          isEditMode={isEditMode}
-          newlyAddedRowIndices={newlyAddedRowIndices}
-          editingRowIndex={editingRowIndex}
-          setEditingRowIndex={setEditingRowIndex}
-          removeRow={removeRow}
-          updateRow={updateRow}
-          columnSizing={columnSizing}
-          resetColumnSizing={resetColumnSizing}
-          renderEditor={renderEditor}
-        />
-        <div className="p-2 bg-gray-50 border-t border-gray-200 shrink-0 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
+        <div className="p-2 bg-gray-50 border-b border-gray-200 shrink-0 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
           <div className="flex gap-2 shrink-0 justify-start">
             <button
-              onClick={addRow}
+              onClick={() => {
+                addRow();
+                setTimeout(() => {
+                  document.getElementById(`row-${rows.length}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+                }, 100);
+              }}
               className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded transition-colors flex-1 sm:flex-none sm:w-max"
             >
               <Plus size={14} />
@@ -164,6 +154,22 @@ export function PropertyTableEditor({
             )}
           </div>
         </div>
+        <TableCoreUI
+          table={table}
+          rows={rows}
+          columns={field.columns || []}
+          isSelectionMode={isSelectionMode}
+          isEditMode={isEditMode}
+          newlyAddedRowIndices={newlyAddedRowIndices}
+          editingRowIndex={editingRowIndex}
+          setEditingRowIndex={setEditingRowIndex}
+          removeRow={removeRow}
+          updateRow={updateRow}
+          columnSizing={columnSizing}
+          resetColumnSizing={resetColumnSizing}
+          renderEditor={renderEditor}
+        />
+
       </div>
 
       <TableModals
