@@ -44,6 +44,7 @@ export function useTableLogic({
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [newlyAddedRowIndices, setNewlyAddedRowIndices] = useState<Set<number>>(new Set());
+  const [expandedArchives, setExpandedArchives] = useState<Set<string>>(new Set());
   const [globalFilter, setGlobalFilter] = useState("");
 
   // Synchroniser l'état quand les paramètres changent
@@ -323,6 +324,32 @@ export function useTableLogic({
     setRowSelection({});
   };
 
+  const handleArchive = () => {
+    const selectedIndices = Object.keys(rowSelection).map(Number);
+    if (selectedIndices.length === 0) return;
+
+    const groupId = `archive-${Date.now()}`;
+    const newRows = [...rows];
+    
+    selectedIndices.forEach((idx) => {
+      newRows[idx] = { ...newRows[idx], _archiveGroup: groupId };
+    });
+
+    onChange(newRows);
+    setRowSelection({});
+  };
+
+  const handleUnarchive = (groupId: string) => {
+    const newRows = rows.map(r => {
+      if (r._archiveGroup === groupId) {
+        const { _archiveGroup, ...rest } = r;
+        return rest;
+      }
+      return r;
+    });
+    onChange(newRows);
+  };
+
   const resetColumnSizing = () => {
     setColumnSizing({});
     updateSettings({ columnSizing: {} });
@@ -388,6 +415,10 @@ export function useTableLogic({
     removeRow,
     updateRow,
     handleSum,
+    handleArchive,
+    handleUnarchive,
+    expandedArchives,
+    setExpandedArchives,
     globalFilter,
     setGlobalFilter,
   };

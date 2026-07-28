@@ -1,5 +1,6 @@
+import React from "react";
 import { flexRender, Table as TanStackTable } from "@tanstack/react-table";
-import { ChevronUp, ChevronDown, Maximize2, X, RotateCcw, Plus } from "lucide-react";
+import { ChevronUp, ChevronDown, Maximize2, X, RotateCcw, Plus, Archive } from "lucide-react";
 import { CustomFieldDefinition } from "@/types/notes";
 import { TYPE_CONFIGS } from "../FieldEditorSheet";
 
@@ -10,6 +11,9 @@ interface TableCoreUIProps {
   isSelectionMode: boolean;
   isEditMode?: boolean;
   newlyAddedRowIndices?: Set<number>;
+  expandedArchives?: Set<string>;
+  setExpandedArchives?: (val: Set<string>) => void;
+  handleUnarchive?: (groupId: string) => void;
   editingRowIndex: number | null;
   setEditingRowIndex: (idx: number | null) => void;
   removeRow: (idx: number) => void;
@@ -30,6 +34,9 @@ export function TableCoreUI({
   isSelectionMode,
   isEditMode = true,
   newlyAddedRowIndices = new Set(),
+  expandedArchives,
+  setExpandedArchives,
+  handleUnarchive,
   editingRowIndex,
   setEditingRowIndex,
   removeRow,
@@ -132,13 +139,16 @@ export function TableCoreUI({
           ))}
         </thead>
         <tbody className="divide-y divide-gray-100">
-          {table.getRowModel().rows.map((row) => {
-            const rIndex = parseInt(row.id, 10);
-            const isRowLocked = !isEditMode && !newlyAddedRowIndices.has(rIndex);
-            
-            return (
-              <tr
-                key={row.id}
+          {(() => {
+            const renderedGroups = new Set<string>();
+            return table.getRowModel().rows.map((row, index, array) => {
+              const rIndex = parseInt(row.id, 10);
+              const isRowLocked = !isEditMode && !newlyAddedRowIndices.has(rIndex);
+              const archiveGroup = row.original._archiveGroup;
+              
+              const renderActualRow = () => (
+                <tr
+                  key={row.id}
                 id={`row-${rIndex}`}
                 onClick={(e) => {
                   if (isSelectionMode) {
@@ -299,8 +309,67 @@ export function TableCoreUI({
                   </div>
                 </td>
               </tr>
-            );
-          })}
+              );
+
+              if (archiveGroup) {
+                if (!renderedGroups.has(archiveGroup)) {
+                  renderedGroups.add(archiveGroup);
+                  const groupCount = array.filter(r => r.original._archiveGroup === archiveGroup).length;
+                  const isExpanded = expandedArchives?.has(archiveGroup);
+
+                  const archiveHeader = (
+                    <tr
+                      key={`archive-${archiveGroup}`}
+                      onClick={() => {
+                        if (!setExpandedArchives || !expandedArchives) return;
+                        const next = new Set(expandedArchives);
+                        if (isExpanded) next.delete(archiveGroup);
+                        else next.add(archiveGroup);
+                        setExpandedArchives(next);
+                      }}
+                      className="group/archive bg-gray-50/80 hover:bg-gray-100/80 cursor-pointer transition-colors border-b border-gray-200"
+                    >
+                      <td colSpan={columns.length + (isSelectionMode ? 2 : 1)} className="p-2 text-sm text-gray-500 font-medium">
+                        <div className="flex items-center gap-2">
+                          <span className="flex items-center gap-1.5 px-2 py-1 bg-white rounded border border-gray-200 shadow-sm text-xs">
+                            <Archive size={14} className="text-gray-400" />
+                            {groupCount} ligne{groupCount > 1 ? "s" : ""} archivée{groupCount > 1 ? "s" : ""}
+                          </span>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleUnarchive?.(archiveGroup);
+                            }}
+                            className="text-xs text-amber-600 hover:text-amber-700 hover:underline sm:opacity-0 sm:group-hover/archive:opacity-100 transition-opacity ml-2"
+                          >
+                            Désarchiver
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+
+                  if (!isExpanded) {
+                    return archiveHeader;
+                  }
+
+                  return (
+                    <React.Fragment key={`${row.id}-frag`}>
+                      {archiveHeader}
+                      {renderActualRow()}
+                    </React.Fragment>
+                  );
+                } else {
+                  if (!expandedArchives?.has(archiveGroup)) {
+                    return null;
+                  }
+                  return renderActualRow();
+                }
+              }
+
+              return renderActualRow();
+            });
+          })()}
         </tbody>
       </table>
     </div>

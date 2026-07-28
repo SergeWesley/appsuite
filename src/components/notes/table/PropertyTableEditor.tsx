@@ -47,6 +47,10 @@ export function PropertyTableEditor({
     removeRow,
     updateRow,
     handleSum,
+    handleArchive,
+    handleUnarchive,
+    expandedArchives,
+    setExpandedArchives,
     globalFilter,
     setGlobalFilter,
   } = useTableLogic({ field, value, onChange, noteId, metadata, onMetadataChange });
@@ -168,6 +172,9 @@ export function PropertyTableEditor({
           columnSizing={columnSizing}
           resetColumnSizing={resetColumnSizing}
           renderEditor={renderEditor}
+          expandedArchives={expandedArchives}
+          setExpandedArchives={setExpandedArchives}
+          handleUnarchive={handleUnarchive}
         />
 
       </div>
@@ -180,6 +187,7 @@ export function PropertyTableEditor({
         rowSelection={rowSelection}
         setRowSelection={setRowSelection}
         handleSum={handleSum}
+        handleArchive={handleArchive}
         renderEditor={renderEditor}
         updateRow={updateRow}
       />

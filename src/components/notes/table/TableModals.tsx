@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Table, Maximize2, Sigma } from "lucide-react";
+import { X, Table, Maximize2, Sigma, Archive } from "lucide-react";
 import { CustomFieldDefinition } from "@/types/notes";
 import { RowSelectionState } from "@tanstack/react-table";
 
@@ -11,6 +11,7 @@ interface TableModalsProps {
   rowSelection: RowSelectionState;
   setRowSelection: (val: RowSelectionState) => void;
   handleSum: () => void;
+  handleArchive: () => void;
   renderEditor: (
     field: CustomFieldDefinition,
     value: any,
@@ -27,6 +28,7 @@ export function TableModals({
   rowSelection,
   setRowSelection,
   handleSum,
+  handleArchive,
   renderEditor,
   updateRow,
 }: TableModalsProps) {
@@ -90,18 +92,29 @@ export function TableModals({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-4 z-[80]"
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-3 sm:px-5 py-2 sm:py-3 rounded-2xl shadow-xl flex items-center gap-2 sm:gap-4 z-[80]"
           >
             <span className="text-sm font-medium whitespace-nowrap">
-              {Object.keys(rowSelection).length} ligne{Object.keys(rowSelection).length > 1 ? "s" : ""} sélectionnée{Object.keys(rowSelection).length > 1 ? "s" : ""}
+              <span className="hidden sm:inline">{Object.keys(rowSelection).length} ligne{Object.keys(rowSelection).length > 1 ? "s" : ""} sélectionnée{Object.keys(rowSelection).length > 1 ? "s" : ""}</span>
+              <span className="sm:hidden">{Object.keys(rowSelection).length} sél.</span>
             </span>
             <div className="w-px h-5 bg-gray-700" />
             <button
               onClick={handleSum}
-              className="flex items-center gap-2 text-sm font-medium hover:text-amber-400 transition-colors whitespace-nowrap"
+              className="flex items-center gap-1.5 sm:gap-2 text-sm font-medium hover:text-amber-400 transition-colors whitespace-nowrap px-1 sm:px-0"
+              title="Somme"
             >
-              <Sigma size={16} />
-              Somme
+              <Sigma size={18} className="sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Somme</span>
+            </button>
+            <div className="w-px h-5 bg-gray-700" />
+            <button
+              onClick={handleArchive}
+              className="flex items-center gap-1.5 sm:gap-2 text-sm font-medium hover:text-amber-400 transition-colors whitespace-nowrap px-1 sm:px-0"
+              title="Archiver"
+            >
+              <Archive size={18} className="sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Archiver</span>
             </button>
             <div className="w-px h-5 bg-gray-700" />
             <button
