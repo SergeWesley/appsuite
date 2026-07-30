@@ -138,7 +138,7 @@ export function TableCoreUI({
             </tr>
           ))}
         </thead>
-        <tbody className="divide-y divide-gray-100">
+        <tbody>
           {(() => {
             const renderedGroups = new Set<string>();
             return table.getRowModel().rows.map((row, index, array) => {
@@ -149,20 +149,20 @@ export function TableCoreUI({
               const renderActualRow = () => (
                 <tr
                   key={row.id}
-                id={`row-${rIndex}`}
-                onClick={(e) => {
-                  if (isSelectionMode) {
-                    if ((e.target as HTMLElement).tagName.toLowerCase() === 'input' && (e.target as HTMLInputElement).type === 'checkbox') {
-                      return;
+                  id={`row-${rIndex}`}
+                  onClick={(e) => {
+                    if (isSelectionMode) {
+                      if ((e.target as HTMLElement).tagName.toLowerCase() === 'input' && (e.target as HTMLInputElement).type === 'checkbox') {
+                        return;
+                      }
+                      row.toggleSelected();
                     }
-                    row.toggleSelected();
-                  }
-                }}
-                className={`group hover:bg-gray-50/50 transition-colors ${isSelectionMode ? "cursor-pointer" : ""} ${
-                  row.getIsSelected() || editingRowIndex === rIndex ? "bg-amber-50/30" : 
-                  newlyAddedRowIndices.has(rIndex) ? "bg-green-50/30" : ""
-                }`}
-              >
+                  }}
+                  className={`group hover:bg-gray-50/50 transition-colors border-b border-gray-100 last:border-b-0 ${isSelectionMode ? "cursor-pointer" : ""} ${
+                    row.getIsSelected() || editingRowIndex === rIndex ? "bg-amber-50/30" : 
+                    newlyAddedRowIndices.has(rIndex) ? "bg-green-50/30" : ""
+                  }`}
+                >
                 {row.getVisibleCells().map((cell) => {
                   if (cell.column.id === "select") {
                     return (
@@ -331,7 +331,7 @@ export function TableCoreUI({
                         else next.add(archiveGroup);
                         setExpandedArchives(next);
                       }}
-                      className="group/archive bg-gray-50/80 hover:bg-gray-100/80 cursor-pointer transition-colors"
+                      className="group/archive bg-gray-50/80 hover:bg-gray-100/80 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
                     >
                       {isSelectionMode && (
                         <td className="p-1 align-middle border-r border-gray-100 text-center" onClick={(e) => e.stopPropagation()}>
