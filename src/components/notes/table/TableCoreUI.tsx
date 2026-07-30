@@ -331,7 +331,7 @@ export function TableCoreUI({
                         else next.add(archiveGroup);
                         setExpandedArchives(next);
                       }}
-                      className="group/archive bg-gray-50/80 hover:bg-gray-100/80 cursor-pointer transition-colors border-b border-gray-200"
+                      className="group/archive bg-gray-50/80 hover:bg-gray-100/80 cursor-pointer transition-colors"
                     >
                       {isSelectionMode && (
                         <td className="p-1 align-middle border-r border-gray-100 text-center" onClick={(e) => e.stopPropagation()}>
