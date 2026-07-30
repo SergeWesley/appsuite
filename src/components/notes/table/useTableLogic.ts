@@ -328,11 +328,23 @@ export function useTableLogic({
     const selectedIndices = Object.keys(rowSelection).map(Number);
     if (selectedIndices.length === 0) return;
 
-    const groupId = `archive-${Date.now()}`;
+    let targetGroupId = `archive-${Date.now()}`;
+    
+    // Si des lignes sélectionnées font déjà partie d'une archive, 
+    // on utilise l'ID de la première archive trouvée pour fusionner.
+    for (const idx of selectedIndices) {
+      if (rows[idx]?._archiveGroup) {
+        targetGroupId = rows[idx]._archiveGroup;
+        break;
+      }
+    }
+
     const newRows = [...rows];
     
     selectedIndices.forEach((idx) => {
-      newRows[idx] = { ...newRows[idx], _archiveGroup: groupId };
+      if (newRows[idx]) {
+        newRows[idx] = { ...newRows[idx], _archiveGroup: targetGroupId };
+      }
     });
 
     onChange(newRows);

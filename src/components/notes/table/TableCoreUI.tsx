@@ -314,8 +314,12 @@ export function TableCoreUI({
               if (archiveGroup) {
                 if (!renderedGroups.has(archiveGroup)) {
                   renderedGroups.add(archiveGroup);
-                  const groupCount = array.filter(r => r.original._archiveGroup === archiveGroup).length;
+                  const groupRows = array.filter(r => r.original._archiveGroup === archiveGroup);
+                  const groupCount = groupRows.length;
                   const isExpanded = expandedArchives?.has(archiveGroup);
+                  
+                  const allSelected = groupRows.every(r => r.getIsSelected());
+                  const someSelected = groupRows.some(r => r.getIsSelected());
 
                   const archiveHeader = (
                     <tr
@@ -329,7 +333,24 @@ export function TableCoreUI({
                       }}
                       className="group/archive bg-gray-50/80 hover:bg-gray-100/80 cursor-pointer transition-colors border-b border-gray-200"
                     >
-                      <td colSpan={columns.length + (isSelectionMode ? 2 : 1)} className="p-2 text-sm text-gray-500 font-medium">
+                      {isSelectionMode && (
+                        <td className="p-1 align-middle border-r border-gray-100 text-center" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex justify-center items-center h-full px-2">
+                            <input
+                              type="checkbox"
+                              className="w-4 h-4 rounded border-gray-300 text-amber-500 focus:ring-amber-500 cursor-pointer"
+                              checked={allSelected}
+                              ref={el => { if (el) el.indeterminate = someSelected && !allSelected; }}
+                              onChange={() => {
+                                groupRows.forEach(r => {
+                                  r.toggleSelected(!allSelected);
+                                });
+                              }}
+                            />
+                          </div>
+                        </td>
+                      )}
+                      <td colSpan={columns.length + (isSelectionMode ? 1 : 1)} className="p-2 text-sm text-gray-500 font-medium">
                         <div className="flex items-center gap-2">
                           <span className="flex items-center gap-1.5 px-2 py-1 bg-white rounded border border-gray-200 shadow-sm text-xs">
                             <Archive size={14} className="text-gray-400" />
