@@ -124,7 +124,6 @@ export function PropertyTableEditor({
             >
               <Plus size={14} />
               <span className="hidden sm:inline">Ajouter une ligne</span>
-              <span className="sm:hidden">Ajouter</span>
             </button>
             <button
               onClick={() => {
@@ -138,7 +137,7 @@ export function PropertyTableEditor({
               }`}
             >
               <CheckSquare size={14} />
-              <span>Sélectionner</span>
+              <span className="hidden sm:inline">Sélectionner</span>
             </button>
             <button
               onClick={() => setIsEditMode(!isEditMode)}
@@ -150,7 +149,6 @@ export function PropertyTableEditor({
             >
               {isEditMode ? <Unlock size={14} /> : <Lock size={14} />}
               <span className="hidden sm:inline">{isEditMode ? "Mode édition" : "Verrouillé"}</span>
-              <span className="sm:hidden">{isEditMode ? "Éditer" : "Verrou"}</span>
             </button>
             {activeAutomations.length > 0 && (
               <button
@@ -174,7 +172,6 @@ export function PropertyTableEditor({
             >
               <Layers size={14} />
               <span className="hidden sm:inline">Tri multiple</span>
-              <span className="sm:hidden">Tri multi</span>
             </button>
           </div>
           

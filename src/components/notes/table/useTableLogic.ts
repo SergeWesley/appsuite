@@ -43,7 +43,7 @@ export function useTableLogic({
   const [columnSizing, setColumnSizing] = useState<ColumnSizingState>(dbSettings.columnSizing || {});
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [isSelectionMode, setIsSelectionMode] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(true);
   const [isMultiSortEnabled, setIsMultiSortEnabled] = useState(false);
   const [newlyAddedRowIndices, setNewlyAddedRowIndices] = useState<Set<number>>(new Set());
   const [expandedArchives, setExpandedArchives] = useState<Set<string>>(new Set());
