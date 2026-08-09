@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { CustomFieldDefinition } from "@/types/notes";
-import { Plus, CheckSquare, Search, X, Lock, Unlock, Zap, CalendarClock, Play } from "lucide-react";
+import { Plus, Settings2, Trash2, Edit2, CheckSquare, Search, X, Lock, Unlock, ArrowDownToLine, Zap, Play, CalendarClock, Layers } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTableLogic } from "./useTableLogic";
 import { runAutomations } from "./useTableAutomations";
@@ -49,6 +49,8 @@ export function PropertyTableEditor({
     addRow,
     removeRow,
     updateRow,
+    isMultiSortEnabled,
+    setIsMultiSortEnabled,
     handleSum,
     handleArchive,
     handleUnarchive,
@@ -161,6 +163,19 @@ export function PropertyTableEditor({
                 <span className="sm:hidden">{activeAutomations.length}</span>
               </button>
             )}
+            <button
+              onClick={() => setIsMultiSortEnabled(!isMultiSortEnabled)}
+              className={`flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded transition-colors flex-1 sm:flex-none sm:w-max ${
+                isMultiSortEnabled
+                  ? "text-blue-600 bg-blue-50"
+                  : "text-gray-500 hover:text-blue-600 hover:bg-blue-50"
+              }`}
+              title="Permet de trier sur plusieurs colonnes"
+            >
+              <Layers size={14} />
+              <span className="hidden sm:inline">Tri multiple</span>
+              <span className="sm:hidden">Tri multi</span>
+            </button>
           </div>
           
           <div className="relative w-full sm:w-auto sm:flex-1 sm:max-w-xs sm:ml-auto">
@@ -203,6 +218,7 @@ export function PropertyTableEditor({
           expandedArchives={expandedArchives}
           setExpandedArchives={setExpandedArchives}
           handleUnarchive={handleUnarchive}
+          isMultiSortEnabled={isMultiSortEnabled}
         />
 
       </div>

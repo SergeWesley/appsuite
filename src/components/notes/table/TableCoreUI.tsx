@@ -25,6 +25,7 @@ interface TableCoreUIProps {
     value: any,
     onChange: (val: any) => void
   ) => React.ReactNode;
+  isMultiSortEnabled?: boolean;
 }
 
 export function TableCoreUI({
@@ -44,6 +45,7 @@ export function TableCoreUI({
   columnSizing,
   resetColumnSizing,
   renderEditor,
+  isMultiSortEnabled = false,
 }: TableCoreUIProps) {
   return (
     <div className="w-full overflow-auto flex-1 bg-white relative [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -71,7 +73,17 @@ export function TableCoreUI({
                   >
                     <div
                       className="group flex items-center gap-1 cursor-pointer hover:text-amber-600 transition-colors select-none overflow-hidden"
-                      onClick={header.column.getToggleSortingHandler()}
+                      onClick={(e) => {
+                        const handler = header.column.getToggleSortingHandler();
+                        if (handler) {
+                          if (isMultiSortEnabled && !e.shiftKey) {
+                            // Si le mode tri multiple est activé, on force l'ajout au tri plutôt que de remplacer l'existant
+                            header.column.toggleSorting(undefined, true);
+                          } else {
+                            handler(e);
+                          }
+                        }
+                      }}
                     >
                       <span className="truncate flex items-center gap-1.5">
                         {header.column.id === "select" ? null : (

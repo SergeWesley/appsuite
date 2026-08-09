@@ -44,6 +44,7 @@ export function useTableLogic({
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isMultiSortEnabled, setIsMultiSortEnabled] = useState(false);
   const [newlyAddedRowIndices, setNewlyAddedRowIndices] = useState<Set<number>>(new Set());
   const [expandedArchives, setExpandedArchives] = useState<Set<string>>(new Set());
   const [globalFilter, setGlobalFilter] = useState("");
@@ -435,14 +436,17 @@ export function useTableLogic({
     columns: field.columns || [],
     editingRowIndex,
     setEditingRowIndex,
+    sorting,
+    columnSizing,
+    rowSelection,
+    setRowSelection,
     isSelectionMode,
     setIsSelectionMode,
     isEditMode,
     setIsEditMode,
+    isMultiSortEnabled,
+    setIsMultiSortEnabled,
     newlyAddedRowIndices,
-    rowSelection,
-    setRowSelection,
-    columnSizing,
     resetColumnSizing,
     addRow,
     removeRow,
