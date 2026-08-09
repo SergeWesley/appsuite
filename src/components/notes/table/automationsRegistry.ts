@@ -31,39 +31,39 @@ export const AUTOMATIONS_REGISTRY: Record<string, AutomationDefinition> = {
       }
     ],
     execute: (field: CustomFieldDefinition, rows: any[], config?: Record<string, any>, automationId?: string) => {
-      // 1. Supprimer les lignes précédemment générées par cette automatisation
-      let currentRows = rows.filter(row => row._sourceAutomationId !== automationId);
-      
-      const indicesToSum: number[] = [];
-      currentRows.forEach((row, idx) => {
-        // On inclut toutes les lignes (même archivées) pour ne pas perdre les totaux du passé !
-        indicesToSum.push(idx);
-      });
+      const groupByColumn = config?.groupByColumn;
 
-      if (indicesToSum.length === 0) {
-        return { newRows: rows, hasChanges: false }; // Note : on retourne les lignes d'origine s'il n'y a rien à sommer, pour éviter de supprimer les totaux par erreur si le tableau a été vidé.
+      // Sépare les lignes de données des lignes de totaux précédemment générées
+      const dataRows = rows.filter(row => row._sourceAutomationId !== automationId);
+      const previousTotalRows = rows.filter(row => row._sourceAutomationId === automationId);
+      
+      if (dataRows.length === 0) {
+        return { newRows: rows, hasChanges: false };
       }
 
       const numericCols = field.columns?.filter((c) => c.type === "number" || c.type === "currency") || [];
       if (numericCols.length === 0) {
-        return { newRows: currentRows, hasChanges: rows.length !== currentRows.length };
+        return { newRows: rows, hasChanges: false };
       }
 
       const textCols = field.columns?.filter((c) => c.type === "text" || c.type === "textarea" || c.type === "select") || [];
       
-      const groupByColumn = config?.groupByColumn;
-
-      // Grouper les lignes
+      // Grouper les lignes de données
       const groups: Record<string, number[]> = {};
       
-      indicesToSum.forEach(idx => {
-        const row = currentRows[idx];
+      dataRows.forEach((row, idx) => {
         const groupKey = groupByColumn && row[groupByColumn] ? String(row[groupByColumn]) : "ALL";
         if (!groups[groupKey]) groups[groupKey] = [];
         groups[groupKey].push(idx);
       });
 
-      const newRows = [...currentRows];
+      // Garder les anciens totaux qui ne sont pas recalculés (car plus de données)
+      const keptPreviousTotalRows = previousTotalRows.filter(row => {
+        const rowGroupKey = groupByColumn && row[groupByColumn] ? String(row[groupByColumn]) : "ALL";
+        return !(rowGroupKey in groups);
+      });
+
+      const newRows = [...dataRows, ...keptPreviousTotalRows];
 
       // Pour chaque groupe, créer une ligne de total
       Object.entries(groups).forEach(([groupKey, indices]) => {
@@ -82,7 +82,7 @@ export const AUTOMATIONS_REGISTRY: Record<string, AutomationDefinition> = {
 
         numericCols.forEach((col) => {
           const sum = indices.reduce((acc, idx) => {
-            const val = currentRows[idx][col.id];
+            const val = dataRows[idx][col.id];
             const num = parseFloat(val);
             return acc + (isNaN(num) ? 0 : num);
           }, 0);
