@@ -13,12 +13,24 @@ export type CustomFieldType =
   | "table"     // Tableau de données (ex: Liste d'ingrédients)
   | "autoincrement"; // ID auto-incrémenté pour tableaux
 
+export type TableAutomationType = string;
+export type TableAutomationSchedule = "daily_midnight" | "weekly" | "monthly" | "on_change";
+
+export interface TableAutomation {
+  id: string;
+  type: TableAutomationType;
+  schedule: TableAutomationSchedule;
+  enabled: boolean;
+  config?: Record<string, any>;
+}
+
 export interface CustomFieldDefinition {
   id: string;          // UUID du champ (généré à la création)
   name: string;        // Nom affiché à l'utilisateur
   type: CustomFieldType;
   options?: string[];  // Options, utilisé uniquement pour le type "select"
   columns?: CustomFieldDefinition[]; // Colonnes, utilisé uniquement pour le type "table"
+  automations?: TableAutomation[]; // Automatisations, utilisé uniquement pour le type "table"
   required?: boolean;  // Rendre la saisie obligatoire
   icon?: string;       // (Optionnel) nom d'icône pour l'UI, ex: lucide-react
 }

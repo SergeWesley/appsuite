@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Plus, Type, List, Hash, Calendar, Clock, CheckSquare, Palette, Star, Link, Euro, Table, ChevronUp, ChevronDown, ListOrdered } from "lucide-react";
-import { CustomFieldDefinition, CustomFieldType } from "@/types/notes";
+import { X, Plus, Type, List, Hash, Calendar, Clock, CheckSquare, Palette, Star, Link, Euro, Table, ChevronUp, ChevronDown, ListOrdered, Zap, Trash2 } from "lucide-react";
+import { CustomFieldDefinition, CustomFieldType, TableAutomation, TableAutomationType } from "@/types/notes";
+import { AUTOMATIONS_REGISTRY } from "./table/automationsRegistry";
 
 export const TYPE_CONFIGS: Record<CustomFieldType, { label: string; icon: React.ElementType }> = {
   text: { label: "Texte court", icon: Type },
@@ -36,6 +37,11 @@ export function FieldEditorSheet({ isOpen, onClose, onSave, initialField, isNest
   const [optionsStr, setOptionsStr] = useState("");
 
   const [columns, setColumns] = useState<CustomFieldDefinition[]>([]);
+  const [automations, setAutomations] = useState<TableAutomation[]>([]);
+  const [isAddingAutomation, setIsAddingAutomation] = useState(false);
+  const [newAutomationType, setNewAutomationType] = useState<TableAutomationType>("daily_sum");
+  const [newAutomationConfig, setNewAutomationConfig] = useState<Record<string, any>>({});
+
   const [newColName, setNewColName] = useState("");
   const [newColType, setNewColType] = useState<CustomFieldType>("text");
   const [newColOptionsStr, setNewColOptionsStr] = useState("");
@@ -47,17 +53,24 @@ export function FieldEditorSheet({ isOpen, onClose, onSave, initialField, isNest
         setType(initialField.type);
         setOptionsStr(initialField.options?.join(", ") || "");
         setColumns(initialField.columns || []);
+        setAutomations(initialField.automations || []);
       } else {
         setName("");
         setType("text");
         setOptionsStr("");
         setColumns([]);
+        setAutomations([]);
       }
       setNewColName("");
       setNewColType("text");
       setNewColOptionsStr("");
+      setIsAddingAutomation(false);
     }
   }, [isOpen, initialField]);
+
+  useEffect(() => {
+    setNewAutomationConfig({});
+  }, [newAutomationType]);
 
   const handleAddColumn = () => {
     if (!newColName.trim()) return;
@@ -89,6 +102,7 @@ export function FieldEditorSheet({ isOpen, onClose, onSave, initialField, isNest
     }
     if (type === "table") {
       newField.columns = columns;
+      newField.automations = automations;
     }
 
     onSave(newField);
@@ -333,6 +347,108 @@ export function FieldEditorSheet({ isOpen, onClose, onSave, initialField, isNest
                       />
                     )}
                   </div>
+                </motion.div>
+              )}
+
+              {type === "table" && (
+                <motion.div 
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                  className="bg-purple-50/50 p-4 rounded-xl border border-purple-100 space-y-4"
+                >
+                  <div className="flex justify-between items-center border-b border-purple-200 pb-2">
+                    <label className="block text-sm font-medium text-purple-900 flex items-center gap-2">
+                      <Zap size={16} /> Automatisations (Cron)
+                    </label>
+                    <button onClick={() => setIsAddingAutomation(true)} className="text-xs text-purple-600 hover:text-purple-700 font-medium bg-purple-100 hover:bg-purple-200 px-2 py-1 rounded transition-colors">+ Ajouter</button>
+                  </div>
+                  
+                  {automations.map(auto => (
+                    <div key={auto.id} className="flex justify-between items-center bg-white p-3 rounded-lg border border-purple-100 text-sm shadow-sm">
+                      <div className="flex flex-col">
+                        <span className="font-semibold text-gray-800">{AUTOMATIONS_REGISTRY[auto.type]?.name || auto.type}</span>
+                        <span className="text-xs text-gray-500">Exécution : {AUTOMATIONS_REGISTRY[auto.type]?.defaultSchedule === 'daily_midnight' ? 'À minuit' : (auto.schedule || 'À minuit')}</span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                         <label className="flex items-center gap-2 cursor-pointer">
+                           <span className="text-xs text-gray-500">Actif</span>
+                           <input type="checkbox" checked={auto.enabled} onChange={(e) => setAutomations(automations.map(a => a.id === auto.id ? {...a, enabled: e.target.checked} : a))} className="w-4 h-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded" />
+                         </label>
+                         <button onClick={() => setAutomations(automations.filter(a => a.id !== auto.id))} className="text-gray-400 hover:text-red-500 transition-colors p-1"><Trash2 size={16}/></button>
+                      </div>
+                    </div>
+                  ))}
+
+                  <AnimatePresence>
+                    {isAddingAutomation && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
+                        onClick={() => setIsAddingAutomation(false)}
+                      >
+                        <motion.div
+                          initial={{ scale: 0.95, opacity: 0, y: 10 }}
+                          animate={{ scale: 1, opacity: 1, y: 0 }}
+                          exit={{ scale: 0.95, opacity: 0, y: 10 }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="bg-white rounded-2xl shadow-xl w-full max-w-md flex flex-col overflow-hidden"
+                        >
+                          <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-purple-50">
+                            <h3 className="font-semibold text-purple-900 flex items-center gap-2">
+                              <Zap size={18} className="text-purple-600 fill-purple-600" />
+                              Nouvelle automatisation
+                            </h3>
+                            <button onClick={() => setIsAddingAutomation(false)} className="text-purple-400 hover:text-purple-600 hover:bg-purple-100 p-2 rounded-lg transition-colors"><X size={20} /></button>
+                          </div>
+
+                          <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto">
+                            <div>
+                               <label className="block text-sm font-medium text-gray-700 mb-1">Type d'action</label>
+                               <select value={newAutomationType} onChange={(e) => setNewAutomationType(e.target.value as any)} className="w-full text-sm border-gray-200 rounded-lg focus:ring-purple-500 p-2 border bg-white">
+                                 {Object.values(AUTOMATIONS_REGISTRY).map(def => (
+                                   <option key={def.id} value={def.id}>{def.name}</option>
+                                 ))}
+                               </select>
+                             </div>
+
+                            {/* Dynamic config fields */}
+                            {AUTOMATIONS_REGISTRY[newAutomationType]?.configFields?.map(field => (
+                              <div key={field.id} className="pt-2 border-t border-gray-100 mt-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">{field.label}</label>
+                                {field.type === "column_select" && (
+                                  <select
+                                    value={newAutomationConfig[field.id] || ""}
+                                    onChange={(e) => setNewAutomationConfig({...newAutomationConfig, [field.id]: e.target.value})}
+                                    className="w-full text-sm border-gray-200 rounded-lg focus:ring-purple-500 p-2 border bg-white"
+                                  >
+                                    <option value="">-- Aucune sélection --</option>
+                                    {columns.map(col => (
+                                      <option key={col.id} value={col.id}>{col.name}</option>
+                                    ))}
+                                  </select>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="p-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
+                            <button onClick={() => setIsAddingAutomation(false)} className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-1.5">Annuler</button>
+                            <button onClick={() => {
+                              setAutomations([...automations, { 
+                                id: `auto_${Date.now()}`, 
+                                type: newAutomationType as any, 
+                                schedule: AUTOMATIONS_REGISTRY[newAutomationType]?.defaultSchedule || 'daily_midnight', 
+                                enabled: true,
+                                config: newAutomationConfig
+                              }]);
+                              setIsAddingAutomation(false);
+                            }} className="text-sm font-medium bg-purple-600 hover:bg-purple-700 text-white px-4 py-1.5 rounded-lg transition-colors shadow-sm">Ajouter</button>
+                          </div>
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
               )}
             </div>

@@ -159,11 +159,13 @@ export default function NoteEditorPage() {
 
   const handleMetadataChange = (index: number, key: string, value: any) => {
     pushHistory({ title, content, instances }, true);
-    const nextInstances = [...instances];
-    nextInstances[index] = { ...nextInstances[index], [key]: value };
-    setInstances(nextInstances);
+    setInstances((prevInstances) => {
+      const nextInstances = [...prevInstances];
+      nextInstances[index] = { ...nextInstances[index], [key]: value };
+      debouncedSave(title, content, nextInstances);
+      return nextInstances;
+    });
     setSaved(false);
-    debouncedSave(title, content, nextInstances);
   };
 
   const handleAddInstance = () => {

@@ -1,6 +1,7 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { CustomFieldDefinition } from "@/types/notes";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
+import { runAutomations } from "./useTableAutomations";
 import {
   useReactTable,
   getCoreRowModel,
@@ -113,6 +114,26 @@ export function useTableLogic({
   }, [columnSizing]);
 
   const rows = useMemo(() => (Array.isArray(value) ? value : []), [value]);
+
+  const automationsRunRef = useRef(false);
+
+  useEffect(() => {
+    if (automationsRunRef.current) return;
+    if (!field.automations || field.automations.length === 0) return;
+    if (rows.length === 0) return;
+
+    automationsRunRef.current = true;
+
+    const automationsState = metadata?._automationsState || {};
+    const { updatedRows, updatedState, hasChanges } = runAutomations(field, rows, automationsState);
+
+    if (hasChanges) {
+      if (onMetadataChange) {
+        onMetadataChange("_automationsState", updatedState);
+      }
+      onChange(updatedRows);
+    }
+  }, [field.automations, rows, metadata?._automationsState, onChange, onMetadataChange]);
 
   // Génération automatique des ID manquants pour les lignes et sous-lignes existantes
   useEffect(() => {
