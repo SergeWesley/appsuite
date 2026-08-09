@@ -4,6 +4,7 @@ import { NoteFolder } from "@/types/notes";
 import { Folder, StickyNote, Settings, MoveRight, Trash2, ArrowUp, ArrowDown, Lock } from "lucide-react";
 import { useContextMenu } from "@/hooks/useContextMenu";
 import { ContextMenu, ContextMenuItem } from "@/components/ui/ContextMenu";
+import { extractEmojiAndName } from "@/lib/folder-utils";
 
 interface FolderCardProps {
   folder: NoteFolder;
@@ -70,6 +71,8 @@ export function FolderCard({
   const hasNotes = folder.noteCount !== undefined && folder.noteCount > 0;
   const hasSubfolders = subfolderCount > 0;
 
+  const { emoji, label } = extractEmojiAndName(folder.name);
+
   return (
     <>
       <button
@@ -90,9 +93,13 @@ export function FolderCard({
         }`}
       >
         {/* Folder Icon SVG */}
-        <div className={`relative flex-shrink-0 ${viewMode === 'list' ? 'w-8 h-6' : 'w-16 h-12'}`}>
-          {/* Folder tab (the small flap on top) */}
-          <svg
+        <div className={`relative flex-shrink-0 ${viewMode === 'list' ? 'w-8 h-6 flex items-center justify-center' : 'w-16 h-12 flex items-center justify-center'}`}>
+          {emoji ? (
+            <span className={viewMode === 'list' ? 'text-2xl leading-none' : 'text-[44px] leading-none drop-shadow-sm'}>
+              {emoji}
+            </span>
+          ) : (
+            <svg
             viewBox="0 0 80 64"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -134,6 +141,7 @@ export function FolderCard({
               opacity="0.2"
             />
           </svg>
+          )}
 
           {/* Counters badge for grid mode */}
           {viewMode === "grid" && (hasNotes || hasSubfolders || folder.isLocked) && (
@@ -165,7 +173,7 @@ export function FolderCard({
 
         {/* Folder name */}
         <p className={`text-sm font-medium text-gray-800 truncate ${viewMode === 'list' ? 'flex-1 text-left' : 'text-center w-full max-w-[100px]'}`}>
-          {folder.name}
+          {label}
         </p>
 
         {/* Counters for list mode */}
