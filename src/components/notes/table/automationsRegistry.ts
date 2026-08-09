@@ -34,14 +34,13 @@ export const AUTOMATIONS_REGISTRY: Record<string, AutomationDefinition> = {
       // 1. Supprimer les lignes précédemment générées par cette automatisation
       let currentRows = rows.filter(row => row._sourceAutomationId !== automationId);
       
-      const unarchivedIndices: number[] = [];
+      const indicesToSum: number[] = [];
       currentRows.forEach((row, idx) => {
-        if (!row._archiveGroup) {
-          unarchivedIndices.push(idx);
-        }
+        // On inclut toutes les lignes (même archivées) pour ne pas perdre les totaux du passé !
+        indicesToSum.push(idx);
       });
 
-      if (unarchivedIndices.length === 0) {
+      if (indicesToSum.length === 0) {
         return { newRows: rows, hasChanges: false }; // Note : on retourne les lignes d'origine s'il n'y a rien à sommer, pour éviter de supprimer les totaux par erreur si le tableau a été vidé.
       }
 
@@ -57,7 +56,7 @@ export const AUTOMATIONS_REGISTRY: Record<string, AutomationDefinition> = {
       // Grouper les lignes
       const groups: Record<string, number[]> = {};
       
-      unarchivedIndices.forEach(idx => {
+      indicesToSum.forEach(idx => {
         const row = currentRows[idx];
         const groupKey = groupByColumn && row[groupByColumn] ? String(row[groupByColumn]) : "ALL";
         if (!groups[groupKey]) groups[groupKey] = [];
