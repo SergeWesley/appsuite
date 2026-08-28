@@ -83,13 +83,19 @@ export function PropertyValueEditor({
           } else {
             const parsed = new Date(value);
             if (!isNaN(parsed.getTime())) {
-              formattedDate = parsed.toLocaleDateString("en-CA");
+              const yyyy = parsed.getFullYear();
+              const mm = String(parsed.getMonth() + 1).padStart(2, '0');
+              const dd = String(parsed.getDate()).padStart(2, '0');
+              formattedDate = `${yyyy}-${mm}-${dd}`;
             } else {
               formattedDate = value;
             }
           }
         } else if (value instanceof Date && !isNaN(value.getTime())) {
-          formattedDate = value.toLocaleDateString("en-CA");
+          const yyyy = value.getFullYear();
+          const mm = String(value.getMonth() + 1).padStart(2, '0');
+          const dd = String(value.getDate()).padStart(2, '0');
+          formattedDate = `${yyyy}-${mm}-${dd}`;
         }
       }
 

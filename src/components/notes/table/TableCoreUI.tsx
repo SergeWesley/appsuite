@@ -257,7 +257,8 @@ export function TableCoreUI({
                             <button
                               onClick={() => {
                                 const newSubRow: Record<string, any> = {};
-                                const todayStr = new Date().toLocaleDateString("en-CA");
+                                const today = new Date();
+                                const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
                                 subCols.forEach((sc) => {
                                   if (sc.type === "autoincrement") {
                                     const existingValues = subTableData

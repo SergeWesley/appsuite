@@ -200,7 +200,8 @@ export function useTableLogic({
   const addRow = () => {
     const newRow: Record<string, any> = {};
     if (field.columns) {
-      const todayStr = new Date().toLocaleDateString("en-CA");
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
       field.columns.forEach((col) => {
         if (col.type === "autoincrement") {
           const existingValues = rows
