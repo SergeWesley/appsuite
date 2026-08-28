@@ -1,6 +1,6 @@
 import React from "react";
 import { flexRender, Table as TanStackTable } from "@tanstack/react-table";
-import { ChevronUp, ChevronDown, Maximize2, X, RotateCcw, Plus, Archive } from "lucide-react";
+import { ChevronUp, ChevronDown, ChevronRight, Maximize2, X, RotateCcw, Plus, Archive } from "lucide-react";
 import { CustomFieldDefinition } from "@/types/notes";
 import { TYPE_CONFIGS } from "../FieldEditorSheet";
 
@@ -172,7 +172,8 @@ export function TableCoreUI({
                   }}
                   className={`group hover:bg-gray-50/50 transition-colors border-b border-gray-100 last:border-b-0 ${isSelectionMode ? "cursor-pointer" : ""} ${
                     row.getIsSelected() || editingRowIndex === rIndex ? "bg-amber-50/30" : 
-                    newlyAddedRowIndices.has(rIndex) ? "bg-green-50/30" : ""
+                    newlyAddedRowIndices?.has(rIndex) ? "bg-green-50/30" : 
+                    archiveGroup ? "bg-amber-50/15" : ""
                   }`}
                 >
                 {row.getVisibleCells().map((cell) => {
@@ -343,7 +344,12 @@ export function TableCoreUI({
                         else next.add(archiveGroup);
                         setExpandedArchives(next);
                       }}
-                      className="group/archive bg-gray-50/80 hover:bg-gray-100/80 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
+                      className={`group/archive cursor-pointer transition-colors border-b last:border-b-0 ${
+                        isExpanded
+                          ? "bg-amber-50/50 hover:bg-amber-50/70 border-amber-200/70"
+                          : "bg-gray-50/80 hover:bg-gray-100/80 border-gray-100"
+                      }`}
+                      title={isExpanded ? "Cliquer pour replier" : "Cliquer pour afficher les lignes archivées"}
                     >
                       {isSelectionMode && (
                         <td className="p-1 align-middle border-r border-gray-100 text-center" onClick={(e) => e.stopPropagation()}>
@@ -362,11 +368,33 @@ export function TableCoreUI({
                           </div>
                         </td>
                       )}
-                      <td colSpan={columns.length + (isSelectionMode ? 1 : 1)} className="p-2 text-sm text-gray-500 font-medium">
+                      <td colSpan={columns.length + (isSelectionMode ? 1 : 1)} className="p-2 text-sm font-medium">
                         <div className="flex items-center gap-2">
-                          <span className="flex items-center gap-1.5 px-2 py-1 bg-white rounded border border-gray-200 shadow-sm text-xs">
-                            <Archive size={14} className="text-gray-400" />
-                            {groupCount} ligne{groupCount > 1 ? "s" : ""} archivée{groupCount > 1 ? "s" : ""}
+                          <span
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-medium transition-colors shadow-sm ${
+                              isExpanded
+                                ? "bg-amber-100/80 border-amber-300 text-amber-900"
+                                : "bg-white border-gray-200 text-gray-700 hover:border-gray-300"
+                            }`}
+                          >
+                            {isExpanded ? (
+                              <ChevronDown size={14} className="text-amber-700 shrink-0" />
+                            ) : (
+                              <ChevronRight size={14} className="text-gray-500 shrink-0" />
+                            )}
+                            <Archive size={13} className={isExpanded ? "text-amber-700 shrink-0" : "text-gray-400 shrink-0"} />
+                            <span>
+                              {groupCount} ligne{groupCount > 1 ? "s" : ""} archivée{groupCount > 1 ? "s" : ""}
+                            </span>
+                            <span
+                              className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ml-1 ${
+                                isExpanded
+                                  ? "bg-amber-200/90 text-amber-900"
+                                  : "bg-gray-100 text-gray-500"
+                              }`}
+                            >
+                              {isExpanded ? "Déplié" : "Replié"}
+                            </span>
                           </span>
                           <button
                             onClick={(e) => {
