@@ -72,15 +72,36 @@ export function PropertyValueEditor({
         </div>
       );
 
-    case "date":
+    case "date": {
+      let formattedDate = "";
+      if (value) {
+        if (typeof value === "string") {
+          if (value.includes("T")) {
+            formattedDate = value.split("T")[0];
+          } else if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+            formattedDate = value;
+          } else {
+            const parsed = new Date(value);
+            if (!isNaN(parsed.getTime())) {
+              formattedDate = parsed.toLocaleDateString("en-CA");
+            } else {
+              formattedDate = value;
+            }
+          }
+        } else if (value instanceof Date && !isNaN(value.getTime())) {
+          formattedDate = value.toLocaleDateString("en-CA");
+        }
+      }
+
       return (
         <input
           type="date"
-          value={value || ""}
+          value={formattedDate}
           onChange={(e) => onChange(e.target.value)}
-          className="px-2 py-1 -ml-2 text-sm text-gray-900 bg-transparent hover:bg-gray-50 focus:bg-white rounded-md border-transparent hover:border-gray-200 focus:border-amber-500 focus:ring-0 outline-none transition-all cursor-pointer"
+          className="w-full min-w-[125px] px-2 py-1 -ml-2 text-sm text-gray-900 bg-transparent hover:bg-gray-50 focus:bg-white rounded-md border-transparent hover:border-gray-200 focus:border-amber-500 focus:ring-0 outline-none transition-all cursor-pointer min-h-[32px]"
         />
       );
+    }
 
     case "time":
       return (

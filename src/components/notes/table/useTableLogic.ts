@@ -200,6 +200,7 @@ export function useTableLogic({
   const addRow = () => {
     const newRow: Record<string, any> = {};
     if (field.columns) {
+      const todayStr = new Date().toLocaleDateString("en-CA");
       field.columns.forEach((col) => {
         if (col.type === "autoincrement") {
           const existingValues = rows
@@ -208,6 +209,8 @@ export function useTableLogic({
             .filter((v) => !isNaN(v));
           const max = existingValues.length > 0 ? Math.max(...existingValues) : 0;
           newRow[col.id] = max + 1;
+        } else if (col.type === "date") {
+          newRow[col.id] = todayStr;
         }
       });
     }

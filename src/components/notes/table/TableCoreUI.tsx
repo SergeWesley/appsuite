@@ -257,6 +257,7 @@ export function TableCoreUI({
                             <button
                               onClick={() => {
                                 const newSubRow: Record<string, any> = {};
+                                const todayStr = new Date().toLocaleDateString("en-CA");
                                 subCols.forEach((sc) => {
                                   if (sc.type === "autoincrement") {
                                     const existingValues = subTableData
@@ -265,6 +266,8 @@ export function TableCoreUI({
                                       .filter((v: any) => !isNaN(v));
                                     const max = existingValues.length > 0 ? Math.max(...existingValues) : 0;
                                     newSubRow[sc.id] = max + 1;
+                                  } else if (sc.type === "date") {
+                                    newSubRow[sc.id] = todayStr;
                                   }
                                 });
                                 const newSubData = [...subTableData, newSubRow];
