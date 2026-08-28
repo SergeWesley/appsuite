@@ -127,8 +127,13 @@ export function PropertyTableEditor({
             </button>
             <button
               onClick={() => {
-                if (isSelectionMode) setRowSelection({});
-                setIsSelectionMode(!isSelectionMode);
+                if (isSelectionMode) {
+                  setRowSelection({});
+                  setIsSelectionMode(false);
+                } else {
+                  setIsSelectionMode(true);
+                  setIsEditMode(false);
+                }
               }}
               className={`flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded transition-colors flex-1 sm:flex-none sm:w-max ${
                 isSelectionMode
