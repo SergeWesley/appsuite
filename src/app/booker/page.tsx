@@ -147,13 +147,15 @@ export default function BookerPage() {
       iconColor="text-blue-600"
       currentModule="booker"
       actions={
-        <button
-          onClick={() => openForm()}
-          className="hidden sm:inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Plus size={20} className="mr-2" />
-          Ajouter un livre
-        </button>
+        books.length > 0 ? (
+          <button
+            onClick={() => openForm()}
+            className="hidden sm:inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Plus size={20} className="mr-2" />
+            Ajouter un livre
+          </button>
+        ) : null
       }
     >
       <div className="space-y-8">
@@ -253,16 +255,18 @@ export default function BookerPage() {
       </div>
 
       {/* Bouton flottant pour mobile */}
-      <motion.button
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => openForm()}
-        className="floating-action md:hidden inline-flex items-center justify-center w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors"
-      >
-        <Plus size={24} />
-      </motion.button>
+      {books.length > 0 && (
+        <motion.button
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => openForm()}
+          className="floating-action md:hidden inline-flex items-center justify-center w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors"
+        >
+          <Plus size={24} />
+        </motion.button>
+      )}
 
       {/* Formulaire */}
       <BookForm

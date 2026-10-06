@@ -131,13 +131,15 @@ export default function TrackerPage() {
       currentModule="tracker"
       actions={
         <>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="hidden sm:inline-flex items-center text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-          >
-            <Plus size={20} className="mr-2" />
-            Nouvelle séance
-          </button>
+          {sessions.length > 0 && (
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="hidden sm:inline-flex items-center text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              <Plus size={20} className="mr-2" />
+              Nouvelle séance
+            </button>
+          )}
 
           <Menu as="div" className="relative inline-block text-left">
             <MenuButton className="p-2 text-gray-500 hover:text-green-600 transition-colors rounded-lg hover:bg-green-50">
@@ -323,12 +325,14 @@ export default function TrackerPage() {
 
 
       {/* Bouton flottant pour mobile */}
-      <button
-        onClick={() => setShowCreateModal(true)}
-        className="floating-action md:hidden inline-flex items-center justify-center w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-colors active:scale-95"
-      >
-        <Plus size={24} />
-      </button>
+      {sessions.length > 0 && (
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="floating-action md:hidden inline-flex items-center justify-center w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-colors active:scale-95"
+        >
+          <Plus size={24} />
+        </button>
+      )}
 
       {/* Modal de création */}
       <SessionMetadataModal

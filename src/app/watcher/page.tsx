@@ -180,13 +180,15 @@ export default function WatcherPage() {
       iconColor="text-purple-600"
       currentModule="watcher"
       actions={
-        <button
-          onClick={() => openForm()}
-          className="inline-flex items-center text-sm px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-        >
-          <Plus size={20} className="mr-2" />
-          Ajouter une œuvre
-        </button>
+        medias.length > 0 ? (
+          <button
+            onClick={() => openForm()}
+            className="inline-flex items-center text-sm px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          >
+            <Plus size={20} className="mr-2" />
+            Ajouter une œuvre
+          </button>
+        ) : null
       }
     >
         {/* Statistiques */}
@@ -337,16 +339,18 @@ export default function WatcherPage() {
 
 
       {/* Bouton flottant pour mobile */}
-      <motion.button
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={() => openForm()}
-        className="floating-action md:hidden inline-flex items-center justify-center w-14 h-14 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 transition-colors"
-      >
-        <Plus size={24} />
-      </motion.button>
+      {medias.length > 0 && (
+        <motion.button
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => openForm()}
+          className="floating-action md:hidden inline-flex items-center justify-center w-14 h-14 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 transition-colors"
+        >
+          <Plus size={24} />
+        </motion.button>
+      )}
 
       {/* Formulaire */}
       <MediaForm

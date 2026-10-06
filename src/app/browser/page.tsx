@@ -126,11 +126,13 @@ export default function BrowserPage() {
 
 
       {/* Floating Add Button */}
-      <FloatingAddButton
-        onClick={() => setShowAddModal(true)}
-        label="Ajouter un site"
-        color="bg-teal-500 hover:bg-teal-600"
-      />
+      {apps.length > 0 && (
+        <FloatingAddButton
+          onClick={() => setShowAddModal(true)}
+          label="Ajouter un site"
+          color="bg-teal-500 hover:bg-teal-600"
+        />
+      )}
 
       {/* Add App Modal */}
       <BrowserAppFormModal

@@ -111,11 +111,13 @@ export default function SpenderPage() {
 
 
       {/* Floating Add Button */}
-      <FloatingAddButton
-        onClick={() => setShowAddModal(true)}
-        label="Ajouter"
-        color="bg-red-500 hover:bg-red-600"
-      />
+      {subscriptions.length > 0 && (
+        <FloatingAddButton
+          onClick={() => setShowAddModal(true)}
+          label="Ajouter"
+          color="bg-red-500 hover:bg-red-600"
+        />
+      )}
 
       {/* Create Modal */}
       <CreateSubscriptionModal
