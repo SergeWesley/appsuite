@@ -6,6 +6,7 @@ import Link from "next/link";
 import { appModules } from "@/config/modules";
 import { useFilterPersistence } from "@/hooks/useFilterPersistence";
 import { AppLayout } from "@/components/AppLayout";
+import { FloatingBackground } from "@/components/FloatingBackground";
 
 export default function Dashboard() {
   const { selectedViewMode, updateFilter } = useFilterPersistence("dashboard-view", {
@@ -18,9 +19,10 @@ export default function Dashboard() {
       icon={Grid3X3}
       iconColor="text-blue-600"
       currentModule="dashboard"
-      padding="px-4 sm:px-6 lg:px-8 py-12"
+      padding="px-4 sm:px-6 lg:px-8 py-12 relative"
     >
-      <div className="text-center mb-12">
+      <FloatingBackground opacity={0.08} />
+      <div className="text-center mb-12 relative z-10">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

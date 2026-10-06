@@ -8,13 +8,14 @@ interface FloatingIconProps {
   Icon: React.ElementType;
   index: number;
   colorClass: string;
+  maxOpacity?: number;
 }
 
 /**
  * Composant représentant une icône flottante individuelle avec des
  * animations de déplacement et de rotation aléatoires.
  */
-const FloatingIcon = ({ Icon, index, colorClass }: FloatingIconProps) => {
+const FloatingIcon = ({ Icon, index, colorClass, maxOpacity = 0.25 }: FloatingIconProps) => {
   const [mounted, setMounted] = useState(false);
   const [randomProps, setRandomProps] = useState({
     x: 0,
@@ -29,19 +30,18 @@ const FloatingIcon = ({ Icon, index, colorClass }: FloatingIconProps) => {
 
   useEffect(() => {
     setRandomProps({
-      x: Math.random() * 100, // Position de départ aléatoire sur l'axe X (%)
-      y: Math.random() * 100, // Position de départ aléatoire sur l'axe Y (%)
-      size: Math.random() * 40 + 20, // Taille aléatoire entre 20 et 60px
-      duration: Math.random() * 10 + 8, // Durée de l'animation aléatoire entre 8 et 18s (plus rapide)
-      delay: Math.random() * -10, // Délai négatif ajusté proportionnellement
-      amplitudeX: Math.random() * 60 - 30, // Balancier horizontal (bulles)
-      distanceY: -(Math.random() * 300 + 200), // Distance de montée
-      rotation: Math.random() * 30 - 15, // Léger balancement rotatif
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 40 + 20,
+      duration: Math.random() * 10 + 8,
+      delay: Math.random() * -10,
+      amplitudeX: Math.random() * 60 - 30,
+      distanceY: -(Math.random() * 300 + 200),
+      rotation: Math.random() * 30 - 15,
     });
     setMounted(true);
   }, []);
 
-  // Évite les erreurs d'hydratation (hydration mismatch) avec Next.js
   if (!mounted) return null;
 
   return (
@@ -55,7 +55,7 @@ const FloatingIcon = ({ Icon, index, colorClass }: FloatingIconProps) => {
         y: [0, randomProps.distanceY],
         x: [0, randomProps.amplitudeX, -randomProps.amplitudeX, 0],
         rotate: [0, randomProps.rotation, -randomProps.rotation, 0],
-        opacity: [0, 0.25, 0.25, 0],
+        opacity: [0, maxOpacity, maxOpacity, 0],
       }}
       transition={{
         duration: randomProps.duration,
@@ -73,16 +73,16 @@ const FloatingIcon = ({ Icon, index, colorClass }: FloatingIconProps) => {
  * Arrière-plan animé affichant des icônes flottantes générées à
  * partir des modules de l'application.
  */
-export const FloatingBackground = () => {
+export const FloatingBackground = ({ opacity = 0.25 }: { opacity?: number }) => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       {/* Icônes flottantes */}
       {appModules.map((module, i) => (
-        <FloatingIcon key={i} Icon={module.icon} index={i} colorClass={module.theme.text} />
+        <FloatingIcon key={i} Icon={module.icon} index={i} colorClass={module.theme.text} maxOpacity={opacity} />
       ))}
       {/* On double le nombre d'icônes pour plus de densité visuelle */}
       {appModules.map((module, i) => (
-        <FloatingIcon key={`second-${i}`} Icon={module.icon} index={i + appModules.length} colorClass={module.theme.text} />
+        <FloatingIcon key={`second-${i}`} Icon={module.icon} index={i + appModules.length} colorClass={module.theme.text} maxOpacity={opacity} />
       ))}
     </div>
   );
