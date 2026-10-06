@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { Mail, Lock, User, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { FloatingBackground } from "./FloatingBackground";
 
 interface AuthFormProps {
   onSignIn: (email: string, password: string) => Promise<void>;
@@ -86,28 +87,16 @@ export function AuthForm({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative overflow-hidden">
+      <FloatingBackground />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md p-6 sm:p-8"
+        className="w-full max-w-md p-6 sm:p-8 relative z-10"
       >
         {/* Header */}
         <div className="text-center mb-10">
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="inline-flex items-center justify-center mb-6"
-          >
-            <Image
-              src="/icon-192x192.png"
-              alt="AppSuite Logo"
-              width={96}
-              height={96}
-              className="w-24 h-24 object-contain"
-            />
-          </motion.div>
+
           <h1 className="text-3xl font-bold text-gray-900 mb-3 tracking-tight">
             {isSignUp ? "Créer un compte" : "Bon retour"}
           </h1>
