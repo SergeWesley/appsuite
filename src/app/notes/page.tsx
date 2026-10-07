@@ -313,11 +313,13 @@ export default function NotesPage() {
 
 
       {/* Floating Add Button */}
-      <FloatingAddButton
-        onClick={() => setShowCreateFolderModal(true)}
-        label="Créer un dossier"
-        color="bg-amber-500 hover:bg-amber-600"
-      />
+      {folders.length > 0 && (
+        <FloatingAddButton
+          onClick={() => setShowCreateFolderModal(true)}
+          label="Créer un dossier"
+          color="bg-amber-500 hover:bg-amber-600"
+        />
+      )}
 
       {/* Create Folder Modal */}
       <CreateFolderModal

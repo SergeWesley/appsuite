@@ -150,7 +150,7 @@ export default function BookerPage() {
         books.length > 0 ? (
           <button
             onClick={() => openForm()}
-            className="hidden sm:inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="hidden md:inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <Plus size={20} className="mr-2" />
             Ajouter un livre

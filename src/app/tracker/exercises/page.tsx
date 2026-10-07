@@ -114,13 +114,15 @@ export default function ExerciseCatalogPage() {
       currentModule="tracker"
       onBack={() => router.push("/tracker")}
       actions={
-        <button
-          onClick={() => setShowExerciseForm(true)}
-          className="hidden sm:inline-flex items-center text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-        >
-          <Plus size={20} className="mr-2" />
-          Créer un exercice
-        </button>
+        filteredExercises.length > 0 ? (
+          <button
+            onClick={() => setShowExerciseForm(true)}
+            className="hidden md:inline-flex items-center text-sm px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          >
+            <Plus size={20} className="mr-2" />
+            Créer un exercice
+          </button>
+        ) : null
       }
     >
         {/* En-tête */}
@@ -330,12 +332,14 @@ export default function ExerciseCatalogPage() {
 
 
       {/* Bouton flottant pour mobile */}
-      <button
-        onClick={() => setShowExerciseForm(true)}
-        className="floating-action md:hidden inline-flex items-center justify-center w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-colors active:scale-95"
-      >
-        <Plus size={24} />
-      </button>
+      {filteredExercises.length > 0 && (
+        <button
+          onClick={() => setShowExerciseForm(true)}
+          className="floating-action md:hidden inline-flex items-center justify-center w-14 h-14 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-colors active:scale-95"
+        >
+          <Plus size={24} />
+        </button>
+      )}
 
       {/* Exercise Form Modal */}
       <ExerciseForm
