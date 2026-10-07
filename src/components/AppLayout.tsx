@@ -35,7 +35,7 @@ export function AppLayout({
 }: AppLayoutProps) {
   return (
     <div className={`fixed top-0 left-0 w-full h-[100dvh] flex flex-col overflow-hidden overscroll-none ${bgClass}`}>
-      <FloatingBackground opacity={0.08} />
+      <FloatingBackground opacity={0.2} />
       <div className="shrink-0 z-40">
         <AppHeader
           title={title}
