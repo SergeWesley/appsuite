@@ -47,14 +47,14 @@ export function AppHeader({
 
   return (
     <>
-      <header className="bg-gray-50/80 backdrop-blur-md sticky top-0 z-40">
-        <div className={`${maxWidth} mx-auto px-4 sm:px-6 lg:px-8`}>
-          <div className={`flex items-center justify-between ${height}`}>
-            <div className="flex items-center gap-2 min-w-0 flex-1 mr-4">
+      <header className="sticky top-2 sm:top-0 z-40 sm:bg-gray-50/80 sm:backdrop-blur-md pointer-events-none">
+        <div className={`${maxWidth} mx-auto px-2 sm:px-6 lg:px-8 pointer-events-auto`}>
+          <div className={`flex items-center justify-between gap-2 ${height}`}>
+            <div className="flex items-center gap-2 min-w-0 flex-1">
               {onBack && !isSplitMode && (
                 <button
                   onClick={onBack}
-                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors mr-1"
+                  className="p-2 sm:p-2 rounded-full sm:rounded-lg bg-white/90 backdrop-blur-md shadow-sm sm:bg-transparent sm:shadow-none hover:bg-gray-100 transition-colors flex-shrink-0"
                   aria-label="Retour"
                 >
                   <ArrowLeft size={20} className="text-gray-600" />
@@ -63,23 +63,23 @@ export function AppHeader({
               {!isSplitMode ? (
                 <button
                   onClick={() => setIsNavMenuOpen(true)}
-                  className="flex items-center p-2 rounded-lg hover:bg-gray-100 transition-colors min-w-0 flex-1 text-left"
+                  className="flex items-center p-2 sm:p-2 rounded-full sm:rounded-lg bg-white/90 backdrop-blur-md shadow-sm sm:bg-transparent sm:shadow-none hover:bg-gray-100 transition-colors min-w-0 flex-1 text-left"
                   aria-label="Menu de navigation"
                 >
-                  {Icon && <Icon className={`h-8 w-8 flex-shrink-0 ${iconColor}`} />}
+                  {Icon && <Icon className={`h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 ${iconColor} ml-1 sm:ml-0`} />}
                   <div className="flex items-center gap-2 min-w-0 flex-1">
                     <h1
-                      className={`${Icon ? "ml-3" : ""} text-xl font-semibold text-gray-900 truncate block`}
+                      className={`${Icon ? "ml-2 sm:ml-3" : "ml-3 sm:ml-0"} text-lg sm:text-xl font-semibold text-gray-900 truncate block`}
                     >
                       {title}
                     </h1>
                   </div>
                 </button>
               ) : (
-                <div className="flex items-center p-2 min-w-0 flex-1 text-left gap-2">
-                  {Icon && <Icon className={`h-6 w-6 flex-shrink-0 ${iconColor}`} />}
+                <div className="flex items-center p-2 sm:p-2 rounded-full sm:rounded-lg bg-white/90 backdrop-blur-md shadow-sm sm:bg-transparent sm:shadow-none min-w-0 flex-1 text-left gap-2">
+                  {Icon && <Icon className={`h-6 w-6 flex-shrink-0 ${iconColor} ml-1 sm:ml-0`} />}
                   <h1
-                    className={`${Icon ? "ml-3" : ""} text-lg font-semibold text-gray-900 truncate min-w-0 flex-1`}
+                    className={`${Icon ? "ml-1 sm:ml-3" : "ml-2 sm:ml-0"} text-base sm:text-lg font-semibold text-gray-900 truncate min-w-0 flex-1`}
                   >
                     {title}
                   </h1>
@@ -87,9 +87,9 @@ export function AppHeader({
               )}
             </div>
 
-            <div className="flex items-center gap-4 flex-shrink-0">
+            <div className="flex items-center gap-2 flex-shrink-0">
               {actions && (
-                <div className="flex items-center gap-2 sm:gap-4">
+                <div className="flex items-center gap-2 px-1 py-1 rounded-full sm:rounded-none bg-white/90 backdrop-blur-md shadow-sm sm:bg-transparent sm:shadow-none">
                   {actions}
                 </div>
               )}
@@ -97,7 +97,7 @@ export function AppHeader({
               {/* Menu utilisateur caché en mode split pour gagner de l'espace */}
               {!isSplitMode && (
                 <Menu as="div" className="relative inline-block text-left">
-                  <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                  <MenuButton className="flex items-center gap-2 px-3 py-2 text-gray-700 bg-white/90 backdrop-blur-md shadow-sm sm:bg-transparent sm:shadow-none hover:bg-gray-100 rounded-full sm:rounded-lg transition-colors">
                     <User size={20} />
                     <span className="hidden sm:block text-sm">
                       {user?.user_metadata?.name ||
