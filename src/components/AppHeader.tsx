@@ -49,7 +49,7 @@ export function AppHeader({
     <>
       <header className="sticky top-2 sm:top-0 z-40 sm:bg-gray-50/80 sm:backdrop-blur-md pointer-events-none">
         <div className={`${maxWidth} mx-auto px-2 sm:px-6 lg:px-8 pointer-events-auto`}>
-          <div className={`flex items-center justify-between gap-2 ${height}`}>
+          <div className={`flex items-center justify-between gap-2 sm:${height}`}>
             <div className="flex items-center gap-2 min-w-0 flex-1">
               {onBack && !isSplitMode && (
                 <button
